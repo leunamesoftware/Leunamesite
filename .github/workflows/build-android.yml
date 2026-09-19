@@ -66,13 +66,19 @@ jobs:
         run: npx cap sync android
 
       - name: Aplicar o ícone oficial da LeuName Softwares
+        # Copia tambem a camada "foreground" e a cor de fundo do icone
+        # adaptativo (Android 8+), nao so os ic_launcher.png legados.
+        # Sem isso, o launcher moderno continua mostrando o icone padrao
+        # do Capacitor (a seta azul), mesmo com ic_launcher.png trocado.
         working-directory: ANDROID/projeto-instalador-android
         shell: bash
         run: |
           for d in mipmap-mdpi mipmap-hdpi mipmap-xhdpi mipmap-xxhdpi mipmap-xxxhdpi; do
             cp "icones-oficiais/$d/ic_launcher.png" "android/app/src/main/res/$d/ic_launcher.png"
             cp "icones-oficiais/$d/ic_launcher_round.png" "android/app/src/main/res/$d/ic_launcher_round.png"
+            cp "icones-oficiais/$d/ic_launcher_foreground.png" "android/app/src/main/res/$d/ic_launcher_foreground.png"
           done
+          cp "icones-oficiais/ic_launcher_background.xml" "android/app/src/main/res/values/ic_launcher_background.xml"
 
       - name: Dar permissão de execução ao Gradle
         working-directory: ANDROID/projeto-instalador-android/android
