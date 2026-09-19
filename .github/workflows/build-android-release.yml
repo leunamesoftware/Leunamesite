@@ -1,0 +1,173 @@
+name: Build Android AAB (Google Play)
+
+# Gera o Android App Bundle (.aab) assinado, para publicar/atualizar o
+# LeuName Gestão na Google Play Console.
+#
+# Este workflow é separado do "Build Android APK" (que continua gerando o
+# .apk de instalação direta, sem loja, exatamente como antes). Este aqui
+# só entra em uso quando for publicar ou atualizar o app na Play Store.
+#
+# Antes de rodar pela primeira vez, é necessário cadastrar 4 segredos no
+# repositório (Settings → Secrets and variables → Actions → New repository
+# secret), com os valores gerados junto com o keystore de assinatura:
+#   ANDROID_KEYSTORE_BASE64   (conteúdo do arquivo .keystore em base64)
+#   ANDROID_KEYSTORE_PASSWORD
+#   ANDROID_KEY_ALIAS
+#   ANDROID_KEY_PASSWORD
+#
+# Para lançar uma atualização depois de já publicado: aumente o
+# versionCode em ANDROID/projeto-instalador-android/versao-release.properties
+# e rode este workflow de novo.
+on:
+  workflow_dispatch:
+
+jobs:
+  build-android-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Baixar código do repositório
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Configurar Java (necessário para compilar Android)
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Configurar o Android SDK
+        shell: bash
+        run: |
+          export ANDROID_SDK_ROOT="${ANDROID_SDK_ROOT:-${ANDROID_HOME:-/usr/local/lib/android/sdk}}"
+          echo "ANDROID_SDK_ROOT=$ANDROID_SDK_ROOT" >> "$GITHUB_ENV"
+          echo "ANDROID_HOME=$ANDROID_SDK_ROOT" >> "$GITHUB_ENV"
+          SDKMANAGER="$(find "$ANDROID_SDK_ROOT" -maxdepth 4 -type f -name sdkmanager 2>/dev/null | sort -V | tail -n1)"
+          if [ -z "$SDKMANAGER" ]; then
+            mkdir -p "$ANDROID_SDK_ROOT/cmdline-tools"
+            curl -sSL -o /tmp/cmdline-tools.zip \
+              https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip
+            unzip -q /tmp/cmdline-tools.zip -d "$ANDROID_SDK_ROOT/cmdline-tools"
+            mv "$ANDROID_SDK_ROOT/cmdline-tools/cmdline-tools" "$ANDROID_SDK_ROOT/cmdline-tools/latest"
+            SDKMANAGER="$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager"
+          fi
+          yes | "$SDKMANAGER" --licenses > /dev/null || true
+          "$SDKMANAGER" --install "platform-tools" "platforms;android-34" "build-tools;34.0.0" > /dev/null
+
+      - name: Instalar dependências do projeto Android
+        working-directory: ANDROID/projeto-instalador-android
+        run: npm install
+
+      - name: Criar o projeto Android nativo (Capacitor)
+        working-directory: ANDROID/projeto-instalador-android
+        run: npx cap add android
+
+      - name: Copiar o sistema para dentro do projeto Android
+        working-directory: ANDROID/projeto-instalador-android
+        run: npx cap sync android
+
+      - name: Aplicar o ícone oficial da LeuName Softwares
+        working-directory: ANDROID/projeto-instalador-android
+        shell: bash
+        run: |
+          for d in mipmap-mdpi mipmap-hdpi mipmap-xhdpi mipmap-xxhdpi mipmap-xxxhdpi; do
+            cp "icones-oficiais/$d/ic_launcher.png" "android/app/src/main/res/$d/ic_launcher.png"
+            cp "icones-oficiais/$d/ic_launcher_round.png" "android/app/src/main/res/$d/ic_launcher_round.png"
+            cp "icones-oficiais/$d/ic_launcher_foreground.png" "android/app/src/main/res/$d/ic_launcher_foreground.png"
+          done
+          cp "icones-oficiais/ic_launcher_background.xml" "android/app/src/main/res/values/ic_launcher_background.xml"
+
+      - name: Decodificar o keystore de assinatura (a partir do secret)
+        working-directory: ANDROID/projeto-instalador-android
+        shell: bash
+        run: |
+          echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 -d > android/app/release.keystore
+
+      - name: Configurar versão e assinatura de release no build.gradle
+        # cap add android gera o build.gradle do zero a cada execução (não é
+        # versionado), então aplicamos aqui a versão (de
+        # versao-release.properties) e o signingConfig apontando para o
+        # keystore decodificado no passo anterior, lendo as senhas dos
+        # secrets do repositório.
+        working-directory: ANDROID/projeto-instalador-android
+        shell: bash
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          python3 - <<'PY'
+          import os, re
+
+          props = {}
+          with open("versao-release.properties", encoding="utf-8") as f:
+              for line in f:
+                  line = line.strip()
+                  if not line or line.startswith("#") or "=" not in line:
+                      continue
+                  k, v = line.split("=", 1)
+                  props[k.strip()] = v.strip()
+
+          version_code = props["versionCode"]
+          version_name = props["versionName"]
+
+          gradle_path = "android/app/build.gradle"
+          with open(gradle_path, encoding="utf-8") as f:
+              text = f.read()
+
+          text = re.sub(r"versionCode\s+\d+", f"versionCode {version_code}", text, count=1)
+          text = re.sub(r'versionName\s+"[^"]*"', f'versionName "{version_name}"', text, count=1)
+
+          signing_block = (
+              "    signingConfigs {\n"
+              "        release {\n"
+              "            storeFile file('release.keystore')\n"
+              f"            storePassword System.getenv('KEYSTORE_PASSWORD')\n"
+              f"            keyAlias System.getenv('KEY_ALIAS')\n"
+              f"            keyPassword System.getenv('KEY_PASSWORD')\n"
+              "        }\n"
+              "    }\n"
+          )
+          text = text.replace("    buildTypes {", signing_block + "    buildTypes {", 1)
+          text = text.replace(
+              "        release {\n            minifyEnabled false",
+              "        release {\n            signingConfig signingConfigs.release\n            minifyEnabled false",
+              1,
+          )
+
+          with open(gradle_path, "w", encoding="utf-8") as f:
+              f.write(text)
+
+          print(f"versionCode={version_code} versionName={version_name} aplicados; signingConfig inserido.")
+          PY
+
+      - name: Dar permissão de execução ao Gradle
+        working-directory: ANDROID/projeto-instalador-android/android
+        shell: bash
+        run: chmod +x gradlew
+
+      - name: Gerar o Android App Bundle (.aab) assinado
+        working-directory: ANDROID/projeto-instalador-android/android
+        shell: bash
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: ./gradlew bundleRelease --no-daemon
+
+      - name: Renomear o AAB final
+        working-directory: ANDROID/projeto-instalador-android
+        shell: bash
+        run: |
+          cp android/app/build/outputs/bundle/release/app-release.aab \
+             android/app/build/outputs/bundle/release/LeuName-Gestao.aab
+
+      - name: Enviar o AAB como Artifact do GitHub
+        uses: actions/upload-artifact@v4
+        with:
+          name: LeuName-Gestao-Android-AAB
+          path: ANDROID/projeto-instalador-android/android/app/build/outputs/bundle/release/LeuName-Gestao.aab
+          if-no-files-found: error
