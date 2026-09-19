@@ -1,0 +1,16 @@
+name = "leuname-licencas"
+main = "src/index.js"
+compatibility_date = "2026-09-19"
+
+# Depois de criar o banco (passo 2 do README), troque o database_id abaixo
+# pelo id real que o comando "wrangler d1 create" devolver.
+[[d1_databases]]
+binding = "DB"
+database_name = "leuname_licencas"
+database_id = "COLE-AQUI-O-ID-DO-BANCO"
+
+# Depois de configurar o subdominio na Cloudflare (passo 4 do README),
+# descomente e ajuste a linha abaixo.
+# routes = [
+#   { pattern = "api.leunamesoftware.com/*", zone_name = "leunamesoftware.com" }
+# ]
