@@ -7,10 +7,14 @@ name: Build Android AAB (Google Play)
 # .apk de instalação direta, sem loja, exatamente como antes). Este aqui
 # só entra em uso quando for publicar ou atualizar o app na Play Store.
 #
-# Antes de rodar pela primeira vez, é necessário cadastrar 4 segredos no
-# repositório (Settings → Secrets and variables → Actions → New repository
-# secret), com os valores gerados junto com o keystore de assinatura:
-#   ANDROID_KEYSTORE_BASE64   (conteúdo do arquivo .keystore em base64)
+# Antes de rodar pela primeira vez, é necessário cadastrar estes segredos
+# no repositório (Settings → Secrets and variables → Actions → New
+# repository secret), com os valores gerados junto com o keystore de
+# assinatura:
+#   ANDROID_KEYSTORE_B64_PART1..5  (o .keystore em base64, dividido em 5
+#                                    pedaços curtos — cada um cabe numa
+#                                    tela de celular sem precisar rolar,
+#                                    o que evita colagem incompleta)
 #   ANDROID_KEYSTORE_PASSWORD
 #   ANDROID_KEY_ALIAS
 #   ANDROID_KEY_PASSWORD
@@ -80,11 +84,11 @@ jobs:
           done
           cp "icones-oficiais/ic_launcher_background.xml" "android/app/src/main/res/values/ic_launcher_background.xml"
 
-      - name: Decodificar o keystore de assinatura (a partir do secret)
+      - name: Decodificar o keystore de assinatura (a partir dos 5 secrets)
         working-directory: ANDROID/projeto-instalador-android
         shell: bash
         run: |
-          echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 -d > android/app/release.keystore
+          printf '%s' "${{ secrets.ANDROID_KEYSTORE_B64_PART1 }}${{ secrets.ANDROID_KEYSTORE_B64_PART2 }}${{ secrets.ANDROID_KEYSTORE_B64_PART3 }}${{ secrets.ANDROID_KEYSTORE_B64_PART4 }}${{ secrets.ANDROID_KEYSTORE_B64_PART5 }}" | base64 -d > android/app/release.keystore
           echo "Tamanho do keystore decodificado (esperado: 2808 bytes):"
           wc -c < android/app/release.keystore
           echo "SHA256 do keystore decodificado (esperado: 0663866b05c9884e60931eff7eb72fa204f0bf1675f37d9d6dbe6bdf808b3d8b):"
