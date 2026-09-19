@@ -34,8 +34,11 @@ jobs:
         # está no runner, sem depender dessa action.
         shell: bash
         run: |
-          yes | sdkmanager --licenses > /dev/null || true
-          sdkmanager --install "platform-tools" > /dev/null
+          export ANDROID_SDK_ROOT="${ANDROID_SDK_ROOT:-${ANDROID_HOME:-/usr/local/lib/android/sdk}}"
+          SDKMANAGER="$(find "$ANDROID_SDK_ROOT/cmdline-tools" -maxdepth 2 -type f -name sdkmanager | sort -V | tail -n1)"
+          echo "Usando sdkmanager em: $SDKMANAGER"
+          yes | "$SDKMANAGER" --licenses > /dev/null || true
+          "$SDKMANAGER" --install "platform-tools" > /dev/null
 
       - name: Instalar dependências do projeto Android
         working-directory: ANDROID/projeto-instalador-android
