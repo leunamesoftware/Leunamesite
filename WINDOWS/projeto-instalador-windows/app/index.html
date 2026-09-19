@@ -746,6 +746,36 @@ function authBrandHTML(loja){
   </div>`;
 }
 
+function renderLicenseGate(errMsg){
+  document.getElementById('app-root').classList.remove('ready');
+  const root=document.getElementById('auth-root');
+  root.innerHTML=`
+  <div class="auth-screen"><div class="auth-card">
+    ${authBrandHTML()}
+    <h2 style="font-size:17px;text-align:center;margin-top:6px;">Ativação da licença</h2>
+    <p class="muted small center" style="margin:6px 0 18px;">Para usar o LeuName Gestão, digite a chave de licença enviada pela LeuName Softwares.</p>
+    <div class="field"><label>Chave de licença <span class="req">*</span></label><input id="lic-key" placeholder="LEU-XXXX-XXXX-XXXX" style="text-transform:uppercase;" autofocus></div>
+    ${errMsg?`<div class="callout warn" style="margin-top:10px;"><span>${ic('warn',15)}</span><span>${esc(errMsg)}</span></div>`:''}
+    <button class="btn primary" id="lic-activate" style="width:100%;justify-content:center;margin-top:16px;padding:11px;">Ativar licença</button>
+    <p class="muted small center" style="margin-top:14px;">Sem a chave? Fale com a LeuName Softwares para receber sua licença.</p>
+  </div></div>`;
+  const input=document.getElementById('lic-key');
+  const doActivate=async()=>{
+    const btn=document.getElementById('lic-activate');
+    const raw=input.value.trim().toUpperCase();
+    if(!raw){ renderLicenseGate('Digite a chave de licença.'); return; }
+    btn.disabled=true; btn.textContent='Verificando...';
+    const valid=await licenseKeyValid(raw);
+    if(!valid){ renderLicenseGate('Chave de licença inválida. Verifique e tente novamente.'); return; }
+    lsSet(LICENSE_LS_KEY,raw);
+    toast('Licença ativada com sucesso!','success');
+    __booted=false; boot();
+  };
+  document.getElementById('lic-activate').onclick=doActivate;
+  input.addEventListener('keydown',(e)=>{ if(e.key==='Enter') doActivate(); });
+  input.focus();
+}
+
 async function renderLogin(){
   document.getElementById('app-root').classList.remove('ready');
   const loja=await getLoja();
@@ -826,8 +856,7 @@ function renderOnboarding(){
   } else if(OB.step===4){
     body=`
       <h3 style="font-size:15.5px;margin-bottom:14px;">3. Licença</h3>
-      <div class="field"><label>Chave de licença</label><input id="ob-licenca" value="${esc(d.licenca)}" placeholder="LEU-XXXX-XXXX-XXXX (opcional agora)"></div>
-      <div class="callout info" style="margin-top:6px;"><span>${ic('key',16)}</span><span>Sem chave, o sistema roda em <b>modo avaliação local</b> com todos os módulos liberados. Ative a licença depois em Configurações → Licença. Até ${LICENSE_MAX_DEVICES_DEFAULT} dispositivos por licença.</span></div>
+      <div class="callout info"><span>${ic('key',16)}</span><span>Licença ativada: <b>${esc(d.licenca||lsGet(LICENSE_LS_KEY)||'')}</b>. Você pode gerenciá-la depois em Configurações → Licença. Até ${LICENSE_MAX_DEVICES_DEFAULT} dispositivos por licença.</span></div>
       <div class="field" style="margin-top:14px;"><label>Armazenamento em nuvem</label>
         <div class="callout info"><span>${ic('cloud',16)}</span><span>Você poderá conectar Google Drive, OneDrive ou Dropbox a qualquer momento em Configurações → Backup e Sincronização. Por enquanto o sistema funciona 100% offline no seu dispositivo.</span></div>
       </div>
@@ -882,7 +911,7 @@ function wireOnboardingStep(){
   } else if(OB.step===4){
     document.getElementById('ob-back4').onclick=()=>{ OB.step=3; renderOnboarding(); };
     document.getElementById('ob-finish').onclick=async()=>{
-      d.licenca=document.getElementById('ob-licenca').value.trim();
+      d.licenca=lsGet(LICENSE_LS_KEY)||'';
       await finishOnboarding();
     };
   }
@@ -2488,10 +2517,34 @@ const CONFIG_TABS=[
   {id:'licenca',label:'Licença'},
   {id:'sobre',label:'Sobre'},
 ];
+const LICENSE_LOCAL_SECRET='LeuName-Ativacao-Local-PrimeiroCliente-2026-v1';
+const LICENSE_LS_KEY='leuname_licenca_ativa';
 function licenseChecksumValid(key){
   if(!key) return false;
   const m=/^LEU-([0-9A-Z]{4})-([0-9A-Z]{4})-([0-9A-Z]{4})$/.exec(key.trim().toUpperCase());
-  return !!m; // validação local de formato — ativação definitiva requer servidor de licenças
+  return !!m; // checagem rápida de formato (sem custo de crypto)
+}
+/* Checksum HMAC-SHA256 local: os 2 primeiros grupos da chave são livres (identificam
+   o cliente) e o 3º grupo é a assinatura desses 2 grupos com um segredo embutido no
+   próprio app. Isso permite validar a chave 100% offline, sem servidor, mantendo a
+   chave exclusiva de quem a gerou com o script gerador (mesmo segredo). */
+async function licenseChecksum(g1,g2){
+  const enc=new TextEncoder();
+  const keyMaterial=await crypto.subtle.importKey('raw',enc.encode(LICENSE_LOCAL_SECRET),{name:'HMAC',hash:'SHA-256'},false,['sign']);
+  const sig=await crypto.subtle.sign('HMAC',keyMaterial,enc.encode('LEU-'+g1+'-'+g2));
+  return Array.from(new Uint8Array(sig)).slice(0,2).map(b=>b.toString(16).toUpperCase().padStart(2,'0')).join('');
+}
+async function licenseKeyValid(key){
+  if(!licenseChecksumValid(key)) return false;
+  const m=/^LEU-([0-9A-Z]{4})-([0-9A-Z]{4})-([0-9A-Z]{4})$/.exec(key.trim().toUpperCase());
+  const [,g1,g2,checksum]=m;
+  const esperado=await licenseChecksum(g1,g2);
+  return esperado===checksum;
+}
+async function isLicenseActivated(){
+  const key=lsGet(LICENSE_LS_KEY);
+  if(!key) return false;
+  return await licenseKeyValid(key);
 }
 VIEWS.configuracoes = {
   render: async()=>{
@@ -2607,7 +2660,7 @@ VIEWS.configuracoes = {
         <div class="field span2"><label>Chave de licença</label><input id="lc-key" value="${esc(lic.chave||'')}" placeholder="LEU-XXXX-XXXX-XXXX"></div>
       </div>
       <button class="btn primary" id="lc-ativar" style="margin-top:8px;">${ic('key',14)} Ativar licença</button>
-      <div class="callout warn" style="margin-top:12px;"><span>${ic('warn',15)}</span><span>Esta tela valida apenas o <b>formato</b> da chave localmente. A validação definitiva (vincular a chave a esta loja e impedir uso em outra loja) exige o servidor de licenças da LeuName Softwares — arquitetura e código de exemplo incluídos no pacote do projeto.</span></div>
+      <div class="callout info" style="margin-top:12px;"><span>${ic('key',15)}</span><span>A chave é validada localmente (sem internet) contra a assinatura embutida no sistema. Essa validação não verifica se a chave já está em uso em outra instalação — para isso, uma futura versão comercial pode usar o servidor de licenças incluído no pacote do projeto.</span></div>
       </div></div>`;
     } else if(tab==='sobre'){
       body=`<div class="panel"><div class="panel-body center" style="padding:34px 20px;">
@@ -2677,9 +2730,9 @@ VIEWS.configuracoes = {
       document.getElementById('lc-ativar').onclick=async()=>{
         const key=document.getElementById('lc-key').value.trim().toUpperCase();
         const cfg=await getConfig();
-        if(!licenseChecksumValid(key)){ toast('Formato de chave inválido. Use LEU-XXXX-XXXX-XXXX.','error'); return; }
+        if(!(await licenseKeyValid(key))){ toast('Chave de licença inválida. Use LEU-XXXX-XXXX-XXXX.','error'); return; }
         cfg.licenca={chave:key,status:'ativada_local',dispositivosMax:cfg.licenca.dispositivosMax||LICENSE_MAX_DEVICES_DEFAULT,ativada_em:nowISO()};
-        await saveConfig(cfg); await logAction('licenca_ativada',key);
+        await saveConfig(cfg); lsSet(LICENSE_LS_KEY,key); await logAction('licenca_ativada',key);
         toast('Licença ativada localmente.','success'); render();
       };
     }
@@ -2796,6 +2849,7 @@ async function boot(){
   if(__booted) return; __booted=true;
   try{ await openDB(); }catch(e){ console.error('Falha ao abrir banco local',e); }
   setupPWA();
+  if(!(await isLicenseActivated())){ renderLicenseGate(); return; }
   const restored = await tryRestoreSession();
   if(restored){ await startApp(); return; }
   const firstRun = await isFirstRun();

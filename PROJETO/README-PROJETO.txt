@@ -21,27 +21,50 @@ licenca-servidor-para-versao-comercial-futura/
   decidirem partir para a versão comercial (Hotmart/Kiwify, licença
   online, vários clientes).
 
+gerador-chave-ativacao-local/
+  Script Node.js (gerar-chave.js) que gera chaves de ativação para a
+  proteção local descrita abaixo. Roda 100% offline, sem instalar nada
+  além do Node.js. Veja "SOBRE A PROTEÇÃO/LICENÇA NESTA ENTREGA".
+
 ==================================================
 SOBRE A PROTEÇÃO/LICENÇA NESTA ENTREGA
 
-Nada foi alterado na proteção que já existia. Continua exatamente como
-estava: dentro do sistema, em Configurações → Licença, existe um campo
-para digitar uma chave no formato LEU-XXXX-XXXX-XXXX. Essa validação é
-LOCAL — confere se a chave está no formato certo, não confirma nada com
-nenhum servidor (porque, como combinado, nenhum servidor de licença
-online foi criado nesta etapa).
+Agora a ativação é OBRIGATÓRIA antes de liberar o sistema: na primeira
+vez que o LeuName Gestão é aberto (Windows, Android ou navegador), ele
+mostra a tela "Ativação da licença" e não deixa passar para o cadastro
+da loja/login enquanto uma chave válida não for digitada. Fluxo:
 
-Ou seja: hoje, sem servidor online, essa chave funciona mais como uma
-identificação do que como um bloqueio real contra cópia — isso é uma
-limitação conhecida, não um bug, e o plano para resolver de verdade já
-está desenhado (pasta acima) para a segunda versão comercial.
+  instala → abre pela 1ª vez → tela "Ativação da licença" → digita a
+  chave LEU-XXXX-XXXX-XXXX → sistema confere a chave → se válida, libera
+  o sistema e grava a ativação naquele dispositivo → nas próximas
+  aberturas não pede a chave de novo (a menos que apaguem os dados do
+  app/navegador daquele dispositivo).
+
+A validação é LOCAL e criptográfica (HMAC-SHA256): os 2 primeiros
+grupos da chave são livres e o 3º grupo é a assinatura desses 2 grupos
+usando um segredo embutido dentro do próprio app. O app recalcula essa
+assinatura na hora e só libera o sistema se ela confirmar — ou seja, não
+é mais "só formato", é uma chave de verdade, só que verificada sem
+precisar de internet nem servidor (como foi pedido nesta etapa).
+
+Isso é ativação LOCAL, para o primeiro cliente: não impede que a mesma
+chave seja digitada em mais de uma instalação/dispositivo diferente,
+porque não há servidor central conferindo isso — essa é a limitação
+conhecida de qualquer proteção 100% offline, e continua sendo o motivo
+de existir a pasta licenca-servidor-para-versao-comercial-futura/ para
+quando vocês quiserem controlar isso de verdade (várias licenças,
+dispositivos por cliente, bloqueio remoto) na versão comercial.
+
+Para gerar uma chave nova, veja gerador-chave-ativacao-local/gerar-chave.js.
 
 ==================================================
-NADA DO SISTEMA EM SI FOI ALTERADO NESTA ETAPA
+O QUE FOI ALTERADO NESTA ETAPA
 
-Todos os módulos continuam exatamente como estavam: Dashboard, Produtos,
-Peças, Clientes, Fornecedores, Vendas, Ordens de Serviço, Financeiro,
-Relatórios, Usuários, Permissões, Backup, Dispositivos, Configurações,
-Login, Licença, Impressão, funcionamento offline, banco local e
-interface responsiva. Esta etapa cuidou só de empacotar o que já existia
-para instalação no Windows e no Android.
+Só a parte de ativação/licença do arquivo leuname-gestao.html (e suas
+2 cópias dentro dos pacotes Windows e Android) foi alterada, para
+acrescentar a tela obrigatória de ativação descrita acima. Nenhum outro
+módulo foi tocado: Dashboard, Produtos, Peças, Clientes, Fornecedores,
+Vendas, Ordens de Serviço, Financeiro, Relatórios, Usuários, Permissões,
+Backup, Dispositivos, Configurações, Login, Impressão, funcionamento
+offline, banco local e interface responsiva continuam exatamente como
+estavam.
