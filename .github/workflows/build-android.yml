@@ -27,18 +27,31 @@ jobs:
           java-version: '17'
 
       - name: Configurar o Android SDK
-        # O runner ubuntu-latest já vem com o Android SDK pré-instalado.
         # A action android-actions/setup-android@v3 tenta instalar o pacote
         # legado "tools", que foi removido do repositório do SDK e faz o
-        # passo falhar. Por isso aceitamos as licenças usando o SDK que já
-        # está no runner, sem depender dessa action.
+        # passo falhar. Em vez de depender de um sdkmanager pré-instalado em
+        # um caminho incerto do runner, baixamos o cmdline-tools oficial do
+        # Google só se ele ainda não existir, e instalamos exatamente a
+        # plataforma/build-tools que o projeto Android (gerado pelo
+        # Capacitor) declara em variables.gradle (compileSdkVersion 34).
         shell: bash
         run: |
           export ANDROID_SDK_ROOT="${ANDROID_SDK_ROOT:-${ANDROID_HOME:-/usr/local/lib/android/sdk}}"
-          SDKMANAGER="$(find "$ANDROID_SDK_ROOT/cmdline-tools" -maxdepth 2 -type f -name sdkmanager | sort -V | tail -n1)"
+          echo "ANDROID_SDK_ROOT=$ANDROID_SDK_ROOT" >> "$GITHUB_ENV"
+          echo "ANDROID_HOME=$ANDROID_SDK_ROOT" >> "$GITHUB_ENV"
+          SDKMANAGER="$(find "$ANDROID_SDK_ROOT" -maxdepth 4 -type f -name sdkmanager 2>/dev/null | sort -V | tail -n1)"
+          if [ -z "$SDKMANAGER" ]; then
+            echo "sdkmanager não encontrado em $ANDROID_SDK_ROOT; baixando cmdline-tools do Google..."
+            mkdir -p "$ANDROID_SDK_ROOT/cmdline-tools"
+            curl -sSL -o /tmp/cmdline-tools.zip \
+              https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip
+            unzip -q /tmp/cmdline-tools.zip -d "$ANDROID_SDK_ROOT/cmdline-tools"
+            mv "$ANDROID_SDK_ROOT/cmdline-tools/cmdline-tools" "$ANDROID_SDK_ROOT/cmdline-tools/latest"
+            SDKMANAGER="$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager"
+          fi
           echo "Usando sdkmanager em: $SDKMANAGER"
           yes | "$SDKMANAGER" --licenses > /dev/null || true
-          "$SDKMANAGER" --install "platform-tools" > /dev/null
+          "$SDKMANAGER" --install "platform-tools" "platforms;android-34" "build-tools;34.0.0" > /dev/null
 
       - name: Instalar dependências do projeto Android
         working-directory: ANDROID/projeto-instalador-android
