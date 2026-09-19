@@ -7,7 +7,7 @@ compatibility_date = "2026-09-19"
 [[d1_databases]]
 binding = "DB"
 database_name = "leuname_licencas"
-database_id = "COLE-AQUI-O-ID-DO-BANCO"
+database_id = "4f3f9185-7743-4c36-b86e-92c557847c1e"
 
 # Depois de configurar o subdominio na Cloudflare (passo 4 do README),
 # descomente e ajuste a linha abaixo.
