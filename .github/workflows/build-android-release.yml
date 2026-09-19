@@ -85,6 +85,10 @@ jobs:
         shell: bash
         run: |
           echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 -d > android/app/release.keystore
+          echo "Tamanho do keystore decodificado (esperado: 2808 bytes):"
+          wc -c < android/app/release.keystore
+          echo "SHA256 do keystore decodificado (esperado: 0663866b05c9884e60931eff7eb72fa204f0bf1675f37d9d6dbe6bdf808b3d8b):"
+          sha256sum android/app/release.keystore
 
       - name: Configurar versão e assinatura de release no build.gradle
         # cap add android gera o build.gradle do zero a cada execução (não é
