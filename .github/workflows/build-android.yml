@@ -27,7 +27,15 @@ jobs:
           java-version: '17'
 
       - name: Configurar o Android SDK
-        uses: android-actions/setup-android@v3
+        # O runner ubuntu-latest já vem com o Android SDK pré-instalado.
+        # A action android-actions/setup-android@v3 tenta instalar o pacote
+        # legado "tools", que foi removido do repositório do SDK e faz o
+        # passo falhar. Por isso aceitamos as licenças usando o SDK que já
+        # está no runner, sem depender dessa action.
+        shell: bash
+        run: |
+          yes | sdkmanager --licenses > /dev/null || true
+          sdkmanager --install "platform-tools" > /dev/null
 
       - name: Instalar dependências do projeto Android
         working-directory: ANDROID/projeto-instalador-android
