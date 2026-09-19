@@ -9,8 +9,8 @@ binding = "DB"
 database_name = "leuname_licencas"
 database_id = "4f3f9185-7743-4c36-b86e-92c557847c1e"
 
-# Depois de configurar o subdominio na Cloudflare (passo 4 do README),
-# descomente e ajuste a linha abaixo.
-# routes = [
-#   { pattern = "api.leunamesoftware.com/*", zone_name = "leunamesoftware.com" }
-# ]
+# Domínio customizado: o "wrangler deploy" cria isso automaticamente,
+# junto com o resto (script + binding do banco), numa unica chamada.
+[[routes]]
+pattern = "api.leunamesoftware.com"
+custom_domain = true

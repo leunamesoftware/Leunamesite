@@ -1,0 +1,50 @@
+name: Deploy Servidor de Licenças (Cloudflare)
+
+# Publica/atualiza o Worker "leuname-licencas" na Cloudflare: sobe o
+# código, liga o banco D1 e configura o domínio api.leunamesoftware.com
+# — tudo em uma única chamada do wrangler. Depois configura o segredo
+# ADMIN_TOKEN separadamente.
+#
+# Requer estes segredos no repositório (Settings → Secrets and
+# variables → Actions → New repository secret):
+#   CF_API_TOKEN   -> token de API da Cloudflare (permissões: Workers
+#                     Scripts Edit, D1 Edit, Account Settings Read,
+#                     Workers Routes Edit, Zone Read)
+#   ADMIN_TOKEN    -> a "senha mestra" para gerar/consultar licenças
+#                     pela API (valor já gerado e entregue à LeuName
+#                     Softwares separadamente)
+#
+# Para futuras atualizações do código do servidor de licenças, basta
+# rodar este workflow de novo (workflow_dispatch).
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Baixar código do repositório
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Publicar o Worker (código + banco D1 + domínio)
+        working-directory: PROJETO/servidor-licencas-cloudflare
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+        run: npx wrangler@latest deploy
+
+      - name: Configurar o segredo ADMIN_TOKEN no Worker
+        working-directory: PROJETO/servidor-licencas-cloudflare
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+        run: printf '%s' "${{ secrets.ADMIN_TOKEN }}" | npx wrangler@latest secret put ADMIN_TOKEN
+
+      - name: Esperar o domínio propagar
+        run: sleep 20
+
+      - name: Testar o servidor no ar
+        run: curl -sS --fail https://api.leunamesoftware.com/health
