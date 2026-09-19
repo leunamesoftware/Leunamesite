@@ -1,0 +1,75 @@
+name: Build Android APK
+
+# Como rodar pelo celular:
+# GitHub → aba Actions → "Build Android APK" → botão "Run workflow" → esperar
+# terminar (demora mais que o do Windows, é normal) → abrir a execução →
+# seção "Artifacts" → baixar "LeuName-Gestao-Android" (um .zip contendo o
+# .apk real).
+on:
+  workflow_dispatch:
+
+jobs:
+  build-android:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Baixar código do repositório
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Configurar Java (necessário para compilar Android)
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Configurar o Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Instalar dependências do projeto Android
+        working-directory: ANDROID/projeto-instalador-android
+        run: npm install
+
+      - name: Criar o projeto Android nativo (Capacitor)
+        working-directory: ANDROID/projeto-instalador-android
+        run: npx cap add android
+
+      - name: Copiar o sistema para dentro do projeto Android
+        working-directory: ANDROID/projeto-instalador-android
+        run: npx cap sync android
+
+      - name: Aplicar o ícone oficial da LeuName Softwares
+        working-directory: ANDROID/projeto-instalador-android
+        shell: bash
+        run: |
+          for d in mipmap-mdpi mipmap-hdpi mipmap-xhdpi mipmap-xxhdpi mipmap-xxxhdpi; do
+            cp "icones-oficiais/$d/ic_launcher.png" "android/app/src/main/res/$d/ic_launcher.png"
+            cp "icones-oficiais/$d/ic_launcher_round.png" "android/app/src/main/res/$d/ic_launcher_round.png"
+          done
+
+      - name: Dar permissão de execução ao Gradle
+        working-directory: ANDROID/projeto-instalador-android/android
+        shell: bash
+        run: chmod +x gradlew
+
+      - name: Gerar o APK
+        working-directory: ANDROID/projeto-instalador-android/android
+        shell: bash
+        run: ./gradlew assembleDebug --no-daemon
+
+      - name: Renomear o APK final
+        working-directory: ANDROID/projeto-instalador-android
+        shell: bash
+        run: |
+          cp android/app/build/outputs/apk/debug/app-debug.apk \
+             android/app/build/outputs/apk/debug/LeuName-Gestao.apk
+
+      - name: Enviar o APK como Artifact do GitHub
+        uses: actions/upload-artifact@v4
+        with:
+          name: LeuName-Gestao-Android
+          path: ANDROID/projeto-instalador-android/android/app/build/outputs/apk/debug/LeuName-Gestao.apk
+          if-no-files-found: error

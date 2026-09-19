@@ -1,0 +1,67 @@
+LEUNAME GESTÃO — WINDOWS
+LeuName Softwares
+==================================================
+
+>>> ATUALIZAÇÃO: agora existe um jeito de gerar o .exe SEM precisar de
+>>> computador, direto pelo celular, usando o GitHub Actions. Veja o
+>>> arquivo "README.md" na raiz deste projeto — é o caminho recomendado.
+>>> As instruções abaixo continuam válidas como alternativa, para quem
+>>> tiver um computador com Node.js.
+
+SITUAÇÃO REAL, SEM ENROLAÇÃO:
+
+O ambiente onde eu (Claude) trabalho NÃO tem acesso à internet e NÃO tem
+as ferramentas de compilação do Windows instaladas. Por isso, eu NÃO
+consegui gerar o arquivo "Instalar-LeuName-Gestao.exe" de verdade aqui
+dentro. Preferi te avisar isso claramente a fingir que o arquivo existe.
+
+O que eu SIM consegui deixar 100% pronto:
+
+  - O projeto completo do instalador (pasta "projeto-instalador-windows"),
+    já configurado com o nome "LeuName Gestão", o ícone oficial da
+    LeuName Softwares (build/icon.ico, gerado de verdade a partir da
+    sua logo) e o nome de arquivo final
+    "Instalar-LeuName-Gestao-1.0.0.exe".
+  - O sistema LeuName Gestão completo já embutido dentro do projeto
+    (pasta app/), pronto para virar o aplicativo instalado.
+  - Está configurado para abrir como programa próprio do Windows (não
+    abre dentro de navegador, não mostra barra de endereço), com atalho
+    na área de trabalho e no menu Iniciar.
+
+O QUE FALTA — E É SÓ ISSO — PARA GERAR O .EXE DE VERDADE:
+
+1. Um computador (Windows, Mac ou Linux — qualquer um serve) com
+   Node.js instalado (baixe grátis em nodejs.org, é só next-next-next).
+2. Abrir uma janela de terminal dentro da pasta
+   "projeto-instalador-windows".
+3. Digitar estes dois comandos, um de cada vez:
+
+      npm install
+      npm run dist:win
+
+4. Isso baixa o Electron (framework usado) automaticamente da internet
+   e monta o instalador sozinho. Demora alguns minutos na primeira vez.
+5. O arquivo final aparece em:
+      projeto-instalador-windows/release/Instalar-LeuName-Gestao-1.0.0.exe
+
+Esse .exe gerado é o que você distribui para os seus clientes.
+
+Se você não tiver ninguém para rodar esses 2 comandos, qualquer
+freelancer de TI resolve isso em poucos minutos — é um projeto Electron
+padrão, nada exótico.
+
+AVISO IMPORTANTE SOBRE O ÍCONE DO WINDOWS:
+Como não existe uma assinatura digital (certificado de code signing) no
+instalador ainda, o Windows SmartScreen pode mostrar um aviso de "editor
+desconhecido" na primeira instalação em cada computador. Isso é normal
+para instaladores não assinados e não impede a instalação — o usuário
+clica em "Mais informações → Executar assim mesmo". Se quiser eliminar
+esse aviso, é necessário comprar um certificado de assinatura de código
+(passo para uma etapa comercial futura, não necessário agora).
+
+ENQUANTO ISSO — SEU CLIENTE JÁ PODE USAR O SISTEMA HOJE:
+Na pasta PROJETO/, na raiz desta entrega, está o arquivo
+"leuname-gestao.html" — é o sistema completo, 100% funcional, o mesmo
+que vai dentro do instalador. Seu cliente pode abrir esse arquivo direto
+no navegador (Chrome ou Edge) e começar a usar agora mesmo, sem esperar
+o instalador ficar pronto.

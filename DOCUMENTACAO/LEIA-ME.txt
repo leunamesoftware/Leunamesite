@@ -1,0 +1,36 @@
+LEUNAME GESTÃO
+LeuName Softwares
+==================================================
+
+Bem-vindo(a)! Este é o seu sistema de gestão para loja de celulares e
+assistência técnica.
+
+COMO COMEÇAR A USAR AGORA MESMO (COMPUTADOR OU CELULAR)
+---------------------------------------------------------
+1. Abra a pasta PROJETO
+2. Abra o arquivo "leuname-gestao.html" com dois cliques
+3. Ele abre no seu navegador (Chrome ou Edge) e o sistema já funciona
+   completo — cadastros, vendas, ordens de serviço, estoque, financeiro,
+   tudo.
+4. Na primeira vez, o sistema vai te guiar para criar sua loja e sua
+   senha de acesso.
+
+Dica: no computador, você pode criar um atalho desse arquivo na Área de
+Trabalho. No celular Android, abra pelo Chrome e use o menu do navegador
+→ "Adicionar à tela inicial" para ficar com um ícone rápido.
+
+INSTALADOR PARA COMPUTADOR (WINDOWS)
+---------------------------------------------------------
+Abra a pasta WINDOWS e leia o arquivo "LEIA-ME-WINDOWS.txt" — o
+instalador oficial (Instalar-LeuName-Gestao.exe) está sendo preparado e
+os detalhes de quando/como ele chega estão explicados ali.
+
+APLICATIVO PARA CELULAR (ANDROID)
+---------------------------------------------------------
+Abra a pasta ANDROID e leia o arquivo "LEIA-ME-ANDROID.txt" — o
+aplicativo oficial (LeuName-Gestao.apk) está sendo preparado e os
+detalhes de quando/como ele chega estão explicados ali.
+
+DÚVIDAS?
+---------------------------------------------------------
+Fale com quem te entregou este sistema: LeuName Softwares.

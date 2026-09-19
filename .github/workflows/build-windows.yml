@@ -1,0 +1,43 @@
+name: Build Windows EXE
+
+# Como rodar pelo celular:
+# GitHub → aba Actions → "Build Windows EXE" → botão "Run workflow" → esperar
+# terminar → abrir a execução → seção "Artifacts" → baixar
+# "Instalar-LeuName-Gestao-Windows" (é um .zip contendo o .exe real).
+on:
+  workflow_dispatch:
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - name: Baixar código do repositório
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Instalar dependências do projeto Windows
+        working-directory: WINDOWS/projeto-instalador-windows
+        run: npm install
+
+      - name: Gerar o instalador Windows (.exe)
+        working-directory: WINDOWS/projeto-instalador-windows
+        run: npm run dist:win
+
+      - name: Conferir se o instalador foi criado
+        working-directory: WINDOWS/projeto-instalador-windows
+        shell: bash
+        run: |
+          echo "Arquivos gerados em release/:"
+          ls -la release/
+          test -f release/*.exe || (echo "ERRO: nenhum .exe foi gerado" && exit 1)
+
+      - name: Enviar o instalador como Artifact do GitHub
+        uses: actions/upload-artifact@v4
+        with:
+          name: Instalar-LeuName-Gestao-Windows
+          path: WINDOWS/projeto-instalador-windows/release/*.exe
+          if-no-files-found: error

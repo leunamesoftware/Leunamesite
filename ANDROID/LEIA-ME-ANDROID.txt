@@ -1,0 +1,78 @@
+LEUNAME GESTÃO — ANDROID
+LeuName Softwares
+==================================================
+
+>>> ATUALIZAÇÃO: agora existe um jeito de gerar o .apk SEM precisar de
+>>> computador, direto pelo celular, usando o GitHub Actions. Veja o
+>>> arquivo "README.md" na raiz deste projeto — é o caminho recomendado.
+>>> As instruções abaixo continuam válidas como alternativa, para quem
+>>> tiver um computador com Android Studio.
+
+SITUAÇÃO REAL, SEM ENROLAÇÃO:
+
+Gerar um .apk de verdade exige o Android SDK, o Gradle e acesso à
+internet para baixar as ferramentas de build do Google — nada disso
+existe no ambiente onde eu trabalho. Por isso eu NÃO consegui gerar o
+arquivo "LeuName-Gestao.apk" aqui dentro. Preferi te avisar isso
+claramente a fingir que o arquivo existe.
+
+O que eu SIM deixei 100% pronto:
+
+  - O sistema LeuName Gestão completo, pronto para virar o app Android
+    (pasta www/index.html — é o sistema inteiro, já testado).
+  - A configuração do projeto (capacitor.config.json) já com o nome
+    "LeuName Gestão" e a identidade do app (com.leunamesoftwares.gestao).
+  - Os ícones oficiais da LeuName Softwares gerados de verdade, em todos
+    os tamanhos que o Android pede (pasta icones-oficiais/), prontos
+    para substituir o ícone padrão.
+
+O QUE FALTA PARA GERAR O .APK DE VERDADE:
+
+Ferramenta usada: Capacitor (padrão da indústria para transformar um
+sistema web em aplicativo Android real — é o que Trello, Under Armour
+e muitos outros apps usam por baixo dos panos).
+
+1. Instalar o Android Studio (gratuito, em developer.android.com/studio)
+   — ele já vem com tudo que falta (Android SDK, Gradle, emulador).
+2. Instalar o Node.js (gratuito, em nodejs.org), se ainda não tiver.
+3. Abrir um terminal dentro desta pasta "android-wrapper" e rodar, um de
+   cada vez:
+
+      npm install
+      npx cap add android
+      npx cap sync android
+
+4. Copiar os arquivos de dentro de "icones-oficiais/mipmap-*/" para
+   dentro de "android/app/src/main/res/mipmap-*/" (mesma estrutura de
+   pastas), substituindo os ícones genéricos que o Capacitor criou.
+5. Rodar:
+
+      npx cap open android
+
+   Isso abre o projeto no Android Studio.
+6. Dentro do Android Studio: menu Build → Build Bundle(s) / APK(s) →
+   Build APK(s). Na primeira vez ele baixa umas coisas da internet
+   sozinho — pode demorar alguns minutos.
+7. O arquivo pronto aparece em:
+      android/app/build/outputs/apk/debug/app-debug.apk
+
+   Esse arquivo já pode ser renomeado para "LeuName-Gestao.apk" e
+   enviado para instalar no celular do cliente (o Android vai pedir
+   para autorizar "instalar de fontes desconhecidas" na primeira vez,
+   já que não veio da Play Store — é normal).
+
+8. Para uma versão mais "oficial" (assinada, pronta para Play Store no
+   futuro), o Android Studio tem um assistente em Build → Generate
+   Signed Bundle / APK — isso é opcional para este primeiro cliente.
+
+Se você não tiver ninguém para fazer isso, qualquer desenvolvedor
+Android resolve esses passos em menos de uma hora — é um projeto
+Capacitor padrão, nada exótico ou fora do comum.
+
+ENQUANTO ISSO — SEU CLIENTE JÁ PODE USAR NO CELULAR HOJE:
+Sem esperar o .apk, o cliente pode abrir o arquivo "leuname-gestao.html"
+(pasta PROJETO/, na raiz desta entrega) direto no Chrome do celular
+Android, e usar o menu do navegador → "Adicionar à tela inicial". Isso
+já cria um ícone no celular dele que abre o sistema em tela cheia, sem
+barra de endereço — não é um .apk instalado de verdade, mas já resolve
+o uso imediato enquanto o .apk oficial não fica pronto.
