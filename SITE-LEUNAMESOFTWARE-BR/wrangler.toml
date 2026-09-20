@@ -10,13 +10,13 @@ compatibility_date = "2026-09-19"
 [assets]
 directory = "./"
 
-# Dominio customizado: por enquanto NAO configurado (o site fica
-# disponivel apenas em leuname-site-br.<subdominio-da-conta>.workers.dev).
-# Quando o dominio .com.br for definido, repita no Cloudflare Dashboard o
-# mesmo passo manual ja feito para api.leunamesoftware.com:
-#   Workers & Pages -> leuname-site-br -> Settings -> Domains & Routes ->
-#   Add Custom Domain -> www.leunamesoftware.com.br
-# Depois, descomente o bloco abaixo e rode o workflow de deploy de novo.
-# [[routes]]
-# pattern = "www.leunamesoftware.com.br"
-# custom_domain = true
+# Dominio customizado: leunamesoftware.com.br (nameservers trocados pra
+# Cloudflare em 20/09/2026, aguardando propagar -- o "wrangler deploy" liga
+# isto automaticamente assim que a zona estiver ativa na conta).
+[[routes]]
+pattern = "leunamesoftware.com.br"
+custom_domain = true
+
+[[routes]]
+pattern = "www.leunamesoftware.com.br"
+custom_domain = true
