@@ -733,7 +733,6 @@ function authBrandHTML(loja){
       <div class="brand-mark" style="width:46px;height:46px;border-radius:11px;"><img src="${loja.logo}" alt="${esc(loja.nome||'')}"></div>
       <div style="text-align:left;min-width:0;">
         <div style="font-family:var(--font-head);font-weight:800;font-size:18px;color:var(--gray-800);letter-spacing:.2px;overflow-wrap:break-word;">${esc(loja.nome||'')}</div>
-        <div style="font-size:9.5px;letter-spacing:.8px;color:var(--gray-400);font-weight:600;">SISTEMA LEUNAME GESTÃO</div>
       </div>
     </div>`;
   }
@@ -741,9 +740,11 @@ function authBrandHTML(loja){
     <div class="brand-mark" style="width:42px;height:42px;"><img src="${LOGO_DATA_URI}" alt="LeuName"></div>
     <div style="text-align:left">
       <div style="font-family:var(--font-head);font-weight:800;font-size:19px;color:var(--gray-800);letter-spacing:.2px;">LeuName <span style="font-weight:700;">Gestão</span></div>
-      <div style="font-size:10.5px;letter-spacing:1.5px;color:var(--gray-400);font-weight:700;">LEUNAME SOFTWARES</div>
     </div>
   </div>`;
+}
+function authFooterHTML(){
+  return `<p class="small center muted" style="margin-top:22px;opacity:.55;letter-spacing:.3px;">LeuName Softwares</p>`;
 }
 
 function renderLicenseGate(errMsg){
@@ -758,6 +759,7 @@ function renderLicenseGate(errMsg){
     ${errMsg?`<div class="callout warn" style="margin-top:10px;"><span>${ic('warn',15)}</span><span>${esc(errMsg)}</span></div>`:''}
     <button class="btn primary" id="lic-activate" style="width:100%;justify-content:center;margin-top:16px;padding:11px;">Ativar licença</button>
     <p class="muted small center" style="margin-top:14px;">Sem a chave? Fale com a LeuName Softwares para receber sua licença.</p>
+    ${authFooterHTML()}
   </div></div>`;
   const input=document.getElementById('lic-key');
   const doActivate=async()=>{
@@ -790,6 +792,7 @@ async function renderLogin(){
     <div id="lg-error" class="callout warn hidden" style="margin-top:12px;"></div>
     <button class="btn primary" id="lg-submit" style="width:100%;justify-content:center;margin-top:16px;padding:11px;">Entrar</button>
     <p class="small center muted" style="margin-top:14px;">Esqueceu a senha? Peça ao administrador da loja para redefini-la em <b>Usuários</b>.</p>
+    ${authFooterHTML()}
   </div></div>`;
   const submit=async()=>{
     const email=document.getElementById('lg-email').value.trim();
@@ -865,7 +868,7 @@ function renderOnboarding(){
         <button class="btn primary" id="ob-finish">Criar minha loja</button>
       </div>`;
   }
-  root.innerHTML=`<div class="auth-screen"><div class="auth-card wide">${authBrandHTML()}${obStepsHTML()}${body}</div></div>`;
+  root.innerHTML=`<div class="auth-screen"><div class="auth-card wide">${authBrandHTML()}${obStepsHTML()}${body}${authFooterHTML()}</div></div>`;
   wireOnboardingStep();
 }
 

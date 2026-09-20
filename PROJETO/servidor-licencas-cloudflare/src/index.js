@@ -130,6 +130,22 @@ export default {
       return json({ ok: true, servico: 'leuname-licencas' });
     }
 
+    // GET /download/<arquivo> — link fixo e permanente para o instalador
+    // mais recente (ex.: /download/leuname-gestao.apk). O conteudo e
+    // atualizado automaticamente pelos workflows de build a cada nova
+    // versao; o link em si nunca muda, entao pode ser compartilhado com
+    // clientes ou usado direto no navegador do celular/computador.
+    if (pathname.startsWith('/download/') && request.method === 'GET') {
+      const fileName = pathname.replace('/download/', '');
+      const obj = await env.DOWNLOADS.get(fileName);
+      if (!obj) return new Response('Arquivo não encontrado.', { status: 404 });
+      const headers = new Headers();
+      obj.writeHttpMetadata(headers);
+      headers.set('Content-Disposition', `attachment; filename="${fileName}"`);
+      headers.set('Cache-Control', 'no-cache');
+      return new Response(obj.body, { headers });
+    }
+
     // GET /privacidade?app=leuname-gestao — página pública de política de
     // privacidade, usada como URL oficial no Google Play Console e em
     // lojas de terceiros. Reutilizável: para um app novo, basta adicionar

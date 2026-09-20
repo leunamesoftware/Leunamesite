@@ -1,10 +1,12 @@
 name: Build Android APK
 
-# Como rodar pelo celular:
-# GitHub → aba Actions → "Build Android APK" → botão "Run workflow" → esperar
-# terminar (demora mais que o do Windows, é normal) → abrir a execução →
-# seção "Artifacts" → baixar "LeuName-Gestao-Android" (um .zip contendo o
-# .apk real).
+# Depois que este workflow terminar, a versão mais recente do APK fica
+# disponível para baixar direto (sem zip, sem navegar no GitHub) em:
+# https://api.leunamesoftware.com/download/leuname-gestao.apk
+#
+# (Alternativa, se precisar do arquivo bruto do GitHub: aba Actions →
+# "Build Android APK" → abrir a execução → seção "Artifacts" → baixar
+# "LeuName-Gestao-Android", um .zip contendo o .apk real.)
 on:
   workflow_dispatch:
 
@@ -103,3 +105,23 @@ jobs:
           name: LeuName-Gestao-Android
           path: ANDROID/projeto-instalador-android/android/app/build/outputs/apk/debug/LeuName-Gestao.apk
           if-no-files-found: error
+
+      - name: Configurar Node.js 22 (exigido pelo wrangler)
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Publicar o APK no link fixo de download
+        # Sobe o APK para o mesmo servidor da Cloudflare que já hospeda as
+        # licenças, disponibilizando sempre em
+        # https://api.leunamesoftware.com/download/leuname-gestao.apk
+        # (link permanente, sem precisar navegar no GitHub Actions).
+        working-directory: PROJETO/servidor-licencas-cloudflare
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+        run: |
+          npx wrangler@latest r2 object put \
+            leuname-downloads/leuname-gestao.apk \
+            --file ../../ANDROID/projeto-instalador-android/android/app/build/outputs/apk/debug/LeuName-Gestao.apk \
+            --content-type application/vnd.android.package-archive \
+            --remote

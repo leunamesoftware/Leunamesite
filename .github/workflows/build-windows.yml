@@ -1,9 +1,12 @@
 name: Build Windows EXE
 
-# Como rodar pelo celular:
-# GitHub → aba Actions → "Build Windows EXE" → botão "Run workflow" → esperar
-# terminar → abrir a execução → seção "Artifacts" → baixar
-# "Instalar-LeuName-Gestao-Windows" (é um .zip contendo o .exe real).
+# Depois que este workflow terminar, a versão mais recente do instalador
+# fica disponível para baixar direto (sem zip, sem navegar no GitHub) em:
+# https://api.leunamesoftware.com/download/leuname-gestao.exe
+#
+# (Alternativa, se precisar do arquivo bruto do GitHub: aba Actions →
+# "Build Windows EXE" → abrir a execução → seção "Artifacts" → baixar
+# "Instalar-LeuName-Gestao-Windows", um .zip contendo o .exe real.)
 on:
   workflow_dispatch:
 
@@ -41,3 +44,29 @@ jobs:
           name: Instalar-LeuName-Gestao-Windows
           path: WINDOWS/projeto-instalador-windows/release/*.exe
           if-no-files-found: error
+
+      - name: Renomear o instalador para nome fixo
+        working-directory: WINDOWS/projeto-instalador-windows
+        shell: bash
+        run: cp release/*.exe release/leuname-gestao.exe
+
+      - name: Configurar Node.js 22 (exigido pelo wrangler)
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Publicar o instalador no link fixo de download
+        # Sobe o .exe para o mesmo servidor da Cloudflare que já hospeda as
+        # licenças, disponibilizando sempre em
+        # https://api.leunamesoftware.com/download/leuname-gestao.exe
+        # (link permanente, sem precisar navegar no GitHub Actions).
+        working-directory: PROJETO/servidor-licencas-cloudflare
+        shell: bash
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+        run: |
+          npx wrangler@latest r2 object put \
+            leuname-downloads/leuname-gestao.exe \
+            --file ../../WINDOWS/projeto-instalador-windows/release/leuname-gestao.exe \
+            --content-type application/x-msdownload \
+            --remote

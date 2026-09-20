@@ -9,6 +9,13 @@ binding = "DB"
 database_name = "leuname_licencas"
 database_id = "4f3f9185-7743-4c36-b86e-92c557847c1e"
 
+# Bucket com os instaladores (.apk / .exe) mais recentes, atualizado
+# automaticamente pelos workflows de build. Serve como link fixo de
+# download (sem precisar navegar no GitHub).
+[[r2_buckets]]
+binding = "DOWNLOADS"
+bucket_name = "leuname-downloads"
+
 # Domínio customizado: o "wrangler deploy" cria isso automaticamente,
 # junto com o resto (script + binding do banco), numa unica chamada.
 [[routes]]
