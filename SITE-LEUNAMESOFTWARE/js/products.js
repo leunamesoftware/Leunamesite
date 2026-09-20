@@ -334,6 +334,30 @@
     );
   }
 
+  function categoryCardHTML(cat) {
+    return (
+      '<a class="cat-card" href="categoria.html?slug=' + cat.slug + '">' +
+        '<span class="cat-ic cat-ic-' + cat.color + '">' + cat.icon + '</span>' +
+        '<span class="cat-card-name">' + cat.name + '</span>' +
+        '<span class="cat-card-link">Ver productos →</span>' +
+      '</a>'
+    );
+  }
+
+  function mountCategoryGrid(elId) {
+    var el = document.getElementById(elId);
+    if (!el) return;
+    el.innerHTML = CATEGORIES.map(categoryCardHTML).join('');
+  }
+
+  function mountProductGrid(elId, products) {
+    var el = document.getElementById(elId);
+    if (!el) return;
+    el.innerHTML = products.length
+      ? products.map(productCardHTML).join('')
+      : '<p class="cat-empty">No hay productos para mostrar todavía.</p>';
+  }
+
   global.LeuStore = {
     CATEGORIES: CATEGORIES,
     PRODUCTS: PRODUCTS,
@@ -344,6 +368,9 @@
     formatPrice: formatPrice,
     starsHTML: starsHTML,
     productVisualHTML: productVisualHTML,
-    productCardHTML: productCardHTML
+    productCardHTML: productCardHTML,
+    categoryCardHTML: categoryCardHTML,
+    mountCategoryGrid: mountCategoryGrid,
+    mountProductGrid: mountProductGrid
   };
 })(window);

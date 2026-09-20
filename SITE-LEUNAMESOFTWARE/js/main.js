@@ -131,6 +131,21 @@
 })();
 
 /* ==========================================================================
+   Formularios de login / registro — todavía no hay backend de autenticación
+   real conectado; solo evitamos el envío y mostramos una nota explicativa.
+   ========================================================================== */
+(function () {
+  'use strict';
+  var form = document.getElementById('loginForm');
+  if (!form) return;
+  var msg = document.getElementById('loginMsg');
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    if (msg) msg.hidden = false;
+  });
+})();
+
+/* ==========================================================================
    Stepper de cantidad genérico (usado en producto.html)
    ========================================================================== */
 (function () {

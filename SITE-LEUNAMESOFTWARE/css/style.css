@@ -213,6 +213,13 @@ h1,h2,h3,h4{ font-family:var(--font-head); margin:0; }
 }
 
 /* ==========================================================================
+   Correccion de overflow en grids con 1fr: los items de grid/flex tienen
+   min-width:auto por defecto, lo que puede forzar el contenedor a
+   desbordarse si dentro hay texto/botones que no se ajustan (nowrap).
+   ========================================================================== */
+.checkout-layout > *, .cart-layout > *, .account-layout > *, .cat-layout > *, .contact-layout > *, .about-grid > *{ min-width:0; }
+
+/* ==========================================================================
    Botones y utilidades generales
    ========================================================================== */
 .btn{
@@ -231,7 +238,7 @@ h1,h2,h3,h4{ font-family:var(--font-head); margin:0; }
 .btn-outline-block{ display:block; width:100%; text-align:center; background:var(--white); color:var(--blue-600); border:1.5px solid var(--blue-500); border-radius:var(--radius-pill); font-weight:700; font-size:13.5px; padding:10px 14px; transition:background .2s var(--ease); }
 .btn-outline-block:hover{ background:var(--blue-50); }
 .btn-ghost{ color:var(--blue-600); font-weight:700; }
-.btn-block{ width:100%; }
+.btn-block{ width:100%; white-space:normal; }
 .btn-danger-ghost{ color:var(--red-500); font-weight:600; font-size:13px; }
 .is-added{ background:#1a9a55 !important; }
 
