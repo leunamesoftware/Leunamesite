@@ -516,18 +516,28 @@ h1,h2,h3,h4{ font-family:var(--font-head); margin:0; }
 .product-detail{ display:grid; gap:36px; grid-template-columns:1fr; padding-block:36px; }
 @media (min-width:900px){ .product-detail{ grid-template-columns:1fr 1fr; } }
 
+/* Cabecera minimalista para demo.html y checkout.html: páginas de venta
+   e pago dedicadas, sin barra de búsqueda ni categorías ni footer -- solo
+   la logo, para no distraer al cliente del objetivo (ver/comprar). */
+.demo-minimal-header{ padding-block:16px; }
+.demo-minimal-header .container{ display:flex; }
+.demo-minimal-header a{ display:inline-flex; align-items:center; gap:10px; }
+.demo-minimal-header img{ width:34px; height:34px; border-radius:8px; flex:none; }
+.demo-minimal-brand-word{ display:block; font-family:var(--font-head); font-weight:800; font-size:15px; color:var(--ink-900); letter-spacing:.3px; }
+.demo-minimal-brand-sub{ display:block; font-family:var(--font-head); font-weight:600; font-size:8px; letter-spacing:2px; color:var(--ink-400); }
+
 /* Página de demo de producto (demo.html) — página de ventas dedicada,
    pensada para "enganchar": mascota + saludo, funcionalidades en tarjetas
    de color, captura/video destacado con checklist, y un cierre con precio
    y botón de compra. Sin fondos oscuros ni recuadros vacíos inventados. */
 .demo-script{ font-family:'Caveat',cursive; font-weight:700; }
-.demo-hero{ display:grid; grid-template-columns:1fr; gap:18px; align-items:center; padding-block:16px 8px; max-width:960px; margin-inline:auto; }
-@media (min-width:760px){ .demo-hero{ grid-template-columns:220px 1fr; gap:30px; } }
-.demo-hero-mascot{ position:relative; width:170px; margin-inline:auto; border-radius:var(--radius-l); overflow:hidden; box-shadow:var(--shadow-pop); }
+.demo-hero{ display:grid; grid-template-columns:1fr; gap:4px; align-items:center; padding-block:8px 8px; max-width:960px; margin-inline:auto; }
+@media (min-width:760px){ .demo-hero{ grid-template-columns:300px 1fr; gap:24px; } }
+.demo-hero-mascot{ position:relative; width:250px; margin-inline:auto; }
 @media (min-width:760px){ .demo-hero-mascot{ width:100%; } }
 .demo-hero-mascot img,.demo-hero-mascot video{ display:block; width:100%; height:auto; }
 .demo-hero-sound{
-  position:absolute; right:10px; bottom:10px; width:36px; height:36px; border-radius:50%;
+  position:absolute; right:14px; bottom:6px; width:36px; height:36px; border-radius:50%;
   background:rgba(7,26,51,.72); color:var(--white); display:flex; align-items:center; justify-content:center;
   backdrop-filter:blur(2px);
 }
