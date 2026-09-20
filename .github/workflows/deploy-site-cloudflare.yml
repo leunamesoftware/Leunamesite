@@ -41,10 +41,3 @@ jobs:
         # Se a conta trocar de subdominio workers.dev no futuro, atualize
         # aqui e nas referencias a SITE_URL do servidor da loja.
         run: curl -sS --fail "https://leuname-site.emanuelantunes2024.workers.dev/index.html" > /dev/null
-
-      - name: TEMP - testar arquivos do PWA do painel admin
-        run: |
-          echo "manifest:" && curl -sS --fail "https://leuname-site.emanuelantunes2024.workers.dev/admin-manifest.webmanifest"
-          echo && echo "sw:" && curl -sS --fail -o /dev/null -w "%{http_code}\n" "https://leuname-site.emanuelantunes2024.workers.dev/admin-sw.js"
-          echo "icon-192:" && curl -sS --fail -o /dev/null -w "%{http_code} %{content_type}\n" "https://leuname-site.emanuelantunes2024.workers.dev/assets/img/icon-192.png"
-          echo "icon-512:" && curl -sS --fail -o /dev/null -w "%{http_code} %{content_type}\n" "https://leuname-site.emanuelantunes2024.workers.dev/assets/img/icon-512.png"
