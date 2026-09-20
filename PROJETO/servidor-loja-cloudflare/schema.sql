@@ -44,9 +44,28 @@ CREATE TABLE IF NOT EXISTS pedidos (
   estado TEXT NOT NULL DEFAULT 'pendiente', -- pendiente | pagado | cancelado
   stripe_session_id TEXT,                   -- id de la Checkout Session de Stripe
   chave_licencia TEXT,                      -- licencia real generada tras el pago (solo leuname-gestao)
+  cupon_usado_codigo TEXT,                  -- codigo del cupon aplicado a este pedido (si tenia uno)
+  cupon_usado_descuento REAL,               -- monto real descontado por ese cupon
   creado_em TEXT NOT NULL,
   FOREIGN KEY (cliente_id) REFERENCES clientes(id)
 );
+
+-- Cupones de descuento para "la proxima compra": se generan automaticamente
+-- cuando un pedido se paga de verdad (webhook checkout.session.completed) y
+-- se reconocen automaticamente por email en el checkout siguiente -- el
+-- cliente NO escribe ningun codigo, el sistema lo aplica solo.
+CREATE TABLE IF NOT EXISTS cupones (
+  id TEXT PRIMARY KEY,
+  codigo TEXT NOT NULL UNIQUE,
+  cliente_email TEXT NOT NULL,
+  porcentaje INTEGER NOT NULL,
+  usado INTEGER NOT NULL DEFAULT 0,
+  pedido_origem_id TEXT,                    -- pedido que genero este cupon de regalo
+  pedido_uso_id TEXT,                       -- pedido donde este cupon fue gastado
+  creado_em TEXT NOT NULL,
+  usado_em TEXT
+);
+CREATE INDEX IF NOT EXISTS idx_cupones_email_usado ON cupones(cliente_email, usado);
 
 -- Registro de eventos de webhook de Stripe ya procesados, para evitar
 -- procesar el mismo evento dos veces si Stripe reintenta la entrega.

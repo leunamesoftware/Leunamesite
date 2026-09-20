@@ -34,11 +34,21 @@ async function listarProductos(env, { soloActivos = true } = {}) {
   return results;
 }
 
+// Busca un cupon de "proxima compra" activo (no usado) para un email.
+// El cliente nunca escribe un codigo: el sistema lo reconoce solo por el
+// email que puso en el checkout.
+async function buscarCuponActivo(env, email) {
+  if (!email) return null;
+  return env.DB.prepare('SELECT id, codigo, porcentaje FROM cupones WHERE LOWER(cliente_email) = LOWER(?) AND usado = 0 ORDER BY creado_em DESC LIMIT 1')
+    .bind(email.trim()).first();
+}
+
 // Valida el carrito contra el catalogo real (precios SIEMPRE del
 // servidor, nunca del cuerpo de la peticion) y crea el pedido +
 // pedido_items en estado 'pendiente'. Usado tanto por POST /pedidos
 // (registro simple, sin pago) como por POST /checkout/session (que
-// ademas crea la sesion de pago real en Stripe).
+// ademas crea la sesion de pago real en Stripe). Si el email del
+// cliente tiene un cupon de proxima compra activo, se aplica solo.
 async function crearPedidoDesdeCarrito(env, body) {
   if (!body || !body.cliente || !body.cliente.email || !Array.isArray(body.items) || !body.items.length) {
     return { erro: 'datos_invalidos' };
@@ -57,6 +67,10 @@ async function crearPedidoDesdeCarrito(env, body) {
 
   const subtotal = itemsConPrecio.reduce((sum, i) => sum + i.producto.precio * i.cantidad, 0);
 
+  const cupon = await buscarCuponActivo(env, body.cliente.email);
+  const descuento = cupon ? Math.round(subtotal * (cupon.porcentaje / 100) * 100) / 100 : 0;
+  const total = Math.round((subtotal - descuento) * 100) / 100;
+
   const clienteExistente = await env.DB.prepare('SELECT id FROM clientes WHERE email = ?')
     .bind(body.cliente.email).first();
   const clienteId = clienteExistente ? clienteExistente.id : crypto.randomUUID();
@@ -68,9 +82,9 @@ async function crearPedidoDesdeCarrito(env, body) {
 
   const pedidoId = crypto.randomUUID();
   await env.DB.prepare(
-    `INSERT INTO pedidos (id, cliente_id, cliente_nombre, cliente_email, cliente_telefono, cliente_pais, subtotal, total, estado, creado_em)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'pendiente', datetime('now'))`
-  ).bind(pedidoId, clienteId, body.cliente.nombre || null, body.cliente.email, body.cliente.telefono || null, body.cliente.pais || null, subtotal, subtotal).run();
+    `INSERT INTO pedidos (id, cliente_id, cliente_nombre, cliente_email, cliente_telefono, cliente_pais, subtotal, total, cupon_usado_codigo, cupon_usado_descuento, estado, creado_em)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pendiente', datetime('now'))`
+  ).bind(pedidoId, clienteId, body.cliente.nombre || null, body.cliente.email, body.cliente.telefono || null, body.cliente.pais || null, subtotal, total, cupon ? cupon.codigo : null, cupon ? descuento : null).run();
 
   const batch = itemsConPrecio.map((i) =>
     env.DB.prepare(
@@ -79,7 +93,11 @@ async function crearPedidoDesdeCarrito(env, body) {
   );
   await env.DB.batch(batch);
 
-  return { pedidoId, itemsConPrecio, subtotal, clienteEmail: body.cliente.email, clienteNombre: body.cliente.nombre || null };
+  return {
+    pedidoId, itemsConPrecio, subtotal, total,
+    clienteEmail: body.cliente.email, clienteNombre: body.cliente.nombre || null,
+    cupon: cupon ? { id: cupon.id, codigo: cupon.codigo, porcentaje: cupon.porcentaje, descuento } : null,
+  };
 }
 
 // ---- integracion con la API de Stripe (via fetch directo, sin SDK —
@@ -210,9 +228,28 @@ export default {
       const body = await request.json().catch(() => null);
       const resultado = await crearPedidoDesdeCarrito(env, body);
       if (resultado.erro) return json({ ok: false, erro: resultado.erro }, 400);
-      const { pedidoId, itemsConPrecio, clienteEmail } = resultado;
+      const { pedidoId, itemsConPrecio, clienteEmail, cupon } = resultado;
 
       const siteUrl = (env.SITE_URL || 'https://leuname-site.emanuelantunes2024.workers.dev').replace(/\/$/, '');
+
+      // Si el email tiene un cupon de "proxima compra" activo, se crea un
+      // Stripe Coupon real (de un solo uso, valido solo en esta sesion) y
+      // se aplica automaticamente -- el cliente no escribe ningun codigo.
+      let discounts;
+      if (cupon) {
+        try {
+          const stripeCoupon = await stripeApi(env, '/coupons', {
+            percent_off: cupon.porcentaje,
+            duration: 'once',
+            name: `Cupón LeuName ${cupon.porcentaje}% (${cupon.codigo})`,
+          });
+          discounts = [{ coupon: stripeCoupon.id }];
+        } catch (e) {
+          // Si Stripe fallara al crear el cupon, seguimos sin descuento en
+          // vez de bloquear la compra -- el pedido ya se guardo sin cupon.
+          discounts = undefined;
+        }
+      }
 
       let session;
       try {
@@ -232,6 +269,7 @@ export default {
               product_data: { name: i.producto.nombre },
             },
           })),
+          discounts,
           success_url: `${siteUrl}/confirmacion.html?pedido=${pedidoId}&session_id={CHECKOUT_SESSION_ID}`,
           cancel_url: `${siteUrl}/checkout.html?cancelado=1`,
           metadata: { pedido_id: pedidoId },
@@ -253,7 +291,7 @@ export default {
     if (pedidoPublicoMatch && request.method === 'GET') {
       const sessionId = url.searchParams.get('session_id') || '';
       const pedido = await env.DB.prepare(
-        'SELECT id, estado, total, cliente_email, chave_licencia, stripe_session_id FROM pedidos WHERE id = ?'
+        'SELECT id, estado, total, cliente_email, chave_licencia, stripe_session_id, cupon_usado_codigo, cupon_usado_descuento FROM pedidos WHERE id = ?'
       ).bind(pedidoPublicoMatch[1]).first();
       if (!pedido || !sessionId || pedido.stripe_session_id !== sessionId) {
         return json({ ok: false, erro: 'pedido_no_encontrado' }, 404);
@@ -261,6 +299,11 @@ export default {
       const { results: items } = await env.DB.prepare(
         'SELECT producto_id, nombre_producto, cantidad FROM pedido_items WHERE pedido_id = ?'
       ).bind(pedido.id).all();
+      // Cupon de regalo ganado con ESTA compra (para la proxima) — solo
+      // existe despues de que el webhook procese el pago.
+      const cuponGanado = await env.DB.prepare(
+        'SELECT codigo, porcentaje FROM cupones WHERE pedido_origem_id = ?'
+      ).bind(pedido.id).first();
       return json({
         ok: true,
         pedido: {
@@ -269,9 +312,22 @@ export default {
           total: pedido.total,
           email: pedido.cliente_email,
           chave_licencia: pedido.chave_licencia || null,
+          cupon_usado: pedido.cupon_usado_codigo ? { codigo: pedido.cupon_usado_codigo, descuento: pedido.cupon_usado_descuento } : null,
+          cupon_ganado: cuponGanado || null,
         },
         items,
       });
+    }
+
+    // GET /cupones/verificar?email=... — consulta publica: dice si ese
+    // email tiene un cupon de "proxima compra" activo, sin exponer nada
+    // mas. Usado por el checkout para mostrar el descuento automaticamente
+    // apenas el cliente escribe su correo (antes de pagar).
+    if (pathname === '/cupones/verificar' && request.method === 'GET') {
+      const email = (url.searchParams.get('email') || '').trim().toLowerCase();
+      if (!email) return json({ ok: true, cupon: null });
+      const cupon = await buscarCuponActivo(env, email);
+      return json({ ok: true, cupon: cupon ? { codigo: cupon.codigo, porcentaje: cupon.porcentaje } : null });
     }
 
     // POST /webhook/stripe — Stripe llama a esta ruta cuando el pago se
@@ -298,6 +354,28 @@ export default {
         const pedidoId = session.metadata && session.metadata.pedido_id;
         if (pedidoId) {
           await env.DB.prepare("UPDATE pedidos SET estado = 'pagado' WHERE id = ?").bind(pedidoId).run();
+
+          // Cupon de "proxima compra": se marca como gastado el que se haya
+          // usado en este pedido, y se genera uno nuevo de regalo (10% de
+          // descuento) para el mismo email -- se reconoce solo, sin que el
+          // cliente tenga que escribir ningun codigo la proxima vez.
+          const pedidoCupon = await env.DB.prepare(
+            'SELECT cliente_email, cupon_usado_codigo FROM pedidos WHERE id = ?'
+          ).bind(pedidoId).first();
+          if (pedidoCupon) {
+            if (pedidoCupon.cupon_usado_codigo) {
+              await env.DB.prepare(
+                "UPDATE cupones SET usado = 1, pedido_uso_id = ?, usado_em = datetime('now') WHERE codigo = ?"
+              ).bind(pedidoId, pedidoCupon.cupon_usado_codigo).run();
+            }
+            if (pedidoCupon.cliente_email) {
+              const codigo = `LEU10-${crypto.randomUUID().slice(0, 6).toUpperCase()}`;
+              await env.DB.prepare(
+                `INSERT INTO cupones (id, codigo, cliente_email, porcentaje, usado, pedido_origem_id, creado_em)
+                 VALUES (?, ?, ?, 10, 0, ?, datetime('now'))`
+              ).bind(crypto.randomUUID(), codigo, pedidoCupon.cliente_email, pedidoId).run();
+            }
+          }
 
           const { results: items } = await env.DB.prepare(
             'SELECT producto_id FROM pedido_items WHERE pedido_id = ?'
