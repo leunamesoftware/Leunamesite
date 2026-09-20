@@ -8,6 +8,16 @@
    del producto). Es la MISMA página para todos los productos — solo
    cambia el contenido según el id de la URL.
 
+   window.LeuDemo.render(product, els, opts) es reutilizable: la usa tanto
+   esta página standalone (demo.html) como el overlay de pantalla completa
+   que producto.js abre al hacer clic en "Ver demo" (ver producto.js).
+   Cuando opts.autoplaySound es true, el video del presentador arranca
+   hablando con sonido de inmediato -- esto solo funciona de verdad cuando
+   render() se llama dentro del mismo gesto de clic del usuario (por eso el
+   overlay lo activa así, mientras que esta página standalone, a la que se
+   puede llegar sin un clic previo -- ej. un enlace compartido -- usa el modo
+   "toca para reproducir con sonido", que es el único 100% confiable ahí).
+
    Nada se inventa: el video real solo aparece cuando el producto tiene
    product.demoVideoUrl cargado; mientras tanto se muestra la captura de
    pantalla real del producto (product.imageUrl), sin un botón de play
@@ -25,16 +35,17 @@
     '<path d="M6 3h9l4 4v14H6Z"/><path d="M15 3v4h4M9 12h6M9 16h6M9 8h2"/>' // informes
   ];
 
-  function render() {
+  var ICON_PLAY = '<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M8 5v14l11-7Z"/></svg>';
+  var ICON_PAUSE = '<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M7 5h4v14H7zM13 5h4v14h-4z"/></svg>';
+
+  function renderDemo(product, els, opts) {
+    opts = opts || {};
+    var contentEl = els.contentEl;
+    var breadcrumbEl = els.breadcrumbEl;
+    var coverEl = els.coverEl;
+    var stickyEl = els.stickyEl;
     var Store = window.LeuStore;
-    if (!Store) return;
-    var id = new URLSearchParams(window.location.search).get('id');
-    var product = id ? Store.getProduct(id) : null;
-    var contentEl = document.getElementById('demoContent');
-    var breadcrumbEl = document.getElementById('demoBreadcrumb');
-    var coverEl = document.getElementById('demoCover');
-    var stickyEl = document.getElementById('demoSticky');
-    if (!contentEl) return;
+    if (!Store || !contentEl) return;
     if (coverEl) coverEl.innerHTML = '';
     if (stickyEl) { stickyEl.innerHTML = ''; stickyEl.classList.remove('is-visible'); }
 
@@ -51,7 +62,6 @@
     if (breadcrumbEl) {
       breadcrumbEl.innerHTML = '<a href="index.html">Inicio</a> / <a href="producto.html?id=' + product.id + '">' + product.name + '</a> / Demo';
     }
-    document.title = 'Demo de ' + product.name + ' — LeuName Softwares';
 
     var features = product.features || [];
 
@@ -80,9 +90,10 @@
             '<source src="assets/img/demo/apresentador-transparente.webm" type="video/webm">' +
             '<source src="assets/img/demo/apresentador.mp4" type="video/mp4">' +
           '</video>' +
-          '<button type="button" id="demoMascotPlay" class="demo-hero-play" aria-label="Reproducir con sonido">' +
+          '<button type="button" id="demoMascotPlay" class="demo-hero-play" aria-label="Reproducir con sonido" hidden>' +
             '<svg viewBox="0 0 24 24" width="26" height="26" fill="currentColor"><path d="M8 5v14l11-7Z"/></svg>' +
           '</button>' +
+          '<button type="button" id="demoMascotToggle" class="demo-hero-toggle" aria-label="Pausar" hidden>' + ICON_PAUSE + '</button>' +
         '</div>' +
         '<div class="demo-hero-bubble">' +
           '<h1>¡Hola! Sé muy bienvenido a <span>' + product.name + '</span></h1>' +
@@ -131,24 +142,68 @@
       location.href = 'checkout.html';
     }
 
-    var buyNow = document.getElementById('demoBuyNowBtn');
+    var buyNow = contentEl.querySelector('#demoBuyNowBtn');
     if (buyNow) buyNow.addEventListener('click', irAComprar);
 
-    // El video del presentador empieza pausado, mostrando un fotograma fijo
-    // (poster) con un botón de play grande. Recién con el toque directo del
-    // cliente se reproduce CON sonido desde el inicio -- es el único modo
-    // 100% confiable en todos los navegadores móviles (a diferencia de
-    // "autoplay mudo + activar sonido después", que algunos celulares
-    // simplemente ignoran).
-    var mascotVideo = document.getElementById('demoMascotVideo');
-    var playBtn = document.getElementById('demoMascotPlay');
+    // Video del presentador: dos modos posibles.
+    // - opts.autoplaySound (usado por el overlay de "Ver demo"): arranca
+    //   hablando con sonido de inmediato, aprovechando el clic que el
+    //   cliente acaba de dar para abrir la demo (mismo documento, mismo
+    //   gesto -- por eso el navegador lo permite sin pedir un toque extra).
+    // - modo normal (esta página standalone): empieza pausado con un
+    //   fotograma fijo y un botón de play grande; recién con el toque
+    //   directo del cliente se reproduce CON sonido, que es el único modo
+    //   100% confiable cuando no hubo un clic previo en este documento.
+    // En ambos casos hay un botón pequeño para pausar/reanudar.
+    var mascotVideo = contentEl.querySelector('#demoMascotVideo');
+    var playBtn = contentEl.querySelector('#demoMascotPlay');
+    var toggleBtn = contentEl.querySelector('#demoMascotToggle');
+
+    function actualizarToggle() {
+      if (!toggleBtn || !mascotVideo) return;
+      toggleBtn.innerHTML = mascotVideo.paused ? ICON_PLAY : ICON_PAUSE;
+      toggleBtn.setAttribute('aria-label', mascotVideo.paused ? 'Reproducir' : 'Pausar');
+    }
+
+    function reproducirConSonido() {
+      mascotVideo.muted = false;
+      mascotVideo.volume = 1;
+      return mascotVideo.play();
+    }
+
     if (mascotVideo && playBtn) {
       playBtn.addEventListener('click', function () {
-        mascotVideo.muted = false;
-        mascotVideo.volume = 1;
-        mascotVideo.play().catch(function () {});
+        reproducirConSonido().catch(function () {});
         playBtn.hidden = true;
       });
+    }
+
+    if (mascotVideo && toggleBtn) {
+      toggleBtn.addEventListener('click', function () {
+        if (mascotVideo.paused) {
+          reproducirConSonido().catch(function () {});
+        } else {
+          mascotVideo.pause();
+        }
+      });
+      mascotVideo.addEventListener('play', function () {
+        actualizarToggle();
+        toggleBtn.hidden = false;
+        if (playBtn) playBtn.hidden = true;
+      });
+      mascotVideo.addEventListener('pause', actualizarToggle);
+    }
+
+    if (mascotVideo) {
+      if (opts.autoplaySound) {
+        reproducirConSonido().catch(function () {
+          // El navegador lo bloqueó (no llegó un gesto real a este
+          // documento) -- se cae al modo "toca para reproducir".
+          if (playBtn) playBtn.hidden = false;
+        });
+      } else if (playBtn) {
+        playBtn.hidden = false;
+      }
     }
 
     // Barra fija abajo (solo mobile, ver CSS): mantiene el precio y el
@@ -158,7 +213,7 @@
       stickyEl.innerHTML =
         '<span class="demo-sticky-bar-price">' + Store.formatPrice(product.price) + '</span>' +
         '<button type="button" id="demoStickyBuyBtn" class="btn btn-primary">Comprar ahora</button>';
-      var stickyBuy = document.getElementById('demoStickyBuyBtn');
+      var stickyBuy = stickyEl.querySelector('#demoStickyBuyBtn');
       if (stickyBuy) stickyBuy.addEventListener('click', irAComprar);
 
       // Visible solo entre el hero y el CTA final -- si no, se duplica
@@ -185,6 +240,25 @@
     }
   }
 
-  document.addEventListener('DOMContentLoaded', render);
-  document.addEventListener('products:updated', render);
+  window.LeuDemo = { render: renderDemo };
+
+  // Bootstrap de la página standalone (demo.html?id=...).
+  function renderStandalone() {
+    var Store = window.LeuStore;
+    if (!Store) return;
+    var id = new URLSearchParams(window.location.search).get('id');
+    var product = id ? Store.getProduct(id) : null;
+    var contentEl = document.getElementById('demoContent');
+    if (!contentEl) return;
+    document.title = product ? ('Demo de ' + product.name + ' — LeuName Softwares') : 'Demo no encontrada — LeuName Softwares';
+    renderDemo(product, {
+      contentEl: contentEl,
+      breadcrumbEl: document.getElementById('demoBreadcrumb'),
+      coverEl: document.getElementById('demoCover'),
+      stickyEl: document.getElementById('demoSticky')
+    }, { autoplaySound: false });
+  }
+
+  document.addEventListener('DOMContentLoaded', renderStandalone);
+  document.addEventListener('products:updated', renderStandalone);
 })();

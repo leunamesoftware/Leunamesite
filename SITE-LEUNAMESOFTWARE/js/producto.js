@@ -61,7 +61,7 @@
           '</div>' +
           '<div class="product-actions-buy">' +
             '<button class="btn btn-primary" id="buyNowBtn">Comprar ahora</button>' +
-            (product.demoUrl ? '<a class="btn btn-demo" href="' + product.demoUrl + '">Ver demo</a>' : '') +
+            (product.demoUrl ? '<button type="button" class="btn btn-demo" id="verDemoBtn">Ver demo</button>' : '') +
           '</div>' +
         '</div>' +
         '<div class="trust-row">' +
@@ -77,6 +77,51 @@
         var qty = qtyInput ? Math.max(1, parseInt(qtyInput.value, 10) || 1) : 1;
         window.LeuCart.addItem(product.id, qty);
         location.href = 'checkout.html';
+      });
+    }
+
+    // "Ver demo" abre la demo como overlay de pantalla completa DENTRO de
+    // esta misma página (sin navegar a demo.html) -- así el clic del
+    // cliente sigue "vivo" cuando el video se arma, y el navegador permite
+    // que el presentador arranque hablando con sonido de inmediato, sin
+    // pedirle al cliente que toque un botón de más.
+    var verDemoBtn = document.getElementById('verDemoBtn');
+    var demoOverlay = document.getElementById('demoOverlay');
+    if (verDemoBtn && demoOverlay && window.LeuDemo) {
+      var cerrarDemo = function () {
+        demoOverlay.hidden = true;
+        demoOverlay.innerHTML = '';
+        document.body.style.overflow = '';
+      };
+      verDemoBtn.addEventListener('click', function () {
+        demoOverlay.innerHTML =
+          '<header class="demo-minimal-header demo-overlay-header">' +
+            '<div class="container">' +
+              '<a href="index.html" aria-label="LeuName Softwares — Inicio">' +
+                '<img src="assets/img/logo-mark.png" alt="" width="34" height="34">' +
+                '<span><span class="demo-minimal-brand-word">LEUNAME</span><span class="demo-minimal-brand-sub">SOFTWARES</span></span>' +
+              '</a>' +
+              '<button type="button" class="demo-overlay-close" id="demoOverlayClose" aria-label="Cerrar demo">&times;</button>' +
+            '</div>' +
+          '</header>' +
+          '<main><div id="demoOverlayCover"></div><div class="container" style="padding-block:8px 64px;"><div id="demoOverlayContent"></div></div></main>' +
+          '<div class="demo-sticky-bar" id="demoOverlaySticky"></div>';
+
+        demoOverlay.hidden = false;
+        document.body.style.overflow = 'hidden';
+        window.LeuDemo.render(product, {
+          contentEl: demoOverlay.querySelector('#demoOverlayContent'),
+          coverEl: demoOverlay.querySelector('#demoOverlayCover'),
+          stickyEl: demoOverlay.querySelector('#demoOverlaySticky')
+        }, { autoplaySound: true });
+
+        history.pushState({ demoOverlay: true }, '', product.demoUrl);
+        demoOverlay.querySelector('#demoOverlayClose').addEventListener('click', function () {
+          history.back();
+        });
+      });
+      window.addEventListener('popstate', function (ev) {
+        if (!demoOverlay.hidden && !(ev.state && ev.state.demoOverlay)) cerrarDemo();
       });
     }
 
