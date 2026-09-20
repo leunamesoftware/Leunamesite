@@ -205,6 +205,7 @@ export default {
       try {
         session = await stripeApi(env, '/checkout/sessions', {
           mode: 'payment',
+          payment_method_types: ['card'],
           customer_email: clienteEmail,
           line_items: itemsConPrecio.map((i) => ({
             quantity: i.cantidad,
