@@ -76,12 +76,12 @@
     contentEl.innerHTML =
       '<section class="demo-hero">' +
         '<div class="demo-hero-mascot">' +
-          '<video id="demoMascotVideo" autoplay muted loop playsinline>' +
+          '<video id="demoMascotVideo" loop playsinline poster="assets/img/demo/poster-frame.png">' +
             '<source src="assets/img/demo/apresentador-transparente.webm" type="video/webm">' +
             '<source src="assets/img/demo/apresentador.mp4" type="video/mp4">' +
           '</video>' +
-          '<button type="button" id="demoMascotSound" class="demo-hero-sound" aria-label="Activar sonido">' +
-            '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 9v6h4l5 5V4L9 9H5Z"/><path d="M17.5 8.5a5 5 0 0 1 0 7"/></svg>' +
+          '<button type="button" id="demoMascotPlay" class="demo-hero-play" aria-label="Reproducir con sonido">' +
+            '<svg viewBox="0 0 24 24" width="26" height="26" fill="currentColor"><path d="M8 5v14l11-7Z"/></svg>' +
           '</button>' +
         '</div>' +
         '<div class="demo-hero-bubble">' +
@@ -134,23 +134,20 @@
     var buyNow = document.getElementById('demoBuyNowBtn');
     if (buyNow) buyNow.addEventListener('click', irAComprar);
 
-    // El video del presentador empieza mudo (autoplay lo exige) -- este
-    // botón activa el sonido para que el cliente lo escuche hablar.
+    // El video del presentador empieza pausado, mostrando un fotograma fijo
+    // (poster) con un botón de play grande. Recién con el toque directo del
+    // cliente se reproduce CON sonido desde el inicio -- es el único modo
+    // 100% confiable en todos los navegadores móviles (a diferencia de
+    // "autoplay mudo + activar sonido después", que algunos celulares
+    // simplemente ignoran).
     var mascotVideo = document.getElementById('demoMascotVideo');
-    var soundBtn = document.getElementById('demoMascotSound');
-    if (mascotVideo && soundBtn) {
-      soundBtn.addEventListener('click', function () {
-        mascotVideo.muted = !mascotVideo.muted;
-        // Algunos navegadores móviles no retoman el audio solo con
-        // cambiar .muted -- forzar volumen + play() de nuevo lo garantiza.
-        if (!mascotVideo.muted) {
-          mascotVideo.volume = 1;
-          mascotVideo.play().catch(function () {});
-        }
-        soundBtn.setAttribute('aria-label', mascotVideo.muted ? 'Activar sonido' : 'Silenciar');
-        soundBtn.innerHTML = mascotVideo.muted
-          ? '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 9v6h4l5 5V4L9 9H5Z"/><path d="M17.5 8.5a5 5 0 0 1 0 7"/></svg>'
-          : '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 9v6h4l5 5V4L9 9H5Z"/><path d="m16 9 5 6M21 9l-5 6"/></svg>';
+    var playBtn = document.getElementById('demoMascotPlay');
+    if (mascotVideo && playBtn) {
+      playBtn.addEventListener('click', function () {
+        mascotVideo.muted = false;
+        mascotVideo.volume = 1;
+        mascotVideo.play().catch(function () {});
+        playBtn.hidden = true;
       });
     }
 
