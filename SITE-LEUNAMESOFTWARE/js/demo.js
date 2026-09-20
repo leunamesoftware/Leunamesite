@@ -61,8 +61,19 @@
       '<section class="demo-cta">' +
         '<h2>¿Listo para empezar?</h2>' +
         '<p class="demo-cta-price">' + Store.formatPrice(product.price) + '</p>' +
-        '<a href="producto.html?id=' + product.id + '" class="btn btn-primary btn-block">Comprar ahora</a>' +
+        '<button type="button" id="demoBuyNowBtn" class="btn btn-primary btn-block">Comprar ahora</button>' +
       '</section>';
+
+    // Va directo al checkout (sin pasar por la página del producto primero)
+    // -- el cliente ya vio todo en la demo, no necesita ver la misma info
+    // de nuevo antes de pagar.
+    var buyNow = document.getElementById('demoBuyNowBtn');
+    if (buyNow) {
+      buyNow.addEventListener('click', function () {
+        if (window.LeuCart) window.LeuCart.addItem(product.id, 1);
+        location.href = 'checkout.html';
+      });
+    }
   }
 
   document.addEventListener('DOMContentLoaded', render);
