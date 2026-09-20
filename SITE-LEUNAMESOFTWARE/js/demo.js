@@ -142,8 +142,11 @@
       soundBtn.addEventListener('click', function () {
         mascotVideo.muted = !mascotVideo.muted;
         // Algunos navegadores móviles no retoman el audio solo con
-        // cambiar .muted -- forzar play() de nuevo lo garantiza.
-        if (!mascotVideo.muted) mascotVideo.play().catch(function () {});
+        // cambiar .muted -- forzar volumen + play() de nuevo lo garantiza.
+        if (!mascotVideo.muted) {
+          mascotVideo.volume = 1;
+          mascotVideo.play().catch(function () {});
+        }
         soundBtn.setAttribute('aria-label', mascotVideo.muted ? 'Activar sonido' : 'Silenciar');
         soundBtn.innerHTML = mascotVideo.muted
           ? '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 9v6h4l5 5V4L9 9H5Z"/><path d="M17.5 8.5a5 5 0 0 1 0 7"/></svg>'

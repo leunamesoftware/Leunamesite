@@ -573,7 +573,16 @@ h1,h2,h3,h4{ font-family:var(--font-head); margin:0; }
 .demo-showcase-rocket .demo-script{ font-size:21px; color:var(--blue-600); }
 @keyframes demoRocketFloat{ 0%,100%{ transform:translateY(0) rotate(-3deg); } 50%{ transform:translateY(-6px) rotate(3deg); } }
 @media (prefers-reduced-motion: reduce){ .demo-showcase-rocket img{ animation:none; } }
-.demo-trust-row{ display:flex; flex-wrap:wrap; justify-content:center; gap:20px 28px; max-width:760px; margin:0 auto; padding-block:8px; }
+.demo-trust-row{ display:flex; flex-wrap:nowrap; justify-content:center; gap:10px; max-width:520px; margin:0 auto; padding-block:6px 18px; }
+.demo-trust-row .trust-item{ flex-direction:column; text-align:center; gap:6px; flex:1 1 0; min-width:0; }
+.demo-trust-row .trust-ic{ width:38px; height:38px; margin-inline:auto; }
+.demo-trust-row .trust-item h4{ font-size:11.5px; line-height:1.25; }
+@media (min-width:640px){
+  .demo-trust-row{ max-width:640px; gap:24px; }
+  .demo-trust-row .trust-item{ flex-direction:row; text-align:left; }
+  .demo-trust-row .trust-ic{ margin-inline:0; }
+  .demo-trust-row .trust-item h4{ font-size:13.5px; }
+}
 .demo-cta{
   text-align:center; max-width:480px; margin:36px auto 0; padding:32px 28px; border-radius:var(--radius-l);
   background:linear-gradient(120deg,var(--navy-900),var(--blue-600)); color:var(--white);
