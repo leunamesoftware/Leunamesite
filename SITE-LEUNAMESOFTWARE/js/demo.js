@@ -75,7 +75,12 @@
 
     contentEl.innerHTML =
       '<section class="demo-hero">' +
-        '<div class="demo-hero-mascot"><img src="assets/img/demo/mascote.png" alt=""></div>' +
+        '<div class="demo-hero-mascot">' +
+          '<video id="demoMascotVideo" autoplay muted loop playsinline src="assets/img/demo/apresentador.mp4"></video>' +
+          '<button type="button" id="demoMascotSound" class="demo-hero-sound" aria-label="Activar sonido">' +
+            '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 9v6h4l5 5V4L9 9H5Z"/><path d="M17.5 8.5a5 5 0 0 1 0 7"/></svg>' +
+          '</button>' +
+        '</div>' +
         '<div class="demo-hero-bubble">' +
           '<h1>¡Hola! Sé muy bienvenido a <span>' + product.name + '</span></h1>' +
           '<p>' + product.short + '</p>' +
@@ -125,6 +130,20 @@
 
     var buyNow = document.getElementById('demoBuyNowBtn');
     if (buyNow) buyNow.addEventListener('click', irAComprar);
+
+    // El video del presentador empieza mudo (autoplay lo exige) -- este
+    // botón activa el sonido para que el cliente lo escuche hablar.
+    var mascotVideo = document.getElementById('demoMascotVideo');
+    var soundBtn = document.getElementById('demoMascotSound');
+    if (mascotVideo && soundBtn) {
+      soundBtn.addEventListener('click', function () {
+        mascotVideo.muted = !mascotVideo.muted;
+        soundBtn.setAttribute('aria-label', mascotVideo.muted ? 'Activar sonido' : 'Silenciar');
+        soundBtn.innerHTML = mascotVideo.muted
+          ? '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 9v6h4l5 5V4L9 9H5Z"/><path d="M17.5 8.5a5 5 0 0 1 0 7"/></svg>'
+          : '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 9v6h4l5 5V4L9 9H5Z"/><path d="m16 9 5 6M21 9l-5 6"/></svg>';
+      });
+    }
 
     // Barra fija abajo (solo mobile, ver CSS): mantiene el precio y el
     // botón de compra siempre visibles mientras el cliente se desplaza,
