@@ -16,10 +16,9 @@ binding = "IMAGENES"
 bucket_name = "leuname-loja-imagenes"
 
 # URL publica do site estatico (SITE-LEUNAMESOFTWARE/), usada para montar
-# os links de sucesso/cancelamento do Stripe Checkout. Atualizar se o
-# dominio customizado (www.leunamesoftware.com) for ligado no futuro.
+# os links de sucesso/cancelamento do Stripe Checkout.
 [vars]
-SITE_URL = "https://leuname-site.emanuelantunes2024.workers.dev"
+SITE_URL = "https://www.leunamesoftware.com"
 
 # Segredos usados por este Worker (configurados via "wrangler secret put"
 # no workflow de deploy, nunca escritos aqui):
