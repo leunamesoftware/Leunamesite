@@ -33,6 +33,75 @@ async function gerarChave() {
   return `LEU-${g1}-${g2}-${g3}`;
 }
 
+// Páginas públicas de política de privacidade, por app — usadas como URL
+// oficial exigida pela Google Play Console (e por lojas de terceiros).
+// Para lançar um app novo, basta adicionar uma entrada aqui.
+const PRIVACY_PAGES = {
+  'leuname-gestao': {
+    nomeApp: 'LeuName Gestão',
+    corpo: `
+      <p><strong>Última atualização:</strong> 20 de setembro de 2026.</p>
+      <p>O LeuName Gestão é um aplicativo de gestão empresarial (vendas,
+      estoque, ordens de serviço, financeiro e relatórios) desenvolvido
+      pela LeuName Softwares.</p>
+      <h2>Onde ficam os seus dados</h2>
+      <p>Todos os dados que você cadastra no LeuName Gestão — produtos,
+      clientes, vendas, ordens de serviço, informações financeiras — ficam
+      armazenados <strong>somente no seu próprio dispositivo</strong>, em
+      um banco de dados local (IndexedDB). O aplicativo funciona 100%
+      offline e <strong>não envia esses dados para nenhum servidor da
+      LeuName Softwares ou de terceiros</strong>.</p>
+      <h2>Ativação da licença</h2>
+      <p>A chave de licença informada na ativação é validada inteiramente
+      dentro do próprio aplicativo, de forma local e offline, sem
+      necessidade de conexão com a internet e sem envio da chave, do
+      dispositivo ou de qualquer outro dado a um servidor.</p>
+      <h2>Permissões do aplicativo</h2>
+      <p>O aplicativo pode solicitar permissão de armazenamento apenas para
+      salvar ou importar arquivos de backup que você mesmo escolher gerar
+      (por exemplo, exportação de relatórios). Essa permissão não é usada
+      para coletar ou transmitir dados.</p>
+      <h2>Compartilhamento de dados com terceiros</h2>
+      <p>A LeuName Softwares não coleta, não acessa e não compartilha os
+      dados inseridos no aplicativo com terceiros, pois esses dados nunca
+      saem do dispositivo do usuário.</p>
+      <h2>Backup e sincronização em nuvem (opcional)</h2>
+      <p>Caso o usuário opte, dentro das configurações do aplicativo, por
+      conectar um serviço de nuvem próprio (como Google Drive, OneDrive ou
+      Dropbox) para backup, esse envio é feito diretamente entre o
+      dispositivo do usuário e o serviço de nuvem escolhido por ele,
+      seguindo a política de privacidade do respectivo serviço — a
+      LeuName Softwares não tem acesso a esses dados.</p>
+      <h2>Contato</h2>
+      <p>Dúvidas sobre esta política podem ser enviadas para
+      <strong>contato@leunamesoftware.com</strong>.</p>
+    `,
+  },
+};
+
+function privacyPageHTML(app) {
+  const title = `Política de Privacidade — ${app.nomeApp}`;
+  return `<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>${title}</title>
+<style>
+  body{font-family:-apple-system,Segoe UI,Roboto,Arial,sans-serif;max-width:720px;margin:0 auto;padding:32px 20px 80px;color:#1a2233;line-height:1.6;}
+  h1{font-size:22px;} h2{font-size:17px;margin-top:28px;}
+  p{font-size:15px;}
+  footer{margin-top:48px;font-size:13px;color:#667;}
+</style>
+</head>
+<body>
+<h1>${title}</h1>
+${app.corpo}
+<footer>LeuName Softwares</footer>
+</body>
+</html>`;
+}
+
 function json(data, status = 200) {
   return new Response(JSON.stringify(data, null, 2), {
     status,
@@ -59,6 +128,19 @@ export default {
 
     if (pathname === '/health') {
       return json({ ok: true, servico: 'leuname-licencas' });
+    }
+
+    // GET /privacidade?app=leuname-gestao — página pública de política de
+    // privacidade, usada como URL oficial no Google Play Console e em
+    // lojas de terceiros. Reutilizável: para um app novo, basta adicionar
+    // uma entrada em PRIVACY_PAGES acima.
+    if (pathname === '/privacidade' && request.method === 'GET') {
+      const appId = url.searchParams.get('app') || 'leuname-gestao';
+      const app = PRIVACY_PAGES[appId];
+      if (!app) return new Response('App não encontrado.', { status: 404 });
+      return new Response(privacyPageHTML(app), {
+        headers: { 'Content-Type': 'text/html; charset=utf-8' },
+      });
     }
 
     // ---- rotas administrativas (exigem o header Authorization: Bearer <ADMIN_TOKEN>) ----
