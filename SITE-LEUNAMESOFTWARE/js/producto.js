@@ -81,10 +81,8 @@
     }
 
     // "Ver demo" abre la demo como overlay de pantalla completa DENTRO de
-    // esta misma página (sin navegar a demo.html) -- así el clic del
-    // cliente sigue "vivo" cuando el video se arma, y el navegador permite
-    // que el presentador arranque hablando con sonido de inmediato, sin
-    // pedirle al cliente que toque un botón de más.
+    // esta misma página (sin navegar a demo.html), para que la transición
+    // sea instantánea.
     var verDemoBtn = document.getElementById('verDemoBtn');
     var demoOverlay = document.getElementById('demoOverlay');
     if (verDemoBtn && demoOverlay && window.LeuDemo) {
@@ -113,7 +111,7 @@
           contentEl: demoOverlay.querySelector('#demoOverlayContent'),
           coverEl: demoOverlay.querySelector('#demoOverlayCover'),
           stickyEl: demoOverlay.querySelector('#demoOverlaySticky')
-        }, { autoplaySound: true });
+        });
 
         history.pushState({ demoOverlay: true }, '', product.demoUrl);
         demoOverlay.querySelector('#demoOverlayClose').addEventListener('click', function () {

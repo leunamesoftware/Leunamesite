@@ -8,15 +8,13 @@
    del producto). Es la MISMA página para todos los productos — solo
    cambia el contenido según el id de la URL.
 
-   window.LeuDemo.render(product, els, opts) es reutilizable: la usa tanto
-   esta página standalone (demo.html) como el overlay de pantalla completa
-   que producto.js abre al hacer clic en "Ver demo" (ver producto.js).
-   Cuando opts.autoplaySound es true, el video del presentador arranca
-   hablando con sonido de inmediato -- esto solo funciona de verdad cuando
-   render() se llama dentro del mismo gesto de clic del usuario (por eso el
-   overlay lo activa así, mientras que esta página standalone, a la que se
-   puede llegar sin un clic previo -- ej. un enlace compartido -- usa el modo
-   "toca para reproducir con sonido", que es el único 100% confiable ahí).
+   window.LeuDemo.render(product, els) es reutilizable: la usa tanto esta
+   página standalone (demo.html) como el overlay de pantalla completa que
+   producto.js abre al hacer clic en "Ver demo" (ver producto.js). El video
+   del presentador siempre pide un toque directo antes de sonar -- ningún
+   navegador garantiza sonido automático sin ese gesto, y varios lo
+   "fingen" (dejan el video reproduciéndose pero forzando silencio sin
+   avisar), así que pedir el toque es el único modo realmente confiable.
 
    Nada se inventa: el video real solo aparece cuando el producto tiene
    product.demoVideoUrl cargado; mientras tanto se muestra la captura de
@@ -38,8 +36,7 @@
   var ICON_PLAY = '<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M8 5v14l11-7Z"/></svg>';
   var ICON_PAUSE = '<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M7 5h4v14H7zM13 5h4v14h-4z"/></svg>';
 
-  function renderDemo(product, els, opts) {
-    opts = opts || {};
+  function renderDemo(product, els) {
     var contentEl = els.contentEl;
     var breadcrumbEl = els.breadcrumbEl;
     var coverEl = els.coverEl;
@@ -146,16 +143,10 @@
     var buyNow = contentEl.querySelector('#demoBuyNowBtn');
     if (buyNow) buyNow.addEventListener('click', irAComprar);
 
-    // Video del presentador: dos modos posibles.
-    // - opts.autoplaySound (usado por el overlay de "Ver demo"): arranca
-    //   hablando con sonido de inmediato, aprovechando el clic que el
-    //   cliente acaba de dar para abrir la demo (mismo documento, mismo
-    //   gesto -- por eso el navegador lo permite sin pedir un toque extra).
-    // - modo normal (esta página standalone): empieza pausado con un
-    //   fotograma fijo y un botón de play grande; recién con el toque
-    //   directo del cliente se reproduce CON sonido, que es el único modo
-    //   100% confiable cuando no hubo un clic previo en este documento.
-    // En ambos casos hay un botón pequeño para pausar/reanudar.
+    // Video del presentador: empieza pausado con un fotograma fijo y un
+    // botón de play grande; recién con el toque directo del cliente se
+    // reproduce CON sonido desde el inicio. Además hay un botón pequeño
+    // para pausar/reanudar una vez que ya está sonando.
     var mascotVideo = contentEl.querySelector('#demoMascotVideo');
     var playBtn = contentEl.querySelector('#demoMascotPlay');
     var toggleBtn = contentEl.querySelector('#demoMascotToggle');
@@ -195,22 +186,15 @@
       mascotVideo.addEventListener('pause', actualizarToggle);
     }
 
-    if (mascotVideo) {
-      if (opts.autoplaySound) {
-        reproducirConSonido().then(function () {
-          // Algunos navegadores no rechazan play() -- en cambio, dejan que
-          // el video arranque pero fuerzan muted=true por su cuenta. Si eso
-          // pasa, no hay otro aviso: hay que revisar y mostrar el botón.
-          if (mascotVideo.muted) { if (playBtn) playBtn.hidden = false; }
-        }).catch(function () {
-          // El navegador lo bloqueó de plano (no llegó un gesto real a
-          // este documento) -- se cae al modo "toca para reproducir".
-          if (playBtn) playBtn.hidden = false;
-        });
-      } else if (playBtn) {
-        playBtn.hidden = false;
-      }
-    }
+    // Siempre se pide un toque directo antes de reproducir con sonido.
+    // Antes se intentaba también sin ese toque (arrancar "solo" en el
+    // mismo clic de "Ver demo"), pero algunos navegadores no avisan
+    // cuando bloquean eso: dejan el video reproduciéndose igual, pero
+    // forzando silencio por su cuenta, sin lanzar ningún error -- así
+    // que ese modo podía fallar en silencio, sin ningún botón visible
+    // para corregirlo. Pedir siempre el toque es el único patrón 100%
+    // confiable en todos los navegadores y dispositivos.
+    if (mascotVideo && playBtn) playBtn.hidden = false;
 
     // Barra fija abajo (solo mobile, ver CSS): mantiene el precio y el
     // botón de compra siempre visibles mientras el cliente se desplaza,
@@ -262,7 +246,7 @@
       breadcrumbEl: document.getElementById('demoBreadcrumb'),
       coverEl: document.getElementById('demoCover'),
       stickyEl: document.getElementById('demoSticky')
-    }, { autoplaySound: false });
+    });
   }
 
   document.addEventListener('DOMContentLoaded', renderStandalone);
