@@ -39,6 +39,7 @@
       <h2 id="formTitle">Nuevo producto</h2>
       <form id="productForm">
         <input type="hidden" id="pOriginalId">
+        <input type="hidden" id="pImagenUrl">
         <div class="admin-form-grid cols-2">
           <div class="admin-field"><label class="admin-label" for="pId">ID (slug único)</label><input class="admin-input" id="pId" required pattern="[a-z0-9-]+" placeholder="mi-producto"></div>
           <div class="admin-field"><label class="admin-label" for="pNombre">Nombre</label><input class="admin-input" id="pNombre" required></div>
@@ -63,9 +64,30 @@
           <div class="admin-field"><label class="admin-label" for="pIncluye">Qué incluye (una línea por ítem)</label><textarea class="admin-textarea" id="pIncluye"></textarea></div>
           <div class="admin-field"><label class="admin-label" for="pCaracteristicas">Características (una línea por ítem)</label><textarea class="admin-textarea" id="pCaracteristicas"></textarea></div>
         </div>
+        <div class="admin-form-grid cols-2" style="margin-top:14px;">
+          <div class="admin-field">
+            <label class="admin-label" for="pTag">Etiqueta destacada (opcional)</label>
+            <select class="admin-select" id="pTag">
+              <option value="">Ninguna</option>
+              <option value="novedad">Novedad</option>
+              <option value="recomendado">Recomendado</option>
+            </select>
+          </div>
+          <div class="admin-field"><label class="admin-label" for="pDemoUrl">URL de demo (opcional)</label><input class="admin-input" id="pDemoUrl" placeholder="demo.html?id=mi-producto o un enlace externo"></div>
+        </div>
         <label style="display:flex;align-items:center;gap:8px;margin-top:14px;font-size:13px;color:var(--ink-600);">
           <input type="checkbox" id="pReal"> Es un producto real (no un ejemplo de catálogo)
         </label>
+
+        <div class="admin-field" style="margin-top:14px;">
+          <label class="admin-label">Imagen del producto</label>
+          <div id="pImagenPreviewWrap" hidden style="margin-bottom:10px;">
+            <img id="pImagenPreview" alt="" style="width:120px;height:90px;object-fit:cover;border-radius:8px;border:1px solid var(--gray-200);">
+          </div>
+          <input type="file" id="pImagenFile" accept="image/jpeg,image/png,image/webp,image/gif" class="admin-input" style="padding:8px;">
+          <p class="admin-note" id="pImagenHint" style="text-align:left;margin-top:6px;">Guarda el producto primero para poder subir su imagen.</p>
+        </div>
+
         <div class="admin-form-actions">
           <button class="admin-btn admin-btn-primary" type="submit">Guardar</button>
           <button class="admin-btn admin-btn-outline" type="button" id="cancelFormBtn">Cancelar</button>

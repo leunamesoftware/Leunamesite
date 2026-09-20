@@ -77,6 +77,22 @@
     document.getElementById('pIncluye').value = product && product.incluye ? JSON.parse(product.incluye).join('\n') : '';
     document.getElementById('pCaracteristicas').value = product && product.caracteristicas ? JSON.parse(product.caracteristicas).join('\n') : '';
     document.getElementById('pReal').checked = !!(product && product.real);
+    document.getElementById('pTag').value = (product && product.tag) || '';
+    document.getElementById('pDemoUrl').value = (product && product.demo_url) || '';
+
+    var imagenUrl = (product && product.imagen_url) || '';
+    document.getElementById('pImagenUrl').value = imagenUrl;
+    var previewWrap = document.getElementById('pImagenPreviewWrap');
+    var preview = document.getElementById('pImagenPreview');
+    if (imagenUrl) { preview.src = imagenUrl; previewWrap.hidden = false; } else { previewWrap.hidden = true; }
+    document.getElementById('pImagenFile').value = '';
+    var imagenHint = document.getElementById('pImagenHint');
+    if (product) {
+      imagenHint.textContent = 'Elige una imagen (JPG, PNG, WEBP o GIF, máx. 5MB) para subirla ahora.';
+    } else {
+      imagenHint.textContent = 'Guarda el producto primero para poder subir su imagen.';
+    }
+
     formCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
@@ -108,8 +124,9 @@
   form.addEventListener('submit', function (e) {
     e.preventDefault();
     var originalId = document.getElementById('pOriginalId').value;
+    var newId = document.getElementById('pId').value.trim();
     var payload = {
-      id: document.getElementById('pId').value.trim(),
+      id: newId,
       nombre: document.getElementById('pNombre').value.trim(),
       categoria: document.getElementById('pCategoria').value,
       precio: parseFloat(document.getElementById('pPrecio').value),
@@ -119,16 +136,55 @@
       descripcion: document.getElementById('pDescripcion').value.trim(),
       incluye: document.getElementById('pIncluye').value.split('\n').map(function (s) { return s.trim(); }).filter(Boolean),
       caracteristicas: document.getElementById('pCaracteristicas').value.split('\n').map(function (s) { return s.trim(); }).filter(Boolean),
-      real: document.getElementById('pReal').checked
+      real: document.getElementById('pReal').checked,
+      tag: document.getElementById('pTag').value || null,
+      demo_url: document.getElementById('pDemoUrl').value.trim() || null,
+      // El campo de imagen se sube por separado (POST .../imagen); reenviamos
+      // el valor actual aquí para no borrarlo al guardar el resto del formulario.
+      imagen_url: document.getElementById('pImagenUrl').value || null
     };
     var request = originalId
       ? AdminAPI.api('/admin/productos/' + originalId, { method: 'PUT', body: JSON.stringify(payload) })
       : AdminAPI.api('/admin/productos', { method: 'POST', body: JSON.stringify(payload) });
     request.then(function () {
+      var savedId = originalId || newId;
       formCard.hidden = true;
       form.reset();
-      load();
+      load().then(function () {
+        if (!originalId) {
+          showBanner('Producto creado. Edítalo de nuevo si quieres subirle una imagen.');
+        }
+      });
     }).catch(function () { showBanner('No se pudo guardar el producto.', true); });
+  });
+
+  document.getElementById('pImagenFile').addEventListener('change', function (e) {
+    var file = e.target.files[0];
+    if (!file) return;
+    var id = document.getElementById('pOriginalId').value;
+    if (!id) {
+      showBanner('Guarda el producto primero, luego edítalo de nuevo para subir la imagen.', true);
+      e.target.value = '';
+      return;
+    }
+    var hint = document.getElementById('pImagenHint');
+    hint.textContent = 'Subiendo imagen…';
+    fetch(AdminAPI.BASE_URL + '/admin/productos/' + id + '/imagen', {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer ' + AdminAPI.getToken(), 'Content-Type': file.type },
+      body: file
+    })
+      .then(function (res) { return res.json().then(function (data) { if (!res.ok) throw new Error(data.erro || 'error'); return data; }); })
+      .then(function (data) {
+        document.getElementById('pImagenUrl').value = data.imagen_url;
+        document.getElementById('pImagenPreview').src = data.imagen_url + '?t=' + Date.now();
+        document.getElementById('pImagenPreviewWrap').hidden = false;
+        hint.textContent = 'Imagen subida. Se guardó automáticamente.';
+        load();
+      })
+      .catch(function (err) {
+        hint.textContent = 'No se pudo subir la imagen (' + err.message + ').';
+      });
   });
 
   load();

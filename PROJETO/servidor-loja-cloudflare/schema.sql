@@ -16,6 +16,9 @@ CREATE TABLE IF NOT EXISTS productos (
   reviews INTEGER NOT NULL DEFAULT 0,
   incluye TEXT,                     -- JSON array de strings
   caracteristicas TEXT,             -- JSON array de strings
+  imagen_url TEXT,                  -- URL publica de la imagen real (subida via el panel admin a R2)
+  demo_url TEXT,                    -- URL de la pagina/video de demo del producto (opcional)
+  tag TEXT,                         -- etiqueta editorial opcional: 'novedad' | 'recomendado'
   activo INTEGER NOT NULL DEFAULT 1,
   creado_em TEXT NOT NULL
 );

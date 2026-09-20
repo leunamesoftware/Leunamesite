@@ -32,7 +32,10 @@
       description: row.descripcion || '',
       includes: row.incluye ? JSON.parse(row.incluye) : [],
       features: row.caracteristicas ? JSON.parse(row.caracteristicas) : [],
-      badge: row.real ? 'Producto real' : 'Ejemplo'
+      badge: row.real ? 'Producto real' : 'Ejemplo',
+      imageUrl: row.imagen_url || null,
+      demoUrl: row.demo_url || null,
+      tag: row.tag || null
     };
   }
 

@@ -173,6 +173,19 @@ export default {
       return json({ ok: true, producto });
     }
 
+    // GET /imagen/productos/<archivo> — sirve la imagen real de un producto,
+    // subida por el panel admin (ver POST /admin/productos/:id/imagen).
+    if (pathname.startsWith('/imagen/') && request.method === 'GET') {
+      const clave = pathname.replace('/imagen/', '');
+      const obj = await env.IMAGENES.get(clave);
+      if (!obj) return new Response('Imagen no encontrada.', { status: 404 });
+      const headers = new Headers();
+      obj.writeHttpMetadata(headers);
+      headers.set('Cache-Control', 'public, max-age=3600');
+      headers.set('Access-Control-Allow-Origin', '*');
+      return new Response(obj.body, { headers });
+    }
+
     // POST /pedidos — crea un pedido a partir del carrito, SIN procesar pago.
     // Se mantiene por compatibilidad/pruebas; el checkout real de la tienda
     // usa POST /checkout/session (abajo), que ademas crea el cobro en Stripe.
@@ -365,12 +378,13 @@ export default {
           return json({ ok: false, erro: 'datos_invalidos' }, 400);
         }
         await env.DB.prepare(
-          `INSERT INTO productos (id, nombre, categoria, descripcion_corta, descripcion, precio, real, rating, reviews, incluye, caracteristicas, activo, creado_em)
-           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, datetime('now'))`
+          `INSERT INTO productos (id, nombre, categoria, descripcion_corta, descripcion, precio, real, rating, reviews, incluye, caracteristicas, imagen_url, demo_url, tag, activo, creado_em)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, datetime('now'))`
         ).bind(
           body.id, body.nombre, body.categoria, body.descripcion_corta || '', body.descripcion || '',
           Number(body.precio), body.real ? 1 : 0, Number(body.rating || 4.5), Number(body.reviews || 0),
-          JSON.stringify(body.incluye || []), JSON.stringify(body.caracteristicas || [])
+          JSON.stringify(body.incluye || []), JSON.stringify(body.caracteristicas || []),
+          body.imagen_url || null, body.demo_url || null, body.tag || null
         ).run();
         return json({ ok: true, id: body.id });
       }
@@ -381,11 +395,12 @@ export default {
         const body = await request.json().catch(() => null);
         if (!body) return json({ ok: false, erro: 'datos_invalidos' }, 400);
         await env.DB.prepare(
-          `UPDATE productos SET nombre=?, categoria=?, descripcion_corta=?, descripcion=?, precio=?, real=?, rating=?, reviews=?, incluye=?, caracteristicas=?, activo=? WHERE id=?`
+          `UPDATE productos SET nombre=?, categoria=?, descripcion_corta=?, descripcion=?, precio=?, real=?, rating=?, reviews=?, incluye=?, caracteristicas=?, imagen_url=?, demo_url=?, tag=?, activo=? WHERE id=?`
         ).bind(
           body.nombre, body.categoria, body.descripcion_corta || '', body.descripcion || '',
           Number(body.precio), body.real ? 1 : 0, Number(body.rating || 4.5), Number(body.reviews || 0),
           JSON.stringify(body.incluye || []), JSON.stringify(body.caracteristicas || []),
+          body.imagen_url || null, body.demo_url || null, body.tag || null,
           body.activo === false ? 0 : 1, id
         ).run();
         return json({ ok: true, id });
@@ -394,6 +409,32 @@ export default {
       if (adminProductoMatch && request.method === 'DELETE') {
         await env.DB.prepare('UPDATE productos SET activo = 0 WHERE id = ?').bind(adminProductoMatch[1]).run();
         return json({ ok: true, id: adminProductoMatch[1], eliminado_logico: true });
+      }
+
+      // POST /admin/productos/:id/imagen — sube la imagen real del producto
+      // (body = el archivo crudo, con el Content-Type del archivo) a R2 y
+      // guarda la URL publica resultante en productos.imagen_url.
+      const imagenMatch = pathname.match(/^\/admin\/productos\/([a-z0-9-]+)\/imagen$/);
+      if (imagenMatch && request.method === 'POST') {
+        const id = imagenMatch[1];
+        const producto = await env.DB.prepare('SELECT id FROM productos WHERE id = ?').bind(id).first();
+        if (!producto) return json({ ok: false, erro: 'producto_no_encontrado' }, 404);
+
+        const contentType = request.headers.get('Content-Type') || 'application/octet-stream';
+        const extPorTipo = { 'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp', 'image/gif': 'gif' };
+        const ext = extPorTipo[contentType];
+        if (!ext) return json({ ok: false, erro: 'tipo_no_soportado', detalle: 'Usa JPG, PNG, WEBP o GIF.' }, 400);
+
+        const bytes = await request.arrayBuffer();
+        if (bytes.byteLength > 5 * 1024 * 1024) return json({ ok: false, erro: 'archivo_muy_grande', detalle: 'Maximo 5MB.' }, 400);
+
+        const clave = `productos/${id}.${ext}`;
+        await env.IMAGENES.put(clave, bytes, { httpMetadata: { contentType } });
+
+        // Este mismo Worker sirve la imagen en /imagen/<clave> (ver abajo).
+        const imagenUrl = `${url.origin}/imagen/${clave}`;
+        await env.DB.prepare('UPDATE productos SET imagen_url = ? WHERE id = ?').bind(imagenUrl, id).run();
+        return json({ ok: true, id, imagen_url: imagenUrl });
       }
 
       if (pathname === '/admin/pedidos' && request.method === 'GET') {

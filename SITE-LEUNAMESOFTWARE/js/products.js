@@ -43,7 +43,8 @@
       description: 'LeuName Gestão es un sistema completo de gestión pensado para tiendas de celulares, accesorios y asistencia técnica. Controla ventas, stock, clientes, órdenes de servicio y finanzas desde un solo lugar. Funciona 100% offline —no depende de internet para operar el día a día— y, si activas la misma licencia en más de un dispositivo, sincroniza automáticamente los datos entre ellos cuando hay conexión.',
       includes: ['Licencia de uso para 1 tienda', 'Aplicación para Android y Windows', 'Sincronización entre tus dispositivos', 'Actualizaciones incluidas', 'Soporte especializado'],
       features: ['Control de ventas y caja diaria', 'Gestión de stock y productos', 'Órdenes de servicio técnico', 'Ficha de clientes', 'Reportes financieros', 'Funciona 100% offline'],
-      badge: 'Producto real'
+      badge: 'Producto real',
+      demoUrl: 'demo.html?id=leuname-gestao'
     },
     {
       id: 'sistema-inventario',
@@ -303,6 +304,9 @@
   // Arte visual "de producto" genérica por categoría (sin fotos), reutilizada
   // en las tarjetas de producto y en la galería de la página de detalle.
   function productVisualHTML(product) {
+    if (product.imageUrl) {
+      return '<div class="prod-visual prod-visual-photo"><img src="' + product.imageUrl + '" alt="' + product.name + '" loading="lazy"></div>';
+    }
     var cat = getCategory(product.category) || CATEGORIES[0];
     var initials = product.name.split(' ').slice(0, 2).map(function (w) { return w[0]; }).join('').toUpperCase();
     return (

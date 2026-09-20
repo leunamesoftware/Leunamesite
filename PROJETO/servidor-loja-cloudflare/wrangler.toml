@@ -9,6 +9,12 @@ binding = "DB"
 database_name = "leuname_loja"
 database_id = "960c3bdb-6562-4499-bf66-d55a6347b1db"
 
+# Bucket para as imagens dos produtos, enviadas pelo painel admin
+# (admin/productos.html) e servidas publicamente em /imagen/<arquivo>.
+[[r2_buckets]]
+binding = "IMAGENES"
+bucket_name = "leuname-loja-imagenes"
+
 # URL publica do site estatico (SITE-LEUNAMESOFTWARE/), usada para montar
 # os links de sucesso/cancelamento do Stripe Checkout. Atualizar se o
 # dominio customizado (www.leunamesoftware.com) for ligado no futuro.
