@@ -473,9 +473,9 @@ h1,h2,h3,h4{ font-family:var(--font-head); margin:0; }
 .newsletter-inner{ display:flex; flex-direction:column; gap:18px; padding-block:40px; align-items:flex-start; }
 .newsletter h3{ font-size:clamp(19px,2.4vw,24px); font-weight:800; }
 .newsletter p{ color:rgba(255,255,255,.8); font-size:14px; margin-top:6px; max-width:420px; }
-.newsletter-form{ display:flex; gap:10px; width:100%; max-width:440px; flex-wrap:wrap; }
+.newsletter-form{ display:flex; gap:10px; width:100%; max-width:440px; }
 .newsletter-form input{
-  flex:1 1 220px; height:48px; border-radius:var(--radius-pill); border:none; padding-inline:18px;
+  flex:1 1 auto; min-width:0; height:48px; border-radius:var(--radius-pill); border:none; padding-inline:18px;
   font-family:var(--font-body); font-size:14px; outline:none;
 }
 .newsletter-form .btn{ flex:none; height:48px; padding-inline:22px; }

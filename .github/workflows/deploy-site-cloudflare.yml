@@ -41,28 +41,3 @@ jobs:
         # Se a conta trocar de subdominio workers.dev no futuro, atualize
         # aqui e nas referencias a SITE_URL do servidor da loja.
         run: curl -sS --fail "https://leuname-site.emanuelantunes2024.workers.dev/index.html" > /dev/null
-
-      - name: TEMP - screenshot da barra de busca mobile no site no ar
-        run: |
-          npm i -D playwright@1.48.0
-          npx playwright install --with-deps chromium
-          node -e "
-          const { chromium } = require('playwright');
-          (async () => {
-            const browser = await chromium.launch();
-            const page = await browser.newPage({ viewport: { width: 390, height: 900 } });
-            await page.goto('https://leuname-site.emanuelantunes2024.workers.dev/index.html?nocache=' + Date.now(), { waitUntil: 'networkidle' });
-            await page.waitForTimeout(500);
-            const form = await page.\$('#searchbarMobile');
-            const btn = await page.\$('#searchbarMobile button');
-            console.log('form box', JSON.stringify(await form.boundingBox()));
-            console.log('button box', JSON.stringify(await btn.boundingBox()));
-            await page.screenshot({ path: 'searchbar-live.png', clip: { x: 0, y: 0, width: 390, height: 300 } });
-            await browser.close();
-          })();
-          "
-      - name: TEMP - upload screenshot
-        uses: actions/upload-artifact@v4
-        with:
-          name: searchbar-live
-          path: searchbar-live.png
