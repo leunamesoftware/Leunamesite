@@ -34,4 +34,9 @@
   }
 
   global.AdminAPI = { BASE_URL: BASE_URL, getToken: getToken, setToken: setToken, clearToken: clearToken, requireAuth: requireAuth, api: api };
+
+  // Registra o service worker so pra habilitar "Instalar app" no celular.
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/admin-sw.js', { scope: '/' }).catch(function () { /* no-op */ });
+  }
 })(window);
