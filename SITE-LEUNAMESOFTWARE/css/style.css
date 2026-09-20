@@ -506,6 +506,17 @@ h1,h2,h3,h4{ font-family:var(--font-head); margin:0; }
 .cart-item-remove{ font-size:12.5px; color:var(--red-500); font-weight:600; margin-top:8px; }
 .cart-item-qty{ flex:none; }
 .cart-item-price{ flex:none; width:90px; text-align:right; font-weight:800; font-family:var(--font-head); color:var(--ink-900); }
+@media (max-width:639px){
+  /* Em telas estreitas nao ha espaco pro item, o stepper de quantidade e o
+     preco caberem lado a lado numa unica linha (o stepper acabava se
+     sobrepondo ao nome do produto). Vira grid de 2 linhas: mídia+info em
+     cima, stepper e preco embaixo, sem sobreposicao. */
+  .cart-item{ flex-wrap:wrap; align-items:flex-start; row-gap:12px; }
+  .cart-item-media{ order:1; }
+  .cart-item-info{ order:2; flex:1 1 auto; }
+  .cart-item-qty{ order:3; flex:none; }
+  .cart-item-price{ order:4; flex:1 1 auto; width:auto; text-align:right; align-self:center; }
+}
 .cart-summary{ background:var(--white); border-radius:var(--radius-l); box-shadow:var(--shadow-card); padding:24px; align-self:flex-start; }
 .cart-summary h2{ font-size:16px; font-weight:800; margin-bottom:16px; }
 .totals-row{ display:flex; justify-content:space-between; font-size:14px; color:var(--ink-600); padding-block:7px; }
