@@ -1,0 +1,22 @@
+name = "leuname-site-br"
+compatibility_date = "2026-09-19"
+
+# Publica o site estatico (SITE-LEUNAMESOFTWARE-BR/) como um Worker de
+# "static assets" na Cloudflare — nao precisa de codigo de servidor,
+# nem de permissao extra no CF_API_TOKEN (usa a MESMA permissao
+# "Workers Scripts Edit" ja concedida para os outros Workers
+# deste projeto). Cada arquivo .html e servido no caminho exato do
+# link (ex: /checkout.html), sem reescrita de URL.
+[assets]
+directory = "./"
+
+# Dominio customizado: por enquanto NAO configurado (o site fica
+# disponivel apenas em leuname-site-br.<subdominio-da-conta>.workers.dev).
+# Quando o dominio .com.br for definido, repita no Cloudflare Dashboard o
+# mesmo passo manual ja feito para api.leunamesoftware.com:
+#   Workers & Pages -> leuname-site-br -> Settings -> Domains & Routes ->
+#   Add Custom Domain -> www.leunamesoftware.com.br
+# Depois, descomente o bloco abaixo e rode o workflow de deploy de novo.
+# [[routes]]
+# pattern = "www.leunamesoftware.com.br"
+# custom_domain = true

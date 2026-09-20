@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Checkout — LeuName Softwares</title>
+<meta name="description" content="Completa tus datos para finalizar tu compra en LeuName Softwares.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<a class="skip-link" href="#main">Saltar al contenido</a>
+
+<header class="demo-minimal-header">
+  <div class="container">
+    <a href="index.html" aria-label="LeuName Softwares — Inicio">
+      <img src="assets/img/logo-mark.png" alt="" width="34" height="34">
+      <span><span class="demo-minimal-brand-word">LEUNAME</span><span class="demo-minimal-brand-sub">SOFTWARES</span></span>
+    </a>
+  </div>
+</header>
+
+<main id="main">
+<div class="page-hero" style="padding-block:20px 8px;">
+  <div class="container">
+    <h1>Finalizar compra</h1>
+  </div>
+</div>
+
+<div class="container">
+  <div class="checkout-empty" id="checkoutEmpty" hidden>
+    <h2>Tu carrito está vacío</h2>
+    <p>Agrega productos antes de continuar con el pago.</p>
+    <a class="btn btn-primary" href="categoria.html">Ver productos</a>
+  </div>
+
+  <form class="checkout-layout" id="checkoutForm" novalidate>
+    <div>
+      <div class="checkout-form-card">
+        <h2>Datos de contacto</h2>
+        <div class="form-grid form-grid-2">
+          <div class="field"><label for="ckName">Nombre completo</label><input id="ckName" name="nombre" type="text" required></div>
+          <div class="field"><label for="ckEmail">Correo electrónico</label><input id="ckEmail" name="email" type="email" required></div>
+          <div class="field"><label for="ckPhone">Teléfono</label><input id="ckPhone" name="telefono" type="tel" required></div>
+          <div class="field">
+            <label for="ckCountry">País</label>
+            <select id="ckCountry" name="pais" required>
+              <option value="ES">España</option>
+              <option value="MX">México</option>
+              <option value="AR">Argentina</option>
+              <option value="CO">Colombia</option>
+              <option value="CL">Chile</option>
+              <option value="PE">Perú</option>
+              <option value="US">Estados Unidos</option>
+              <option value="PT">Portugal</option>
+              <option value="BR">Brasil</option>
+              <option value="OTRO">Otro</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="payment-card" id="payment-section">
+        <h2><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-3px;margin-right:6px;"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>Pago</h2>
+        <p class="payment-placeholder">Al hacer clic en «Finalizar pedido» te llevaremos a la página de pago segura de Stripe para completar la compra con tarjeta.</p>
+      </div>
+    </div>
+
+    <aside class="cart-summary">
+      <h2>Resumen del pedido</h2>
+      <div id="checkoutSummary"></div>
+      <div id="checkoutTotals" style="margin-top:8px;"></div>
+      <button type="submit" id="payButton" class="btn btn-primary btn-block" style="margin-top:18px;">Finalizar pedido</button>
+      <p id="payMessage" class="newsletter-msg" style="background:var(--blue-50);color:var(--ink-900);margin-top:12px;" hidden></p>
+      <div class="checkout-trust-row">
+        <span><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3 4.5 6v6c0 4.5 3.2 7.9 7.5 9 4.3-1.1 7.5-4.5 7.5-9V6L12 3Z"/><path d="m9 12 2 2 4-4"/></svg>Pago 100% seguro</span>
+        <span><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8Z"/></svg>Entrega inmediata</span>
+      </div>
+      <a href="carrito.html" class="btn-ghost" style="display:block;text-align:center;margin-top:12px;">← Volver al carrito</a>
+    </aside>
+  </form>
+</div>
+
+</main>
+
+<script src="js/products.js"></script>
+<script src="js/cart.js"></script>
+<script src="js/api.js"></script>
+<script src="js/main.js"></script>
+<script src="js/checkout.js"></script>
+</body>
+</html>

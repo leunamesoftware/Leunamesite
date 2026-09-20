@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contacto — LeuName Softwares</title>
+<meta name="description" content="Ponte en contacto con el equipo de LeuName Softwares.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<a class="skip-link" href="#main">Saltar al contenido</a>
+
+<header class="site-header" id="siteHeader">
+
+  <!-- Fila 1: barra de utilidad -->
+  <div class="topbar">
+    <div class="container topbar-inner">
+      <p class="topbar-msg">
+        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2c3 1 5 4 5 8 0 3-1.5 6-5 11-3.5-5-5-8-5-11 0-4 2-7 5-8Z"/><circle cx="12" cy="9" r="2"/></svg>
+        <span>Productos digitales que transforman ideas en realidad.</span>
+      </p>
+      <ul class="topbar-badges">
+        <li><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3 4.5 6v6c0 4.5 3.2 7.9 7.5 9 4.3-1.1 7.5-4.5 7.5-9V6L12 3Z"/><path d="m9 12 2 2 4-4"/></svg> Compra segura</li>
+        <li><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8Z"/></svg> Entrega digital inmediata</li>
+        <li><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 13a8 8 0 0 1 16 0"/><rect x="3" y="13" width="4" height="6" rx="1.5"/><rect x="17" y="13" width="4" height="6" rx="1.5"/><path d="M20 19v1a3 3 0 0 1-3 3h-3"/></svg> Soporte especializado</li>
+      </ul>
+      <button class="lang-select" type="button" aria-label="Seleccionar idioma">
+        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 4 6 4 9s-1.5 6.4-4 9c-2.5-2.6-4-6-4-9s1.5-6.4 4-9Z"/></svg>
+        <span>ES</span>
+        <svg class="chevron" viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Fila 2: logo + busqueda + cuenta + carrito -->
+  <div class="mainbar">
+    <div class="container mainbar-inner">
+      <button class="menu-toggle" id="menuToggle" type="button" aria-label="Abrir menú" aria-expanded="false" aria-controls="categoryNav">
+        <span></span><span></span><span></span>
+      </button>
+
+      <a href="index.html" class="brand" aria-label="LeuName Softwares — Inicio">
+        <img class="brand-mark" src="assets/img/logo-mark.png" alt="" width="48" height="48">
+        <span class="brand-text">
+          <span class="brand-word">LEUNAME</span>
+          <span class="brand-sub">SOFTWARES</span>
+        </span>
+      </a>
+
+      <form class="searchbar" role="search" action="categoria.html" method="get">
+        <label class="sr-only" for="siteSearch">¿Qué estás buscando?</label>
+        <input id="siteSearch" name="q" type="search" placeholder="¿Qué estás buscando?" autocomplete="off">
+        <button type="submit" aria-label="Buscar">
+          <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        </button>
+      </form>
+      <div class="mainbar-actions">
+        <a href="login.html" class="action-link">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 20c1.5-4 5-6 8-6s6.5 2 8 6"/></svg>
+          <span class="action-text"><small>Entrar</small>Mi cuenta</span>
+        </a>
+        <a href="carrito.html" class="action-link cart-link">
+          <span class="cart-ic-wrap">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="21" r="1.4"/><circle cx="18" cy="21" r="1.4"/><path d="M2.5 3h2.2l2.4 12.2a2 2 0 0 0 2 1.6h8.2a2 2 0 0 0 2-1.6L21 7H6"/></svg>
+            <span class="cart-badge">0</span>
+          </span>
+          <span class="action-text"><small>Carrito</small>0,00 €</span>
+        </a>
+      </div>
+    </div>
+    <form class="searchbar searchbar-mobile" id="searchbarMobile" role="search" action="categoria.html" method="get">
+      <label class="sr-only" for="siteSearchMobile">¿Qué estás buscando?</label>
+      <input id="siteSearchMobile" name="q" type="search" placeholder="¿Qué estás buscando?" autocomplete="off">
+      <button type="submit" aria-label="Buscar">
+        <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      </button>
+    </form>
+  </div>
+
+  <!-- Fila 3: categorias -->
+  <nav class="categorybar" id="categoryNav" aria-label="Categorías">
+    <div class="container categorybar-inner">
+      <button class="all-cats" type="button" onclick="location.href='categoria.html'">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+        Todas las categorías
+        <svg class="chevron" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+      </button>
+      <ul class="cat-links">
+        <li><a href="categoria.html?slug=aplicaciones"><span class="cat-ic cat-ic-blue"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="12" rx="1.5"/><path d="M2 20h20"/></svg></span>Aplicaciones y Sistemas</a></li>
+        <li><a href="categoria.html?slug=templates"><span class="cat-ic cat-ic-green"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.2"/><rect x="14" y="3" width="7" height="7" rx="1.2"/><rect x="3" y="14" width="7" height="7" rx="1.2"/><rect x="14" y="14" width="7" height="7" rx="1.2"/></svg></span>Templates</a></li>
+        <li><a href="categoria.html?slug=libros"><span class="cat-ic cat-ic-amber"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H12v18H6.5A2.5 2.5 0 0 1 4 18.5v-13Z"/><path d="M20 5.5A2.5 2.5 0 0 0 17.5 3H12v18h5.5a2.5 2.5 0 0 0 2.5-2.5v-13Z"/></svg></span>Libros</a></li>
+        <li><a href="categoria.html?slug=recetas"><span class="cat-ic cat-ic-pink"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 10c0-3 2.5-6 6-6s6 3 6 6"/><path d="M4 10h16l-1.2 9a2 2 0 0 1-2 1.8H7.2a2 2 0 0 1-2-1.8L4 10Z"/></svg></span>Recetas</a></li>
+        <li><a href="categoria.html?slug=diseno"><span class="cat-ic cat-ic-purple"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3a9 9 0 1 0 0 18c1.1 0 1.5-.7 1.5-1.4 0-.4-.2-.7-.4-1-.2-.3-.4-.6-.4-1 0-.8.6-1.4 1.4-1.4H16a4 4 0 0 0 4-4c0-5-3.6-9-8-9Z"/><circle cx="7.5" cy="10.5" r="1"/><circle cx="12" cy="7.5" r="1"/><circle cx="16.5" cy="10.5" r="1"/></svg></span>Diseño y Logos</a></li>
+        <li><a href="categoria.html?slug=otros"><span class="cat-ic cat-ic-gray"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 12v7a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-7"/><rect x="2" y="7" width="20" height="5" rx="1"/><path d="M12 7v13M12 7c-1.5-3-5.5-3.5-5.5-1S9 7 12 7Zm0 0c1.5-3 5.5-3.5 5.5-1S15 7 12 7Z"/></svg></span>Otros productos</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="mobile-cat-scroll" aria-hidden="true">
+    <button onclick="location.href='categoria.html?slug=aplicaciones'"><span class="cat-ic cat-ic-blue"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="12" rx="1.5"/><path d="M2 20h20"/></svg></span>Aplicaciones</button>
+    <button onclick="location.href='categoria.html?slug=templates'"><span class="cat-ic cat-ic-green"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.2"/><rect x="14" y="3" width="7" height="7" rx="1.2"/><rect x="3" y="14" width="7" height="7" rx="1.2"/><rect x="14" y="14" width="7" height="7" rx="1.2"/></svg></span>Templates</button>
+    <button onclick="location.href='categoria.html?slug=libros'"><span class="cat-ic cat-ic-amber"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H12v18H6.5A2.5 2.5 0 0 1 4 18.5v-13Z"/><path d="M20 5.5A2.5 2.5 0 0 0 17.5 3H12v18h5.5a2.5 2.5 0 0 0 2.5-2.5v-13Z"/></svg></span>Libros</button>
+    <button onclick="location.href='categoria.html?slug=recetas'"><span class="cat-ic cat-ic-pink"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 10c0-3 2.5-6 6-6s6 3 6 6"/><path d="M4 10h16l-1.2 9a2 2 0 0 1-2 1.8H7.2a2 2 0 0 1-2-1.8L4 10Z"/></svg></span>Recetas</button>
+    <button onclick="location.href='categoria.html?slug=diseno'"><span class="cat-ic cat-ic-purple"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3a9 9 0 1 0 0 18c1.1 0 1.5-.7 1.5-1.4 0-.4-.2-.7-.4-1-.2-.3-.4-.6-.4-1 0-.8.6-1.4 1.4-1.4H16a4 4 0 0 0 4-4c0-5-3.6-9-8-9Z"/><circle cx="7.5" cy="10.5" r="1"/><circle cx="12" cy="7.5" r="1"/><circle cx="16.5" cy="10.5" r="1"/></svg></span>Diseño</button>
+    <button onclick="location.href='categoria.html?slug=otros'"><span class="cat-ic cat-ic-gray"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 12v7a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-7"/><rect x="2" y="7" width="20" height="5" rx="1"/><path d="M12 7v13M12 7c-1.5-3-5.5-3.5-5.5-1S9 7 12 7Zm0 0c1.5-3 5.5-3.5 5.5-1S15 7 12 7Z"/></svg></span>Otros</button>
+  </div>
+</header>
+
+<div class="nav-overlay" id="navOverlay"></div>
+
+<main id="main">
+<div class="page-hero">
+  <div class="container">
+    <p class="breadcrumb"><a href="index.html">Inicio</a> / Contacto</p>
+    <h1>Hablemos</h1>
+    <p>¿Tienes dudas sobre un producto o necesitas soporte? Escríbenos.</p>
+  </div>
+</div>
+
+<div class="container contact-layout">
+  <div class="contact-info-card">
+    <div class="trust-item">
+      <span class="trust-ic"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m4 7 8 6 8-6"/></svg></span>
+      <div><h4>Contacto general</h4><p><a href="mailto:contacto@leunamesoftware.com">contacto@leunamesoftware.com</a></p></div>
+    </div>
+    <div class="trust-item">
+      <span class="trust-ic"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 13a8 8 0 0 1 16 0"/><rect x="3" y="13" width="4" height="6" rx="1.5"/><rect x="17" y="13" width="4" height="6" rx="1.5"/></svg></span>
+      <div><h4>Soporte técnico</h4><p><a href="mailto:soporte@leunamesoftware.com">soporte@leunamesoftware.com</a></p></div>
+    </div>
+    <div class="trust-item">
+      <span class="trust-ic"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></span>
+      <div><h4>Horario de atención</h4><p>Atención 100% online, respondemos a la brevedad</p></div>
+    </div>
+  </div>
+
+  <div class="contact-form-card">
+    <!-- Formulario 100% del lado del cliente: no hay ningún servicio de envío de correo real conectado todavía. -->
+    <form id="contactForm">
+      <div class="form-grid form-grid-2">
+        <div class="field"><label for="cName">Nombre</label><input id="cName" type="text" required></div>
+        <div class="field"><label for="cEmail">Correo electrónico</label><input id="cEmail" type="email" required></div>
+      </div>
+      <div class="field" style="margin-top:16px;">
+        <label for="cSubject">Asunto</label>
+        <select id="cSubject">
+          <option>Consulta general</option>
+          <option>Soporte técnico</option>
+          <option>Ventas</option>
+          <option>Otro</option>
+        </select>
+      </div>
+      <div class="field" style="margin-top:16px;">
+        <label for="cMessage">Mensaje</label>
+        <textarea id="cMessage" required></textarea>
+      </div>
+      <button type="submit" class="btn btn-primary" style="margin-top:18px;">Enviar mensaje</button>
+    </form>
+    <div class="contact-success" id="contactMsg" hidden>
+      <svg viewBox="0 0 24 24" width="46" height="46" fill="none" stroke="currentColor" stroke-width="2"><path d="m5 13 4 4 10-10"/></svg>
+      <h3>Gracias, te responderemos pronto</h3>
+      <p style="color:var(--ink-600);margin-top:8px;">Este formulario todavía no envía correos reales: es una demostración del flujo.</p>
+    </div>
+  </div>
+</div>
+
+</main>
+
+<footer class="site-footer">
+  <div class="container footer-grid">
+    <div class="footer-col footer-col-brand">
+      <div class="footer-brand">
+        <img src="assets/img/logo-mark.png" alt="" width="38" height="38">
+        <span class="footer-brand-text">LEUNAME SOFTWARES</span>
+      </div>
+      <p>Productos digitales que transforman ideas en oportunidades: aplicaciones, templates, libros, recetas, diseños y mucho más — todo en un solo lugar.</p>
+      <div class="footer-socials">
+        <a href="#" aria-label="Facebook"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M13.5 21v-7h2.3l.4-2.7h-2.7v-1.9c0-.8.2-1.3 1.4-1.3h1.4V5.7c-.7-.1-1.6-.2-2.6-.2-2.6 0-4.4 1.6-4.4 4.4v2.4H7v2.7h2.3V21h4.2Z"/></svg></a>
+        <a href="#" aria-label="Instagram"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="1"/></svg></a>
+        <a href="#" aria-label="YouTube"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2.5" y="6" width="19" height="12" rx="3"/><path d="m10.5 9.5 5 2.5-5 2.5v-5Z" fill="currentColor" stroke="none"/></svg></a>
+        <a href="#" aria-label="X (Twitter)"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 4l16 16M20 4 4 20"/></svg></a>
+        <a href="#" aria-label="Pinterest"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M9.5 19c.6-2.4 1.6-6.3 2.2-8.8M12 12.5a3 3 0 1 0-2.8-4"/></svg></a>
+        <a href="#" aria-label="LinkedIn"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M7.5 10.5v6M7.5 8v.01M12 16.5v-3.7c0-1.2.8-2 2-2s2 .8 2 2v3.7"/></svg></a>
+      </div>
+    </div>
+    <div class="footer-col">
+      <h5>Enlaces rápidos</h5>
+      <ul>
+        <li><a href="index.html">Inicio</a></li>
+        <li><a href="categoria.html">Todos los productos</a></li>
+        <li><a href="sobre-nosotros.html">Sobre nosotros</a></li>
+        <li><a href="blog.html">Blog</a></li>
+        <li><a href="contacto.html">Contacto</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h5>Categorías</h5>
+      <ul>
+        <li><a href="categoria.html?slug=aplicaciones">Aplicaciones y Sistemas</a></li>
+        <li><a href="categoria.html?slug=templates">Templates</a></li>
+        <li><a href="categoria.html?slug=libros">Libros</a></li>
+        <li><a href="categoria.html?slug=recetas">Recetas</a></li>
+        <li><a href="categoria.html?slug=diseno">Diseño y Logos</a></li>
+        <li><a href="categoria.html?slug=otros">Otros productos</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h5>Ayuda</h5>
+      <ul>
+        <li><a href="preguntas-frecuentes.html">Preguntas frecuentes</a></li>
+        <li><a href="terminos-de-uso.html">Términos de uso</a></li>
+        <li><a href="politica-de-privacidad.html">Política de privacidad</a></li>
+        <li><a href="politica-de-reembolso.html">Política de reembolso</a></li>
+        <li><a href="mailto:soporte@leunamesoftware.com">Soporte</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h5>Contacto</h5>
+      <ul>
+        <li><a href="mailto:contacto@leunamesoftware.com">contacto@leunamesoftware.com</a></li>
+        <li><a href="mailto:soporte@leunamesoftware.com">soporte@leunamesoftware.com</a></li>
+        <li>Atención 100% online</li>
+      </ul>
+    </div>
+  </div>
+  <div class="container footer-bottom">
+    <p>© 2026 LeuName Softwares. Todos los derechos reservados.</p>
+    <p>Creando hoy un mejor mañana.</p>
+  </div>
+</footer>
+
+<script src="js/products.js"></script>
+<script src="js/cart.js"></script>
+<script src="js/api.js"></script>
+<script src="js/main.js"></script>
+
+</body>
+</html>
