@@ -48,11 +48,3 @@ jobs:
 
       - name: Testar o servidor no ar
         run: curl -sS --fail https://api.leunamesoftware.com/health
-
-      # ---- TEMPORARIO: gerar uma licenca real para o cliente Jefferson ----
-      - name: TEMP — gerar licenca para Jefferson
-        run: |
-          curl -sS -X POST "https://api.leunamesoftware.com/admin/licencas/gerar" \
-            -H "Authorization: Bearer ${{ secrets.ADMIN_TOKEN }}" \
-            -H "Content-Type: application/json" \
-            -d '{"app_id":"leuname-gestao","cliente_nome":"Jefferson","origem":"manual"}'
