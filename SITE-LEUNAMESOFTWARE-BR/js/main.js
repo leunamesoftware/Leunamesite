@@ -35,8 +35,8 @@
 })();
 
 /* ==========================================================================
-   Carrusel del Hero — hoy muestra un único slide; el markup y los controles
-   (flechas + puntos) ya están listos para cuando existan más slides.
+   Carrossel do Hero — hoje mostra um único slide; o markup e os controles
+   (setas + pontos) já estão prontos para quando existirem mais slides.
    ========================================================================== */
 (function () {
   'use strict';
@@ -48,14 +48,14 @@
   }
   dots.forEach(function (dot, idx) { dot.addEventListener('click', function () { setActive(idx); }); });
   carousel.querySelectorAll('.hero-arrow').forEach(function (btn) {
-    btn.addEventListener('click', function () { setActive(0); }); // no-op: un único slide por ahora
+    btn.addEventListener('click', function () { setActive(0); }); // no-op: apenas um slide por enquanto
   });
 })();
 
 /* ==========================================================================
-   Newsletter — 100% del lado del cliente. No hay ningún servicio de email
-   real conectado: solo evita el envío del formulario y muestra un mensaje
-   de confirmación en pantalla.
+   Newsletter — 100% do lado do cliente. Não há nenhum serviço de e-mail
+   real conectado: apenas evita o envio do formulário e mostra uma mensagem
+   de confirmação na tela.
    ========================================================================== */
 (function () {
   'use strict';
@@ -66,15 +66,15 @@
     e.preventDefault();
     if (msg) {
       msg.hidden = false;
-      msg.textContent = '¡Gracias! Revisa tu correo para confirmar la suscripción. (Nota: este formulario aún no está conectado a un servicio de email real.)';
+      msg.textContent = 'Obrigado! Confira seu e-mail para confirmar a inscrição. (Nota: este formulário ainda não está conectado a um serviço de e-mail real.)';
     }
     form.reset();
   });
 })();
 
 /* ==========================================================================
-   Acordeón de preguntas frecuentes — reutilizable en cualquier página que
-   incluya elementos .faq-item.
+   Acordeão de perguntas frequentes — reutilizável em qualquer página que
+   inclua elementos .faq-item.
    ========================================================================== */
 (function () {
   'use strict';
@@ -91,7 +91,7 @@
 })();
 
 /* ==========================================================================
-   Formulario de contacto — 100% del lado del cliente (sin envío real).
+   Formulário de contato — 100% do lado do cliente (sem envio real).
    ========================================================================== */
 (function () {
   'use strict';
@@ -106,9 +106,9 @@
 })();
 
 /* ==========================================================================
-   Botones "Añadir al carrito" — cualquier botón con [data-add-to-cart]
-   agrega el producto indicado en data-product-id (y, si existe, toma la
-   cantidad de un input con id data-qty-target).
+   Botões "Adicionar ao carrinho" — qualquer botão com [data-add-to-cart]
+   adiciona o produto indicado em data-product-id (e, se existir, usa a
+   quantidade de um input com id data-qty-target).
    ========================================================================== */
 (function () {
   'use strict';
@@ -124,15 +124,15 @@
     }
     window.LeuCart.addItem(id, qty);
     var original = btn.textContent;
-    btn.textContent = 'Añadido ✓';
+    btn.textContent = 'Adicionado ✓';
     btn.classList.add('is-added');
     setTimeout(function () { btn.textContent = original; btn.classList.remove('is-added'); }, 1600);
   });
 })();
 
 /* ==========================================================================
-   Formularios de login / registro — todavía no hay backend de autenticación
-   real conectado; solo evitamos el envío y mostramos una nota explicativa.
+   Formulários de login / cadastro — ainda não há backend de autenticação
+   real conectado; apenas evitamos o envio e mostramos uma nota explicativa.
    ========================================================================== */
 (function () {
   'use strict';
@@ -146,12 +146,12 @@
 })();
 
 /* ==========================================================================
-   Carrusel de productos con scroll horizontal ("Productos destacados",
-   "Novedades") — las flechas deslizan por tarjetas y se apagan solas al
-   llegar al principio/final. El contenido de cada carrusel se llena por
-   separado (products.js), así que el estado inicial de las flechas se
-   recalcula también en window "load", por si el carrusel todavía estaba
-   vacío cuando este script corrió.
+   Carrossel de produtos com scroll horizontal ("Produtos em destaque",
+   "Novidades") — as setas deslizam pelos cartões e se desativam sozinhas
+   ao chegar no início/fim. O conteúdo de cada carrossel é preenchido à
+   parte (products.js), então o estado inicial das setas também é
+   recalculado no window "load", caso o carrossel ainda estivesse vazio
+   quando este script rodou.
    ========================================================================== */
 (function () {
   'use strict';
@@ -187,7 +187,7 @@
 })();
 
 /* ==========================================================================
-   Stepper de cantidad genérico (usado en producto.html)
+   Stepper de quantidade genérico (usado em producto.html)
    ========================================================================== */
 (function () {
   'use strict';

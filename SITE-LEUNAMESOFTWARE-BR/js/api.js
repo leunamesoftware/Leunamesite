@@ -1,22 +1,25 @@
 /* ==========================================================================
-   LeuName Softwares — Capa de datos con mejora progresiva
+   LeuName Softwares — Camada de dados com melhoria progressiva
    --------------------------------------------------------------------------
-   Todas las páginas renderizan primero con los datos estáticos de
-   js/products.js (rápido y siempre disponible, incluso sin backend).
-   En segundo plano, este script intenta traer el catálogo real desde el
-   Worker de Cloudflare; si responde, actualiza LeuStore.PRODUCTS en el
-   mismo array (para que cualquier referencia ya tomada siga siendo válida)
-   y dispara el evento "products:updated" para quien quiera re-renderizar.
-   Si el backend no responde (aún no desplegado, sin red, etc.) el sitio
-   sigue funcionando normalmente con los datos estáticos: nunca se muestra
-   una página en blanco por falta de backend.
+   Todas as páginas renderizam primeiro com os dados estáticos de
+   js/products.js (rápido e sempre disponível, mesmo sem backend).
+   Em segundo plano, este script tenta buscar o catálogo real no
+   Worker do Cloudflare; se responder, atualiza LeuStore.PRODUCTS no
+   mesmo array (para que qualquer referência já obtida continue válida)
+   e dispara o evento "products:updated" para quem quiser renderizar de novo.
+   Se o backend não responder (ainda não implantado, sem rede, etc.) o site
+   continua funcionando normalmente com os dados estáticos: nunca aparece
+   uma página em branco por falta de backend.
+
+   TODO: este backend ainda é o mesmo servidor/loja do site em espanhol,
+   usado aqui só como placeholder até o backend brasileiro existir.
    ========================================================================== */
 (function (global) {
   'use strict';
 
-  // URL pública del Worker "leuname-loja" (Cloudflare). Se completa una vez
-  // desplegado (ver PROJETO/servidor-loja-cloudflare/). Dejar vacío desactiva
-  // el intento de red y el sitio usa solo los datos estáticos.
+  // URL pública do Worker "leuname-loja" (Cloudflare). É preenchida quando
+  // implantado (ver PROJETO/servidor-loja-cloudflare/). Deixar vazio desativa
+  // a tentativa de rede e o site usa só os dados estáticos.
   var BACKEND_URL = 'https://leuname-loja.emanuelantunes2024.workers.dev';
 
   function mapRemoteProduct(row) {
@@ -32,7 +35,7 @@
       description: row.descripcion || '',
       includes: row.incluye ? JSON.parse(row.incluye) : [],
       features: row.caracteristicas ? JSON.parse(row.caracteristicas) : [],
-      badge: row.real ? 'Producto real' : 'Ejemplo',
+      badge: row.real ? 'Produto real' : 'Exemplo',
       imageUrl: row.imagen_url || null,
       demoUrl: row.demo_url || null,
       tag: row.tag || null
@@ -54,7 +57,7 @@
         document.dispatchEvent(new CustomEvent('products:updated'));
       })
       .catch(function () {
-        // Backend no disponible todavía: seguimos con los datos estáticos.
+        // Backend ainda não disponível: continuamos com os dados estáticos.
         if (timer) clearTimeout(timer);
       });
   }

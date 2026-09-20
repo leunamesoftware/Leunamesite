@@ -1,8 +1,8 @@
 /* ==========================================================================
-   LeuName Softwares — Carrito de compras (100% cliente, localStorage)
-   No hay backend involucrado en el carrito: el estado vive solo en el
-   navegador del visitante. Usado por index/categoria/producto (botón
-   "Añadir al carrito"), por el badge del header y por carrito.html/checkout.html.
+   LeuName Softwares — Carrinho de compras (100% cliente, localStorage)
+   Não há backend envolvido no carrinho: o estado vive só no navegador do
+   visitante. Usado por index/categoria/producto (botão
+   "Adicionar ao carrinho"), pelo badge do cabeçalho e por carrito.html/checkout.html.
    ========================================================================== */
 (function (global) {
   'use strict';
@@ -22,7 +22,7 @@
   function safeSet(items) {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
-    } catch (e) { /* almacenamiento no disponible: seguimos en memoria para esta carga */ }
+    } catch (e) { /* armazenamento não disponível: seguimos em memória para esta carga */ }
   }
 
   var memoryItems = safeGet();
@@ -85,7 +85,7 @@
       if (small) el.appendChild(small);
       else {
         var s = document.createElement('small');
-        s.textContent = 'Carrito';
+        s.textContent = 'Carrinho';
         el.appendChild(s);
       }
       el.appendChild(document.createTextNode(Store ? Store.formatPrice(t.subtotal) : ''));

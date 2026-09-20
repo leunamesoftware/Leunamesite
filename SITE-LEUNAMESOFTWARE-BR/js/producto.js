@@ -1,5 +1,5 @@
 /* ==========================================================================
-   LeuName Softwares — Página de producto (producto.html?id=...)
+   LeuName Softwares — Página de produto (producto.html?id=...)
    ========================================================================== */
 (function () {
   'use strict';
@@ -22,7 +22,7 @@
       var relatedSection = relatedEl ? relatedEl.closest('section') : null;
       if (relatedSection) relatedSection.hidden = true;
       if (notFoundEl) notFoundEl.hidden = false;
-      document.title = 'Producto no encontrado — LeuName Softwares';
+      document.title = 'Produto não encontrado — LeuName Softwares';
       return;
     }
 

@@ -1,7 +1,7 @@
 /* ==========================================================================
-   LeuName Softwares — Listado de categoría (categoria.html?slug=...)
-   Si no hay slug, muestra todos los productos ("Todos los productos").
-   También soporta ?q=... (usado por la barra de búsqueda del header).
+   LeuName Softwares — Listagem de categoria (categoria.html?slug=...)
+   Se não houver slug, mostra todos os produtos ("Todos os produtos").
+   Também suporta ?q=... (usado pela barra de busca do cabeçalho).
    ========================================================================== */
 (function () {
   'use strict';
@@ -14,15 +14,15 @@
     var query = (params.get('q') || '').trim().toLowerCase();
     var cat = slug ? Store.getCategory(slug) : null;
 
-    document.getElementById('catTitle').textContent = cat ? cat.name : 'Todos los productos';
-    document.getElementById('catBreadName').textContent = cat ? cat.name : 'Todos los productos';
+    document.getElementById('catTitle').textContent = cat ? cat.name : 'Todos os produtos';
+    document.getElementById('catBreadName').textContent = cat ? cat.name : 'Todos os produtos';
     document.getElementById('catDesc').textContent = query
-      ? 'Resultados de búsqueda para "' + query + '".'
-      : (cat ? 'Explora todos nuestros productos de ' + cat.name.toLowerCase() + '.' : 'Explora nuestro catálogo completo de productos digitales.');
-    document.title = (cat ? cat.name : 'Todos los productos') + ' — LeuName Softwares';
+      ? 'Resultados da busca por "' + query + '".'
+      : (cat ? 'Explore todos os nossos produtos de ' + cat.name.toLowerCase() + '.' : 'Explore nosso catálogo completo de produtos digitais.');
+    document.title = (cat ? cat.name : 'Todos os produtos') + ' — LeuName Softwares';
 
     var filtersCats = document.getElementById('filtersCats');
-    var links = ['<a href="categoria.html" class="' + (!slug ? 'is-active' : '') + '">Todos los productos</a>'];
+    var links = ['<a href="categoria.html" class="' + (!slug ? 'is-active' : '') + '">Todos os produtos</a>'];
     Store.CATEGORIES.forEach(function (c) {
       links.push('<a href="categoria.html?slug=' + c.slug + '" class="' + (slug === c.slug ? 'is-active' : '') + '">' + c.name + '</a>');
     });
@@ -54,7 +54,7 @@
       else if (sort === 'precio-desc') list = list.slice().sort(function (a, b) { return b.price - a.price; });
       else if (sort === 'mejor-valorados') list = list.slice().sort(function (a, b) { return b.rating - a.rating; });
 
-      resultCount.textContent = list.length + (list.length === 1 ? ' producto encontrado' : ' productos encontrados');
+      resultCount.textContent = list.length + (list.length === 1 ? ' produto encontrado' : ' produtos encontrados');
       Store.mountProductGrid('catGridResults', list);
     }
 

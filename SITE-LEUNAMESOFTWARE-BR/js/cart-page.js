@@ -1,5 +1,5 @@
 /* ==========================================================================
-   LeuName Softwares — Página del carrito (carrito.html)
+   LeuName Softwares — Página do carrinho (carrito.html)
    ========================================================================== */
 (function () {
   'use strict';
@@ -30,22 +30,22 @@
         '<div class="cart-item-info">' +
           '<a class="cart-item-name" href="producto.html?id=' + li.product.id + '">' + li.product.name + '</a>' +
           '<div class="cart-item-cat">' + (cat ? cat.name : '') + '</div>' +
-          '<button class="cart-item-remove" type="button" data-remove="' + li.product.id + '">Eliminar</button>' +
+          '<button class="cart-item-remove" type="button" data-remove="' + li.product.id + '">Remover</button>' +
         '</div>' +
         '<div class="qty-stepper cart-item-qty">' +
-          '<button type="button" data-qty-step="qty-' + li.product.id + '" data-dir="down" aria-label="Restar">−</button>' +
-          '<input id="qty-' + li.product.id + '" type="number" min="1" value="' + li.qty + '" data-cart-qty="' + li.product.id + '" aria-label="Cantidad">' +
-          '<button type="button" data-qty-step="qty-' + li.product.id + '" data-dir="up" aria-label="Sumar">+</button>' +
+          '<button type="button" data-qty-step="qty-' + li.product.id + '" data-dir="down" aria-label="Diminuir">−</button>' +
+          '<input id="qty-' + li.product.id + '" type="number" min="1" value="' + li.qty + '" data-cart-qty="' + li.product.id + '" aria-label="Quantidade">' +
+          '<button type="button" data-qty-step="qty-' + li.product.id + '" data-dir="up" aria-label="Aumentar">+</button>' +
         '</div>' +
-        '<!-- PRECIO DE EJEMPLO: reemplazar por el precio real -->' +
+        '<!-- PREÇO DE EXEMPLO: substituir pelo preço real -->' +
         '<div class="cart-item-price">' + Store.formatPrice(li.lineTotal) + '</div>' +
       '</div>';
     }).join('');
 
     var totals = Cart.totals();
     totalsEl.innerHTML =
-      '<div class="totals-row"><span>Subtotal (' + totals.count + ' ' + (totals.count === 1 ? 'ítem' : 'ítems') + ')</span><span>' + Store.formatPrice(totals.subtotal) + '</span></div>' +
-      '<div class="totals-row"><span>Descuento</span><span>0,00 €</span></div>' +
+      '<div class="totals-row"><span>Subtotal (' + totals.count + ' ' + (totals.count === 1 ? 'item' : 'itens') + ')</span><span>' + Store.formatPrice(totals.subtotal) + '</span></div>' +
+      '<div class="totals-row"><span>Desconto</span><span>R$ 0,00</span></div>' +
       '<div class="totals-row totals-row-total"><span>Total</span><span>' + Store.formatPrice(totals.subtotal) + '</span></div>';
   }
 
