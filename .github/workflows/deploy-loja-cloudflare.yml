@@ -73,3 +73,6 @@ jobs:
         # Se a conta trocar de subdomínio workers.dev no futuro, atualize a
         # URL abaixo (e em SITE-LEUNAMESOFTWARE/js/api.js e admin/admin.js).
         run: curl -sS --fail "https://leuname-loja.emanuelantunes2024.workers.dev/health"
+
+      - name: TEMP - testar endpoint de cupom
+        run: curl -sS --fail "https://leuname-loja.emanuelantunes2024.workers.dev/cupones/verificar?email=teste-sem-cupom-nao-existe@teste.com"
