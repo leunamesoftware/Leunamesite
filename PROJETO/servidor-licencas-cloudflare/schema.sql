@@ -26,3 +26,21 @@ CREATE INDEX IF NOT EXISTS idx_licencas_chave ON licencas(chave);
 -- App inicial: LeuName Gestão
 INSERT OR IGNORE INTO apps (id, nome, criado_em)
 VALUES ('leuname-gestao', 'LeuName Gestão', datetime('now'));
+
+-- Sincronização de dados entre dispositivos que compartilham a mesma
+-- licença (até LICENSE_MAX_DEVICES_DEFAULT aparelhos). Cada registro do
+-- app (produto, cliente, venda, etc.) vira uma linha aqui, identificada
+-- pela chave de licença + nome da "gaveta" local (store) + id do
+-- registro. "last write wins": só sobrescreve se atualizado_em for mais
+-- novo que o que já está salvo.
+CREATE TABLE IF NOT EXISTS sync_registros (
+  chave TEXT NOT NULL,          -- chave de licença (LEU-XXXX-XXXX-XXXX), namespace da sincronização
+  store TEXT NOT NULL,          -- nome da gaveta local (produtos, clientes, vendas, ...)
+  registro_id TEXT NOT NULL,    -- id do registro dentro da gaveta
+  payload TEXT,                 -- JSON do registro (nulo quando deletado=1)
+  atualizado_em INTEGER NOT NULL, -- epoch ms de quando essa versão foi salva no dispositivo de origem
+  deletado INTEGER NOT NULL DEFAULT 0,
+  PRIMARY KEY (chave, store, registro_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_sync_chave_atualizado ON sync_registros(chave, atualizado_em);

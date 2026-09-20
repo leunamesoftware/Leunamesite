@@ -33,6 +33,20 @@ async function gerarChave() {
   return `LEU-${g1}-${g2}-${g3}`;
 }
 
+// Confere se uma chave tem o formato certo e o checksum bate — mesma
+// validacao que o app faz localmente (licenseKeyValid no index.html).
+// Usado para autenticar as rotas de sincronizacao: qualquer dispositivo
+// com uma chave valida pode ler/escrever os dados daquela chave, sem
+// precisar de login/senha separados (a chave de licenca já é o "id da
+// loja" compartilhado entre os aparelhos dela).
+async function chaveValida(chave) {
+  if (typeof chave !== 'string') return false;
+  const m = /^LEU-([0-9A-Z]{4})-([0-9A-Z]{4})-([0-9A-Z]{4})$/.exec(chave.trim().toUpperCase());
+  if (!m) return false;
+  const esperado = await licenseChecksum(m[1], m[2]);
+  return esperado === m[3];
+}
+
 // Páginas públicas de política de privacidade, por app — usadas como URL
 // oficial exigida pela Google Play Console (e por lojas de terceiros).
 // Para lançar um app novo, basta adicionar uma entrada aqui.
@@ -144,6 +158,67 @@ export default {
       headers.set('Content-Disposition', `attachment; filename="${fileName}"`);
       headers.set('Cache-Control', 'no-cache');
       return new Response(obj.body, { headers });
+    }
+
+    // POST /sync/push — um dispositivo manda as alteracoes locais (desde a
+    // ultima sincronizacao) pra guardar na nuvem. Autenticado pela propria
+    // chave de licenca (nao precisa login/senha: quem tem a chave valida
+    // do cliente pode ler/escrever os dados daquela loja).
+    // Body: { chave, alteracoes: [{ store, id, payload, atualizado_em, deletado }] }
+    if (pathname === '/sync/push' && request.method === 'POST') {
+      const body = await request.json().catch(() => null);
+      if (!body || !body.chave) return json({ ok: false, erro: 'chave_obrigatoria' }, 400);
+      if (!(await chaveValida(body.chave))) return json({ ok: false, erro: 'chave_invalida' }, 401);
+      const chave = body.chave.trim().toUpperCase();
+      const alteracoes = Array.isArray(body.alteracoes) ? body.alteracoes.slice(0, 500) : [];
+      if (alteracoes.length === 0) return json({ ok: true, salvos: 0 });
+
+      const stmt = env.DB.prepare(
+        `INSERT INTO sync_registros (chave, store, registro_id, payload, atualizado_em, deletado)
+         VALUES (?, ?, ?, ?, ?, ?)
+         ON CONFLICT(chave, store, registro_id) DO UPDATE SET
+           payload = excluded.payload,
+           atualizado_em = excluded.atualizado_em,
+           deletado = excluded.deletado
+         WHERE excluded.atualizado_em > sync_registros.atualizado_em`
+      );
+      const batch = alteracoes
+        .filter((a) => a && a.store && a.id && Number.isFinite(a.atualizado_em))
+        .map((a) => stmt.bind(
+          chave,
+          String(a.store),
+          String(a.id),
+          a.deletado ? null : JSON.stringify(a.payload ?? null),
+          a.atualizado_em,
+          a.deletado ? 1 : 0,
+        ));
+      if (batch.length) await env.DB.batch(batch);
+      return json({ ok: true, salvos: batch.length });
+    }
+
+    // GET /sync/pull?chave=...&desde=<epoch_ms> — devolve tudo que mudou
+    // (de qualquer dispositivo) depois de "desde". O dispositivo aplica
+    // essas mudancas no banco local e guarda o maior atualizado_em
+    // recebido como novo cursor pra proxima chamada.
+    if (pathname === '/sync/pull' && request.method === 'GET') {
+      const chave = (url.searchParams.get('chave') || '').trim().toUpperCase();
+      const desde = Number(url.searchParams.get('desde') || '0') || 0;
+      if (!(await chaveValida(chave))) return json({ ok: false, erro: 'chave_invalida' }, 401);
+
+      const { results } = await env.DB.prepare(
+        `SELECT store, registro_id, payload, atualizado_em, deletado
+         FROM sync_registros WHERE chave = ? AND atualizado_em > ?
+         ORDER BY atualizado_em ASC LIMIT 5000`
+      ).bind(chave, desde).all();
+
+      const alteracoes = results.map((r) => ({
+        store: r.store,
+        id: r.registro_id,
+        payload: r.deletado ? null : JSON.parse(r.payload),
+        atualizado_em: r.atualizado_em,
+        deletado: !!r.deletado,
+      }));
+      return json({ ok: true, alteracoes });
     }
 
     // GET /privacidade?app=leuname-gestao — página pública de política de
