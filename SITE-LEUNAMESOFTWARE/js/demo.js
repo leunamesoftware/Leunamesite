@@ -1,20 +1,29 @@
 /* ==========================================================================
    LeuName Softwares — Página de demo de producto (demo.html?id=...)
    --------------------------------------------------------------------------
-   Página única en una sola columna, pensada para "enganchar" al cliente y
-   llevarlo a comprar sin fricción: bienvenida, descripción real del
-   producto, captura de pantalla real, beneficios, video (solo si existe
-   uno real, sin placeholder "en camino"), señales de confianza y un
-   llamado a comprar que va DIRECTO al checkout. Una barra fija abajo (solo
-   en mobile) mantiene el precio y el botón de compra siempre a mano
-   mientras el cliente se desplaza por la página.
+   Página de ventas dedicada, pensada para enganchar al cliente sin hacerlo
+   scrollear demasiado: mascota + saludo, funcionalidades en tarjetas de
+   color, una captura/video destacado con checklist, y un cierre con precio
+   y botón de compra que va DIRECTO al checkout (sin pasar por la página
+   del producto). Es la MISMA página para todos los productos — solo
+   cambia el contenido según el id de la URL.
 
-   Es la MISMA página para todos los productos: solo cambia el contenido
-   según el id en la URL (?id=...) — nunca hay que crear una página nueva
-   por producto.
+   Nada se inventa: el video real solo aparece cuando el producto tiene
+   product.demoVideoUrl cargado; mientras tanto se muestra la captura de
+   pantalla real del producto (product.imageUrl), sin un botón de play
+   falso encima.
    ========================================================================== */
 (function () {
   'use strict';
+
+  var COLORS = ['ic-green', 'ic-blue', 'ic-amber', 'ic-purple', 'ic-pink'];
+  var FEATURE_ICONS = [
+    '<path d="M2.5 3h2.2l2.4 12.2a2 2 0 0 0 2 1.6h8.2a2 2 0 0 0 2-1.6L21 7H6"/>', // carrito (ventas)
+    '<rect x="3" y="7" width="18" height="13" rx="2"/><path d="M3 11h18M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>', // caja (productos/stock)
+    '<ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v6c0 1.7 3.6 3 8 3s8-1.3 8-3V5M4 11v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/>', // base de datos (stock)
+    '<circle cx="9" cy="8" r="3.2"/><path d="M2.5 19c1-3.2 3.5-5 6.5-5s5.5 1.8 6.5 5"/><circle cx="17" cy="8.5" r="2.6"/><path d="M15.5 13.2c2.3.3 4 1.9 4.8 4.8"/>', // clientes
+    '<path d="M6 3h9l4 4v14H6Z"/><path d="M15 3v4h4M9 12h6M9 16h6M9 8h2"/>' // informes
+  ];
 
   function render() {
     var Store = window.LeuStore;
@@ -44,44 +53,64 @@
     }
     document.title = 'Demo de ' + product.name + ' — LeuName Softwares';
 
-    var aboutHTML = product.description && product.description !== product.short
-      ? '<p class="demo-about">' + product.description + '</p>'
-      : '';
+    var features = product.features || [];
 
-    var screenshotHTML = product.imageUrl
-      ? '<div class="demo-screenshot">' +
-          '<div class="demo-screenshot-bar"><span></span><span></span><span></span></div>' +
-          '<img src="' + product.imageUrl + '" alt="Interfaz de ' + product.name + '">' +
-        '</div>'
-      : '';
-
-    var benefitsHTML = (product.features || []).map(function (f) {
-      return '<div class="demo-benefit">' +
-        '<span class="demo-benefit-ic"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4"><path d="m5 13 4 4 10-10"/></svg></span>' +
-        '<p>' + f + '</p>' +
+    var featureCardsHTML = features.slice(0, 5).map(function (f, i) {
+      return '<div class="demo-feature-card">' +
+        '<span class="demo-feature-ic ' + COLORS[i % COLORS.length] + '"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">' + FEATURE_ICONS[i % FEATURE_ICONS.length] + '</svg></span>' +
+        '<h3>' + f + '</h3>' +
       '</div>';
     }).join('');
 
-    // Solo se muestra si el producto tiene un video real cargado
-    // (product.demoVideoUrl) — sin recuadro de "video en camino".
-    var videoHTML = product.demoVideoUrl
-      ? '<section class="demo-section"><h2>Mira cómo funciona</h2><video class="demo-video" controls src="' + product.demoVideoUrl + '"></video></section>'
-      : '';
+    var checklistHTML = features.slice(0, 4).map(function (f) {
+      return '<li><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.6"><path d="m5 13 4 4 10-10"/></svg>' + f + '</li>';
+    }).join('');
+
+    // El video real solo aparece si el producto lo tiene cargado
+    // (product.demoVideoUrl); si no, se muestra la captura real del
+    // producto, sin ningún botón de play falso encima.
+    var mediaHTML = product.demoVideoUrl
+      ? '<video controls src="' + product.demoVideoUrl + '"></video>'
+      : (product.imageUrl ? '<img src="' + product.imageUrl + '" alt="Interfaz de ' + product.name + '">' : '');
 
     contentEl.innerHTML =
-      '<section class="demo-welcome">' +
-        '<span class="demo-welcome-badge"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 10h.01M12 10h.01M16 10h.01M21 12a9 9 0 1 1-4.2-7.6L21 3l-1.2 4.2A8.96 8.96 0 0 1 21 12Z"/></svg></span>' +
-        '<h1>¡Hola! Bienvenido a la demo de ' + product.name + '</h1>' +
-        '<p>' + product.short + '</p>' +
-        aboutHTML +
+      '<section class="demo-hero">' +
+        '<div class="demo-hero-mascot"><img src="assets/img/demo/mascote.png" alt=""></div>' +
+        '<div class="demo-hero-bubble">' +
+          '<h1>¡Hola! Sé muy bienvenido a <span>' + product.name + '</span></h1>' +
+          '<p>' + product.short + '</p>' +
+          '<span class="demo-script">¡Mira una demostración y descubre cómo funciona!</span>' +
+        '</div>' +
       '</section>' +
-      screenshotHTML +
-      (benefitsHTML ? '<section class="demo-section"><h2>Qué vas a encontrar</h2><div class="demo-benefits">' + benefitsHTML + '</div></section>' : '') +
-      videoHTML +
+
+      (featureCardsHTML ?
+        '<section class="demo-section">' +
+          '<h2>Funcionalidades principales</h2>' +
+          '<p class="demo-section-lead">Todo lo que necesitas en un solo sistema.</p>' +
+          '<div class="demo-features-grid">' + featureCardsHTML + '</div>' +
+        '</section>'
+        : '') +
+
+      (mediaHTML ?
+        '<section class="demo-showcase">' +
+          '<div class="demo-showcase-media">' + mediaHTML + '</div>' +
+          '<div class="demo-showcase-copy">' +
+            '<h2>Mira ' + product.name + ' en acción</h2>' +
+            '<p>En pocos minutos entiendes cómo el sistema puede transformar tu rutina.</p>' +
+            (checklistHTML ? '<ul class="demo-showcase-list">' + checklistHTML + '</ul>' : '') +
+            '<div class="demo-showcase-rocket"><img src="assets/img/demo/foguete.png" alt="">' +
+              '<span class="demo-script">¡Tu negocio al próximo nivel!</span>' +
+            '</div>' +
+          '</div>' +
+        '</section>'
+        : '') +
+
       '<div class="demo-trust-row">' +
         '<div class="trust-item"><span class="trust-ic"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3 4.5 6v6c0 4.5 3.2 7.9 7.5 9 4.3-1.1 7.5-4.5 7.5-9V6L12 3Z"/></svg></span><div><h4>Compra segura</h4></div></div>' +
-        '<div class="trust-item"><span class="trust-ic"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8Z"/></svg></span><div><h4>Entrega digital inmediata</h4></div></div>' +
+        '<div class="trust-item"><span class="trust-ic"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8Z"/></svg></span><div><h4>Acceso inmediato</h4></div></div>' +
+        '<div class="trust-item"><span class="trust-ic"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 13a8 8 0 0 1 16 0"/><rect x="3" y="13" width="4" height="6" rx="1.5"/><rect x="17" y="13" width="4" height="6" rx="1.5"/><path d="M20 19v1a3 3 0 0 1-3 3h-3"/></svg></span><div><h4>Soporte especializado</h4></div></div>' +
       '</div>' +
+
       '<section class="demo-cta">' +
         '<h2>¿Listo para empezar?</h2>' +
         '<p class="demo-cta-price">' + Store.formatPrice(product.price) + '</p>' +
@@ -107,14 +136,14 @@
       var stickyBuy = document.getElementById('demoStickyBuyBtn');
       if (stickyBuy) stickyBuy.addEventListener('click', irAComprar);
 
-      var welcomeEl = contentEl.querySelector('.demo-welcome');
-      if (welcomeEl && 'IntersectionObserver' in window) {
+      var heroEl = contentEl.querySelector('.demo-hero');
+      if (heroEl && 'IntersectionObserver' in window) {
         var observer = new IntersectionObserver(function (entries) {
           entries.forEach(function (entry) {
             stickyEl.classList.toggle('is-visible', !entry.isIntersecting);
           });
         }, { threshold: 0 });
-        observer.observe(welcomeEl);
+        observer.observe(heroEl);
       }
     }
   }
