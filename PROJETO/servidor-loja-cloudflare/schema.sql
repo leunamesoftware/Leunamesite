@@ -67,6 +67,20 @@ CREATE TABLE IF NOT EXISTS cupones (
 );
 CREATE INDEX IF NOT EXISTS idx_cupones_email_usado ON cupones(cliente_email, usado);
 
+-- Una fila por cada licencia generada para un pedido. Un pedido puede
+-- tener varias: productos distintos con licencia propia, o mas de una
+-- unidad del mismo producto (cada unidad = una licencia separada).
+CREATE TABLE IF NOT EXISTS pedido_licencas (
+  id TEXT PRIMARY KEY,
+  pedido_id TEXT NOT NULL,
+  producto_id TEXT NOT NULL,
+  nombre_producto TEXT NOT NULL,
+  chave_licencia TEXT NOT NULL,
+  creado_em TEXT NOT NULL,
+  FOREIGN KEY (pedido_id) REFERENCES pedidos(id)
+);
+CREATE INDEX IF NOT EXISTS idx_pedido_licencas_pedido ON pedido_licencas(pedido_id);
+
 -- Registro de eventos de webhook de Stripe ya procesados, para evitar
 -- procesar el mismo evento dos veces si Stripe reintenta la entrega.
 CREATE TABLE IF NOT EXISTS webhook_eventos (

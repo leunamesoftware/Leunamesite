@@ -9,6 +9,15 @@
 // simples + rotas /admin/* protegidas por "Authorization: Bearer
 // <ADMIN_TOKEN>" (o MESMO segredo ADMIN_TOKEN do outro Worker).
 
+// Produtos do catalogo que tem sistema de licenca de verdade, mapeados
+// pro app_id correspondente no servidor de licencas. Cada UNIDADE
+// comprada gera uma licenca propria e separada (se o cliente comprar
+// 2 do mesmo produto, ou produtos diferentes com licenca, cada um
+// recebe seu proprio codigo -- nunca uma licenca unica compartilhada).
+const PRODUTOS_COM_LICENCA = {
+  'leuname-gestao': 'leuname-gestao',
+};
+
 function json(data, status = 200) {
   return new Response(JSON.stringify(data, null, 2), {
     status,
@@ -299,6 +308,12 @@ export default {
       const { results: items } = await env.DB.prepare(
         'SELECT producto_id, nombre_producto, cantidad FROM pedido_items WHERE pedido_id = ?'
       ).bind(pedido.id).all();
+      // Una fila por cada licencia generada para este pedido (puede ser
+      // mas de una: productos distintos con licencia, o mas de una unidad
+      // del mismo producto).
+      const { results: licencas } = await env.DB.prepare(
+        'SELECT producto_id, nombre_producto, chave_licencia FROM pedido_licencas WHERE pedido_id = ? ORDER BY creado_em'
+      ).bind(pedido.id).all();
       // Cupon de regalo ganado con ESTA compra (para la proxima) — solo
       // existe despues de que el webhook procese el pago.
       const cuponGanado = await env.DB.prepare(
@@ -312,6 +327,7 @@ export default {
           total: pedido.total,
           email: pedido.cliente_email,
           chave_licencia: pedido.chave_licencia || null,
+          licencas,
           cupon_usado: pedido.cupon_usado_codigo ? { codigo: pedido.cupon_usado_codigo, descuento: pedido.cupon_usado_descuento } : null,
           cupon_ganado: cuponGanado || null,
         },
@@ -378,33 +394,49 @@ export default {
           }
 
           const { results: items } = await env.DB.prepare(
-            'SELECT producto_id FROM pedido_items WHERE pedido_id = ?'
+            'SELECT producto_id, nombre_producto, cantidad FROM pedido_items WHERE pedido_id = ?'
           ).bind(pedidoId).all();
-          const tieneGestao = items.some((i) => i.producto_id === 'leuname-gestao');
 
-          if (tieneGestao && env.ADMIN_TOKEN) {
-            try {
-              const pedido = await env.DB.prepare(
-                'SELECT cliente_nombre, cliente_email FROM pedidos WHERE id = ?'
-              ).bind(pedidoId).first();
-              const res = await fetch('https://api.leunamesoftware.com/admin/licencas/gerar', {
-                method: 'POST',
-                headers: { 'Authorization': `Bearer ${env.ADMIN_TOKEN}`, 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                  app_id: 'leuname-gestao',
-                  cliente_nome: pedido.cliente_nombre,
-                  cliente_contato: pedido.cliente_email,
-                  origem: 'loja-stripe',
-                }),
-              });
-              const data = await res.json();
-              if (data && data.ok && data.chave) {
-                await env.DB.prepare('UPDATE pedidos SET chave_licencia = ? WHERE id = ?').bind(data.chave, pedidoId).run();
+          // Genera UNA licencia por cada unidad de cada producto que tenga
+          // sistema de licencia (PRODUTOS_COM_LICENCA) -- si el pedido
+          // tiene 2 productos con licencia, o 2 unidades del mismo, salen
+          // 2 codigos distintos, cada uno guardado en pedido_licencas.
+          if (env.ADMIN_TOKEN) {
+            const pedido = await env.DB.prepare(
+              'SELECT cliente_nombre, cliente_email FROM pedidos WHERE id = ?'
+            ).bind(pedidoId).first();
+
+            for (const item of items) {
+              const appId = PRODUTOS_COM_LICENCA[item.producto_id];
+              if (!appId) continue;
+              for (let unidad = 0; unidad < item.cantidad; unidad++) {
+                try {
+                  const res = await fetch('https://api.leunamesoftware.com/admin/licencas/gerar', {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${env.ADMIN_TOKEN}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                      app_id: appId,
+                      cliente_nome: pedido.cliente_nombre,
+                      cliente_contato: pedido.cliente_email,
+                      origem: 'loja-stripe',
+                    }),
+                  });
+                  const data = await res.json();
+                  if (data && data.ok && data.chave) {
+                    await env.DB.prepare(
+                      `INSERT INTO pedido_licencas (id, pedido_id, producto_id, nombre_producto, chave_licencia, creado_em)
+                       VALUES (?, ?, ?, ?, ?, datetime('now'))`
+                    ).bind(crypto.randomUUID(), pedidoId, item.producto_id, item.nombre_producto, data.chave).run();
+                    // Mantiene compatibilidad con pedidos.chave_licencia
+                    // (uso historico): guarda ahi la primera licencia generada.
+                    await env.DB.prepare('UPDATE pedidos SET chave_licencia = COALESCE(chave_licencia, ?) WHERE id = ?').bind(data.chave, pedidoId).run();
+                  }
+                } catch (e) {
+                  // No bloquea el webhook: el pedido ya quedo 'pagado' en la base.
+                  // Si esto falla, la licencia se puede generar manualmente
+                  // despues desde el panel del servidor de licencias.
+                }
               }
-            } catch (e) {
-              // No bloquea el webhook: el pedido ya quedo 'pagado' en la base.
-              // Si esto falla, la licencia se puede generar manualmente
-              // despues desde el panel del servidor de licencias.
             }
           }
         }
