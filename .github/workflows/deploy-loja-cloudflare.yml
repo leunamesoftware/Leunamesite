@@ -73,3 +73,20 @@ jobs:
         # Se a conta trocar de subdomínio workers.dev no futuro, atualize a
         # URL abaixo (e em SITE-LEUNAMESOFTWARE/js/api.js e admin/admin.js).
         run: curl -sS --fail "https://leuname-loja.emanuelantunes2024.workers.dev/health"
+
+      # ---- VERIFICACAO TEMPORARIA (remover apos checar) ----
+      - name: VERIFICAR — STRIPE_WEBHOOK_SECRET esta configurado?
+        # Sem o segredo (vazio), /webhook/stripe responde 503. Com o
+        # segredo configurado, ele tenta validar a assinatura (que aqui e
+        # falsa de propósito) e responde 400 — ou seja, 400 = segredo OK.
+        run: |
+          codigo=$(curl -sS -o /dev/null -w '%{http_code}' -X POST "https://leuname-loja.emanuelantunes2024.workers.dev/webhook/stripe" -H "Stripe-Signature: t=1,v1=fake" -d '{}')
+          echo "codigo recebido: $codigo"
+          if [ "$codigo" = "400" ]; then echo "RESULTADO: STRIPE_WEBHOOK_SECRET configurado (OK)"; fi
+          if [ "$codigo" = "503" ]; then echo "RESULTADO: STRIPE_WEBHOOK_SECRET ainda NAO configurado"; fi
+
+      - name: VERIFICAR — dominio www.leunamesoftware.com esta ligado?
+        run: |
+          codigo=$(curl -sS -o /dev/null -w '%{http_code}' --max-time 10 "https://www.leunamesoftware.com/index.html" || echo "000")
+          echo "codigo recebido: $codigo"
+          if [ "$codigo" = "200" ]; then echo "RESULTADO: dominio ja ligado e servindo o site (OK)"; else echo "RESULTADO: dominio ainda NAO ligado (codigo $codigo)"; fi
