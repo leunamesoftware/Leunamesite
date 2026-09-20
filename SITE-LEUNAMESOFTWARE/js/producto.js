@@ -45,7 +45,9 @@
           '<span class="rating-num">' + product.rating.toFixed(1) + '</span>' +
           '<span class="rating-count">(' + product.reviews + ' valoraciones)</span>' +
         '</div>' +
-        '<p class="short-desc">' + product.short + '</p>' +
+        '<p class="short-desc">' + product.short +
+          (product.demoUrl ? ' Haz clic en «Ver demo» (el botón naranja) y mira una vista previa de cómo funciona.' : '') +
+        '</p>' +
         '<!-- PRECIO DE EJEMPLO: reemplazar por el precio real -->' +
         '<div class="price-row"><span class="price-big">' + Store.formatPrice(product.price) + '</span>' + (product.real ? '' : '<span class="price-badge">Precio de ejemplo</span>') + '</div>' +
         '<div class="product-actions">' +
