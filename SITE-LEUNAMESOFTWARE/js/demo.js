@@ -1,10 +1,10 @@
 /* ==========================================================================
    LeuName Softwares — Página de demo de producto (demo.html?id=...)
    --------------------------------------------------------------------------
-   Muestra una demostración del producto: por ahora solo un espacio
-   reservado para el video (todavía no existe un video real grabado), sin
-   simular ninguna reproducción falsa. Cuando el producto tenga un
-   product.demoVideoUrl real, esta página lo mostrará automáticamente.
+   Página única en una sola columna: bienvenida, captura de pantalla real
+   del producto, características, video (solo si existe uno real) y un
+   llamado a comprar al final. Sin fondos oscuros ni recuadros de video
+   vacíos "en camino" — si no hay video todavía, esa sección no aparece.
    ========================================================================== */
 (function () {
   'use strict';
@@ -18,9 +18,9 @@
     var breadcrumbEl = document.getElementById('demoBreadcrumb');
     var coverEl = document.getElementById('demoCover');
     if (!contentEl) return;
+    if (coverEl) coverEl.innerHTML = '';
 
     if (!product) {
-      if (coverEl) coverEl.innerHTML = '';
       contentEl.innerHTML =
         '<div class="confirm-card">' +
           '<h1>Demo no encontrada</h1>' +
@@ -35,48 +35,34 @@
     }
     document.title = 'Demo de ' + product.name + ' — LeuName Softwares';
 
-    // Capa a todo el ancho: solo aparece cuando el producto tiene una
-    // imagen real subida (product.imageUrl); si no, no se inventa nada.
-    if (coverEl) {
-      coverEl.innerHTML = product.imageUrl
-        ? '<div class="demo-cover" style="background-image:url(\'' + product.imageUrl + '\')">' +
-            '<div class="demo-cover-overlay"><div class="container">' +
-              '<h1>' + product.name + '</h1>' +
-              '<p>' + product.short + '</p>' +
-            '</div></div>' +
-          '</div>'
-        : '';
-    }
-
     var featuresHTML = (product.features || []).map(function (f) {
       return '<li><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4"><path d="m5 13 4 4 10-10"/></svg>' + f + '</li>';
     }).join('');
 
-    var videoBlock = product.demoVideoUrl
-      ? '<video class="demo-video" controls src="' + product.demoVideoUrl + '"></video>'
-      : '<div class="demo-video-placeholder">' +
-          '<svg viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="5" width="14" height="14" rx="2"/><path d="m21 8-4 3 4 3V8Z"/></svg>' +
-          '<p>Video de demostración en camino</p>' +
-          '<small>Muy pronto vas a poder ver el producto en acción aquí.</small>' +
-        '</div>';
+    var screenshotHTML = product.imageUrl
+      ? '<div class="demo-screenshot"><img src="' + product.imageUrl + '" alt="Interfaz de ' + product.name + '"></div>'
+      : '';
 
-    var tituloHTML = product.imageUrl
-      ? ''
-      : '<h1>Demo: ' + product.name + '</h1><p class="short-desc">' + product.short + '</p>';
+    // Solo se muestra si el producto tiene un video real cargado
+    // (product.demoVideoUrl) — sin recuadro de "video en camino".
+    var videoHTML = product.demoVideoUrl
+      ? '<section class="demo-section"><h2>Mira cómo funciona</h2><video class="demo-video" controls src="' + product.demoVideoUrl + '"></video></section>'
+      : '';
 
     contentEl.innerHTML =
-      '<div class="demo-layout">' +
-        '<div>' +
-          tituloHTML +
-          videoBlock +
-          (featuresHTML ? '<div class="product-block" style="margin-top:28px;"><h2>Qué vas a ver en esta demo</h2><ul class="feature-list">' + featuresHTML + '</ul></div>' : '') +
-        '</div>' +
-        '<aside class="cart-summary">' +
-          '<h2>' + Store.formatPrice(product.price) + '</h2>' +
-          '<p style="color:var(--ink-600);font-size:13.5px;margin-top:6px;">¿Te gustó lo que viste?</p>' +
-          '<a href="producto.html?id=' + product.id + '" class="btn btn-primary btn-block" style="margin-top:14px;">Ver página del producto</a>' +
-        '</aside>' +
-      '</div>';
+      '<section class="demo-welcome">' +
+        '<span class="demo-welcome-badge"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 10h.01M12 10h.01M16 10h.01M21 12a9 9 0 1 1-4.2-7.6L21 3l-1.2 4.2A8.96 8.96 0 0 1 21 12Z"/></svg></span>' +
+        '<h1>¡Hola! Bienvenido a la demo de ' + product.name + '</h1>' +
+        '<p>' + product.short + '</p>' +
+      '</section>' +
+      screenshotHTML +
+      (featuresHTML ? '<section class="demo-section"><h2>Qué vas a encontrar</h2><ul class="feature-list">' + featuresHTML + '</ul></section>' : '') +
+      videoHTML +
+      '<section class="demo-cta">' +
+        '<h2>¿Listo para empezar?</h2>' +
+        '<p class="demo-cta-price">' + Store.formatPrice(product.price) + '</p>' +
+        '<a href="producto.html?id=' + product.id + '" class="btn btn-primary btn-block">Comprar ahora</a>' +
+      '</section>';
   }
 
   document.addEventListener('DOMContentLoaded', render);
