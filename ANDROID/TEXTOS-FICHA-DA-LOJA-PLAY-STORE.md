@@ -12,7 +12,7 @@ LeuName Gestão
 ## Descrição curta
 (máx. 80 caracteres)
 ```
-Gestão completa de vendas, estoque, OS e financeiro. 100% offline.
+Gestão para lojas de celulares e assistência técnica. 100% offline.
 ```
 
 ## Descrição completa
