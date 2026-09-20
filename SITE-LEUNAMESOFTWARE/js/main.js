@@ -2,30 +2,30 @@
   'use strict';
 
   var menuToggle = document.getElementById('menuToggle');
-  var mainNav = document.getElementById('mainNav');
+  var categoryNav = document.getElementById('categoryNav');
   var navOverlay = document.getElementById('navOverlay');
 
   function closeMenu() {
-    mainNav.classList.remove('is-open');
+    categoryNav.classList.remove('is-open');
     navOverlay.classList.remove('is-open');
     menuToggle.setAttribute('aria-expanded', 'false');
     document.body.style.overflow = '';
   }
 
   function openMenu() {
-    mainNav.classList.add('is-open');
+    categoryNav.classList.add('is-open');
     navOverlay.classList.add('is-open');
     menuToggle.setAttribute('aria-expanded', 'true');
     document.body.style.overflow = 'hidden';
   }
 
-  if (menuToggle && mainNav && navOverlay) {
+  if (menuToggle && categoryNav && navOverlay) {
     menuToggle.addEventListener('click', function () {
-      var isOpen = mainNav.classList.contains('is-open');
+      var isOpen = categoryNav.classList.contains('is-open');
       if (isOpen) closeMenu(); else openMenu();
     });
     navOverlay.addEventListener('click', closeMenu);
-    mainNav.querySelectorAll('.nav-link').forEach(function (link) {
+    categoryNav.querySelectorAll('a').forEach(function (link) {
       link.addEventListener('click', closeMenu);
     });
     window.addEventListener('resize', function () {
