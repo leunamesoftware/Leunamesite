@@ -36,8 +36,8 @@ jobs:
       - name: Esperar o Worker propagar
         run: sleep 15
 
-      - name: Testar o site no ar (workers.dev)
-        # URL confirmada apos o primeiro deploy (ver log do passo acima).
-        # Se a conta trocar de subdominio workers.dev no futuro, atualize
-        # aqui e nas referencias a SITE_URL do servidor da loja.
-        run: curl -sS --fail "https://leuname-site.emanuelantunes2024.workers.dev/index.html" > /dev/null
+      - name: Testar o site no ar (dominio proprio)
+        # Desde que leunamesoftware.com foi ligado como dominio customizado,
+        # a Cloudflare desativa por padrao o endereco antigo workers.dev
+        # (por isso o teste mudou pra cima do dominio real).
+        run: curl -sS --fail "https://leunamesoftware.com/index.html" > /dev/null
