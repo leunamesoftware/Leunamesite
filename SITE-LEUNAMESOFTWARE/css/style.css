@@ -647,6 +647,15 @@ h1,h2,h3,h4{ font-family:var(--font-head); margin:0; }
 .confirm-card p{ color:var(--ink-600); margin-top:8px; font-size:14.5px; }
 .confirm-order{ background:var(--gray-50); border-radius:12px; padding:16px; margin-top:22px; text-align:left; font-size:13.5px; }
 .confirm-order div{ display:flex; justify-content:space-between; padding-block:5px; }
+.confirm-license{ margin-top:14px; padding:16px; border-radius:var(--radius-m); background:var(--blue-50); text-align:left; }
+.confirm-license p{ margin:0 0 8px; font-weight:600; color:var(--ink-900); font-size:14px; }
+.confirm-license-row{ display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+.confirm-license-row code{ font-family:monospace; font-size:14px; background:var(--white); padding:8px 12px; border-radius:8px; flex:1 1 auto; word-break:break-all; }
+.confirm-license-hint{ margin:10px 0 0 !important; font-size:12.5px !important; font-weight:400 !important; color:var(--ink-600) !important; }
+.confirm-coupon{ margin-top:18px; padding:16px; border-radius:var(--radius-m); background:linear-gradient(120deg,var(--navy-900),var(--blue-600)); color:var(--white); text-align:left; }
+.confirm-coupon p:first-child{ margin:0 0 6px; font-weight:700; }
+.confirm-coupon p:last-child{ margin:0; font-size:14px; color:rgba(255,255,255,.9); }
+.confirm-coupon code{ font-family:monospace; background:rgba(255,255,255,.16); padding:2px 8px; border-radius:6px; }
 .confirm-actions{ display:flex; flex-wrap:wrap; gap:12px; justify-content:center; margin-top:26px; }
 
 /* ==========================================================================

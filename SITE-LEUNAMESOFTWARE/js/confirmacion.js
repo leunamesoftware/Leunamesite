@@ -20,9 +20,7 @@
     var textEl = document.getElementById('confirmText');
     var iconEl = document.getElementById('confirmIcon');
     var orderEl = document.getElementById('confirmOrder');
-    var licenseBox = document.getElementById('confirmLicense');
-    var licenseText = document.getElementById('licenseKeyText');
-    var copyBtn = document.getElementById('copyLicenseBtn');
+    var licensesEl = document.getElementById('confirmLicenses');
     var actionsEl = document.getElementById('confirmActions');
     var couponBox = document.getElementById('confirmCoupon');
     var couponCodeText = document.getElementById('couponCodeText');
@@ -96,17 +94,30 @@
         orderEl.hidden = false;
       }
 
-      if (pedido.chave_licencia && licenseBox && licenseText) {
-        licenseText.textContent = pedido.chave_licencia;
-        licenseBox.hidden = false;
-        if (copyBtn) {
+      // Una licencia separada por cada producto/unidad con licencia en
+      // este pedido -- nunca un solo código compartido entre varios.
+      var licencias = pedido.licencias || [];
+      if (licencias.length && licensesEl) {
+        licencias.forEach(function (lic, idx) {
+          var box = document.createElement('div');
+          box.className = 'confirm-license';
+          box.innerHTML =
+            '<p>Tu clave de licencia de ' + lic.nombre_producto + (licencias.length > 1 ? ' <small style="font-weight:400;color:var(--ink-400);">(' + (idx + 1) + '/' + licencias.length + ')</small>' : '') + '</p>' +
+            '<div class="confirm-license-row">' +
+              '<code></code>' +
+              '<button type="button" class="btn btn-outline">Copiar</button>' +
+            '</div>' +
+            '<p class="confirm-license-hint">Guarda esta clave: la necesitarás para activar la app en tus dispositivos.</p>';
+          box.querySelector('code').textContent = lic.chave_licencia;
+          var copyBtn = box.querySelector('button');
           copyBtn.addEventListener('click', function () {
-            navigator.clipboard.writeText(pedido.chave_licencia).then(function () {
+            navigator.clipboard.writeText(lic.chave_licencia).then(function () {
               copyBtn.textContent = '¡Copiado!';
               setTimeout(function () { copyBtn.textContent = 'Copiar'; }, 2000);
             });
           });
-        }
+          licensesEl.appendChild(box);
+        });
       }
 
       if (pedido.cupon_ganado && couponBox && couponCodeText && couponPercentText) {

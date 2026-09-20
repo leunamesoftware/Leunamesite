@@ -119,17 +119,10 @@
     <h1 id="confirmTitle">Confirmando tu pago…</h1>
     <p id="confirmText">Esto solo toma unos segundos. No cierres esta página.</p>
     <div class="confirm-order" id="confirmOrder" hidden></div>
-    <div class="confirm-license" id="confirmLicense" hidden style="margin-top:18px;padding:16px;border-radius:var(--radius-m);background:var(--blue-50);text-align:left;">
-      <p style="margin:0 0 8px;font-weight:600;">Tu clave de licencia de LeuName Gestão</p>
-      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
-        <code id="licenseKeyText" style="font-family:monospace;font-size:14px;background:var(--white);padding:8px 12px;border-radius:8px;flex:1 1 auto;word-break:break-all;"></code>
-        <button type="button" class="btn btn-outline" id="copyLicenseBtn">Copiar</button>
-      </div>
-      <p style="margin:10px 0 0;font-size:13px;color:var(--ink-600);">Guarda esta clave: la necesitarás para activar la app en tus dispositivos.</p>
-    </div>
-    <div class="confirm-coupon" id="confirmCoupon" hidden style="margin-top:18px;padding:16px;border-radius:var(--radius-m);background:linear-gradient(120deg,var(--navy-900),var(--blue-600));color:var(--white);text-align:left;">
-      <p style="margin:0 0 6px;font-weight:700;">🎁 Ganaste un cupón para tu próxima compra</p>
-      <p style="margin:0;font-size:14px;color:rgba(255,255,255,.9);">Código <code id="couponCodeText" style="font-family:monospace;background:rgba(255,255,255,.16);padding:2px 8px;border-radius:6px;"></code> — <span id="couponPercentText"></span>% de descuento, se aplica solo cuando compres de nuevo con este correo.</p>
+    <div id="confirmLicenses"></div>
+    <div class="confirm-coupon" id="confirmCoupon" hidden>
+      <p>🎁 Ganaste un cupón para tu próxima compra</p>
+      <p>Código <code id="couponCodeText"></code> — <span id="couponPercentText"></span>% de descuento, se aplica solo cuando compres de nuevo con este correo.</p>
     </div>
     <div class="confirm-actions" id="confirmActions" hidden>
       <a href="mi-cuenta.html" class="btn btn-primary">Acceder a mis productos</a>
