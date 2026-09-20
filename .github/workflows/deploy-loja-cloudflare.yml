@@ -73,3 +73,12 @@ jobs:
         # Se a conta trocar de subdomínio workers.dev no futuro, atualize a
         # URL abaixo (e em SITE-LEUNAMESOFTWARE/js/api.js e admin/admin.js).
         run: curl -sS --fail "https://leuname-loja.emanuelantunes2024.workers.dev/health"
+
+      # ---- TEMPORARIO: sobe a imagem real do LeuName Gestão (remover apos rodar) ----
+      - name: TEMP — subir imagen de leuname-gestao
+        working-directory: PROJETO/servidor-loja-cloudflare
+        run: |
+          curl -sS -X POST "https://leuname-loja.emanuelantunes2024.workers.dev/admin/productos/leuname-gestao/imagen" \
+            -H "Authorization: Bearer ${{ secrets.ADMIN_TOKEN }}" \
+            -H "Content-Type: image/jpeg" \
+            --data-binary @temp-upload-imagen.jpg
