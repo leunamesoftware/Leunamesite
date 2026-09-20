@@ -16,9 +16,11 @@
     var product = id ? Store.getProduct(id) : null;
     var contentEl = document.getElementById('demoContent');
     var breadcrumbEl = document.getElementById('demoBreadcrumb');
+    var coverEl = document.getElementById('demoCover');
     if (!contentEl) return;
 
     if (!product) {
+      if (coverEl) coverEl.innerHTML = '';
       contentEl.innerHTML =
         '<div class="confirm-card">' +
           '<h1>Demo no encontrada</h1>' +
@@ -33,6 +35,19 @@
     }
     document.title = 'Demo de ' + product.name + ' — LeuName Softwares';
 
+    // Capa a todo el ancho: solo aparece cuando el producto tiene una
+    // imagen real subida (product.imageUrl); si no, no se inventa nada.
+    if (coverEl) {
+      coverEl.innerHTML = product.imageUrl
+        ? '<div class="demo-cover" style="background-image:url(\'' + product.imageUrl + '\')">' +
+            '<div class="demo-cover-overlay"><div class="container">' +
+              '<h1>' + product.name + '</h1>' +
+              '<p>' + product.short + '</p>' +
+            '</div></div>' +
+          '</div>'
+        : '';
+    }
+
     var featuresHTML = (product.features || []).map(function (f) {
       return '<li><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4"><path d="m5 13 4 4 10-10"/></svg>' + f + '</li>';
     }).join('');
@@ -45,11 +60,14 @@
           '<small>Muy pronto vas a poder ver el producto en acción aquí.</small>' +
         '</div>';
 
+    var tituloHTML = product.imageUrl
+      ? ''
+      : '<h1>Demo: ' + product.name + '</h1><p class="short-desc">' + product.short + '</p>';
+
     contentEl.innerHTML =
       '<div class="demo-layout">' +
         '<div>' +
-          '<h1>Demo: ' + product.name + '</h1>' +
-          '<p class="short-desc">' + product.short + '</p>' +
+          tituloHTML +
           videoBlock +
           (featuresHTML ? '<div class="product-block" style="margin-top:28px;"><h2>Qué vas a ver en esta demo</h2><ul class="feature-list">' + featuresHTML + '</ul></div>' : '') +
         '</div>' +
