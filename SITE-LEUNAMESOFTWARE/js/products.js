@@ -106,6 +106,7 @@
       name: 'Template Tienda Online',
       category: 'templates',
       real: false,
+      tag: 'recomendado',
       price: 24.90,
       rating: 4.6,
       reviews: 29,
@@ -148,6 +149,7 @@
       name: 'E-book: Finanzas Personales',
       category: 'libros',
       real: false,
+      tag: 'novedad',
       price: 9.90,
       rating: 4.6,
       reviews: 64,
@@ -176,6 +178,7 @@
       name: 'Recetas de Italia (207 recetas)',
       category: 'recetas',
       real: false,
+      tag: 'recomendado',
       price: 7.90,
       rating: 4.9,
       reviews: 88,
@@ -204,6 +207,7 @@
       name: 'Kit de Iconos y Recursos Gráficos',
       category: 'otros',
       real: false,
+      tag: 'novedad',
       price: 11.90,
       rating: 4.4,
       reviews: 22,
@@ -311,6 +315,8 @@
     );
   }
 
+  var TAG_LABELS = { novedad: 'Novedad', recomendado: 'Recomendado' };
+
   function productCardHTML(product) {
     var priceComment = '<!-- PRECIO DE EJEMPLO: reemplazar por el precio real -->';
     return (
@@ -318,6 +324,7 @@
         '<a class="product-card-media" href="producto.html?id=' + product.id + '">' +
           productVisualHTML(product) +
           (product.real ? '<span class="product-real-badge">Producto real</span>' : '') +
+          (product.tag && TAG_LABELS[product.tag] ? '<span class="product-tag product-tag-' + product.tag + '">' + TAG_LABELS[product.tag] + '</span>' : '') +
         '</a>' +
         '<div class="product-card-body">' +
           '<a class="product-card-name" href="producto.html?id=' + product.id + '">' + product.name + '</a>' +

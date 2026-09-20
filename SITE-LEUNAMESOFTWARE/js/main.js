@@ -146,6 +146,47 @@
 })();
 
 /* ==========================================================================
+   Carrusel de productos con scroll horizontal ("Productos destacados",
+   "Novedades") — las flechas deslizan por tarjetas y se apagan solas al
+   llegar al principio/final. El contenido de cada carrusel se llena por
+   separado (products.js), así que el estado inicial de las flechas se
+   recalcula también en window "load", por si el carrusel todavía estaba
+   vacío cuando este script corrió.
+   ========================================================================== */
+(function () {
+  'use strict';
+
+  function updateArrows(wrap) {
+    var track = wrap.querySelector('.product-carousel');
+    var prevBtn = wrap.querySelector('.carousel-arrow-prev');
+    var nextBtn = wrap.querySelector('.carousel-arrow-next');
+    if (!track) return;
+    var maxScroll = track.scrollWidth - track.clientWidth;
+    if (prevBtn) prevBtn.disabled = track.scrollLeft <= 4;
+    if (nextBtn) nextBtn.disabled = maxScroll <= 4 || track.scrollLeft >= maxScroll - 4;
+  }
+
+  function scrollByCards(track, dir) {
+    var card = track.querySelector('.product-card');
+    var step = card ? card.getBoundingClientRect().width + 16 : track.clientWidth * 0.8;
+    track.scrollBy({ left: dir * step * 2, behavior: 'smooth' });
+  }
+
+  var wraps = document.querySelectorAll('.carousel-wrap');
+  wraps.forEach(function (wrap) {
+    var track = wrap.querySelector('.product-carousel');
+    if (!track) return;
+    var prevBtn = wrap.querySelector('.carousel-arrow-prev');
+    var nextBtn = wrap.querySelector('.carousel-arrow-next');
+    if (prevBtn) prevBtn.addEventListener('click', function () { scrollByCards(track, -1); });
+    if (nextBtn) nextBtn.addEventListener('click', function () { scrollByCards(track, 1); });
+    track.addEventListener('scroll', function () { updateArrows(wrap); });
+    updateArrows(wrap);
+  });
+  window.addEventListener('load', function () { wraps.forEach(updateArrows); });
+})();
+
+/* ==========================================================================
    Stepper de cantidad genérico (usado en producto.html)
    ========================================================================== */
 (function () {
