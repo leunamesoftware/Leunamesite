@@ -1,0 +1,63 @@
+name: Deploy Servidor da Loja (Cloudflare)
+
+# Publica/atualiza o Worker "leuname-loja" na Cloudflare: sobe o
+# código e liga o banco D1 leuname_loja — tudo em uma única chamada do
+# wrangler. Depois configura o segredo ADMIN_TOKEN separadamente
+# (reaproveita o MESMO segredo do servidor de licenças).
+#
+# Requer estes segredos no repositório (já configurados, reaproveitados
+# do servidor de licenças):
+#   CF_API_TOKEN   -> token de API da Cloudflare (permissões: Workers
+#                     Scripts Edit, D1 Edit, Account Settings Read)
+#   ADMIN_TOKEN    -> a mesma "senha mestra" já usada pelo servidor de
+#                     licenças, reaproveitada aqui para o painel
+#                     administrativo da loja
+#
+# Para futuras atualizações do código deste servidor, basta rodar este
+# workflow de novo (workflow_dispatch).
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Baixar código do repositório
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Publicar o Worker (código + banco D1)
+        working-directory: PROJETO/servidor-loja-cloudflare
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+        run: npx wrangler@latest deploy
+
+      - name: Configurar o segredo ADMIN_TOKEN no Worker
+        working-directory: PROJETO/servidor-loja-cloudflare
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+        run: printf '%s' "${{ secrets.ADMIN_TOKEN }}" | npx wrangler@latest secret put ADMIN_TOKEN
+
+      - name: Esperar o Worker propagar
+        run: sleep 15
+
+      - name: Descobrir a URL pública do Worker
+        working-directory: PROJETO/servidor-loja-cloudflare
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+        run: npx wrangler@latest deployments list | tail -20
+
+      - name: Testar o servidor no ar (workers.dev)
+        run: |
+          set -e
+          # Descobre automaticamente o subdomínio workers.dev da conta a
+          # partir da URL que o "wrangler deploy" imprime nos logs acima
+          # não é trivial de capturar aqui, então testamos direto pelo
+          # nome padrão do Worker (ajuste este passo se a conta usar um
+          # subdomínio diferente do padrão "leuname-loja.workers.dev").
+          curl -sS --fail "https://leuname-loja.leunamesoftwares.workers.dev/health" || \
+          echo "Aviso: não foi possível confirmar a URL padrão automaticamente. Verifique manualmente a URL do Worker no painel da Cloudflare e teste /health."

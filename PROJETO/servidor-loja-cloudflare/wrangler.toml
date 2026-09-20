@@ -1,0 +1,23 @@
+name = "leuname-loja"
+main = "src/index.js"
+compatibility_date = "2026-09-19"
+
+# Banco D1 da loja (catalogo + pedidos). Criado via Cloudflare MCP e ja
+# populado com o catalogo inicial (ver schema.sql).
+[[d1_databases]]
+binding = "DB"
+database_name = "leuname_loja"
+database_id = "960c3bdb-6562-4499-bf66-d55a6347b1db"
+
+# Dominio customizado: por enquanto NAO configurado (o Worker fica
+# disponivel apenas em leuname-loja.<subdominio-da-conta>.workers.dev).
+# Para ligar um dominio proprio (ex: loja-api.leunamesoftware.com), repita
+# no Cloudflare Dashboard o mesmo passo manual que ja foi feito uma vez
+# para api.leunamesoftware.com (usado pelo servidor de licencas):
+#   Workers & Pages -> leuname-loja -> Settings -> Domains & Routes ->
+#   Add Custom Domain -> escolher o subdominio desejado.
+# Depois, descomente o bloco abaixo com o dominio escolhido e rode o
+# workflow de deploy novamente.
+# [[routes]]
+# pattern = "loja-api.leunamesoftware.com"
+# custom_domain = true
