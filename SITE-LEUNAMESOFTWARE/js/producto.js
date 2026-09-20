@@ -59,7 +59,7 @@
           '</div>' +
           '<div class="product-actions-buy">' +
             '<button class="btn btn-primary" id="buyNowBtn">Comprar ahora</button>' +
-            (product.demoUrl ? '<a class="btn btn-demo" href="' + product.demoUrl + '" target="_blank" rel="noopener">Ver demo</a>' : '') +
+            (product.demoUrl ? '<a class="btn btn-demo" href="' + product.demoUrl + '">Ver demo</a>' : '') +
           '</div>' +
         '</div>' +
         '<div class="trust-row">' +
