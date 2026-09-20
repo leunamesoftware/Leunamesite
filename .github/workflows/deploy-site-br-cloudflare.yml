@@ -36,7 +36,8 @@ jobs:
       - name: Esperar o Worker propagar
         run: sleep 15
 
-      - name: Testar o site no ar (workers.dev)
-        # URL provisoria em workers.dev, ate o dominio .com.br ser
-        # configurado (ver wrangler.toml deste site).
-        run: curl -sS --fail "https://leuname-site-br.emanuelantunes2024.workers.dev/index.html" > /dev/null
+      - name: Testar o site no ar (dominio proprio)
+        # Desde que leunamesoftware.com.br foi ligado como dominio
+        # customizado, a Cloudflare desativa por padrao o endereco
+        # workers.dev antigo (por isso o teste mudou pra cima do dominio real).
+        run: curl -sS --fail "https://leunamesoftware.com.br/index.html" > /dev/null
