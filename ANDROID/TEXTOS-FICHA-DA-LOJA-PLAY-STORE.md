@@ -40,16 +40,24 @@ PRINCIPAIS RECURSOS
 • Múltiplos usuários — cadastre sua equipe com permissões por papel
   (administrador, vendedor, técnico, etc.).
 
-100% OFFLINE E NO SEU CONTROLE
+FUNCIONA OFFLINE, E SINCRONIZA ENTRE SEUS APARELHOS
 
-Todos os dados ficam salvos diretamente no seu dispositivo. O LeuName
-Gestão funciona sem precisar de internet o tempo todo, e você decide
-se e quando quer conectar um serviço de nuvem próprio para backup.
+Todos os dados ficam salvos diretamente no seu dispositivo, e o
+LeuName Gestão funciona sem precisar de internet o tempo todo. Se você
+usar a mesma licença em mais de um aparelho (celular e computador da
+loja, por exemplo), os dados sincronizam automaticamente entre eles
+assim que houver conexão.
+
+TAMBÉM DISPONÍVEL PARA COMPUTADOR
+
+Além do celular, o LeuName Gestão também tem uma versão para
+computador (Windows), com os mesmos dados sincronizados. Baixe em:
+https://api.leunamesoftware.com/download/leuname-gestao.exe
 
 PAGAMENTO ÚNICO
 
 Sem mensalidade obrigatória: você adquire a licença uma vez e usa o
-sistema no seu dispositivo.
+sistema em todos os seus dispositivos (dentro do limite da licença).
 
 Desenvolvido pela LeuName Softwares.
 ```
@@ -77,7 +85,24 @@ diferente)
 - Screenshots do app: enviadas separadamente (mínimo 2 exigido pela Google)
 
 ## Formulário "Data safety" (Segurança dos dados)
-Como o app funciona 100% local/offline e não envia dados a nenhum
-servidor, a resposta correta é:
-- **O app coleta ou compartilha algum dos tipos de dados de usuário
-  necessários?** → **Não**
+Com a sincronização entre dispositivos, o app agora **transmite** dados
+a um servidor (nosso, na Cloudflare) — então a resposta mudou. No
+formulário do Play Console, declare:
+
+- **O app coleta ou transmite dados do usuário?** → **Sim**
+- **Tipos de dados:**
+  - **Informações pessoais** (nome, telefone/e-mail de clientes que o
+    lojista cadastra) → finalidade: **Funcionalidade do app** (sincronizar
+    entre os dispositivos do próprio lojista)
+  - **Dados financeiros** (registros de vendas/financeiro cadastrados)
+    → finalidade: **Funcionalidade do app**
+- **Os dados são criptografados em trânsito?** → **Sim** (HTTPS)
+- **O usuário pode solicitar exclusão dos dados?** → **Sim**
+- **Os dados são compartilhados com terceiros?** → **Não**
+- **Os dados são usados para publicidade/marketing?** → **Não**
+
+Resumo pra marcar no questionário: os dados cadastrados pelo lojista
+(produtos, clientes, vendas etc.) são enviados a um servidor próprio da
+LeuName Softwares **somente** para permitir que o mesmo lojista veja os
+mesmos dados em outro aparelho dele (mesma chave de licença) — não são
+vendidos, compartilhados ou usados para anúncios.

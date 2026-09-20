@@ -61,33 +61,46 @@ const PRIVACY_PAGES = {
       <h2>Onde ficam os seus dados</h2>
       <p>Todos os dados que você cadastra no LeuName Gestão — produtos,
       clientes, vendas, ordens de serviço, informações financeiras — ficam
-      armazenados <strong>somente no seu próprio dispositivo</strong>, em
-      um banco de dados local (IndexedDB). O aplicativo funciona 100%
-      offline e <strong>não envia esses dados para nenhum servidor da
-      LeuName Softwares ou de terceiros</strong>.</p>
+      armazenados no seu próprio dispositivo, em um banco de dados local
+      (IndexedDB), e o aplicativo funciona 100% offline: você pode usar o
+      sistema inteiro sem internet.</p>
+      <h2>Sincronização entre os seus dispositivos</h2>
+      <p>Se você ativa a mesma chave de licença em mais de um dispositivo
+      (por exemplo, celular e computador da mesma loja), o aplicativo
+      envia os dados cadastrados para um servidor da LeuName Softwares
+      (hospedado na Cloudflare), de forma automática e sempre que houver
+      conexão com a internet, para que os demais dispositivos com a
+      <strong>mesma chave de licença</strong> recebam essas mesmas
+      informações. Esse envio é protegido por HTTPS (criptografado em
+      trânsito) e os dados ficam associados apenas à sua chave de
+      licença — a LeuName Softwares não acessa, analisa nem compartilha
+      esses dados com terceiros, e eles não são usados para publicidade.
+      Você pode solicitar a exclusão dos dados sincronizados da sua loja
+      a qualquer momento pelo contato abaixo.</p>
       <h2>Ativação da licença</h2>
-      <p>A chave de licença informada na ativação é validada inteiramente
-      dentro do próprio aplicativo, de forma local e offline, sem
-      necessidade de conexão com a internet e sem envio da chave, do
-      dispositivo ou de qualquer outro dado a um servidor.</p>
+      <p>A chave de licença informada na ativação é validada localmente,
+      dentro do próprio aplicativo, sem depender de internet para a
+      primeira ativação.</p>
       <h2>Permissões do aplicativo</h2>
       <p>O aplicativo pode solicitar permissão de armazenamento apenas para
       salvar ou importar arquivos de backup que você mesmo escolher gerar
       (por exemplo, exportação de relatórios). Essa permissão não é usada
-      para coletar ou transmitir dados.</p>
+      para coletar ou transmitir dados a terceiros.</p>
       <h2>Compartilhamento de dados com terceiros</h2>
-      <p>A LeuName Softwares não coleta, não acessa e não compartilha os
-      dados inseridos no aplicativo com terceiros, pois esses dados nunca
-      saem do dispositivo do usuário.</p>
-      <h2>Backup e sincronização em nuvem (opcional)</h2>
+      <p>A LeuName Softwares não vende, não compartilha e não usa para
+      publicidade nenhum dado cadastrado no aplicativo. Os dados
+      sincronizados (ver seção acima) ficam apenas no servidor da
+      LeuName Softwares, pelo tempo necessário para o funcionamento do
+      sistema.</p>
+      <h2>Backup em nuvem de terceiros (opcional)</h2>
       <p>Caso o usuário opte, dentro das configurações do aplicativo, por
       conectar um serviço de nuvem próprio (como Google Drive, OneDrive ou
-      Dropbox) para backup, esse envio é feito diretamente entre o
-      dispositivo do usuário e o serviço de nuvem escolhido por ele,
-      seguindo a política de privacidade do respectivo serviço — a
-      LeuName Softwares não tem acesso a esses dados.</p>
+      Dropbox) para backup adicional, esse envio é feito diretamente entre
+      o dispositivo do usuário e o serviço de nuvem escolhido por ele,
+      seguindo a política de privacidade do respectivo serviço.</p>
       <h2>Contato</h2>
-      <p>Dúvidas sobre esta política podem ser enviadas para
+      <p>Dúvidas sobre esta política, ou pedidos de exclusão de dados,
+      podem ser enviados para
       <strong>contato@leunamesoftware.com</strong>.</p>
     `,
   },
