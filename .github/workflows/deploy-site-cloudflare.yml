@@ -42,21 +42,36 @@ jobs:
         # aqui e nas referencias a SITE_URL do servidor da loja.
         run: curl -sS --fail "https://leuname-site.emanuelantunes2024.workers.dev/index.html" > /dev/null
 
-      - name: TEMP - testar range request e video do apresentador
+      - name: TEMP - investigar duplicacao do botao Comprar na demo
         run: |
-          echo "range request (deve ser 206):"
-          curl -sS -D - -o /dev/null -r 0-1000 "https://leuname-site.emanuelantunes2024.workers.dev/assets/img/demo/apresentador.mp4" | head -5
           npm i -D playwright@1.48.0
           npx playwright install --with-deps chromium
           node -e "
           const { chromium } = require('playwright');
           (async () => {
-            const browser = await chromium.launch({ args: ['--autoplay-policy=no-user-gesture-required'] });
-            const page = await browser.newPage({ viewport: { width: 390, height: 900 } });
+            const browser = await chromium.launch();
+            const page = await browser.newPage({ viewport: { width: 390, height: 844 } });
             await page.goto('https://leuname-site.emanuelantunes2024.workers.dev/demo.html?id=leuname-gestao&nocache=' + Date.now(), { waitUntil: 'networkidle' });
-            await page.waitForFunction(() => { const v = document.getElementById('demoMascotVideo'); return v && v.readyState >= 2; }, { timeout: 15000 });
-            const info = await page.\$eval('#demoMascotVideo', v => ({ paused: v.paused, muted: v.muted, readyState: v.readyState, duration: v.duration }));
-            console.log('video info:', JSON.stringify(info));
+            await page.waitForTimeout(600);
+            const ctaBox = await page.\$eval('.demo-cta', el => { const r = el.getBoundingClientRect(); return r.top + window.scrollY; });
+            await page.evaluate((y) => window.scrollTo(0, y - 200), ctaBox);
+            await page.waitForTimeout(700);
+            const info = await page.evaluate(() => {
+              const sticky = document.getElementById('demoSticky');
+              const cta = document.querySelector('.demo-cta');
+              return {
+                stickyVisible: sticky ? sticky.classList.contains('is-visible') : null,
+                stickyRect: sticky ? sticky.getBoundingClientRect() : null,
+                ctaRect: cta ? cta.getBoundingClientRect() : null,
+              };
+            });
+            console.log('info:', JSON.stringify(info));
+            await page.screenshot({ path: 'sticky-check.png' });
             await browser.close();
           })();
           "
+      - name: TEMP - upload screenshot da checagem
+        uses: actions/upload-artifact@v4
+        with:
+          name: sticky-check
+          path: sticky-check.png
