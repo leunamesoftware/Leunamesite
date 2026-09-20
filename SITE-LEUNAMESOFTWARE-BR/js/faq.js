@@ -1,5 +1,5 @@
 /* ==========================================================================
-   LeuName Softwares — Página de preguntas frecuentes (preguntas-frecuentes.html)
+   LeuName Softwares — Página de perguntas frequentes (preguntas-frecuentes.html)
    ========================================================================== */
 (function () {
   'use strict';

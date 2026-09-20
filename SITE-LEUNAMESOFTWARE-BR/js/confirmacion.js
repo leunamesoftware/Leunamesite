@@ -1,12 +1,12 @@
 /* ==========================================================================
-   LeuName Softwares — Confirmación de pedido
+   LeuName Softwares — Confirmação de pedido
    --------------------------------------------------------------------------
-   Esta página SOLO confía en lo que el backend responde para /pedidos/:id.
-   El backend, a su vez, SOLO marca un pedido como "pagado" cuando Stripe
-   confirma el pago real via webhook (ver /webhook/stripe en el servidor).
-   Por eso hacemos polling unos segundos: el webhook puede tardar un par de
-   segundos más que la redirección del navegador. Nunca se muestra un
-   estado de "pagado" inventado en el cliente.
+   Esta página SÓ confia no que o backend responde em /pedidos/:id.
+   O backend, por sua vez, SÓ marca um pedido como "pago" quando a Stripe
+   confirma o pagamento real via webhook (ver /webhook/stripe no servidor).
+   Por isso fazemos polling por alguns segundos: o webhook pode demorar
+   alguns segundos a mais que o redirecionamento do navegador. Nunca é
+   mostrado um estado de "pago" inventado no cliente.
    ========================================================================== */
 (function () {
   'use strict';
@@ -28,19 +28,19 @@
 
     function showError(msg) {
       if (iconEl) iconEl.style.color = 'var(--ink-400)';
-      if (titleEl) titleEl.textContent = 'No encontramos tu pedido';
+      if (titleEl) titleEl.textContent = 'Não encontramos seu pedido';
       if (textEl) textEl.textContent = msg;
       if (actionsEl) actionsEl.hidden = false;
     }
 
     if (!pedidoId || !sessionId) {
-      showError('Si acabas de pagar, revisa tu correo electrónico: ahí te llega la confirmación. Si el problema persiste, contáctanos.');
+      showError('Se você acabou de pagar, confira seu e-mail: é lá que chega a confirmação. Se o problema persistir, fale conosco.');
       return;
     }
 
     var backend = (window.LeuApi && window.LeuApi.BACKEND_URL) || '';
     if (!backend) {
-      showError('No pudimos conectar con el servidor de la tienda. Intenta recargar esta página en unos segundos.');
+      showError('Não conseguimos conectar com o servidor da loja. Tente recarregar esta página em alguns segundos.');
       return;
     }
 
@@ -62,7 +62,7 @@
           if (intentos < maxIntentos) {
             setTimeout(consultar, 2500);
           } else {
-            showError('Tu pago puede estar aún procesándose. Te enviaremos la confirmación por correo en cuanto esté lista.');
+            showError('Seu pagamento pode ainda estar sendo processado. Vamos te enviar a confirmação por e-mail assim que estiver pronta.');
           }
         });
     }
@@ -72,47 +72,47 @@
         if (intentos < maxIntentos) {
           setTimeout(consultar, 2500);
         } else {
-          if (titleEl) titleEl.textContent = 'Tu pago está siendo procesado';
-          if (textEl) textEl.textContent = 'En cuanto se confirme, te llegará el detalle a tu correo electrónico.';
+          if (titleEl) titleEl.textContent = 'Seu pagamento está sendo processado';
+          if (textEl) textEl.textContent = 'Assim que for confirmado, você receberá os detalhes no seu e-mail.';
           if (actionsEl) actionsEl.hidden = false;
         }
         return;
       }
 
-      // Éxito confirmado por el backend (y solo por el backend).
+      // Sucesso confirmado pelo backend (e só pelo backend).
       if (window.LeuCart) window.LeuCart.clear();
 
-      if (titleEl) titleEl.textContent = '¡Gracias por tu compra!';
-      if (textEl) textEl.textContent = 'Tu pago fue confirmado. Te enviamos los detalles a ' + (pedido.email || 'tu correo electrónico') + '.';
+      if (titleEl) titleEl.textContent = 'Obrigado pela sua compra!';
+      if (textEl) textEl.textContent = 'Seu pagamento foi confirmado. Enviamos os detalhes para ' + (pedido.email || 'o seu e-mail') + '.';
 
       if (orderEl) {
         var productos = items.map(function (i) { return i.nombre_producto + ' × ' + i.cantidad; }).join('<br>');
         orderEl.innerHTML =
-          '<div><span>Número de pedido</span><strong>#' + pedido.id.slice(0, 8).toUpperCase() + '</strong></div>' +
-          '<div><span>Productos</span><strong>' + productos + '</strong></div>' +
-          '<div><span>Total pagado</span><strong>' + (window.LeuStore ? window.LeuStore.formatPrice(pedido.total) : pedido.total + ' €') + '</strong></div>';
+          '<div><span>Número do pedido</span><strong>#' + pedido.id.slice(0, 8).toUpperCase() + '</strong></div>' +
+          '<div><span>Produtos</span><strong>' + productos + '</strong></div>' +
+          '<div><span>Total pago</span><strong>' + (window.LeuStore ? window.LeuStore.formatPrice(pedido.total) : 'R$ ' + pedido.total) + '</strong></div>';
         orderEl.hidden = false;
       }
 
-      // Una licencia separada por cada producto/unidad con licencia en
-      // este pedido -- nunca un solo código compartido entre varios.
+      // Uma licença separada para cada produto/unidade com licença neste
+      // pedido -- nunca um único código compartilhado entre vários.
       var licencias = pedido.licencias || [];
       if (licencias.length && licensesEl) {
         licencias.forEach(function (lic, idx) {
           var box = document.createElement('div');
           box.className = 'confirm-license';
           box.innerHTML =
-            '<p>Tu clave de licencia de ' + lic.nombre_producto + (licencias.length > 1 ? ' <small style="font-weight:400;color:var(--ink-400);">(' + (idx + 1) + '/' + licencias.length + ')</small>' : '') + '</p>' +
+            '<p>Sua chave de licença de ' + lic.nombre_producto + (licencias.length > 1 ? ' <small style="font-weight:400;color:var(--ink-400);">(' + (idx + 1) + '/' + licencias.length + ')</small>' : '') + '</p>' +
             '<div class="confirm-license-row">' +
               '<code></code>' +
               '<button type="button" class="btn btn-outline">Copiar</button>' +
             '</div>' +
-            '<p class="confirm-license-hint">Guarda esta clave: la necesitarás para activar la app en tus dispositivos.</p>';
+            '<p class="confirm-license-hint">Guarde esta chave: você vai precisar dela para ativar o app nos seus dispositivos.</p>';
           box.querySelector('code').textContent = lic.chave_licencia;
           var copyBtn = box.querySelector('button');
           copyBtn.addEventListener('click', function () {
             navigator.clipboard.writeText(lic.chave_licencia).then(function () {
-              copyBtn.textContent = '¡Copiado!';
+              copyBtn.textContent = 'Copiado!';
               setTimeout(function () { copyBtn.textContent = 'Copiar'; }, 2000);
             });
           });

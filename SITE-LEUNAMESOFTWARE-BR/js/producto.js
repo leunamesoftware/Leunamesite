@@ -38,35 +38,35 @@
       '<div class="product-gallery">' + Store.productVisualHTML(product) + '</div>' +
       '<div class="product-info">' +
         '<span class="cat-tag">' + (cat ? cat.name : '') + '</span>' +
-        (product.real ? '<span class="cat-tag" style="background:#e2f6ea;color:#1a9a55;margin-left:8px;">Producto real</span>' : '') +
+        (product.real ? '<span class="cat-tag" style="background:#e2f6ea;color:#1a9a55;margin-left:8px;">Produto real</span>' : '') +
         '<h1>' + product.name + '</h1>' +
         '<div class="product-card-rating">' +
           '<span class="stars">' + Store.starsHTML(product.rating) + '</span>' +
           '<span class="rating-num">' + product.rating.toFixed(1) + '</span>' +
-          '<span class="rating-count">(' + product.reviews + ' valoraciones)</span>' +
+          '<span class="rating-count">(' + product.reviews + ' avaliações)</span>' +
         '</div>' +
         '<p class="short-desc">' + product.short +
-          (product.demoUrl ? ' Haz clic en «Ver demo» (el botón naranja) y mira una vista previa de cómo funciona.' : '') +
+          (product.demoUrl ? ' Clique em «Ver demo» (o botão laranja) e veja uma prévia de como funciona.' : '') +
         '</p>' +
-        '<!-- PRECIO DE EJEMPLO: reemplazar por el precio real -->' +
-        '<div class="price-row"><span class="price-big">' + Store.formatPrice(product.price) + '</span>' + (product.real ? '' : '<span class="price-badge">Precio de ejemplo</span>') + '</div>' +
+        '<!-- PREÇO DE EXEMPLO: substituir pelo preço real -->' +
+        '<div class="price-row"><span class="price-big">' + Store.formatPrice(product.price) + '</span>' + (product.real ? '' : '<span class="price-badge">Preço de exemplo</span>') + '</div>' +
         '<div class="product-actions">' +
           '<div class="product-actions-cart">' +
             '<div class="qty-stepper">' +
-              '<button type="button" data-qty-step="qtyInput" data-dir="down" aria-label="Restar">−</button>' +
-              '<input id="qtyInput" type="number" min="1" value="1" aria-label="Cantidad">' +
-              '<button type="button" data-qty-step="qtyInput" data-dir="up" aria-label="Sumar">+</button>' +
+              '<button type="button" data-qty-step="qtyInput" data-dir="down" aria-label="Diminuir">−</button>' +
+              '<input id="qtyInput" type="number" min="1" value="1" aria-label="Quantidade">' +
+              '<button type="button" data-qty-step="qtyInput" data-dir="up" aria-label="Aumentar">+</button>' +
             '</div>' +
-            '<button class="btn btn-cart" data-add-to-cart data-product-id="' + product.id + '" data-qty-target="qtyInput">Añadir al carrito</button>' +
+            '<button class="btn btn-cart" data-add-to-cart data-product-id="' + product.id + '" data-qty-target="qtyInput">Adicionar ao carrinho</button>' +
           '</div>' +
           '<div class="product-actions-buy">' +
-            '<button class="btn btn-primary" id="buyNowBtn">Comprar ahora</button>' +
+            '<button class="btn btn-primary" id="buyNowBtn">Comprar agora</button>' +
             (product.demoUrl ? '<button type="button" class="btn btn-demo" id="verDemoBtn">Ver demo</button>' : '') +
           '</div>' +
         '</div>' +
         '<div class="trust-row">' +
           '<div class="trust-item"><span class="trust-ic"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3 4.5 6v6c0 4.5 3.2 7.9 7.5 9 4.3-1.1 7.5-4.5 7.5-9V6L12 3Z"/></svg></span><div><h4>Compra segura</h4></div></div>' +
-          '<div class="trust-item"><span class="trust-ic"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8Z"/></svg></span><div><h4>Entrega digital inmediata</h4></div></div>' +
+          '<div class="trust-item"><span class="trust-ic"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8Z"/></svg></span><div><h4>Entrega digital imediata</h4></div></div>' +
         '</div>' +
       '</div>';
 
@@ -80,10 +80,10 @@
       });
     }
 
-    // "Ver demo" abre la demo como overlay de pantalla completa DENTRO de
-    // esta misma página (sin navegar a demo.html) -- así el clic del
-    // cliente sigue "vivo" cuando el video se arma, y el navegador permite
-    // que el presentador arranque hablando con sonido de inmediato.
+    // "Ver demo" abre a demo como overlay em tela cheia DENTRO desta
+    // mesma página (sem navegar até demo.html) -- assim o clique do
+    // cliente continua "vivo" enquanto o vídeo é montado, e o navegador
+    // permite que o apresentador comece falando com som imediatamente.
     var verDemoBtn = document.getElementById('verDemoBtn');
     var demoOverlay = document.getElementById('demoOverlay');
     if (verDemoBtn && demoOverlay && window.LeuDemo) {
@@ -96,11 +96,11 @@
         demoOverlay.innerHTML =
           '<header class="demo-minimal-header demo-overlay-header">' +
             '<div class="container">' +
-              '<a href="index.html" aria-label="LeuName Softwares — Inicio">' +
+              '<a href="index.html" aria-label="LeuName Softwares — Início">' +
                 '<img src="assets/img/logo-mark.png" alt="" width="34" height="34">' +
                 '<span><span class="demo-minimal-brand-word">LEUNAME</span><span class="demo-minimal-brand-sub">SOFTWARES</span></span>' +
               '</a>' +
-              '<button type="button" class="demo-overlay-close" id="demoOverlayClose" aria-label="Cerrar demo">&times;</button>' +
+              '<button type="button" class="demo-overlay-close" id="demoOverlayClose" aria-label="Fechar demo">&times;</button>' +
             '</div>' +
           '</header>' +
           '<main><div id="demoOverlayCover"></div><div class="container" style="padding-block:8px 64px;"><div id="demoOverlayContent"></div></div></main>' +
@@ -139,13 +139,13 @@
     }).join('');
 
     tabsEl.innerHTML =
-      '<div class="product-block"><h2>Descripción</h2><p style="color:var(--ink-600);line-height:1.7;">' + product.description + '</p></div>' +
-      '<div class="product-block"><h2>Qué incluye</h2><ul class="check-list">' + includesHTML + '</ul></div>' +
+      '<div class="product-block"><h2>Descrição</h2><p style="color:var(--ink-600);line-height:1.7;">' + product.description + '</p></div>' +
+      '<div class="product-block"><h2>O que inclui</h2><ul class="check-list">' + includesHTML + '</ul></div>' +
       '<div class="product-block"><h2>Características</h2><ul class="feature-list">' + featuresHTML + '</ul></div>' +
-      (faqHTML ? '<div class="product-block"><h2>Preguntas frecuentes</h2>' + faqHTML + '</div>' : '');
+      (faqHTML ? '<div class="product-block"><h2>Perguntas frequentes</h2>' + faqHTML + '</div>' : '');
 
-    // Reactiva el acordeón de FAQ recién insertado (main.js ya delega en DOMContentLoaded,
-    // que corrió antes de que este HTML existiera).
+    // Reativa o acordeão de FAQ recém-inserido (main.js já delega no DOMContentLoaded,
+    // que rodou antes de este HTML existir).
     tabsEl.querySelectorAll('.faq-item').forEach(function (item) {
       var btn = item.querySelector('.faq-q');
       var panel = item.querySelector('.faq-a');

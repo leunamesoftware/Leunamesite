@@ -1,12 +1,16 @@
+// TODO: este site venderá via Mercado Pago para o Brasil -- a integração
+// com o backend de pagamento ainda não foi feita; o checkout ainda aponta
+// para a mesma API do site em espanhol como placeholder.
 /* ==========================================================================
    LeuName Softwares — Checkout
    --------------------------------------------------------------------------
-   processPayment() llama al backend (Worker "leuname-loja"), que crea el
-   pedido con los precios del catálogo del servidor y, con eso, una Stripe
-   Checkout Session real. La respuesta trae la URL de pago de Stripe, a la
-   que redirigimos al cliente — el pago en sí ocurre siempre en la página
-   de Stripe, nunca en este sitio. Ningún pago se marca como exitoso aquí:
-   la confirmación real llega por webhook al backend (ver confirmacion.html).
+   processPayment() chama o backend (Worker "leuname-loja"), que cria o
+   pedido com os preços do catálogo do servidor e, com isso, uma Stripe
+   Checkout Session real. A resposta traz a URL de pagamento da Stripe,
+   para a qual redirecionamos o cliente — o pagamento em si sempre
+   acontece na página da Stripe, nunca neste site. Nenhum pagamento é
+   marcado como bem-sucedido aqui: a confirmação real chega por webhook
+   ao backend (ver confirmacion.html).
    ========================================================================== */
 (function () {
   'use strict';
@@ -14,7 +18,7 @@
   // orderData = { cliente: {...}, items: [{id, qty}] }
   async function processPayment(orderData) {
     var backend = (window.LeuApi && window.LeuApi.BACKEND_URL) || '';
-    if (!backend) throw new Error('El servidor de la tienda no está disponible ahora mismo.');
+    if (!backend) throw new Error('O servidor da loja não está disponível no momento.');
 
     var res = await fetch(backend + '/checkout/session', {
       method: 'POST',
@@ -24,8 +28,8 @@
     var data = await res.json().catch(function () { return null; });
     if (!res.ok || !data || !data.ok || !data.url) {
       var motivo = (data && (data.erro === 'stripe_no_configurado'))
-        ? 'El pago con tarjeta todavía no está activado en esta tienda.'
-        : 'No pudimos iniciar el pago. Intenta de nuevo en unos minutos.';
+        ? 'O pagamento com cartão ainda não está ativado nesta loja.'
+        : 'Não conseguimos iniciar o pagamento. Tente novamente em alguns minutos.';
       throw new Error(motivo);
     }
     return data;
@@ -45,10 +49,10 @@
     var emptyNotice = document.getElementById('checkoutEmpty');
     var emailInput = document.getElementById('ckEmail');
 
-    // Cupón de "próxima compra" detectado automáticamente por el email que
-    // el cliente escribe — nunca pide un código, el sistema lo reconoce
-    // solo. El backend vuelve a validarlo igual al crear la sesión de pago,
-    // esto es solo para mostrar el descuento antes de pagar.
+    // Cupom de "próxima compra" detectado automaticamente pelo e-mail que
+    // o cliente digita — nunca pede um código, o sistema reconhece
+    // sozinho. O backend valida de novo ao criar a sessão de pagamento,
+    // isso aqui é só para mostrar o desconto antes de pagar.
     var cuponActivo = null;
 
     function render() {
@@ -78,15 +82,15 @@
         var totalConDescuento = totals.subtotal - descuento;
         totalsEl.innerHTML =
           '<div class="totals-row"><span>Subtotal</span><span>' + Store.formatPrice(totals.subtotal) + '</span></div>' +
-          '<div class="totals-row"><span>Descuento' + (cuponActivo ? ' (cupón ' + cuponActivo.codigo + ')' : '') + '</span><span>' + (cuponActivo ? '−' : '') + Store.formatPrice(descuento) + '</span></div>' +
+          '<div class="totals-row"><span>Desconto' + (cuponActivo ? ' (cupom ' + cuponActivo.codigo + ')' : '') + '</span><span>' + (cuponActivo ? '−' : '') + Store.formatPrice(descuento) + '</span></div>' +
           '<div class="totals-row totals-row-total"><span>Total</span><span>' + Store.formatPrice(totalConDescuento) + '</span></div>' +
-          (cuponActivo ? '<p class="checkout-coupon-note">🎁 ¡Encontramos un cupón de ' + cuponActivo.porcentaje + '% para tu compra! Se aplica automáticamente.</p>' : '');
+          (cuponActivo ? '<p class="checkout-coupon-note">🎁 Encontramos um cupom de ' + cuponActivo.porcentaje + '% para a sua compra! Ele é aplicado automaticamente.</p>' : '');
       }
     }
 
-    // Consulta si el email escrito tiene un cupón activo (sin exponer nada
-    // más). Se dispara al salir del campo, con un pequeño debounce mientras
-    // el cliente escribe.
+    // Verifica se o e-mail digitado tem um cupom ativo (sem expor mais
+    // nada). É disparado ao sair do campo, com um pequeno debounce
+    // enquanto o cliente digita.
     var backend = (window.LeuApi && window.LeuApi.BACKEND_URL) || '';
     var verificarCuponTimer;
     function verificarCupon() {
@@ -100,7 +104,7 @@
             cuponActivo = (data && data.ok && data.cupon) ? data.cupon : null;
             render();
           })
-          .catch(function () { /* sin cupón visible si la consulta falla, no bloquea el checkout */ });
+          .catch(function () { /* sem cupom visível se a consulta falhar, não bloqueia o checkout */ });
       }, 400);
     }
     if (emailInput) {
@@ -119,7 +123,7 @@
 
         if (payMsg) {
           payMsg.hidden = false;
-          payMsg.textContent = 'Redirigiendo a la página de pago seguro de Stripe…';
+          payMsg.textContent = 'Redirecionando para a página de pagamento seguro da Stripe…';
         }
         if (payBtn) payBtn.disabled = true;
 
