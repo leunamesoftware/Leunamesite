@@ -73,31 +73,3 @@ jobs:
         # Se a conta trocar de subdomínio workers.dev no futuro, atualize a
         # URL abaixo (e em SITE-LEUNAMESOFTWARE/js/api.js e admin/admin.js).
         run: curl -sS --fail "https://leuname-loja.emanuelantunes2024.workers.dev/health"
-
-      # ---- TESTE TEMPORARIO da integracao com Stripe (remover apos verificar) ----
-      # Cria um pedido de teste real (produto leuname-gestao, cliente falso
-      # qa-test@leunamesoftware.com) e confirma que o backend gera uma Stripe
-      # Checkout Session de verdade (url comecando em https://checkout.stripe.com).
-      # NAO completa nenhum pagamento — so verifica que a sessao foi criada.
-      - name: TESTE — criar sessao de checkout real na Stripe
-        run: |
-          curl -sS -X POST "https://leuname-loja.emanuelantunes2024.workers.dev/checkout/session" \
-            -H "Content-Type: application/json" \
-            -d '{"cliente":{"nombre":"QA Teste","email":"qa-test@leunamesoftware.com","telefono":"000000000","pais":"ES"},"items":[{"id":"leuname-gestao","qty":1}]}' \
-            | tee /tmp/checkout-test-response.json
-          echo
-          grep -q '"ok": true' /tmp/checkout-test-response.json
-          grep -q 'https://checkout.stripe.com' /tmp/checkout-test-response.json
-
-      - name: TESTE — webhook sem segredo configurado deve recusar (503)
-        run: |
-          codigo=$(curl -sS -o /dev/null -w '%{http_code}' -X POST "https://leuname-loja.emanuelantunes2024.workers.dev/webhook/stripe" -d '{}')
-          echo "codigo: $codigo"
-          [ "$codigo" = "503" ]
-
-      - name: TESTE — pedido publico com session_id errado deve recusar (404)
-        run: |
-          pedido_id=$(node -e "console.log(JSON.parse(require('fs').readFileSync('/tmp/checkout-test-response.json')).pedido_id)")
-          codigo=$(curl -sS -o /dev/null -w '%{http_code}' "https://leuname-loja.emanuelantunes2024.workers.dev/pedidos/$pedido_id?session_id=invalido")
-          echo "codigo: $codigo"
-          [ "$codigo" = "404" ]
