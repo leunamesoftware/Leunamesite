@@ -1,13 +1,13 @@
 /* ==========================================================================
-   LeuName Softwares — Datos de productos (fuente única para todas las páginas)
+   LeuName Softwares — Dados de produtos (fonte única para todas as páginas)
    --------------------------------------------------------------------------
-   <!-- CATÁLOGO DE EJEMPLO — reemplazar con productos reales del cliente
-        antes de publicar. Solo "leuname-gestao" es un producto real de la
-        empresa; todos los demás son ejemplos para mostrar cómo luce la
-        tienda con un catálogo completo. -->
-   Cada precio lleva la marca PLACEHOLDER: son valores de ejemplo para que
-   la tienda no se vea "rota" con precios vacíos; deben ser reemplazados
-   por los precios reales antes de publicar el sitio.
+   <!-- CATÁLOGO DE EXEMPLO — substituir pelos produtos reais do cliente
+        antes de publicar. Somente "leuname-gestao" é um produto real da
+        empresa; todos os demais são exemplos para mostrar como fica a
+        loja com um catálogo completo. -->
+   Cada preço leva a marca PLACEHOLDER: são valores de exemplo para que
+   a loja não pareça "quebrada" com preços vazios; devem ser substituídos
+   pelos preços reais antes de publicar o site.
    ========================================================================== */
 (function (global) {
   'use strict';
@@ -22,12 +22,12 @@
   };
 
   var CATEGORIES = [
-    { slug: 'aplicaciones', name: 'Aplicaciones y Sistemas', color: 'blue', icon: ICONS.aplicaciones },
+    { slug: 'aplicaciones', name: 'Aplicativos e Sistemas', color: 'blue', icon: ICONS.aplicaciones },
     { slug: 'templates', name: 'Templates', color: 'green', icon: ICONS.templates },
-    { slug: 'libros', name: 'Libros', color: 'amber', icon: ICONS.libros },
-    { slug: 'recetas', name: 'Recetas', color: 'pink', icon: ICONS.recetas },
-    { slug: 'diseno', name: 'Diseño y Logos', color: 'purple', icon: ICONS.diseno },
-    { slug: 'otros', name: 'Otros productos', color: 'gray', icon: ICONS.otros }
+    { slug: 'libros', name: 'Livros', color: 'amber', icon: ICONS.libros },
+    { slug: 'recetas', name: 'Receitas', color: 'pink', icon: ICONS.recetas },
+    { slug: 'diseno', name: 'Design e Logos', color: 'purple', icon: ICONS.diseno },
+    { slug: 'otros', name: 'Outros produtos', color: 'gray', icon: ICONS.otros }
   ];
 
   var PRODUCTS = [
@@ -36,234 +36,234 @@
       name: 'LeuName Gestão',
       category: 'aplicaciones',
       real: true,
-      price: 29.90, // PRECIO DE EJEMPLO: reemplazar por el precio real
+      price: 29.90, // PREÇO DE EXEMPLO: substituir pelo preço real
       rating: 4.8,
       reviews: 34,
-      short: 'Sistema completo de gestión para tiendas de celulares, accesorios y asistencia técnica.',
-      description: 'LeuName Gestão es un sistema completo de gestión pensado para tiendas de celulares, accesorios y asistencia técnica. Controla ventas, stock, clientes, órdenes de servicio y finanzas desde un solo lugar. Funciona 100% offline —no depende de internet para operar el día a día— y, si activas la misma licencia en más de un dispositivo, sincroniza automáticamente los datos entre ellos cuando hay conexión.',
-      includes: ['Licencia de uso para 1 tienda: hasta 2 computadoras y 2 celulares', 'Aplicación para Android y Windows', 'Sincronización entre tus dispositivos', 'Actualizaciones incluidas', 'Soporte especializado'],
-      features: ['Control de ventas y caja diaria', 'Gestión de stock y productos', 'Órdenes de servicio técnico', 'Ficha de clientes', 'Reportes financieros', 'Funciona 100% offline'],
-      badge: 'Producto real',
+      short: 'Sistema completo de gestão para lojas de celulares, acessórios e assistência técnica.',
+      description: 'LeuName Gestão é um sistema completo de gestão pensado para lojas de celulares, acessórios e assistência técnica. Controla vendas, estoque, clientes, ordens de serviço e finanças em um só lugar. Funciona 100% offline — não depende de internet para operar o dia a dia — e, se você ativar a mesma licença em mais de um dispositivo, sincroniza automaticamente os dados entre eles quando há conexão.',
+      includes: ['Licença de uso para 1 loja: até 2 computadores e 2 celulares', 'Aplicativo para Android e Windows', 'Sincronização entre seus dispositivos', 'Atualizações incluídas', 'Suporte especializado'],
+      features: ['Controle de vendas e caixa diário', 'Gestão de estoque e produtos', 'Ordens de serviço técnico', 'Cadastro de clientes', 'Relatórios financeiros', 'Funciona 100% offline'],
+      badge: 'Produto real',
       demoUrl: 'demo.html?id=leuname-gestao'
     },
     {
       id: 'sistema-inventario',
-      name: 'Sistema de Inventario para Supermercados',
+      name: 'Sistema de Estoque para Supermercados',
       category: 'aplicaciones',
       real: false,
       price: 39.90,
       rating: 4.5,
       reviews: 21,
-      short: 'Control de stock, entradas, salidas y alertas de reposición para supermercados y minimercados.',
-      description: 'Ejemplo de producto: un sistema de control de inventario pensado para supermercados y minimercados, con entradas y salidas de stock, alertas de reposición y reportes de rotación de productos.',
-      includes: ['Licencia de uso', 'Manual de instalación', 'Actualizaciones por 12 meses'],
-      features: ['Control de entradas y salidas', 'Alertas de stock mínimo', 'Códigos de barra', 'Reportes de rotación'],
-      badge: 'Ejemplo'
+      short: 'Controle de estoque, entradas, saídas e alertas de reposição para supermercados e mercadinhos.',
+      description: 'Exemplo de produto: um sistema de controle de estoque pensado para supermercados e mercadinhos, com entradas e saídas de estoque, alertas de reposição e relatórios de giro de produtos.',
+      includes: ['Licença de uso', 'Manual de instalação', 'Atualizações por 12 meses'],
+      features: ['Controle de entradas e saídas', 'Alertas de estoque mínimo', 'Códigos de barras', 'Relatórios de giro'],
+      badge: 'Exemplo'
     },
     {
       id: 'sistema-punto-venta',
-      name: 'Sistema de Punto de Venta (PDV)',
+      name: 'Sistema de Ponto de Venda (PDV)',
       category: 'aplicaciones',
       real: false,
       price: 44.90,
       rating: 4.6,
       reviews: 18,
-      short: 'Punto de venta rápido con emisión de recibos, control de caja y múltiples usuarios.',
-      description: 'Ejemplo de producto: un sistema de punto de venta (PDV) rápido, con emisión de recibos, control de caja por turno y soporte para múltiples usuarios.',
-      includes: ['Licencia de uso', 'Guía rápida de configuración'],
-      features: ['Emisión de recibos', 'Control de caja por turno', 'Múltiples usuarios', 'Historial de ventas'],
-      badge: 'Ejemplo'
+      short: 'PDV rápido com emissão de recibos, controle de caixa e múltiplos usuários.',
+      description: 'Exemplo de produto: um sistema de ponto de venda (PDV) rápido, com emissão de recibos, controle de caixa por turno e suporte para múltiplos usuários.',
+      includes: ['Licença de uso', 'Guia rápido de configuração'],
+      features: ['Emissão de recibos', 'Controle de caixa por turno', 'Múltiplos usuários', 'Histórico de vendas'],
+      badge: 'Exemplo'
     },
     {
       id: 'template-agencia-viajes',
-      name: 'Template Agencia de Viajes',
+      name: 'Template Agência de Viagens',
       category: 'templates',
       real: false,
       price: 19.90,
       rating: 4.7,
       reviews: 42,
-      short: 'Sitio web listo para usar, ideal para agencias de viajes y turismo.',
-      description: 'Ejemplo de producto: un template de sitio web completo y responsivo para agencias de viajes, con secciones de destinos, paquetes y formulario de contacto, listo para personalizar.',
-      includes: ['Archivos HTML/CSS/JS', 'Documentación de instalación', 'Licencia de uso único'],
-      features: ['100% responsivo', 'Fácil de personalizar', 'Optimizado para velocidad', 'Compatible con los navegadores principales'],
-      badge: 'Ejemplo'
+      short: 'Site pronto para usar, ideal para agências de viagens e turismo.',
+      description: 'Exemplo de produto: um template de site completo e responsivo para agências de viagens, com seções de destinos, pacotes e formulário de contato, pronto para personalizar.',
+      includes: ['Arquivos HTML/CSS/JS', 'Documentação de instalação', 'Licença de uso único'],
+      features: ['100% responsivo', 'Fácil de personalizar', 'Otimizado para velocidade', 'Compatível com os principais navegadores'],
+      badge: 'Exemplo'
     },
     {
       id: 'template-portfolio-creativo',
-      name: 'Template Portfolio Creativo',
+      name: 'Template Portfólio Criativo',
       category: 'templates',
       real: false,
       price: 16.90,
       rating: 4.8,
       reviews: 37,
-      short: 'Portfolio moderno para diseñadores, fotógrafos y creativos.',
-      description: 'Ejemplo de producto: un template de portfolio moderno y minimalista, ideal para diseñadores, fotógrafos y otros profesionales creativos que quieran mostrar su trabajo.',
-      includes: ['Archivos HTML/CSS/JS', 'Documentación de instalación', 'Licencia de uso único'],
-      features: ['Galería de proyectos', 'Animaciones suaves', '100% responsivo', 'Fácil de personalizar'],
-      badge: 'Ejemplo'
+      short: 'Portfólio moderno para designers, fotógrafos e criativos.',
+      description: 'Exemplo de produto: um template de portfólio moderno e minimalista, ideal para designers, fotógrafos e outros profissionais criativos que queiram mostrar seu trabalho.',
+      includes: ['Arquivos HTML/CSS/JS', 'Documentação de instalação', 'Licença de uso único'],
+      features: ['Galeria de projetos', 'Animações suaves', '100% responsivo', 'Fácil de personalizar'],
+      badge: 'Exemplo'
     },
     {
       id: 'template-tienda-online',
-      name: 'Template Tienda Online',
+      name: 'Template Loja Online',
       category: 'templates',
       real: false,
       tag: 'recomendado',
       price: 24.90,
       rating: 4.6,
       reviews: 29,
-      short: 'Base lista para montar tu propia tienda online de productos digitales o físicos.',
-      description: 'Ejemplo de producto: un template de tienda online listo para personalizar, con catálogo de productos, carrito y páginas de checkout de ejemplo.',
-      includes: ['Archivos HTML/CSS/JS', 'Documentación de instalación', 'Licencia de uso único'],
-      features: ['Catálogo de productos', 'Carrito de compras', 'Diseño responsivo', 'Fácil de personalizar'],
-      badge: 'Ejemplo'
+      short: 'Base pronta para montar sua própria loja online de produtos digitais ou físicos.',
+      description: 'Exemplo de produto: um template de loja online pronto para personalizar, com catálogo de produtos, carrinho e páginas de checkout de exemplo.',
+      includes: ['Arquivos HTML/CSS/JS', 'Documentação de instalação', 'Licença de uso único'],
+      features: ['Catálogo de produtos', 'Carrinho de compras', 'Design responsivo', 'Fácil de personalizar'],
+      badge: 'Exemplo'
     },
     {
       id: 'pack-logos-profesionales',
-      name: 'Pack de Logos Profesionales',
+      name: 'Pacote de Logos Profissionais',
       category: 'diseno',
       real: false,
       price: 14.90,
       rating: 4.4,
       reviews: 53,
-      short: 'Colección de logotipos editables para distintos rubros de negocio.',
-      description: 'Ejemplo de producto: una colección de logotipos profesionales y editables, pensada para pequeños negocios que buscan una identidad visual rápida y de calidad.',
-      includes: ['Archivos vectoriales editables', 'Versiones en PNG y SVG', 'Licencia de uso comercial'],
-      features: ['Totalmente editables', 'Formatos vectoriales', 'Variedad de estilos', 'Uso comercial permitido'],
-      badge: 'Ejemplo'
+      short: 'Coleção de logotipos editáveis para diferentes ramos de negócio.',
+      description: 'Exemplo de produto: uma coleção de logotipos profissionais e editáveis, pensada para pequenos negócios que buscam uma identidade visual rápida e de qualidade.',
+      includes: ['Arquivos vetoriais editáveis', 'Versões em PNG e SVG', 'Licença de uso comercial'],
+      features: ['Totalmente editáveis', 'Formatos vetoriais', 'Variedade de estilos', 'Uso comercial permitido'],
+      badge: 'Exemplo'
     },
     {
       id: 'logo-pack-minimalista',
-      name: 'Pack de Logos Minimalistas',
+      name: 'Pacote de Logos Minimalistas',
       category: 'diseno',
       real: false,
       price: 12.90,
       rating: 4.5,
       reviews: 31,
-      short: 'Logotipos de estilo minimalista, ideales para marcas modernas.',
-      description: 'Ejemplo de producto: un pack de logotipos de estilo minimalista y geométrico, pensado para marcas modernas que buscan simplicidad.',
-      includes: ['Archivos vectoriales editables', 'Versiones en PNG y SVG', 'Licencia de uso comercial'],
-      features: ['Estilo minimalista', 'Totalmente editables', 'Formatos vectoriales', 'Uso comercial permitido'],
-      badge: 'Ejemplo'
+      short: 'Logotipos de estilo minimalista, ideais para marcas modernas.',
+      description: 'Exemplo de produto: um pacote de logotipos de estilo minimalista e geométrico, pensado para marcas modernas que buscam simplicidade.',
+      includes: ['Arquivos vetoriais editáveis', 'Versões em PNG e SVG', 'Licença de uso comercial'],
+      features: ['Estilo minimalista', 'Totalmente editáveis', 'Formatos vetoriais', 'Uso comercial permitido'],
+      badge: 'Exemplo'
     },
     {
       id: 'ebook-finanzas-personales',
-      name: 'E-book: Finanzas Personales',
+      name: 'E-book: Finanças Pessoais',
       category: 'libros',
       real: false,
       tag: 'novedad',
       price: 9.90,
       rating: 4.6,
       reviews: 64,
-      short: 'Guía práctica para organizar tus finanzas y empezar a ahorrar.',
-      description: 'Ejemplo de producto: un e-book práctico con conceptos básicos de organización financiera personal, presupuesto y ahorro, en formato PDF.',
-      includes: ['Archivo PDF', 'Plantilla de presupuesto de regalo'],
-      features: ['Lenguaje sencillo', 'Ejercicios prácticos', 'Formato PDF descargable'],
-      badge: 'Ejemplo'
+      short: 'Guia prático para organizar suas finanças e começar a poupar.',
+      description: 'Exemplo de produto: um e-book prático com conceitos básicos de organização financeira pessoal, orçamento e poupança, em formato PDF.',
+      includes: ['Arquivo PDF', 'Modelo de orçamento de brinde'],
+      features: ['Linguagem simples', 'Exercícios práticos', 'Formato PDF para baixar'],
+      badge: 'Exemplo'
     },
     {
       id: 'ebook-productividad',
-      name: 'E-book: Productividad Diaria',
+      name: 'E-book: Produtividade Diária',
       category: 'libros',
       real: false,
       price: 8.90,
       rating: 4.3,
       reviews: 27,
-      short: 'Técnicas simples para organizar tu tiempo y tus tareas diarias.',
-      description: 'Ejemplo de producto: un e-book con técnicas de organización personal y gestión del tiempo, pensado para quienes quieren ser más productivos en su día a día.',
-      includes: ['Archivo PDF', 'Checklist imprimible de regalo'],
-      features: ['Lenguaje sencillo', 'Técnicas aplicables', 'Formato PDF descargable'],
-      badge: 'Ejemplo'
+      short: 'Técnicas simples para organizar seu tempo e suas tarefas diárias.',
+      description: 'Exemplo de produto: um e-book com técnicas de organização pessoal e gestão do tempo, pensado para quem quer ser mais produtivo no dia a dia.',
+      includes: ['Arquivo PDF', 'Checklist para imprimir de brinde'],
+      features: ['Linguagem simples', 'Técnicas aplicáveis', 'Formato PDF para baixar'],
+      badge: 'Exemplo'
     },
     {
       id: 'recetas-italia',
-      name: 'Recetas de Italia (207 recetas)',
+      name: 'Receitas da Itália (207 receitas)',
       category: 'recetas',
       real: false,
       tag: 'recomendado',
       price: 7.90,
       rating: 4.9,
       reviews: 88,
-      short: 'Colección de 207 recetas tradicionales de la cocina italiana.',
-      description: 'Ejemplo de producto: una colección digital con 207 recetas tradicionales de la cocina italiana, desde pastas y salsas hasta postres clásicos.',
-      includes: ['Archivo PDF', '207 recetas ilustradas', 'Índice por categorías'],
-      features: ['207 recetas', 'Paso a paso detallado', 'Formato PDF descargable'],
-      badge: 'Ejemplo'
+      short: 'Coleção de 207 receitas tradicionais da culinária italiana.',
+      description: 'Exemplo de produto: uma coleção digital com 207 receitas tradicionais da culinária italiana, de massas e molhos a sobremesas clássicas.',
+      includes: ['Arquivo PDF', '207 receitas ilustradas', 'Índice por categorias'],
+      features: ['207 receitas', 'Passo a passo detalhado', 'Formato PDF para baixar'],
+      badge: 'Exemplo'
     },
     {
       id: 'recetas-reposteria',
-      name: 'Recetas de Repostería Casera',
+      name: 'Receitas de Confeitaria Caseira',
       category: 'recetas',
       real: false,
       price: 6.90,
       rating: 4.7,
       reviews: 45,
-      short: 'Recetas dulces fáciles de preparar en casa.',
-      description: 'Ejemplo de producto: una colección de recetas de repostería casera, con instrucciones claras para principiantes y amantes de la cocina dulce.',
-      includes: ['Archivo PDF', 'Recetas ilustradas', 'Índice por categorías'],
-      features: ['Recetas fáciles', 'Paso a paso detallado', 'Formato PDF descargable'],
-      badge: 'Ejemplo'
+      short: 'Receitas doces fáceis de preparar em casa.',
+      description: 'Exemplo de produto: uma coleção de receitas de confeitaria caseira, com instruções claras para iniciantes e amantes da culinária doce.',
+      includes: ['Arquivo PDF', 'Receitas ilustradas', 'Índice por categorias'],
+      features: ['Receitas fáceis', 'Passo a passo detalhado', 'Formato PDF para baixar'],
+      badge: 'Exemplo'
     },
     {
       id: 'kit-iconos-otros',
-      name: 'Kit de Iconos y Recursos Gráficos',
+      name: 'Kit de Ícones e Recursos Gráficos',
       category: 'otros',
       real: false,
       tag: 'novedad',
       price: 11.90,
       rating: 4.4,
       reviews: 22,
-      short: 'Conjunto de iconos vectoriales para proyectos digitales.',
-      description: 'Ejemplo de producto: un kit de iconos vectoriales editables, pensado para usar en aplicaciones, sitios web y presentaciones.',
-      includes: ['Archivos SVG y PNG', 'Licencia de uso comercial'],
-      features: ['Más de 100 iconos', 'Formatos vectoriales', 'Uso comercial permitido'],
-      badge: 'Ejemplo'
+      short: 'Conjunto de ícones vetoriais para projetos digitais.',
+      description: 'Exemplo de produto: um kit de ícones vetoriais editáveis, pensado para usar em aplicativos, sites e apresentações.',
+      includes: ['Arquivos SVG e PNG', 'Licença de uso comercial'],
+      features: ['Mais de 100 ícones', 'Formatos vetoriais', 'Uso comercial permitido'],
+      badge: 'Exemplo'
     },
     {
       id: 'plantillas-excel-negocios',
-      name: 'Plantillas de Excel para Negocios',
+      name: 'Planilhas de Excel para Negócios',
       category: 'otros',
       real: false,
       price: 13.90,
       rating: 4.5,
       reviews: 19,
-      short: 'Plantillas listas para control financiero, ventas y stock en Excel.',
-      description: 'Ejemplo de producto: un set de plantillas de Excel/Google Sheets para control financiero básico, seguimiento de ventas y control simple de stock.',
-      includes: ['Archivos XLSX', 'Guía de uso en PDF'],
-      features: ['Listas para usar', 'Compatible con Excel y Sheets', 'Fórmulas ya configuradas'],
-      badge: 'Ejemplo'
+      short: 'Planilhas prontas para controle financeiro, vendas e estoque no Excel.',
+      description: 'Exemplo de produto: um conjunto de planilhas de Excel/Google Sheets para controle financeiro básico, acompanhamento de vendas e controle simples de estoque.',
+      includes: ['Arquivos XLSX', 'Guia de uso em PDF'],
+      features: ['Prontas para usar', 'Compatível com Excel e Sheets', 'Fórmulas já configuradas'],
+      badge: 'Exemplo'
     }
   ];
 
   var FAQS_BY_CATEGORY = {
     aplicaciones: [
-      { q: '¿Cómo recibo el producto después de comprar?', a: 'El acceso de descarga se habilita en tu cuenta inmediatamente después de confirmarse el pago. También recibirás un correo con las instrucciones.' },
-      { q: '¿El sistema funciona sin conexión a internet?', a: 'Depende del producto: revisa la descripción de cada aplicación. Varios de nuestros sistemas están pensados para funcionar de forma offline.' },
-      { q: '¿Qué pasa si tengo un problema técnico?', a: 'Puedes escribirnos a soporte@leunamesoftware.com y te ayudaremos a resolverlo.' }
+      { q: 'Como recebo o produto depois de comprar?', a: 'O acesso para download é liberado na sua conta imediatamente após a confirmação do pagamento. Você também receberá um e-mail com as instruções.' },
+      { q: 'O sistema funciona sem conexão com a internet?', a: 'Depende do produto: confira a descrição de cada aplicativo. Vários dos nossos sistemas foram pensados para funcionar de forma offline.' },
+      { q: 'O que acontece se eu tiver um problema técnico?', a: 'Você pode nos escrever para suporte@leunamesoftware.com e vamos te ajudar a resolver.' }
     ],
     templates: [
-      { q: '¿Necesito conocimientos técnicos para usar el template?', a: 'Los templates incluyen documentación básica de instalación. Conocimientos de HTML/CSS ayudan para personalizaciones más avanzadas.' },
-      { q: '¿Puedo usarlo para un cliente?', a: 'La licencia estándar permite uso propio o para un único proyecto de cliente. Consulta los términos de uso para más detalles.' },
-      { q: '¿Incluye soporte de instalación?', a: 'Incluye documentación escrita. Para dudas puntuales, nuestro equipo de soporte está disponible por correo.' }
+      { q: 'Preciso de conhecimentos técnicos para usar o template?', a: 'Os templates incluem documentação básica de instalação. Conhecimentos de HTML/CSS ajudam para personalizações mais avançadas.' },
+      { q: 'Posso usar para um cliente?', a: 'A licença padrão permite uso próprio ou para um único projeto de cliente. Consulte os termos de uso para mais detalhes.' },
+      { q: 'Inclui suporte de instalação?', a: 'Inclui documentação escrita. Para dúvidas pontuais, nossa equipe de suporte está disponível por e-mail.' }
     ],
     libros: [
-      { q: '¿En qué formato recibo el libro?', a: 'Todos nuestros libros digitales se entregan en formato PDF, descargable desde tu cuenta.' },
-      { q: '¿Puedo leerlo en el celular?', a: 'Sí, el PDF puede abrirse en cualquier dispositivo con un lector de PDF instalado.' },
-      { q: '¿Hay reembolso si no me gusta?', a: 'Consulta nuestra Política de reembolso para conocer los plazos y condiciones aplicables a productos digitales.' }
+      { q: 'Em que formato recebo o livro?', a: 'Todos os nossos livros digitais são entregues em formato PDF, disponível para download na sua conta.' },
+      { q: 'Posso ler no celular?', a: 'Sim, o PDF pode ser aberto em qualquer dispositivo com um leitor de PDF instalado.' },
+      { q: 'Tem reembolso se eu não gostar?', a: 'Consulte nossa Política de reembolso para conhecer os prazos e condições aplicáveis a produtos digitais.' }
     ],
     recetas: [
-      { q: '¿Las recetas incluyen fotos?', a: 'La mayoría de nuestras colecciones incluyen imágenes ilustrativas junto al paso a paso.' },
-      { q: '¿Puedo imprimir las recetas?', a: 'Sí, al ser un archivo PDF puedes imprimirlo libremente para tu uso personal.' },
-      { q: '¿Se pueden usar los ingredientes en cualquier país?', a: 'Las recetas usan ingredientes comunes, aunque la disponibilidad puede variar según tu región.' }
+      { q: 'As receitas incluem fotos?', a: 'A maioria das nossas coleções inclui imagens ilustrativas junto com o passo a passo.' },
+      { q: 'Posso imprimir as receitas?', a: 'Sim, por ser um arquivo PDF você pode imprimir livremente para uso pessoal.' },
+      { q: 'Os ingredientes podem ser encontrados em qualquer lugar?', a: 'As receitas usam ingredientes comuns, embora a disponibilidade possa variar de acordo com a sua região.' }
     ],
     diseno: [
-      { q: '¿Puedo modificar los logos?', a: 'Sí, todos los packs incluyen archivos vectoriales totalmente editables.' },
-      { q: '¿Puedo usarlos comercialmente?', a: 'Sí, la licencia incluida permite uso comercial. Revisa los términos de uso para más detalles.' },
-      { q: '¿En qué programas puedo abrir los archivos?', a: 'Los archivos vectoriales son compatibles con programas de edición como Illustrator, Inkscape o CorelDRAW; también se incluyen versiones PNG.' }
+      { q: 'Posso modificar os logos?', a: 'Sim, todos os pacotes incluem arquivos vetoriais totalmente editáveis.' },
+      { q: 'Posso usá-los comercialmente?', a: 'Sim, a licença incluída permite uso comercial. Confira os termos de uso para mais detalhes.' },
+      { q: 'Em quais programas posso abrir os arquivos?', a: 'Os arquivos vetoriais são compatíveis com programas de edição como Illustrator, Inkscape ou CorelDRAW; também incluímos versões em PNG.' }
     ],
     otros: [
-      { q: '¿Cómo descargo el producto?', a: 'El enlace de descarga queda disponible en tu cuenta, en la sección "Mis productos", después de confirmarse el pago.' },
-      { q: '¿Los archivos tienen actualizaciones?', a: 'Cuando corresponda, las actualizaciones se anuncian en tu cuenta y por correo electrónico.' },
-      { q: '¿Puedo pedir soporte?', a: 'Sí, escríbenos a soporte@leunamesoftware.com ante cualquier duda.' }
+      { q: 'Como faço o download do produto?', a: 'O link de download fica disponível na sua conta, na seção "Meus produtos", depois que o pagamento for confirmado.' },
+      { q: 'Os arquivos têm atualizações?', a: 'Quando aplicável, as atualizações são anunciadas na sua conta e por e-mail.' },
+      { q: 'Posso pedir suporte?', a: 'Sim, escreva para suporte@leunamesoftware.com com qualquer dúvida.' }
     ]
   };
 
@@ -283,7 +283,7 @@
   }
 
   function formatPrice(value) {
-    return value.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €';
+    return 'R$ ' + value.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   }
 
   function starsHTML(rating) {
@@ -301,8 +301,8 @@
     return out;
   }
 
-  // Arte visual "de producto" genérica por categoría (sin fotos), reutilizada
-  // en las tarjetas de producto y en la galería de la página de detalle.
+  // Arte visual "de produto" genérica por categoria (sem fotos), reutilizada
+  // nos cartões de produto e na galeria da página de detalhes.
   function productVisualHTML(product) {
     if (product.imageUrl) {
       return '<div class="prod-visual prod-visual-photo"><img src="' + product.imageUrl + '" alt="' + product.name + '" loading="lazy"></div>';
@@ -319,15 +319,15 @@
     );
   }
 
-  var TAG_LABELS = { novedad: 'Novedad', recomendado: 'Recomendado' };
+  var TAG_LABELS = { novedad: 'Novidade', recomendado: 'Recomendado' };
 
   function productCardHTML(product) {
-    var priceComment = '<!-- PRECIO DE EJEMPLO: reemplazar por el precio real -->';
+    var priceComment = '<!-- PREÇO DE EXEMPLO: substituir pelo preço real -->';
     return (
       '<article class="product-card">' +
         '<a class="product-card-media" href="producto.html?id=' + product.id + '">' +
           productVisualHTML(product) +
-          (product.real ? '<span class="product-real-badge">Producto real</span>' : '') +
+          (product.real ? '<span class="product-real-badge">Produto real</span>' : '') +
           (product.tag && TAG_LABELS[product.tag] ? '<span class="product-tag product-tag-' + product.tag + '">' + TAG_LABELS[product.tag] + '</span>' : '') +
         '</a>' +
         '<div class="product-card-body">' +
@@ -339,7 +339,7 @@
           '</div>' +
           priceComment +
           '<p class="product-card-price">' + formatPrice(product.price) + '</p>' +
-          '<a class="btn btn-outline-block" href="producto.html?id=' + product.id + '">Ver producto</a>' +
+          '<a class="btn btn-outline-block" href="producto.html?id=' + product.id + '">Ver produto</a>' +
         '</div>' +
       '</article>'
     );
@@ -350,7 +350,7 @@
       '<a class="cat-card" href="categoria.html?slug=' + cat.slug + '">' +
         '<span class="cat-ic cat-ic-' + cat.color + '">' + cat.icon + '</span>' +
         '<span class="cat-card-name">' + cat.name + '</span>' +
-        '<span class="cat-card-link">Ver productos →</span>' +
+        '<span class="cat-card-link">Ver produtos →</span>' +
       '</a>'
     );
   }
@@ -366,7 +366,7 @@
     if (!el) return;
     el.innerHTML = products.length
       ? products.map(productCardHTML).join('')
-      : '<p class="cat-empty">No hay productos para mostrar todavía.</p>';
+      : '<p class="cat-empty">Ainda não há produtos para mostrar.</p>';
   }
 
   global.LeuStore = {
