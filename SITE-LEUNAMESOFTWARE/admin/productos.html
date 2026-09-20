@@ -73,7 +73,11 @@
               <option value="recomendado">Recomendado</option>
             </select>
           </div>
-          <div class="admin-field"><label class="admin-label" for="pDemoUrl">URL de demo (opcional)</label><input class="admin-input" id="pDemoUrl" placeholder="demo.html?id=mi-producto o un enlace externo"></div>
+          <div class="admin-field">
+            <label class="admin-label" for="pDemoUrl">URL de demo (opcional)</label>
+            <input class="admin-input" id="pDemoUrl" placeholder="demo.html?id=mi-producto o un enlace externo">
+            <p class="admin-note" style="text-align:left;margin-top:4px;">Link de uma página ou vídeo de demonstração desse produto. Pode deixar em branco — a maioria dos produtos não precisa. Exemplo: <code>demo.html?id=leuname-gestao</code></p>
+          </div>
         </div>
         <label style="display:flex;align-items:center;gap:8px;margin-top:14px;font-size:13px;color:var(--ink-600);">
           <input type="checkbox" id="pReal"> Es un producto real (no un ejemplo de catálogo)
@@ -81,6 +85,11 @@
 
         <div class="admin-field" style="margin-top:14px;">
           <label class="admin-label">Imagen del producto</label>
+          <p class="admin-note" style="text-align:left;margin:0 0 8px;background:var(--blue-50);color:var(--ink-900);padding:10px 12px;border-radius:8px;">
+            <strong>Tamanho da imagem:</strong> 800 x 600 pixels (proporção 4:3).<br>
+            <strong>Formatos aceitos:</strong> JPG, PNG, WEBP ou GIF.<br>
+            <strong>Tamanho máximo do arquivo:</strong> 5 MB.
+          </p>
           <div id="pImagenPreviewWrap" hidden style="margin-bottom:10px;">
             <img id="pImagenPreview" alt="" style="width:120px;height:90px;object-fit:cover;border-radius:8px;border:1px solid var(--gray-200);">
           </div>
