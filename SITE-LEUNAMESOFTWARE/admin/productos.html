@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Productos — Admin LeuName Softwares</title>
+<meta name="description" content="Gestión del catálogo de productos de la tienda LeuName Softwares.">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="admin.css">
+</head>
+<body class="admin-body">
+<div class="admin-shell">
+  <div class="admin-topbar">
+    <div class="admin-topbar-brand">
+      <img src="../assets/img/logo-mark.png" alt="" width="32" height="32">
+      <span>LEUNAME<small>ADMIN</small></span>
+    </div>
+    <div class="admin-topbar-actions">
+      <a href="../index.html" target="_blank" rel="noopener">Ver tienda ↗</a>
+      <button type="button" id="logoutBtn">Cerrar sesión</button>
+    </div>
+  </div>
+
+  <main class="admin-main">
+    <div class="admin-head">
+      <h1>Productos</h1>
+      <button class="admin-btn admin-btn-primary" id="newProductBtn" type="button">+ Nuevo producto</button>
+    </div>
+
+    <p class="admin-banner" id="apiBanner" hidden></p>
+
+    <div class="admin-card" id="formCard" hidden>
+      <h2 id="formTitle">Nuevo producto</h2>
+      <form id="productForm">
+        <input type="hidden" id="pOriginalId">
+        <div class="admin-form-grid cols-2">
+          <div class="admin-field"><label class="admin-label" for="pId">ID (slug único)</label><input class="admin-input" id="pId" required pattern="[a-z0-9-]+" placeholder="mi-producto"></div>
+          <div class="admin-field"><label class="admin-label" for="pNombre">Nombre</label><input class="admin-input" id="pNombre" required></div>
+          <div class="admin-field">
+            <label class="admin-label" for="pCategoria">Categoría</label>
+            <select class="admin-select" id="pCategoria">
+              <option value="aplicaciones">Aplicaciones y Sistemas</option>
+              <option value="templates">Templates</option>
+              <option value="libros">Libros</option>
+              <option value="recetas">Recetas</option>
+              <option value="diseno">Diseño y Logos</option>
+              <option value="otros">Otros productos</option>
+            </select>
+          </div>
+          <div class="admin-field"><label class="admin-label" for="pPrecio">Precio (€)</label><input class="admin-input" id="pPrecio" type="number" step="0.01" min="0" required></div>
+          <div class="admin-field"><label class="admin-label" for="pRating">Rating (0–5)</label><input class="admin-input" id="pRating" type="number" step="0.1" min="0" max="5" value="4.5"></div>
+          <div class="admin-field"><label class="admin-label" for="pReviews">Cantidad de valoraciones</label><input class="admin-input" id="pReviews" type="number" step="1" min="0" value="0"></div>
+        </div>
+        <div class="admin-field" style="margin-top:14px;"><label class="admin-label" for="pCorta">Descripción corta</label><input class="admin-input" id="pCorta"></div>
+        <div class="admin-field" style="margin-top:14px;"><label class="admin-label" for="pDescripcion">Descripción</label><textarea class="admin-textarea" id="pDescripcion"></textarea></div>
+        <div class="admin-form-grid cols-2" style="margin-top:14px;">
+          <div class="admin-field"><label class="admin-label" for="pIncluye">Qué incluye (una línea por ítem)</label><textarea class="admin-textarea" id="pIncluye"></textarea></div>
+          <div class="admin-field"><label class="admin-label" for="pCaracteristicas">Características (una línea por ítem)</label><textarea class="admin-textarea" id="pCaracteristicas"></textarea></div>
+        </div>
+        <label style="display:flex;align-items:center;gap:8px;margin-top:14px;font-size:13px;color:var(--ink-600);">
+          <input type="checkbox" id="pReal"> Es un producto real (no un ejemplo de catálogo)
+        </label>
+        <div class="admin-form-actions">
+          <button class="admin-btn admin-btn-primary" type="submit">Guardar</button>
+          <button class="admin-btn admin-btn-outline" type="button" id="cancelFormBtn">Cancelar</button>
+        </div>
+      </form>
+    </div>
+
+    <div class="admin-card">
+      <h2>Catálogo (<span id="productCount">0</span>)</h2>
+      <div class="admin-table-wrap">
+        <table class="admin-table">
+          <thead><tr><th>ID</th><th>Nombre</th><th>Categoría</th><th>Precio</th><th>Estado</th><th></th></tr></thead>
+          <tbody id="productsBody"><tr><td colspan="6" class="admin-empty">Cargando…</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="admin.js"></script>
+<script src="productos.js"></script>
+</body>
+</html>

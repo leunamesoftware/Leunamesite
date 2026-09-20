@@ -17,7 +17,7 @@
   // URL pública del Worker "leuname-loja" (Cloudflare). Se completa una vez
   // desplegado (ver PROJETO/servidor-loja-cloudflare/). Dejar vacío desactiva
   // el intento de red y el sitio usa solo los datos estáticos.
-  var BACKEND_URL = 'https://leuname-loja.leunamesoftwares.workers.dev';
+  var BACKEND_URL = 'https://leuname-loja.emanuelantunes2024.workers.dev';
 
   function mapRemoteProduct(row) {
     return {

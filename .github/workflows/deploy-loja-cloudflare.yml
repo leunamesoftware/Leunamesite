@@ -52,12 +52,8 @@ jobs:
         run: npx wrangler@latest deployments list | tail -20
 
       - name: Testar o servidor no ar (workers.dev)
-        run: |
-          set -e
-          # Descobre automaticamente o subdomínio workers.dev da conta a
-          # partir da URL que o "wrangler deploy" imprime nos logs acima
-          # não é trivial de capturar aqui, então testamos direto pelo
-          # nome padrão do Worker (ajuste este passo se a conta usar um
-          # subdomínio diferente do padrão "leuname-loja.workers.dev").
-          curl -sS --fail "https://leuname-loja.leunamesoftwares.workers.dev/health" || \
-          echo "Aviso: não foi possível confirmar a URL padrão automaticamente. Verifique manualmente a URL do Worker no painel da Cloudflare e teste /health."
+        # URL confirmada no log do "wrangler deploy" (passo acima) na primeira
+        # publicação: https://leuname-loja.emanuelantunes2024.workers.dev
+        # Se a conta trocar de subdomínio workers.dev no futuro, atualize a
+        # URL abaixo (e em SITE-LEUNAMESOFTWARE/js/api.js e admin/admin.js).
+        run: curl -sS --fail "https://leuname-loja.emanuelantunes2024.workers.dev/health"

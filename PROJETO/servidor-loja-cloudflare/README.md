@@ -42,8 +42,9 @@ mesma convenção de bearer token) — não é preciso gerar um segredo novo.
 
 ## Domínio customizado (opcional, ainda não configurado)
 
-O Worker fica disponível em
-`https://leuname-loja.<subdominio-da-conta>.workers.dev`. Para ligar um
+O Worker está publicado e responde em
+**`https://leuname-loja.emanuelantunes2024.workers.dev`** (confirmado
+com `/health` após o primeiro deploy). Para ligar um
 domínio próprio (ex.: `loja-api.leunamesoftware.com`), repita no
 Cloudflare Dashboard o mesmo passo manual já feito uma vez para
 `api.leunamesoftware.com`: **Workers & Pages → leuname-loja → Settings
