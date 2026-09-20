@@ -207,6 +207,10 @@ export default {
           mode: 'payment',
           payment_method_types: ['card'],
           customer_email: clienteEmail,
+          // Propaga o pedido_id ate o Charge (a Stripe NAO copia metadata da
+          // Checkout Session pro PaymentIntent/Charge sozinha) -- necessario
+          // pro webhook de estorno (charge.refunded) saber qual pedido revogar.
+          payment_intent_data: { metadata: { pedido_id: pedidoId } },
           line_items: itemsConPrecio.map((i) => ({
             quantity: i.cantidad,
             price_data: {
@@ -310,6 +314,32 @@ export default {
               // No bloquea el webhook: el pedido ya quedo 'pagado' en la base.
               // Si esto falla, la licencia se puede generar manualmente
               // despues desde el panel del servidor de licencias.
+            }
+          }
+        }
+      }
+
+      // charge.refunded — dispara sempre que uma cobranca e reembolsada
+      // (total ou parcial). So tratamos como cancelamento quando o
+      // reembolso foi TOTAL (charge.refunded===true); um reembolso parcial
+      // (ex: cortesia) nao revoga a licenca automaticamente.
+      if (evento.type === 'charge.refunded') {
+        const charge = evento.data.object;
+        const pedidoId = charge.metadata && charge.metadata.pedido_id;
+        if (pedidoId && charge.refunded === true) {
+          await env.DB.prepare("UPDATE pedidos SET estado = 'reembolsado' WHERE id = ?").bind(pedidoId).run();
+          const pedido = await env.DB.prepare('SELECT chave_licencia FROM pedidos WHERE id = ?').bind(pedidoId).first();
+          if (pedido && pedido.chave_licencia && env.ADMIN_TOKEN) {
+            try {
+              await fetch('https://api.leunamesoftware.com/admin/licencas/revogar', {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${env.ADMIN_TOKEN}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify({ chave: pedido.chave_licencia }),
+              });
+            } catch (e) {
+              // Nao bloqueia o webhook: o pedido ja ficou 'reembolsado'.
+              // Se isso falhar, a licenca pode ser revogada manualmente
+              // depois pelo painel admin-licencas.
             }
           }
         }

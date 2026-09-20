@@ -41,7 +41,7 @@
       var res = await fetch(AdminLicencasAPI.BASE_URL + '/admin/licencas', { headers: { Authorization: 'Bearer ' + token } });
       if (!res.ok) throw new Error('token_invalido');
       AdminLicencasAPI.setToken(token);
-      location.href = 'painel.html';
+      location.href = '../admin/index.html';
     } catch (err) {
       errEl.hidden = false;
     }

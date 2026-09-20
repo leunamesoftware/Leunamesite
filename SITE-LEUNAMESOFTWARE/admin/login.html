@@ -41,7 +41,7 @@
       var res = await fetch(AdminAPI.BASE_URL + '/admin/pedidos', { headers: { Authorization: 'Bearer ' + token } });
       if (!res.ok) throw new Error('token_invalido');
       AdminAPI.setToken(token);
-      location.href = 'productos.html';
+      location.href = 'index.html';
     } catch (err) {
       errEl.hidden = false;
     }

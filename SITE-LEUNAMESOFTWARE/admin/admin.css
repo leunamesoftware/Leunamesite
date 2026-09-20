@@ -52,6 +52,18 @@ button{ font:inherit; cursor:pointer; }
 .admin-topbar-actions a, .admin-topbar-actions button{ color:rgba(255,255,255,.85); font-size:13px; font-weight:600; background:none; border:none; }
 .admin-topbar-actions a:hover, .admin-topbar-actions button:hover{ color:var(--white); }
 
+.admin-nav{ display:flex; gap:4px; padding:0 24px; background:var(--navy-950); overflow-x:auto; }
+.admin-nav a{ color:rgba(255,255,255,.65); font-size:13px; font-weight:600; padding:11px 14px; white-space:nowrap; border-bottom:2px solid transparent; }
+.admin-nav a:hover{ color:var(--white); }
+.admin-nav a.is-active{ color:var(--white); border-bottom-color:var(--blue-500); }
+
+.admin-hub-grid{ display:grid; grid-template-columns:1fr; gap:16px; }
+@media (min-width:640px){ .admin-hub-grid{ grid-template-columns:1fr 1fr 1fr; } }
+.admin-hub-card{ background:var(--white); border-radius:var(--radius-l); box-shadow:var(--shadow-card); padding:24px; display:flex; flex-direction:column; gap:10px; }
+.admin-hub-card h3{ font-family:var(--font-head); font-size:16px; margin:0; }
+.admin-hub-card p{ font-size:13px; color:var(--ink-600); margin:0; line-height:1.5; flex:1; }
+.admin-hub-card a{ color:var(--blue-600); font-weight:700; font-size:13.5px; }
+
 .admin-main{ max-width:1100px; margin-inline:auto; padding:28px 20px 60px; }
 .admin-head{ display:flex; align-items:center; justify-content:space-between; gap:14px; margin-bottom:20px; flex-wrap:wrap; }
 .admin-head h1{ font-size:21px; }

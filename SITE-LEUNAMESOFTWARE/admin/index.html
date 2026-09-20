@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Painel Admin — LeuName Softwares</title>
+<meta name="description" content="Painel administrativo central da LeuName Softwares.">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="admin.css">
+</head>
+<body class="admin-body">
+<div class="admin-shell">
+  <div class="admin-topbar">
+    <div class="admin-topbar-brand">
+      <img src="../assets/img/logo-mark.png" alt="" width="32" height="32">
+      <span>LEUNAME<small>ADMIN</small></span>
+    </div>
+    <div class="admin-topbar-actions">
+      <a href="../index.html" target="_blank" rel="noopener">Ver site ↗</a>
+      <button type="button" id="logoutBtn">Sair</button>
+    </div>
+  </div>
+  <nav class="admin-nav">
+    <a href="index.html" class="is-active">Painel</a>
+    <a href="productos.html">Produtos</a>
+    <a href="pedidos.html">Pedidos</a>
+    <a href="../admin-licencas/painel.html">Licenças</a>
+  </nav>
+
+  <main class="admin-main">
+    <div class="admin-head"><h1>Painel administrativo</h1></div>
+    <p class="admin-banner">Um único lugar para gerenciar a loja e as licenças do LeuName Gestão. Guarde este link: <code>/admin/</code></p>
+
+    <div class="admin-hub-grid">
+      <div class="admin-hub-card">
+        <h3>🛍️ Produtos</h3>
+        <p>Cadastre, edite ou desative produtos do catálogo da loja (preços, descrições, categorias).</p>
+        <a href="productos.html">Gerenciar produtos →</a>
+      </div>
+      <div class="admin-hub-card">
+        <h3>📦 Pedidos</h3>
+        <p>Veja todos os pedidos feitos na loja: quem comprou, o quê, quando, e se foi pago, pendente ou reembolsado.</p>
+        <a href="pedidos.html">Ver pedidos →</a>
+      </div>
+      <div class="admin-hub-card">
+        <h3>🔑 Licenças</h3>
+        <p>Gere, consulte, revogue (bloqueie) ou reative licenças do LeuName Gestão — por nome do cliente.</p>
+        <a href="../admin-licencas/painel.html">Gerenciar licenças →</a>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="admin.js"></script>
+<script>
+  AdminAPI.requireAuth();
+  document.getElementById('logoutBtn').addEventListener('click', function () {
+    AdminAPI.clearToken();
+    location.href = 'login.html';
+  });
+</script>
+</body>
+</html>
