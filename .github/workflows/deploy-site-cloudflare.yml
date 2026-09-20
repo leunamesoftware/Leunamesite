@@ -41,3 +41,22 @@ jobs:
         # Se a conta trocar de subdominio workers.dev no futuro, atualize
         # aqui e nas referencias a SITE_URL do servidor da loja.
         run: curl -sS --fail "https://leuname-site.emanuelantunes2024.workers.dev/index.html" > /dev/null
+
+      - name: TEMP - testar range request e video do apresentador
+        run: |
+          echo "range request (deve ser 206):"
+          curl -sS -D - -o /dev/null -r 0-1000 "https://leuname-site.emanuelantunes2024.workers.dev/assets/img/demo/apresentador.mp4" | head -5
+          npm i -D playwright@1.48.0
+          npx playwright install --with-deps chromium
+          node -e "
+          const { chromium } = require('playwright');
+          (async () => {
+            const browser = await chromium.launch({ args: ['--autoplay-policy=no-user-gesture-required'] });
+            const page = await browser.newPage({ viewport: { width: 390, height: 900 } });
+            await page.goto('https://leuname-site.emanuelantunes2024.workers.dev/demo.html?id=leuname-gestao&nocache=' + Date.now(), { waitUntil: 'networkidle' });
+            await page.waitForFunction(() => { const v = document.getElementById('demoMascotVideo'); return v && v.readyState >= 2; }, { timeout: 15000 });
+            const info = await page.\$eval('#demoMascotVideo', v => ({ paused: v.paused, muted: v.muted, readyState: v.readyState, duration: v.duration }));
+            console.log('video info:', JSON.stringify(info));
+            await browser.close();
+          })();
+          "
