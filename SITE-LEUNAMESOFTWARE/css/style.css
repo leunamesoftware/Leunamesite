@@ -321,6 +321,21 @@ h1,h2,h3,h4{ font-family:var(--font-head); margin:0; }
   .hero-inner{ grid-template-columns:1fr 1fr; padding-block:64px 54px; }
 }
 
+@media (max-width:639px){
+  /* En el celular, la ilustracion (laptop + telefono + chips) quedaba
+     apretada en un contenedor muy bajo (260px), haciendo que el chip
+     "Libros" cayera literalmente encima del telefono y el chip
+     "Templates" encima de la esquina del laptop. Le damos mas alto y
+     reacomodamos los chips para que floten alrededor, sin pisar la
+     ilustracion (verificado midiendo las cajas reales en el navegador). */
+  .hero-art{ height:330px; }
+  .hero-art-laptop{ width:70%; }
+  .hero-art-phone{ width:30%; max-width:130px; }
+  .hero-chip-1{ top:2%; left:0; }
+  .hero-chip-2{ top:4%; right:0; }
+  .hero-chip-3{ top:30%; bottom:auto; left:30%; }
+}
+
 /* ==========================================================================
    Cuadrícula de categorías
    ========================================================================== */
