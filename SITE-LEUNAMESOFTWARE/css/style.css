@@ -265,8 +265,8 @@ h1,h2,h3,h4{ font-family:var(--font-head); margin:0; }
    ========================================================================== */
 .hero{ background:linear-gradient(135deg,var(--navy-950) 0%,var(--navy-900) 45%,var(--blue-600) 130%); position:relative; overflow:hidden; }
 .hero-inner{
-  display:grid; gap:36px; align-items:center; padding-block:52px 40px;
-  grid-template-columns:1fr;
+  display:grid; gap:18px; align-items:center; padding-block:28px 24px;
+  grid-template-columns:1.15fr 1fr;
 }
 .hero-tagline{ position:absolute; top:22px; right:var(--container-pad); font-family:var(--font-head); font-style:italic; font-weight:500; font-size:12.5px; color:var(--blue-400); letter-spacing:.3px; }
 .hero-copy h1{ color:var(--white); font-size:clamp(30px,5.6vw,46px); font-weight:800; line-height:1.12; }
@@ -322,18 +322,23 @@ h1,h2,h3,h4{ font-family:var(--font-head); margin:0; }
 }
 
 @media (max-width:639px){
-  /* En el celular, la ilustracion (laptop + telefono + chips) quedaba
-     apretada en un contenedor muy bajo (260px), haciendo que el chip
-     "Libros" cayera literalmente encima del telefono y el chip
-     "Templates" encima de la esquina del laptop. Le damos mas alto y
-     reacomodamos los chips para que floten alrededor, sin pisar la
-     ilustracion (verificado midiendo las cajas reales en el navegador). */
-  .hero-art{ height:330px; }
-  .hero-art-laptop{ width:70%; }
-  .hero-art-phone{ width:30%; max-width:130px; }
-  .hero-chip-1{ top:2%; left:0; }
-  .hero-chip-2{ top:4%; right:0; }
-  .hero-chip-3{ top:30%; bottom:auto; left:30%; }
+  /* El celular pasa a mostrar el hero en horizontal, igual que la
+     composicion de escritorio (texto + ilustracion lado a lado), en vez
+     de apilado. Para que la ilustracion quepa en una columna angosta sin
+     pelear por espacio, se simplifica a solo el mockup del laptop (ya es
+     horizontal de por si) y se ocultan telefono/chips/blobs, que no
+     entraban sin superponerse. */
+  .hero-inner{ grid-template-columns:1.05fr 1fr; gap:14px; padding-block:22px 20px; }
+  .hero-tagline{ display:none; }
+  .hero-copy h1{ font-size:clamp(17px,5.4vw,22px); line-height:1.2; }
+  .hero-copy p{ font-size:12.5px; margin-top:8px; line-height:1.5; }
+  .hero-copy .btn{ margin-top:14px; padding:9px 14px; font-size:12px; white-space:normal; }
+  .hero-carousel{ margin-top:14px; gap:8px; }
+  .hero-arrow{ width:26px; height:26px; }
+  .hero-dot{ width:6px; height:6px; }
+  .hero-art{ height:auto; display:flex; align-items:center; justify-content:center; }
+  .hero-blob, .hero-chip, .hero-art-phone{ display:none; }
+  .hero-art-laptop{ position:static; width:100%; max-width:none; padding:10px 10px 16px; }
 }
 
 /* ==========================================================================
