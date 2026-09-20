@@ -262,7 +262,7 @@ tbody tr:hover{background:var(--gray-25);}
 .logo-drop img{max-height:52px;max-width:100%;margin-bottom:6px;}
 
 .callout{border-radius:var(--radius-m);padding:13px 15px;font-size:12.5px;display:flex;gap:10px;align-items:flex-start;}
-.callout.info{background:var(--blue-lighter);color:var(--navy);border:1px solid var(--blue-light);}
+.callout.info{background:var(--blue-lighter);color:var(--gray-800);border:1px solid var(--blue-light);}
 .callout.warn{background:var(--amber-bg);color:#7A4A00;border:1px solid #F1D9AE;}
 .callout svg{flex:none;margin-top:1px;}
 
@@ -732,7 +732,7 @@ function authBrandHTML(loja){
     return `<div class="auth-brand">
       <div class="brand-mark" style="width:46px;height:46px;border-radius:11px;"><img src="${loja.logo}" alt="${esc(loja.nome||'')}"></div>
       <div style="text-align:left;min-width:0;">
-        <div style="font-family:var(--font-head);font-weight:800;font-size:18px;color:var(--navy);letter-spacing:.2px;overflow-wrap:break-word;">${esc(loja.nome||'')}</div>
+        <div style="font-family:var(--font-head);font-weight:800;font-size:18px;color:var(--gray-800);letter-spacing:.2px;overflow-wrap:break-word;">${esc(loja.nome||'')}</div>
         <div style="font-size:9.5px;letter-spacing:.8px;color:var(--gray-400);font-weight:600;">SISTEMA LEUNAME GESTÃO</div>
       </div>
     </div>`;
@@ -740,7 +740,7 @@ function authBrandHTML(loja){
   return `<div class="auth-brand">
     <div class="brand-mark" style="width:42px;height:42px;"><img src="${LOGO_DATA_URI}" alt="LeuName"></div>
     <div style="text-align:left">
-      <div style="font-family:var(--font-head);font-weight:800;font-size:19px;color:var(--navy);letter-spacing:.2px;">LeuName <span style="font-weight:700;">Gestão</span></div>
+      <div style="font-family:var(--font-head);font-weight:800;font-size:19px;color:var(--gray-800);letter-spacing:.2px;">LeuName <span style="font-weight:700;">Gestão</span></div>
       <div style="font-size:10.5px;letter-spacing:1.5px;color:var(--gray-400);font-weight:700;">LEUNAME SOFTWARES</div>
     </div>
   </div>`;
