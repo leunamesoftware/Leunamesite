@@ -18,6 +18,7 @@
   --gray-200:#dde3ee;
   --red-500:#e5484d;
   --amber:#f5a524;
+  --green:#1a9a55;
 
   --font-head:'Poppins',system-ui,sans-serif;
   --font-body:'Inter',system-ui,sans-serif;
@@ -238,8 +239,10 @@ h1,h2,h3,h4{ font-family:var(--font-head); margin:0; }
 .btn-outline-block{ display:block; width:100%; text-align:center; background:var(--white); color:var(--blue-600); border:1.5px solid var(--blue-500); border-radius:var(--radius-pill); font-weight:700; font-size:13.5px; padding:10px 14px; transition:background .2s var(--ease); }
 .btn-outline-block:hover{ background:var(--blue-50); }
 .btn-ghost{ color:var(--blue-600); font-weight:700; }
-.btn-demo{ background:var(--white); color:#7c3ce0; border:1.5px solid #7c3ce0; }
-.btn-demo:hover{ background:#f5eefe; }
+.btn-cart{ background:var(--green); color:var(--white); }
+.btn-cart:hover{ background:#158049; transform:translateY(-1px); }
+.btn-demo{ background:var(--amber); color:var(--white); }
+.btn-demo:hover{ background:#dd9010; transform:translateY(-1px); }
 .product-actions .btn{ padding:11px 20px; font-size:13.5px; }
 .btn-block{ width:100%; white-space:normal; }
 .btn-danger-ghost{ color:var(--red-500); font-weight:600; font-size:13px; }
@@ -547,8 +550,11 @@ h1,h2,h3,h4{ font-family:var(--font-head); margin:0; }
 .qty-stepper button{ width:38px; height:38px; display:flex; align-items:center; justify-content:center; font-size:18px; color:var(--ink-600); }
 .qty-stepper button:hover{ background:var(--gray-50); }
 .qty-stepper input{ width:44px; text-align:center; border:none; outline:none; font-weight:700; font-size:14px; font-family:inherit; }
-.product-actions{ display:flex; flex-wrap:wrap; gap:12px; align-items:center; margin-top:22px; }
-.product-actions .btn{ flex:1 1 180px; }
+.product-actions{ display:flex; flex-direction:column; gap:12px; margin-top:22px; }
+.product-actions-cart{ display:flex; gap:10px; align-items:center; }
+.product-actions-cart .btn{ flex:1 1 auto; min-width:0; }
+.product-actions-buy{ display:flex; gap:10px; }
+.product-actions-buy .btn{ flex:1 1 0; min-width:0; }
 .trust-row{ display:flex; flex-wrap:wrap; gap:18px; margin-top:26px; padding-top:22px; border-top:1px solid var(--gray-200); }
 .trust-row .trust-item{ flex:1 1 160px; }
 .product-tabs-section{ padding-block:8px 56px; }

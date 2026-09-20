@@ -49,14 +49,18 @@
         '<!-- PRECIO DE EJEMPLO: reemplazar por el precio real -->' +
         '<div class="price-row"><span class="price-big">' + Store.formatPrice(product.price) + '</span>' + (product.real ? '' : '<span class="price-badge">Precio de ejemplo</span>') + '</div>' +
         '<div class="product-actions">' +
-          '<div class="qty-stepper">' +
-            '<button type="button" data-qty-step="qtyInput" data-dir="down" aria-label="Restar">−</button>' +
-            '<input id="qtyInput" type="number" min="1" value="1" aria-label="Cantidad">' +
-            '<button type="button" data-qty-step="qtyInput" data-dir="up" aria-label="Sumar">+</button>' +
+          '<div class="product-actions-cart">' +
+            '<div class="qty-stepper">' +
+              '<button type="button" data-qty-step="qtyInput" data-dir="down" aria-label="Restar">−</button>' +
+              '<input id="qtyInput" type="number" min="1" value="1" aria-label="Cantidad">' +
+              '<button type="button" data-qty-step="qtyInput" data-dir="up" aria-label="Sumar">+</button>' +
+            '</div>' +
+            '<button class="btn btn-cart" data-add-to-cart data-product-id="' + product.id + '" data-qty-target="qtyInput">Añadir al carrito</button>' +
           '</div>' +
-          '<button class="btn btn-outline" data-add-to-cart data-product-id="' + product.id + '" data-qty-target="qtyInput">Añadir al carrito</button>' +
-          '<button class="btn btn-primary" id="buyNowBtn">Comprar ahora</button>' +
-          (product.demoUrl ? '<a class="btn btn-demo" href="' + product.demoUrl + '" target="_blank" rel="noopener">Ver demo</a>' : '') +
+          '<div class="product-actions-buy">' +
+            '<button class="btn btn-primary" id="buyNowBtn">Comprar ahora</button>' +
+            (product.demoUrl ? '<a class="btn btn-demo" href="' + product.demoUrl + '" target="_blank" rel="noopener">Ver demo</a>' : '') +
+          '</div>' +
         '</div>' +
         '<div class="trust-row">' +
           '<div class="trust-item"><span class="trust-ic"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3 4.5 6v6c0 4.5 3.2 7.9 7.5 9 4.3-1.1 7.5-4.5 7.5-9V6L12 3Z"/></svg></span><div><h4>Compra segura</h4></div></div>' +
