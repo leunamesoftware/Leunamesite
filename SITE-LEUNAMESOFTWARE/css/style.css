@@ -605,6 +605,7 @@ h1,h2,h3,h4{ font-family:var(--font-head); margin:0; }
 .cart-summary h2{ font-size:16px; font-weight:800; margin-bottom:16px; }
 .totals-row{ display:flex; justify-content:space-between; font-size:14px; color:var(--ink-600); padding-block:7px; }
 .totals-row-total{ border-top:1px solid var(--gray-200); margin-top:6px; padding-top:14px; font-weight:800; font-size:17px; color:var(--ink-900); }
+.checkout-coupon-note{ margin-top:10px; padding:9px 12px; border-radius:10px; background:#e2f6ea; color:#116f3c; font-size:12.5px; font-weight:600; }
 .cart-actions{ display:flex; flex-direction:column; gap:10px; margin-top:20px; }
 .cart-empty{ text-align:center; padding:70px 20px; color:var(--ink-600); }
 .cart-empty svg{ color:var(--gray-200); margin-bottom:16px; }
@@ -633,6 +634,9 @@ h1,h2,h3,h4{ font-family:var(--font-head); margin:0; }
   border:1.5px dashed var(--gray-200); border-radius:12px; padding:18px; color:var(--ink-600); font-size:13.5px; line-height:1.6; background:var(--gray-50);
 }
 .checkout-empty{ text-align:center; padding:70px 20px; color:var(--ink-600); }
+.checkout-trust-row{ display:flex; flex-wrap:wrap; gap:10px 16px; margin-top:14px; }
+.checkout-trust-row span{ display:inline-flex; align-items:center; gap:6px; font-size:12px; font-weight:600; color:var(--ink-600); }
+.checkout-trust-row svg{ color:var(--green); flex:none; }
 
 /* ==========================================================================
    Confirmación

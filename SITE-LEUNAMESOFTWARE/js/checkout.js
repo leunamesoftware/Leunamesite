@@ -43,6 +43,13 @@
     var payBtn = document.getElementById('payButton');
     var payMsg = document.getElementById('payMessage');
     var emptyNotice = document.getElementById('checkoutEmpty');
+    var emailInput = document.getElementById('ckEmail');
+
+    // Cupón de "próxima compra" detectado automáticamente por el email que
+    // el cliente escribe — nunca pide un código, el sistema lo reconoce
+    // solo. El backend vuelve a validarlo igual al crear la sesión de pago,
+    // esto es solo para mostrar el descuento antes de pagar.
+    var cuponActivo = null;
 
     function render() {
       var items = Cart.lineItems();
@@ -67,11 +74,38 @@
         }).join('');
       }
       if (totalsEl) {
+        var descuento = cuponActivo ? totals.subtotal * (cuponActivo.porcentaje / 100) : 0;
+        var totalConDescuento = totals.subtotal - descuento;
         totalsEl.innerHTML =
           '<div class="totals-row"><span>Subtotal</span><span>' + Store.formatPrice(totals.subtotal) + '</span></div>' +
-          '<div class="totals-row"><span>Descuento</span><span>0,00 €</span></div>' +
-          '<div class="totals-row totals-row-total"><span>Total</span><span>' + Store.formatPrice(totals.subtotal) + '</span></div>';
+          '<div class="totals-row"><span>Descuento' + (cuponActivo ? ' (cupón ' + cuponActivo.codigo + ')' : '') + '</span><span>' + (cuponActivo ? '−' : '') + Store.formatPrice(descuento) + '</span></div>' +
+          '<div class="totals-row totals-row-total"><span>Total</span><span>' + Store.formatPrice(totalConDescuento) + '</span></div>' +
+          (cuponActivo ? '<p class="checkout-coupon-note">🎁 ¡Encontramos un cupón de ' + cuponActivo.porcentaje + '% para tu compra! Se aplica automáticamente.</p>' : '');
       }
+    }
+
+    // Consulta si el email escrito tiene un cupón activo (sin exponer nada
+    // más). Se dispara al salir del campo, con un pequeño debounce mientras
+    // el cliente escribe.
+    var backend = (window.LeuApi && window.LeuApi.BACKEND_URL) || '';
+    var verificarCuponTimer;
+    function verificarCupon() {
+      clearTimeout(verificarCuponTimer);
+      var email = emailInput && emailInput.value.trim();
+      if (!email || !backend || !email.includes('@')) { cuponActivo = null; render(); return; }
+      verificarCuponTimer = setTimeout(function () {
+        fetch(backend + '/cupones/verificar?email=' + encodeURIComponent(email))
+          .then(function (res) { return res.json(); })
+          .then(function (data) {
+            cuponActivo = (data && data.ok && data.cupon) ? data.cupon : null;
+            render();
+          })
+          .catch(function () { /* sin cupón visible si la consulta falla, no bloquea el checkout */ });
+      }, 400);
+    }
+    if (emailInput) {
+      emailInput.addEventListener('input', verificarCupon);
+      emailInput.addEventListener('blur', verificarCupon);
     }
 
     document.addEventListener('cart:changed', render);

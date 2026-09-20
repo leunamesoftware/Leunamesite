@@ -24,6 +24,9 @@
     var licenseText = document.getElementById('licenseKeyText');
     var copyBtn = document.getElementById('copyLicenseBtn');
     var actionsEl = document.getElementById('confirmActions');
+    var couponBox = document.getElementById('confirmCoupon');
+    var couponCodeText = document.getElementById('couponCodeText');
+    var couponPercentText = document.getElementById('couponPercentText');
 
     function showError(msg) {
       if (iconEl) iconEl.style.color = 'var(--ink-400)';
@@ -104,6 +107,12 @@
             });
           });
         }
+      }
+
+      if (pedido.cupon_ganado && couponBox && couponCodeText && couponPercentText) {
+        couponCodeText.textContent = pedido.cupon_ganado.codigo;
+        couponPercentText.textContent = pedido.cupon_ganado.porcentaje;
+        couponBox.hidden = false;
       }
 
       if (actionsEl) actionsEl.hidden = false;
