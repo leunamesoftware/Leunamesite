@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Licenças — Admin LeuName Softwares</title>
+<meta name="description" content="Geração, consulta e revogação de licenças do LeuName Gestão.">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../admin/admin.css">
+</head>
+<body class="admin-body">
+<div class="admin-shell">
+  <div class="admin-topbar">
+    <div class="admin-topbar-brand">
+      <img src="../assets/img/logo-mark.png" alt="" width="32" height="32">
+      <span>LEUNAME<small>LICENÇAS</small></span>
+    </div>
+    <div class="admin-topbar-actions">
+      <button type="button" id="logoutBtn">Sair</button>
+    </div>
+  </div>
+
+  <main class="admin-main">
+    <div class="admin-head">
+      <h1>Licenças</h1>
+      <button class="admin-btn admin-btn-primary" id="newLicBtn" type="button">+ Gerar licença</button>
+    </div>
+
+    <p class="admin-banner" id="apiBanner" hidden></p>
+
+    <div class="admin-card" id="formCard" hidden>
+      <h2>Gerar nova licença</h2>
+      <form id="licForm">
+        <div class="admin-form-grid cols-2">
+          <div class="admin-field">
+            <label class="admin-label" for="lApp">Aplicativo</label>
+            <select class="admin-select" id="lApp">
+              <option value="leuname-gestao">LeuName Gestão</option>
+            </select>
+          </div>
+          <div class="admin-field"><label class="admin-label" for="lOrigem">Origem</label><input class="admin-input" id="lOrigem" value="manual" placeholder="manual, loja-stripe..."></div>
+          <div class="admin-field"><label class="admin-label" for="lNome">Nome do cliente</label><input class="admin-input" id="lNome" placeholder="Ex: Jefferson"></div>
+          <div class="admin-field"><label class="admin-label" for="lContato">Contato (e-mail/telefone)</label><input class="admin-input" id="lContato" placeholder="opcional"></div>
+        </div>
+        <div class="admin-form-actions">
+          <button class="admin-btn admin-btn-primary" type="submit">Gerar</button>
+          <button class="admin-btn admin-btn-outline" type="button" id="cancelFormBtn">Cancelar</button>
+        </div>
+      </form>
+      <div class="admin-banner" id="newKeyBanner" hidden style="margin-top:14px;"></div>
+    </div>
+
+    <div class="admin-card">
+      <h2>Todas as licenças (<span id="licCount">0</span>)</h2>
+      <div class="admin-table-wrap">
+        <table class="admin-table">
+          <thead><tr><th>Chave</th><th>Cliente</th><th>Contato</th><th>Origem</th><th>Status</th><th>Criada em</th><th></th></tr></thead>
+          <tbody id="licBody"><tr><td colspan="7" class="admin-empty">Carregando…</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="admin-licencas.js"></script>
+<script src="painel.js"></script>
+</body>
+</html>

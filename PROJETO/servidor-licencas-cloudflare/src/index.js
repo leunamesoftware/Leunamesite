@@ -306,6 +306,16 @@ export default {
         return json({ ok: true, chave: body.chave, status: 'revogada' });
       }
 
+      // POST /admin/licencas/reativar  { chave }
+      if (pathname === '/admin/licencas/reativar' && request.method === 'POST') {
+        const body = await request.json();
+        if (!body.chave) return json({ ok: false, erro: 'chave_obrigatoria' }, 400);
+        await env.DB.prepare(
+          "UPDATE licencas SET status = 'ativa', revogado_em = NULL WHERE chave = ?"
+        ).bind(body.chave).run();
+        return json({ ok: true, chave: body.chave, status: 'ativa' });
+      }
+
       return json({ ok: false, erro: 'rota_nao_encontrada' }, 404);
     }
 

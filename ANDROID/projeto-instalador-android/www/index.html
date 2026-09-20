@@ -560,6 +560,7 @@ async function syncNow(){
     const push=await syncPush();
     const pull=await syncPull();
     if(push.ok||pull.ok) lsSet('leuname_sync_ultimo',nowISO());
+    checkLicenseRevoked().then(revoked=>{ if(revoked) renderLicenseRevoked(); });
     return {ok:!!(push.ok&&pull.ok),push,pull};
   } finally { _syncInFlight=false; }
 }
@@ -876,6 +877,24 @@ function renderLicenseGate(errMsg){
   document.getElementById('lic-activate').onclick=doActivate;
   input.addEventListener('keydown',(e)=>{ if(e.key==='Enter') doActivate(); });
   input.focus();
+}
+
+function renderLicenseRevoked(){
+  document.getElementById('app-root').classList.remove('ready');
+  const root=document.getElementById('auth-root');
+  root.innerHTML=`
+  <div class="auth-screen"><div class="auth-card">
+    ${authBrandHTML()}
+    <h2 style="font-size:17px;text-align:center;margin-top:6px;">Licença desativada</h2>
+    <div class="callout warn" style="margin-top:10px;"><span>${ic('warn',15)}</span><span>Sua licença foi desativada. Entre em contato com a LeuName Softwares para reativar o acesso.</span></div>
+    <button class="btn outline" id="lic-recheck" style="width:100%;justify-content:center;margin-top:16px;padding:11px;">Verificar novamente</button>
+    ${authFooterHTML()}
+  </div></div>`;
+  document.getElementById('lic-recheck').onclick=async()=>{
+    const btn=document.getElementById('lic-recheck'); btn.disabled=true; btn.textContent='Verificando...';
+    const aindaRevogada=await checkLicenseRevoked();
+    if(!aindaRevogada){ __booted=false; boot(); } else { btn.disabled=false; btn.textContent='Verificar novamente'; toast('Licença ainda está desativada.','warn'); }
+  };
 }
 
 async function renderLogin(){
@@ -2649,6 +2668,24 @@ async function isLicenseActivated(){
   if(!key) return false;
   return await licenseKeyValid(key);
 }
+const LICENSE_REVOKED_LS_KEY='leuname_licenca_revogada';
+/* Consulta o servidor de licencas para saber se a chave foi revogada (ex:
+   cliente inadimplente). So bloqueia com confirmacao explicita do servidor
+   (status !== 'ativa'); qualquer falha de rede, resposta invalida ou chave
+   nao encontrada NAO bloqueia -- o app continua 100% funcional offline. */
+async function checkLicenseRevoked(){
+  const chave=lsGet(LICENSE_LS_KEY);
+  if(!chave) return false;
+  let resp;
+  try{ resp=await fetch(SYNC_API_BASE+'/licencas/verificar?chave='+encodeURIComponent(chave)); }
+  catch(e){ return false; }
+  if(!resp.ok) return false;
+  let data;
+  try{ data=await resp.json(); }catch(e){ return false; }
+  if(!data||!data.ok||!data.encontrada) return false;
+  if(data.status && data.status!=='ativa'){ lsSet(LICENSE_REVOKED_LS_KEY,'1'); return true; }
+  lsSet(LICENSE_REVOKED_LS_KEY,''); return false;
+}
 VIEWS.configuracoes = {
   render: async()=>{
     const tab=STATE.configTab||'loja';
@@ -2969,6 +3006,20 @@ async function boot(){
   try{ await syncMigrateExisting(); }catch(e){ console.error('Falha ao preparar sincronizacao',e); }
   setupPWA();
   if(!(await isLicenseActivated())){ renderLicenseGate(); return; }
+  if(lsGet(LICENSE_REVOKED_LS_KEY)==='1'){
+    renderLicenseRevoked();
+    checkLicenseRevoked().then(revoked=>{ if(!revoked){ __booted=false; boot(); } });
+    return;
+  }
+  // Aguarda a checagem (com teto de 4s) ANTES de renderizar onboarding/login,
+  // para nao correr o risco dessas telas sobrescreverem a tela de bloqueio
+  // caso a resposta do servidor chegue no meio do boot. Offline ou lento:
+  // depois de 4s segue normalmente (nunca trava o app por causa da rede).
+  const revogadaNoBoot = await Promise.race([
+    checkLicenseRevoked(),
+    new Promise(resolve=>setTimeout(()=>resolve(false),4000)),
+  ]);
+  if(revogadaNoBoot){ renderLicenseRevoked(); return; }
   const restored = await tryRestoreSession();
   if(restored){ await startApp(); syncNow().catch(()=>{}); return; }
   let firstRun = await isFirstRun();
