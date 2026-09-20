@@ -73,26 +73,3 @@ jobs:
         # Se a conta trocar de subdomínio workers.dev no futuro, atualize a
         # URL abaixo (e em SITE-LEUNAMESOFTWARE/js/api.js e admin/admin.js).
         run: curl -sS --fail "https://leuname-loja.emanuelantunes2024.workers.dev/health"
-
-      # ---- TESTE TEMPORARIO do upload de imagem em R2 (remover apos verificar) ----
-      - name: TESTE — upload de imagem real via R2
-        run: |
-          python3 -c "
-          import base64
-          open('/tmp/test-1x1.png','wb').write(base64.b64decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII='))
-          "
-          RESP=$(curl -sS -X POST "https://leuname-loja.emanuelantunes2024.workers.dev/admin/productos/kit-iconos-otros/imagen" \
-            -H "Authorization: Bearer ${{ secrets.ADMIN_TOKEN }}" \
-            -H "Content-Type: image/png" \
-            --data-binary @/tmp/test-1x1.png)
-          echo "$RESP"
-          echo "$RESP" | grep -q '"ok": true'
-          IMG_URL=$(python3 -c "import json,sys; print(json.loads('''$RESP''')['imagen_url'])")
-          echo "URL: $IMG_URL"
-          CODIGO=$(curl -sS -o /dev/null -w '%{http_code}' "$IMG_URL")
-          echo "codigo GET imagen: $CODIGO"
-          [ "$CODIGO" = "200" ]
-          # limpieza: vuelve a dejar el producto de ejemplo sin imagen
-          curl -sS -X PUT "https://leuname-loja.emanuelantunes2024.workers.dev/admin/productos/kit-iconos-otros" \
-            -H "Authorization: Bearer ${{ secrets.ADMIN_TOKEN }}" -H "Content-Type: application/json" \
-            -d '{"nombre":"Kit de Iconos y Recursos Gráficos","categoria":"otros","precio":11.90,"imagen_url":null,"tag":"novedad"}'
