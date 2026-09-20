@@ -48,3 +48,18 @@ jobs:
 
       - name: Testar o servidor no ar
         run: curl -sS --fail https://api.leunamesoftware.com/health
+
+      - name: (temporário) Testar push/pull de sincronização
+        shell: bash
+        run: |
+          set -e
+          CHAVE="LEU-Q6W2-B2BV-9EDA"
+          TS=$(date +%s%3N)
+          echo "Enviando (push)..."
+          curl -sS --fail -X POST https://api.leunamesoftware.com/sync/push \
+            -H "Content-Type: application/json" \
+            -d "{\"chave\":\"$CHAVE\",\"alteracoes\":[{\"store\":\"produtos\",\"id\":\"teste-1\",\"payload\":{\"nome\":\"Produto Teste\"},\"atualizado_em\":$TS,\"deletado\":0}]}"
+          echo ""
+          echo "Buscando (pull)..."
+          curl -sS --fail "https://api.leunamesoftware.com/sync/pull?chave=$CHAVE&desde=0"
+          echo ""
