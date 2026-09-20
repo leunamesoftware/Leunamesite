@@ -136,14 +136,26 @@
       var stickyBuy = document.getElementById('demoStickyBuyBtn');
       if (stickyBuy) stickyBuy.addEventListener('click', irAComprar);
 
+      // Visible solo entre el hero y el CTA final -- si no, se duplica
+      // con el botón "Comprar ahora" que ya está dentro del CTA.
       var heroEl = contentEl.querySelector('.demo-hero');
-      if (heroEl && 'IntersectionObserver' in window) {
-        var observer = new IntersectionObserver(function (entries) {
-          entries.forEach(function (entry) {
-            stickyEl.classList.toggle('is-visible', !entry.isIntersecting);
-          });
+      var ctaEl = contentEl.querySelector('.demo-cta');
+      if (heroEl && ctaEl && 'IntersectionObserver' in window) {
+        var heroVisible = true;
+        var ctaVisible = false;
+        function actualizarSticky() {
+          stickyEl.classList.toggle('is-visible', !heroVisible && !ctaVisible);
+        }
+        var heroObserver = new IntersectionObserver(function (entries) {
+          heroVisible = entries[0].isIntersecting;
+          actualizarSticky();
         }, { threshold: 0 });
-        observer.observe(heroEl);
+        heroObserver.observe(heroEl);
+        var ctaObserver = new IntersectionObserver(function (entries) {
+          ctaVisible = entries[0].isIntersecting;
+          actualizarSticky();
+        }, { threshold: 0 });
+        ctaObserver.observe(ctaEl);
       }
     }
   }
