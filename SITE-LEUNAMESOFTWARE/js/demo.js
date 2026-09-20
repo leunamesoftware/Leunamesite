@@ -90,8 +90,9 @@
             '<source src="assets/img/demo/apresentador-transparente.webm" type="video/webm">' +
             '<source src="assets/img/demo/apresentador.mp4" type="video/mp4">' +
           '</video>' +
-          '<button type="button" id="demoMascotPlay" class="demo-hero-play" aria-label="Reproducir con sonido" hidden>' +
-            '<svg viewBox="0 0 24 24" width="26" height="26" fill="currentColor"><path d="M8 5v14l11-7Z"/></svg>' +
+          '<button type="button" id="demoMascotPlay" class="demo-hero-play" aria-label="Activar el sonido" hidden>' +
+            '<svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M8 5v14l11-7Z"/></svg>' +
+            '<span>Activar sonido</span>' +
           '</button>' +
           '<button type="button" id="demoMascotToggle" class="demo-hero-toggle" aria-label="Pausar" hidden>' + ICON_PAUSE + '</button>' +
         '</div>' +
@@ -196,9 +197,14 @@
 
     if (mascotVideo) {
       if (opts.autoplaySound) {
-        reproducirConSonido().catch(function () {
-          // El navegador lo bloqueó (no llegó un gesto real a este
-          // documento) -- se cae al modo "toca para reproducir".
+        reproducirConSonido().then(function () {
+          // Algunos navegadores no rechazan play() -- en cambio, dejan que
+          // el video arranque pero fuerzan muted=true por su cuenta. Si eso
+          // pasa, no hay otro aviso: hay que revisar y mostrar el botón.
+          if (mascotVideo.muted) { if (playBtn) playBtn.hidden = false; }
+        }).catch(function () {
+          // El navegador lo bloqueó de plano (no llegó un gesto real a
+          // este documento) -- se cae al modo "toca para reproducir".
           if (playBtn) playBtn.hidden = false;
         });
       } else if (playBtn) {
