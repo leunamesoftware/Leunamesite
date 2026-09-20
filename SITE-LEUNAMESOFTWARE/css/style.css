@@ -140,7 +140,7 @@ h1,h2,h3,h4{ font-family:var(--font-head); margin:0; }
   font-size:9.5px; font-weight:800; line-height:16px; text-align:center;
 }
 
-.searchbar-mobile{ display:flex; margin-top:12px; height:44px; }
+.searchbar-mobile{ display:flex; margin-top:12px; height:46px; }
 
 @media (min-width:640px){
   .searchbar{ display:flex; margin-inline:10px; }
