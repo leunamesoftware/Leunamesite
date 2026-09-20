@@ -42,6 +42,22 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
         run: printf '%s' "${{ secrets.ADMIN_TOKEN }}" | npx wrangler@latest secret put ADMIN_TOKEN
 
+      - name: Configurar o segredo STRIPE_SECRET_KEY no Worker
+        working-directory: PROJETO/servidor-loja-cloudflare
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+        run: printf '%s' "${{ secrets.STRIPE_SECRET_KEY }}" | npx wrangler@latest secret put STRIPE_SECRET_KEY
+
+      - name: Configurar o segredo STRIPE_WEBHOOK_SECRET no Worker
+        # Fica vazio ate o webhook ser criado manualmente no Dashboard da
+        # Stripe (passo obrigatoriamente manual — precisa da URL deste
+        # Worker ja publicada). Enquanto vazio, a rota /webhook/stripe
+        # responde 503 em vez de aceitar eventos nao verificados.
+        working-directory: PROJETO/servidor-loja-cloudflare
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+        run: printf '%s' "${{ secrets.STRIPE_WEBHOOK_SECRET }}" | npx wrangler@latest secret put STRIPE_WEBHOOK_SECRET
+
       - name: Esperar o Worker propagar
         run: sleep 15
 

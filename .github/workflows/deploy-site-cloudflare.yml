@@ -1,0 +1,43 @@
+name: Deploy Site LeuName Softwares (Cloudflare)
+
+# Publica o site estatico SITE-LEUNAMESOFTWARE/ como um Worker de
+# "static assets" na Cloudflare. Usa o MESMO CF_API_TOKEN ja usado
+# pelos outros dois Workers deste projeto (nenhuma permissao nova
+# necessaria, pois "static assets" e so mais um tipo de Worker).
+#
+# Para futuras atualizacoes do site, basta rodar este workflow de novo
+# (workflow_dispatch) — ou ele roda sozinho quando algo dentro de
+# SITE-LEUNAMESOFTWARE/ muda num push.
+on:
+  workflow_dispatch:
+  push:
+    branches: [claude/leuname-github-setup-qwkedw]
+    paths:
+      - 'SITE-LEUNAMESOFTWARE/**'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Baixar codigo do repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Publicar o site (static assets)
+        working-directory: SITE-LEUNAMESOFTWARE
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+        run: npx wrangler@latest deploy
+
+      - name: Esperar o Worker propagar
+        run: sleep 15
+
+      - name: Testar o site no ar (workers.dev)
+        # URL confirmada apos o primeiro deploy (ver log do passo acima).
+        # Se a conta trocar de subdominio workers.dev no futuro, atualize
+        # aqui e nas referencias a SITE_URL do servidor da loja.
+        run: curl -sS --fail "https://leuname-site.emanuelantunes2024.workers.dev/index.html" > /dev/null

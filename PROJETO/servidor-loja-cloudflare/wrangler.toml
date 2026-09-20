@@ -9,6 +9,20 @@ binding = "DB"
 database_name = "leuname_loja"
 database_id = "960c3bdb-6562-4499-bf66-d55a6347b1db"
 
+# URL publica do site estatico (SITE-LEUNAMESOFTWARE/), usada para montar
+# os links de sucesso/cancelamento do Stripe Checkout. Atualizar se o
+# dominio customizado (www.leunamesoftware.com) for ligado no futuro.
+[vars]
+SITE_URL = "https://leuname-site.emanuelantunes2024.workers.dev"
+
+# Segredos usados por este Worker (configurados via "wrangler secret put"
+# no workflow de deploy, nunca escritos aqui):
+#   ADMIN_TOKEN            -> ja existente, reaproveitado
+#   STRIPE_SECRET_KEY      -> chave secreta da conta Stripe (sk_test_/sk_live_)
+#   STRIPE_WEBHOOK_SECRET  -> assinatura do endpoint de webhook (whsec_...),
+#                             criado manualmente no Dashboard da Stripe
+#                             apontando para <URL-deste-Worker>/webhook/stripe
+
 # Dominio customizado: por enquanto NAO configurado (o Worker fica
 # disponivel apenas em leuname-loja.<subdominio-da-conta>.workers.dev).
 # Para ligar um dominio proprio (ex: loja-api.leunamesoftware.com), repita

@@ -39,8 +39,17 @@ CREATE TABLE IF NOT EXISTS pedidos (
   subtotal REAL NOT NULL,
   total REAL NOT NULL,
   estado TEXT NOT NULL DEFAULT 'pendiente', -- pendiente | pagado | cancelado
+  stripe_session_id TEXT,                   -- id de la Checkout Session de Stripe
+  chave_licencia TEXT,                      -- licencia real generada tras el pago (solo leuname-gestao)
   creado_em TEXT NOT NULL,
   FOREIGN KEY (cliente_id) REFERENCES clientes(id)
+);
+
+-- Registro de eventos de webhook de Stripe ya procesados, para evitar
+-- procesar el mismo evento dos veces si Stripe reintenta la entrega.
+CREATE TABLE IF NOT EXISTS webhook_eventos (
+  id TEXT PRIMARY KEY,
+  procesado_em TEXT NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS pedido_items (
@@ -55,6 +64,7 @@ CREATE TABLE IF NOT EXISTS pedido_items (
 );
 
 CREATE INDEX IF NOT EXISTS idx_pedidos_cliente ON pedidos(cliente_id);
+CREATE INDEX IF NOT EXISTS idx_pedidos_stripe_session ON pedidos(stripe_session_id);
 CREATE INDEX IF NOT EXISTS idx_pedido_items_pedido ON pedido_items(pedido_id);
 CREATE INDEX IF NOT EXISTS idx_productos_categoria ON productos(categoria);
 

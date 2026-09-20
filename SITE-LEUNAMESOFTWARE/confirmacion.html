@@ -113,21 +113,21 @@
 <div class="nav-overlay" id="navOverlay"></div>
 
 <main id="main">
-<!-- Página de ejemplo: hoy solo se llega aquí navegando el enlace directamente.
-     El flujo de checkout.html todavía NO redirige a esta página, porque el pago
-     real (Stripe) no está integrado. Esta plantilla sirve para mostrar cómo
-     lucirá la confirmación una vez que el pago esté conectado. -->
 <div class="container" style="padding-block:56px 80px;">
-  <div class="confirm-card">
-    <div class="confirm-check"><svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="2.4"><path d="m5 13 4 4 10-10"/></svg></div>
-    <h1>¡Gracias por tu compra!</h1>
-    <p>Tu pedido fue confirmado. Te enviamos los detalles a tu correo electrónico.</p>
-    <div class="confirm-order">
-      <div><span>Número de pedido</span><strong>#LN-000123</strong></div>
-      <div><span>Producto</span><strong>LeuName Gestão</strong></div>
-      <div><span>Correo</span><strong>cliente@ejemplo.com</strong></div>
+  <div class="confirm-card" id="confirmCard">
+    <div class="confirm-check" id="confirmIcon"><svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="2.4"><path d="m5 13 4 4 10-10"/></svg></div>
+    <h1 id="confirmTitle">Confirmando tu pago…</h1>
+    <p id="confirmText">Esto solo toma unos segundos. No cierres esta página.</p>
+    <div class="confirm-order" id="confirmOrder" hidden></div>
+    <div class="confirm-license" id="confirmLicense" hidden style="margin-top:18px;padding:16px;border-radius:var(--radius-m);background:var(--blue-50);text-align:left;">
+      <p style="margin:0 0 8px;font-weight:600;">Tu clave de licencia de LeuName Gestão</p>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+        <code id="licenseKeyText" style="font-family:monospace;font-size:14px;background:var(--white);padding:8px 12px;border-radius:8px;flex:1 1 auto;word-break:break-all;"></code>
+        <button type="button" class="btn btn-outline" id="copyLicenseBtn">Copiar</button>
+      </div>
+      <p style="margin:10px 0 0;font-size:13px;color:var(--ink-600);">Guarda esta clave: la necesitarás para activar la app en tus dispositivos.</p>
     </div>
-    <div class="confirm-actions">
+    <div class="confirm-actions" id="confirmActions" hidden>
       <a href="mi-cuenta.html" class="btn btn-primary">Acceder a mis productos</a>
       <a href="categoria.html" class="btn btn-outline">Seguir comprando</a>
     </div>
@@ -203,6 +203,7 @@
 <script src="js/cart.js"></script>
 <script src="js/api.js"></script>
 <script src="js/main.js"></script>
+<script src="js/confirmacion.js"></script>
 
 </body>
 </html>

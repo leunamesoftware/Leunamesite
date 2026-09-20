@@ -1,20 +1,34 @@
 /* ==========================================================================
    LeuName Softwares — Checkout
    --------------------------------------------------------------------------
-   IMPORTANTE: el pago real (Stripe) todavía no está integrado — falta que
-   el cliente entregue sus credenciales de cuenta de Stripe. La función
-   processPayment() de abajo es el único punto que un desarrollador necesita
-   tocar para conectar el cobro real (por ejemplo, creando una Stripe
-   Checkout Session en el backend y redirigiendo al usuario a Stripe).
-   Ningún pago se simula como exitoso en este archivo.
+   processPayment() llama al backend (Worker "leuname-loja"), que crea el
+   pedido con los precios del catálogo del servidor y, con eso, una Stripe
+   Checkout Session real. La respuesta trae la URL de pago de Stripe, a la
+   que redirigimos al cliente — el pago en sí ocurre siempre en la página
+   de Stripe, nunca en este sitio. Ningún pago se marca como exitoso aquí:
+   la confirmación real llega por webhook al backend (ver confirmacion.html).
    ========================================================================== */
 (function () {
   'use strict';
 
-  // TODO: reemplazar por Stripe Checkout Session real.
-  // orderData = { cliente: {...}, items: [...], subtotal, total }
+  // orderData = { cliente: {...}, items: [{id, qty}] }
   async function processPayment(orderData) {
-    throw new Error('Pago no configurado todavía');
+    var backend = (window.LeuApi && window.LeuApi.BACKEND_URL) || '';
+    if (!backend) throw new Error('El servidor de la tienda no está disponible ahora mismo.');
+
+    var res = await fetch(backend + '/checkout/session', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(orderData),
+    });
+    var data = await res.json().catch(function () { return null; });
+    if (!res.ok || !data || !data.ok || !data.url) {
+      var motivo = (data && (data.erro === 'stripe_no_configurado'))
+        ? 'El pago con tarjeta todavía no está activado en esta tienda.'
+        : 'No pudimos iniciar el pago. Intenta de nuevo en unos minutos.';
+      throw new Error(motivo);
+    }
+    return data;
   }
   window.processPayment = processPayment;
 
@@ -66,20 +80,24 @@
     if (form) {
       form.addEventListener('submit', function (e) {
         e.preventDefault();
+        var items = Cart.lineItems();
+        if (!items.length) return;
+
         if (payMsg) {
           payMsg.hidden = false;
-          payMsg.textContent = 'El pago real todavía no está configurado en esta tienda (falta integrar Stripe). En cuanto el cliente entregue sus credenciales, este botón procesará el cobro real.';
+          payMsg.textContent = 'Redirigiendo a la página de pago seguro de Stripe…';
         }
-        var items = Cart.lineItems();
-        var totals = Cart.totals();
+        if (payBtn) payBtn.disabled = true;
+
         var orderData = {
           cliente: Object.fromEntries(new FormData(form).entries()),
-          items: items.map(function (i) { return { id: i.product.id, qty: i.qty }; }),
-          subtotal: totals.subtotal,
-          total: totals.subtotal
+          items: items.map(function (i) { return { id: i.product.id, qty: i.qty }; })
         };
-        processPayment(orderData).catch(function (err) {
-          console.info('Pago no realizado (esperado): ' + err.message);
+        processPayment(orderData).then(function (data) {
+          window.location.href = data.url;
+        }).catch(function (err) {
+          if (payBtn) payBtn.disabled = false;
+          if (payMsg) payMsg.textContent = err.message;
         });
       });
     }
