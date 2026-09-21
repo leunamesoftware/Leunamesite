@@ -764,6 +764,8 @@ h1,h2,h3,h4{ font-family:var(--font-head); margin:0; }
 .confirm-license-row{ display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
 .confirm-license-row code{ font-family:monospace; font-size:14px; background:var(--white); padding:8px 12px; border-radius:8px; flex:1 1 auto; word-break:break-all; }
 .confirm-license-hint{ margin:10px 0 0 !important; font-size:12.5px !important; font-weight:400 !important; color:var(--ink-600) !important; }
+.confirm-download-buttons{ display:flex; gap:10px; flex-wrap:wrap; }
+.confirm-download-buttons .btn{ flex:1 1 auto; text-align:center; }
 .confirm-coupon{ margin-top:18px; padding:16px; border-radius:var(--radius-m); background:linear-gradient(120deg,var(--navy-900),var(--blue-600)); color:var(--white); text-align:left; }
 .confirm-coupon p:first-child{ margin:0 0 6px; font-weight:700; }
 .confirm-coupon p:last-child{ margin:0; font-size:14px; color:rgba(255,255,255,.9); }

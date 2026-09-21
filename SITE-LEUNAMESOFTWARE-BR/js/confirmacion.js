@@ -11,6 +11,15 @@
 (function () {
   'use strict';
 
+  // Links fixos e permanentes dos instaladores (atualizados automaticamente
+  // pelos workflows de build, nunca mudam de endereço).
+  var DOWNLOAD_LINKS = {
+    'leuname-gestao': {
+      android: 'https://api.leunamesoftware.com/download/leuname-gestao.apk',
+      windows: 'https://api.leunamesoftware.com/download/leuname-gestao.exe'
+    }
+  };
+
   document.addEventListener('DOMContentLoaded', function () {
     var params = new URLSearchParams(window.location.search);
     var pedidoId = params.get('pedido');
@@ -117,6 +126,26 @@
             });
           });
           licensesEl.appendChild(box);
+        });
+
+        // Um único bloco de download por produto (não repete se o cliente
+        // comprou mais de uma unidade do mesmo app).
+        var jaMostrados = {};
+        licencias.forEach(function (lic) {
+          var links = DOWNLOAD_LINKS[lic.producto_id];
+          if (!links || jaMostrados[lic.producto_id]) return;
+          jaMostrados[lic.producto_id] = true;
+
+          var dl = document.createElement('div');
+          dl.className = 'confirm-license confirm-download';
+          dl.innerHTML =
+            '<p>Baixe o aplicativo de ' + lic.nombre_producto + '</p>' +
+            '<div class="confirm-download-buttons">' +
+              '<a class="btn btn-primary" href="' + links.android + '">Baixar para Android (.apk)</a>' +
+              '<a class="btn btn-outline" href="' + links.windows + '">Baixar para Windows (.exe)</a>' +
+            '</div>' +
+            '<p class="confirm-license-hint">Depois de instalar, abra o app e digite a chave de licença acima pra ativar.</p>';
+          licensesEl.appendChild(dl);
         });
       }
 

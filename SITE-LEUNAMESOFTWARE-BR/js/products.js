@@ -236,7 +236,7 @@
 
   var FAQS_BY_CATEGORY = {
     aplicaciones: [
-      { q: 'Como recebo o produto depois de comprar?', a: 'O acesso para download é liberado na sua conta imediatamente após a confirmação do pagamento. Você também receberá um e-mail com as instruções.' },
+      { q: 'Como recebo o produto depois de comprar?', a: 'Assim que o pagamento é confirmado, a própria página de confirmação já mostra sua chave de licença e os botões para baixar o aplicativo (Android e Windows).' },
       { q: 'O sistema funciona sem conexão com a internet?', a: 'Depende do produto: confira a descrição de cada aplicativo. Vários dos nossos sistemas foram pensados para funcionar de forma offline.' },
       { q: 'O que acontece se eu tiver um problema técnico?', a: 'Você pode nos escrever para suporte@leunamesoftware.com.br e vamos te ajudar a resolver.' }
     ],
@@ -261,7 +261,7 @@
       { q: 'Em quais programas posso abrir os arquivos?', a: 'Os arquivos vetoriais são compatíveis com programas de edição como Illustrator, Inkscape ou CorelDRAW; também incluímos versões em PNG.' }
     ],
     otros: [
-      { q: 'Como faço o download do produto?', a: 'O link de download fica disponível na sua conta, na seção "Meus produtos", depois que o pagamento for confirmado.' },
+      { q: 'Como faço o download do produto?', a: 'O link de download aparece direto na página de confirmação, assim que o pagamento é aprovado.' },
       { q: 'Os arquivos têm atualizações?', a: 'Quando aplicável, as atualizações são anunciadas na sua conta e por e-mail.' },
       { q: 'Posso pedir suporte?', a: 'Sim, escreva para suporte@leunamesoftware.com.br com qualquer dúvida.' }
     ]
