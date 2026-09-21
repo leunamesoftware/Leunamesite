@@ -4,6 +4,14 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>ConstruGestão — Sistema de Gestão para Materiais de Construção</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#f97316">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="ConstruGestão">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="icon" href="icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
@@ -1057,6 +1065,7 @@ a{ color:inherit; text-decoration:none; }
   box-shadow:var(--shadow-xs);
   display:flex;
   flex-direction:column;
+  min-width:0;
 }
 .panel__head{
   display:flex; align-items:center; justify-content:space-between;
@@ -1468,6 +1477,7 @@ table.dtable tbody tr:hover{ background:var(--bg-surface-alt); }
   .sidebar.is-open{ transform:translateX(0); }
   .sidebar__backdrop.is-open{ display:block; }
   .main-wrap{ margin-left:0; }
+  .app__sidebar-spacer{ width:0 !important; }
   .topbar__menu-btn{ display:flex; }
   .kpi-grid, .kpi-grid--5{ grid-template-columns:1fr 1fr; }
 }
@@ -1523,12 +1533,34 @@ table.dtable tbody tr:hover{ background:var(--bg-surface-alt); }
   .kpi-grid, .kpi-grid--5{ grid-template-columns:1fr 1fr; }
   .quick-actions{ grid-template-columns:1fr; }
 }
+
+/* Celulares estreitos: cabeçalho não cabe busca + "Minha Loja" ao mesmo
+   tempo sem estourar a largura da tela (a busca e a troca de loja já
+   ficam acessíveis pela barra de baixo / menu, então aqui só escondem
+   do topo). */
+@media (max-width:480px){
+  .search{ display:none; }
+  .storepick{ display:none; }
+  .topbar{ gap:8px; }
+}
 </style>
 </head>
 <body>
 
 <div id="auth-root"></div>
-<div class="modal-backdrop" id="cgModal"><div class="modal" id="cgModalBox" style="max-width:560px;max-height:86vh;overflow-y:auto;"></div></div>
+<style>
+  /* Modais do ConstruGestão real (formulários) -- sem isso, <input>/<select>
+     sem largura definida ficam menores que a coluna e o grid de 2 colunas
+     (SKU + Preço, etc.) fica mais largo que a tela no celular. */
+  #cgModal{ min-width:0; }
+  #cgModalBox{ min-width:0; }
+  #cgModalBox *{ min-width:0; }
+  #cgModalBox input, #cgModalBox select, #cgModalBox textarea{ width:100%; box-sizing:border-box; }
+  @media (max-width:520px){
+    #cgModalBox > form > div[style*="grid-template-columns"]{ grid-template-columns:1fr !important; }
+  }
+</style>
+<div class="modal-backdrop" id="cgModal"><div class="modal" id="cgModalBox" style="max-width:560px;max-height:86vh;overflow-y:auto;min-width:0;"></div></div>
 
 <!-- ================= SPRITE DE ÍCONES ================= -->
 <svg style="display:none">
@@ -9954,6 +9986,12 @@ table.dtable tbody tr:hover{ background:var(--bg-surface-alt); }
   else { document.addEventListener('DOMContentLoaded', boot); }
   window.addEventListener('online', function () { syncNow().catch(function () {}); });
   setInterval(function () { syncNow().catch(function () {}); }, 90000);
+
+  // Registra o service worker só pra habilitar "Instalar app" no
+  // celular e no computador -- ele não guarda nada em cache (ver sw.js).
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js').catch(function () {});
+  }
 })();
 
 </script>
