@@ -341,16 +341,19 @@
   function productCardHTML(product) {
     var priceComment = '<!-- PREÇO DE EXEMPLO: substituir pelo preço real -->';
     var desconto = discountPercent(product);
+    // O card inteiro é um único link (padrão Shopee/Mercado Livre): sem
+    // botão "Ver produto" separado sobrando espaço vertical, a imagem e o
+    // preço ficam maiores dentro do mesmo card.
     return (
-      '<article class="product-card">' +
-        '<a class="product-card-media" href="producto.html?id=' + product.id + '">' +
+      '<a class="product-card" href="producto.html?id=' + product.id + '">' +
+        '<div class="product-card-media">' +
           productVisualHTML(product) +
           (product.real ? '<span class="product-real-badge">Produto real</span>' : '') +
           (product.tag && TAG_LABELS[product.tag] ? '<span class="product-tag product-tag-' + product.tag + '">' + TAG_LABELS[product.tag] + '</span>' : '') +
           (desconto ? '<span class="product-discount-badge">-' + desconto + '%</span>' : '') +
-        '</a>' +
+        '</div>' +
         '<div class="product-card-body">' +
-          '<a class="product-card-name" href="producto.html?id=' + product.id + '">' + product.name + '</a>' +
+          '<span class="product-card-name">' + product.name + '</span>' +
           '<div class="product-card-rating">' +
             '<span class="stars">' + starsHTML(product.rating) + '</span>' +
             '<span class="rating-num">' + product.rating.toFixed(1) + '</span>' +
@@ -358,9 +361,8 @@
           '</div>' +
           priceComment +
           '<p class="product-card-price">' + priceHTML(product) + '</p>' +
-          '<a class="btn btn-outline-block" href="producto.html?id=' + product.id + '">Ver produto</a>' +
         '</div>' +
-      '</article>'
+      '</a>'
     );
   }
 
