@@ -563,7 +563,6 @@ h1,h2,h3,h4{ font-family:var(--font-head); margin:0; }
 .pay-badge svg{ flex:none; }
 .pay-badge-mp{ color:#fff; background:#2D9CDB; }
 .pay-badge-pix{ color:#fff; background:#12B5A5; }
-.pay-badge-boleto{ color:#1a1f2b; background:#f0c93a; }
 .pay-badge-stripe{ color:#fff; background:#635BFF; }
 .pay-badge-mastercard{ color:#fff; background:rgba(255,255,255,.08); }
 .pay-badge-visa,.pay-badge-amex,.pay-badge-elo,.pay-badge-hipercard,.pay-badge-caixa{
