@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Admin — LeuName Softwares</title>
-<meta name="description" content="Panel administrativo interno de la tienda LeuName Softwares.">
+<meta name="description" content="Painel administrativo interno da loja LeuName Softwares.">
 <link rel="manifest" href="../admin-manifest.webmanifest">
 <meta name="theme-color" content="#0a2647">
 <link rel="apple-touch-icon" href="../assets/img/icon-192.png">
@@ -17,24 +17,24 @@
 </head>
 <body class="admin-body admin-body-center">
 
-<!-- Panel interno (no es un sistema de cuentas de usuario real): solo guarda
-     el ADMIN_TOKEN en localStorage de este navegador y lo envía como
-     "Authorization: Bearer <token>" en cada llamada a la API del Worker.
-     Es el mismo patrón usado por el panel de licencias. -->
+<!-- Painel interno (não é um sistema de contas de usuário real): só guarda
+     o ADMIN_TOKEN no localStorage deste navegador e o envia como
+     "Authorization: Bearer <token>" em cada chamada à API do Worker.
+     É o mesmo padrão usado pelo painel de licenças. -->
 <div class="admin-login-card">
   <div class="admin-login-brand">
     <img src="../assets/img/logo-mark.png" alt="" width="40" height="40">
     <span>LEUNAME <small>ADMIN</small></span>
   </div>
-  <h1>Acceso administrativo</h1>
-  <p>Introduce el token de administrador para gestionar el catálogo y los pedidos de la tienda.</p>
+  <h1>Acesso administrativo</h1>
+  <p>Digite o token de administrador para gerenciar o catálogo e os pedidos da loja.</p>
   <form id="adminLoginForm">
     <label class="admin-label" for="tokenInput">Token de administrador</label>
     <input class="admin-input" id="tokenInput" type="password" autocomplete="off" required placeholder="••••••••••••">
     <button class="admin-btn admin-btn-primary" type="submit" style="width:100%;margin-top:14px;">Entrar</button>
   </form>
-  <p class="admin-error" id="loginError" hidden>Token inválido o el servidor no respondió. Verifica e inténtalo de nuevo.</p>
-  <p class="admin-note">Herramienta interna. No es un sistema de cuentas de usuario.</p>
+  <p class="admin-error" id="loginError" hidden>Token inválido ou o servidor não respondeu. Verifique e tente novamente.</p>
+  <p class="admin-note">Ferramenta interna. Não é um sistema de contas de usuário.</p>
 </div>
 
 <script src="admin.js"></script>

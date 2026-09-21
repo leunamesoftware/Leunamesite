@@ -15,7 +15,7 @@
     banner.classList.toggle('is-error', !!isError);
   }
 
-  function fmtPrice(v) { return Number(v).toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €'; }
+  function fmtPrice(v) { return 'R$ ' + Number(v).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
   function fmtData(iso) {
     if (!iso) return '';
     try { return new Date(iso.replace(' ', 'T') + 'Z').toLocaleString('pt-BR'); } catch (e) { return iso; }

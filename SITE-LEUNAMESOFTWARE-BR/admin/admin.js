@@ -1,7 +1,7 @@
 /* ==========================================================================
-   LeuName Softwares — Panel admin interno (no es un sistema de cuentas de
-   usuario real). Guarda el ADMIN_TOKEN en localStorage de este navegador
-   y lo envía como Authorization: Bearer <token> en cada llamada.
+   LeuName Softwares — Painel admin interno (não é um sistema de contas de
+   usuário real). Guarda o ADMIN_TOKEN no localStorage deste navegador
+   e o envia como Authorization: Bearer <token> em cada chamada.
    ========================================================================== */
 (function (global) {
   'use strict';
@@ -13,7 +13,7 @@
     try { return localStorage.getItem(STORAGE_KEY) || ''; } catch (e) { return ''; }
   }
   function setToken(token) {
-    try { localStorage.setItem(STORAGE_KEY, token); } catch (e) { /* almacenamiento no disponible */ }
+    try { localStorage.setItem(STORAGE_KEY, token); } catch (e) { /* armazenamento indisponível */ }
   }
   function clearToken() {
     try { localStorage.removeItem(STORAGE_KEY); } catch (e) { /* no-op */ }

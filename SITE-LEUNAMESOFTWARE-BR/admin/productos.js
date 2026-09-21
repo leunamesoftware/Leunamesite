@@ -1,5 +1,5 @@
 /* ==========================================================================
-   LeuName Softwares — Admin: gestión de productos (admin/productos.html)
+   LeuName Softwares — Admin: gestão de produtos (admin/productos.html)
    ========================================================================== */
 (function () {
   'use strict';
@@ -7,8 +7,8 @@
   AdminAPI.requireAuth();
 
   var CATEGORY_NAMES = {
-    aplicaciones: 'Aplicaciones y Sistemas', templates: 'Templates', libros: 'Libros',
-    recetas: 'Recetas', diseno: 'Diseño y Logos', otros: 'Otros productos'
+    aplicaciones: 'Aplicativos e Sistemas', templates: 'Templates', libros: 'Livros',
+    recetas: 'Receitas', diseno: 'Design e Logos', otros: 'Outros produtos'
   };
 
   var formCard = document.getElementById('formCard');
@@ -21,13 +21,13 @@
     banner.classList.toggle('is-error', !!isError);
   }
 
-  function fmtPrice(v) { return Number(v).toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €'; }
+  function fmtPrice(v) { return 'R$ ' + Number(v).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
 
   function renderRows(productos) {
     var body = document.getElementById('productsBody');
     document.getElementById('productCount').textContent = productos.length;
     if (!productos.length) {
-      body.innerHTML = '<tr><td colspan="6" class="admin-empty">Todavía no hay productos.</td></tr>';
+      body.innerHTML = '<tr><td colspan="6" class="admin-empty">Ainda não há produtos.</td></tr>';
       return;
     }
     body.innerHTML = productos.map(function (p) {
@@ -37,12 +37,12 @@
         '<td>' + (CATEGORY_NAMES[p.categoria] || p.categoria) + '</td>' +
         '<td>' + fmtPrice(p.precio) + '</td>' +
         '<td>' +
-          '<span class="admin-badge ' + (p.real ? 'real' : 'ejemplo') + '">' + (p.real ? 'Real' : 'Ejemplo') + '</span> ' +
-          (p.activo ? '' : '<span class="admin-badge inactivo">Inactivo</span>') +
+          '<span class="admin-badge ' + (p.real ? 'real' : 'ejemplo') + '">' + (p.real ? 'Real' : 'Exemplo') + '</span> ' +
+          (p.activo ? '' : '<span class="admin-badge inactivo">Inativo</span>') +
         '</td>' +
         '<td><div class="admin-row-actions">' +
           '<button class="admin-btn admin-btn-outline admin-btn-sm" data-edit="' + p.id + '">Editar</button>' +
-          '<button class="admin-btn admin-btn-danger admin-btn-sm" data-delete="' + p.id + '">Eliminar</button>' +
+          '<button class="admin-btn admin-btn-danger admin-btn-sm" data-delete="' + p.id + '">Excluir</button>' +
         '</div></td>' +
       '</tr>';
     }).join('');
@@ -56,14 +56,14 @@
       currentProducts = data.productos || [];
       renderRows(currentProducts);
     } catch (err) {
-      document.getElementById('productsBody').innerHTML = '<tr><td colspan="6" class="admin-empty">No se pudo conectar con el servidor.</td></tr>';
-      showBanner('No se pudo conectar con el backend (' + AdminAPI.BASE_URL + '). Verifica que el Worker esté desplegado.', true);
+      document.getElementById('productsBody').innerHTML = '<tr><td colspan="6" class="admin-empty">Não foi possível conectar com o servidor.</td></tr>';
+      showBanner('Não foi possível conectar com o backend (' + AdminAPI.BASE_URL + '). Verifique se o Worker está implantado.', true);
     }
   }
 
   function openForm(product) {
     formCard.hidden = false;
-    document.getElementById('formTitle').textContent = product ? 'Editar producto' : 'Nuevo producto';
+    document.getElementById('formTitle').textContent = product ? 'Editar produto' : 'Novo produto';
     document.getElementById('pOriginalId').value = product ? product.id : '';
     document.getElementById('pId').value = product ? product.id : '';
     document.getElementById('pId').disabled = !!product;
@@ -88,9 +88,9 @@
     document.getElementById('pImagenFile').value = '';
     var imagenHint = document.getElementById('pImagenHint');
     if (product) {
-      imagenHint.textContent = 'Elige una imagen (JPG, PNG, WEBP o GIF, máx. 5MB) para subirla ahora.';
+      imagenHint.textContent = 'Escolha uma imagem (JPG, PNG, WEBP ou GIF, máx. 5MB) para enviá-la agora.';
     } else {
-      imagenHint.textContent = 'Guarda el producto primero para poder subir su imagen.';
+      imagenHint.textContent = 'Salve o produto primeiro para poder enviar a imagem.';
     }
 
     formCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -113,10 +113,10 @@
     }
     if (delBtn) {
       var id = delBtn.getAttribute('data-delete');
-      if (confirm('¿Eliminar (desactivar) el producto "' + id + '"?')) {
+      if (confirm('Excluir (desativar) o produto "' + id + '"?')) {
         AdminAPI.api('/admin/productos/' + id, { method: 'DELETE' })
           .then(load)
-          .catch(function () { showBanner('No se pudo eliminar el producto.', true); });
+          .catch(function () { showBanner('Não foi possível excluir o produto.', true); });
       }
     }
   });
@@ -139,8 +139,8 @@
       real: document.getElementById('pReal').checked,
       tag: document.getElementById('pTag').value || null,
       demo_url: document.getElementById('pDemoUrl').value.trim() || null,
-      // El campo de imagen se sube por separado (POST .../imagen); reenviamos
-      // el valor actual aquí para no borrarlo al guardar el resto del formulario.
+      // O campo de imagem é enviado separadamente (POST .../imagen); reenviamos
+      // o valor atual aqui para não apagá-lo ao salvar o restante do formulário.
       imagen_url: document.getElementById('pImagenUrl').value || null
     };
     var request = originalId
@@ -152,10 +152,10 @@
       form.reset();
       load().then(function () {
         if (!originalId) {
-          showBanner('Producto creado. Edítalo de nuevo si quieres subirle una imagen.');
+          showBanner('Produto criado. Edite-o novamente se quiser enviar uma imagem.');
         }
       });
-    }).catch(function () { showBanner('No se pudo guardar el producto.', true); });
+    }).catch(function () { showBanner('Não foi possível salvar o produto.', true); });
   });
 
   document.getElementById('pImagenFile').addEventListener('change', function (e) {
@@ -163,12 +163,12 @@
     if (!file) return;
     var id = document.getElementById('pOriginalId').value;
     if (!id) {
-      showBanner('Guarda el producto primero, luego edítalo de nuevo para subir la imagen.', true);
+      showBanner('Salve o produto primeiro, depois edite-o novamente para enviar a imagem.', true);
       e.target.value = '';
       return;
     }
     var hint = document.getElementById('pImagenHint');
-    hint.textContent = 'Subiendo imagen…';
+    hint.textContent = 'Enviando imagem…';
     fetch(AdminAPI.BASE_URL + '/admin/productos/' + id + '/imagen', {
       method: 'POST',
       headers: { 'Authorization': 'Bearer ' + AdminAPI.getToken(), 'Content-Type': file.type },
@@ -179,11 +179,11 @@
         document.getElementById('pImagenUrl').value = data.imagen_url;
         document.getElementById('pImagenPreview').src = data.imagen_url + '?t=' + Date.now();
         document.getElementById('pImagenPreviewWrap').hidden = false;
-        hint.textContent = 'Imagen subida. Se guardó automáticamente.';
+        hint.textContent = 'Imagem enviada. Foi salva automaticamente.';
         load();
       })
       .catch(function (err) {
-        hint.textContent = 'No se pudo subir la imagen (' + err.message + ').';
+        hint.textContent = 'Não foi possível enviar a imagem (' + err.message + ').';
       });
   });
 
