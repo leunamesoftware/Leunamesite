@@ -36,7 +36,8 @@
       name: 'LeuName Gestão',
       category: 'aplicaciones',
       real: true,
-      price: 29.90, // PREÇO DE EXEMPLO: substituir pelo preço real
+      price: 250.00,
+      originalPrice: 300.00,
       rating: 4.8,
       reviews: 34,
       short: 'Sistema completo de gestão para lojas de celulares, acessórios e assistência técnica.',
@@ -286,6 +287,15 @@
     return 'R$ ' + value.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   }
 
+  // Preço "de/por": quando o produto tem originalPrice (promoção), mostra o
+  // valor riscado antes do preço atual. Sem originalPrice, mostra só o preço.
+  function priceHTML(product) {
+    if (product.originalPrice && product.originalPrice > product.price) {
+      return '<span class="price-old">' + formatPrice(product.originalPrice) + '</span>' + formatPrice(product.price);
+    }
+    return formatPrice(product.price);
+  }
+
   function starsHTML(rating) {
     var full = Math.round(rating * 2) / 2;
     var out = '';
@@ -338,7 +348,7 @@
             '<span class="rating-count">(' + product.reviews + ')</span>' +
           '</div>' +
           priceComment +
-          '<p class="product-card-price">' + formatPrice(product.price) + '</p>' +
+          '<p class="product-card-price">' + priceHTML(product) + '</p>' +
           '<a class="btn btn-outline-block" href="producto.html?id=' + product.id + '">Ver produto</a>' +
         '</div>' +
       '</article>'
@@ -377,6 +387,7 @@
     getProduct: getProduct,
     getProductsByCategory: getProductsByCategory,
     formatPrice: formatPrice,
+    priceHTML: priceHTML,
     starsHTML: starsHTML,
     productVisualHTML: productVisualHTML,
     productCardHTML: productCardHTML,

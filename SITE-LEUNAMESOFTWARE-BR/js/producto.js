@@ -154,7 +154,7 @@
           (product.demoUrl ? ' Clique em «Ver demo» (o botão laranja) e veja uma prévia de como funciona.' : '') +
         '</p>' +
         '<!-- PREÇO DE EXEMPLO: substituir pelo preço real -->' +
-        '<div class="price-row"><span class="price-big">' + Store.formatPrice(product.price) + '</span>' + (product.real ? '' : '<span class="price-badge">Preço de exemplo</span>') + '</div>' +
+        '<div class="price-row"><span class="price-big">' + Store.priceHTML(product) + '</span>' + (product.real ? '' : '<span class="price-badge">Preço de exemplo</span>') + '</div>' +
         '<div class="product-actions">' +
           '<div class="product-actions-cart">' +
             '<div class="qty-stepper">' +

@@ -139,7 +139,7 @@
 
       '<section class="demo-cta">' +
         '<h2>Pronto para começar?</h2>' +
-        '<p class="demo-cta-price">' + Store.formatPrice(product.price) + '</p>' +
+        '<p class="demo-cta-price">' + Store.priceHTML(product) + '</p>' +
         '<button type="button" id="demoBuyNowBtn" class="btn btn-primary btn-block">Comprar agora</button>' +
         '<p class="demo-cta-hint">Pagamento seguro com cartão · entrega digital imediata</p>' +
       '</section>';

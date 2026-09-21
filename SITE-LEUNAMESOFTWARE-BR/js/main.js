@@ -205,6 +205,36 @@
 })();
 
 /* ==========================================================================
+   Capa e preço promocional dos produtos (usados nos cards/listas) -- só aqui
+   no site BR: a capa tem texto em português e o preço "de/por" é uma
+   promoção só do Brasil. O catálogo (products.js / backend) é compartilhado
+   com o site em espanhol, então a troca é feita aqui, no próprio objeto do
+   produto, ao invés de mexer no dado compartilhado (o preço real cobrado no
+   checkout continua vindo do backend, sem mudança).
+   ========================================================================== */
+(function () {
+  'use strict';
+  var PRODUCT_COVERS = {
+    'leuname-gestao': 'assets/img/products/leuname-gestao-capa.jpg'
+  };
+  var PRODUCT_ORIGINAL_PRICE = {
+    'leuname-gestao': 300
+  };
+
+  function aplicarCapas() {
+    var Store = window.LeuStore;
+    if (!Store) return;
+    Store.PRODUCTS.forEach(function (p) {
+      if (PRODUCT_COVERS[p.id]) p.imageUrl = PRODUCT_COVERS[p.id];
+      if (PRODUCT_ORIGINAL_PRICE[p.id]) p.originalPrice = PRODUCT_ORIGINAL_PRICE[p.id];
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', aplicarCapas);
+  document.addEventListener('products:updated', aplicarCapas);
+})();
+
+/* ==========================================================================
    Botão flutuante do WhatsApp — aparece em todas as páginas, abre uma
    conversa direta com o número da empresa no Brasil.
    ========================================================================== */
