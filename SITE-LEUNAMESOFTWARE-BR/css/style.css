@@ -266,28 +266,52 @@ h1,h2,h3,h4{ font-family:var(--font-head); margin:0; }
 .page-hero .breadcrumb, .page-hero .breadcrumb a{ color:rgba(255,255,255,.65); }
 
 /* ==========================================================================
-   Hero (home)
+   Promo banner (home) -- carrossel de banners cheios de largura, estilo
+   Shopee/Mercado Livre: passa sozinho, arrasta no touch, pontos + setas.
    ========================================================================== */
-.hero{ background:linear-gradient(135deg,var(--navy-950) 0%,var(--navy-900) 45%,var(--blue-600) 130%); position:relative; overflow:hidden; }
-.hero-inner{
-  display:grid; gap:18px; align-items:center; padding-block:28px 24px;
-  grid-template-columns:1.15fr 1fr;
+.promo-banner{ position:relative; background:var(--gray-100); }
+.promo-track{
+  display:flex; overflow-x:auto; scroll-snap-type:x mandatory;
+  -webkit-overflow-scrolling:touch; scrollbar-width:none;
 }
-.hero-tagline{ position:absolute; top:22px; right:var(--container-pad); font-family:var(--font-head); font-style:italic; font-weight:500; font-size:12.5px; color:var(--blue-400); letter-spacing:.3px; }
-.hero-copy h1{ color:var(--white); font-size:clamp(30px,5.6vw,46px); font-weight:800; line-height:1.12; }
-.hero-copy h1 .accent{ color:var(--blue-400); }
-.hero-copy p{ color:rgba(255,255,255,.78); font-size:16px; margin-top:16px; max-width:480px; line-height:1.6; }
-.hero-copy .btn{ margin-top:26px; }
-.hero-carousel{ margin-top:28px; display:flex; align-items:center; gap:14px; }
-.hero-arrow{
-  width:38px; height:38px; border-radius:50%; background:rgba(255,255,255,.1); color:var(--white);
-  display:flex; align-items:center; justify-content:center; flex:none; transition:background .2s var(--ease);
+.promo-track::-webkit-scrollbar{ display:none; }
+.promo-slide{
+  flex:0 0 100%; scroll-snap-align:start; display:flex; align-items:center;
+  min-height:230px; color:var(--white); position:relative; overflow:hidden;
 }
-.hero-arrow:hover{ background:rgba(255,255,255,.22); }
-.hero-dots{ display:flex; gap:8px; }
-.hero-dot{ width:8px; height:8px; border-radius:50%; background:rgba(255,255,255,.3); transition:background .2s var(--ease), width .2s var(--ease); }
-.hero-dot.is-active{ background:var(--blue-400); width:22px; border-radius:6px; }
+.promo-slide-1{ background:linear-gradient(135deg,var(--navy-950) 0%,var(--navy-900) 45%,var(--blue-600) 130%); }
+.promo-slide-2{ background:linear-gradient(135deg,#6e1414 0%,#b8291f 55%,#e5484d 130%); }
+.promo-slide-3{ background:linear-gradient(135deg,#0c4a2a 0%,#157a41 55%,#1a9a55 130%); }
+.promo-slide-inner{ position:relative; z-index:2; max-width:520px; }
+.promo-eyebrow{ font-family:var(--font-head); font-weight:700; font-size:11.5px; letter-spacing:.6px; text-transform:uppercase; color:rgba(255,255,255,.75); }
+.promo-badge{ display:inline-block; background:var(--white); color:#b8291f; font-family:var(--font-head); font-weight:800; font-size:12px; padding:4px 11px; border-radius:var(--radius-pill); }
+.promo-slide h1{ color:var(--white); font-size:clamp(24px,5.4vw,38px); font-weight:800; line-height:1.15; margin-top:8px; }
+.promo-slide h1 .accent{ color:var(--blue-400); }
+.promo-slide p{ color:rgba(255,255,255,.85); font-size:15px; margin-top:10px; line-height:1.55; }
+.promo-slide p s{ opacity:.7; }
+.promo-slide .btn{ margin-top:18px; display:inline-block; pointer-events:none; }
+.promo-dots{ position:absolute; left:50%; bottom:14px; transform:translateX(-50%); display:flex; gap:7px; z-index:3; }
+.promo-dot{ width:7px; height:7px; border-radius:50%; background:rgba(255,255,255,.4); transition:background .2s var(--ease), width .2s var(--ease); }
+.promo-dot.is-active{ background:var(--white); width:20px; border-radius:6px; }
+.promo-arrow{
+  position:absolute; top:50%; transform:translateY(-50%); width:36px; height:36px; border-radius:50%;
+  background:rgba(255,255,255,.16); color:var(--white); display:flex; align-items:center; justify-content:center;
+  z-index:3; transition:background .2s var(--ease);
+}
+.promo-arrow:hover{ background:rgba(255,255,255,.3); }
+.promo-arrow-prev{ left:14px; }
+.promo-arrow-next{ right:14px; }
+@media (max-width:639px){
+  .promo-slide{ min-height:210px; }
+  .promo-slide-inner{ padding-inline:20px; }
+  .promo-slide h1{ font-size:clamp(19px,6vw,24px); }
+  .promo-slide p{ font-size:13px; margin-top:6px; }
+  .promo-slide .btn{ margin-top:12px; padding:8px 14px; font-size:12px; }
+  .promo-arrow{ display:none; }
+}
 
+/* Hero (about) -- .hero-art/.hero-art-laptop/.hero-blob são usados em
+   sobre-nosotros.html (mockup ilustrado da seção "Sobre"). */
 .hero-art{ position:relative; height:clamp(260px,42vw,420px); }
 .hero-art-laptop{
   position:absolute; left:6%; bottom:6%; width:78%; max-width:420px;
@@ -322,25 +346,7 @@ h1,h2,h3,h4{ font-family:var(--font-head); margin:0; }
 @keyframes floaty{ 0%,100%{ transform:translateY(0); } 50%{ transform:translateY(-9px); } }
 @media (prefers-reduced-motion:reduce){ .hero-chip{ animation:none; } }
 
-@media (min-width:900px){
-  .hero-inner{ grid-template-columns:1fr 1fr; padding-block:64px 54px; }
-}
-
 @media (max-width:639px){
-  /* El celular pasa a mostrar el hero en horizontal, igual que la
-     composicion de escritorio (texto + ilustracion lado a lado), en vez
-     de apilado. Para que la ilustracion quepa en una columna angosta sin
-     pelear por espacio, se simplifica a solo el mockup del laptop (ya es
-     horizontal de por si) y se ocultan telefono/chips/blobs, que no
-     entraban sin superponerse. */
-  .hero-inner{ grid-template-columns:1.05fr 1fr; gap:14px; padding-block:22px 20px; }
-  .hero-tagline{ display:none; }
-  .hero-copy h1{ font-size:clamp(17px,5.4vw,22px); line-height:1.2; }
-  .hero-copy p{ font-size:12.5px; margin-top:8px; line-height:1.5; }
-  .hero-copy .btn{ margin-top:14px; padding:9px 14px; font-size:12px; white-space:normal; }
-  .hero-carousel{ margin-top:14px; gap:8px; }
-  .hero-arrow{ width:26px; height:26px; }
-  .hero-dot{ width:6px; height:6px; }
   .hero-art{ height:auto; display:flex; align-items:center; justify-content:center; }
   .hero-blob, .hero-chip, .hero-art-phone{ display:none; }
   .hero-art-laptop{ position:static; width:100%; max-width:none; padding:10px 10px 16px; }

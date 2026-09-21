@@ -35,21 +35,55 @@
 })();
 
 /* ==========================================================================
-   Carrossel do Hero — hoje mostra um único slide; o markup e os controles
-   (setas + pontos) já estão prontos para quando existirem mais slides.
+   Carrossel de banners (home) — passa sozinho a cada 5s, arrasta no touch
+   (scroll-snap nativo), pontos e setas sincronizados com a posição real
+   do scroll (então funciona igual seja por clique, seta ou arrasto).
    ========================================================================== */
 (function () {
   'use strict';
-  var carousel = document.querySelector('.hero-carousel');
-  if (!carousel) return;
-  var dots = carousel.querySelectorAll('.hero-dot');
+  var track = document.getElementById('promoTrack');
+  if (!track) return;
+  var slides = track.querySelectorAll('.promo-slide');
+  var dots = document.querySelectorAll('#promoDots .promo-dot');
+  var prevBtn = document.querySelector('.promo-arrow-prev');
+  var nextBtn = document.querySelector('.promo-arrow-next');
+  if (slides.length < 2) return;
+
+  var current = 0;
+  var timer = null;
+
   function setActive(i) {
+    current = i;
     dots.forEach(function (d, idx) { d.classList.toggle('is-active', idx === i); d.setAttribute('aria-current', idx === i ? 'true' : 'false'); });
   }
-  dots.forEach(function (dot, idx) { dot.addEventListener('click', function () { setActive(idx); }); });
-  carousel.querySelectorAll('.hero-arrow').forEach(function (btn) {
-    btn.addEventListener('click', function () { setActive(0); }); // no-op: apenas um slide por enquanto
+  function goTo(i) {
+    var next = (i + slides.length) % slides.length;
+    track.scrollTo({ left: track.clientWidth * next, behavior: 'smooth' });
+    setActive(next);
+  }
+  function resetTimer() {
+    clearTimeout(timer);
+    timer = setTimeout(function () { goTo(current + 1); }, 5000);
+  }
+
+  dots.forEach(function (dot, idx) { dot.addEventListener('click', function () { goTo(idx); resetTimer(); }); });
+  if (nextBtn) nextBtn.addEventListener('click', function () { goTo(current + 1); resetTimer(); });
+  if (prevBtn) prevBtn.addEventListener('click', function () { goTo(current - 1); resetTimer(); });
+
+  // Sincroniza os pontos quando o usuário arrasta manualmente no celular.
+  var scrollTimer;
+  track.addEventListener('scroll', function () {
+    clearTimeout(scrollTimer);
+    scrollTimer = setTimeout(function () {
+      var idx = Math.round(track.scrollLeft / track.clientWidth);
+      if (idx !== current) setActive(idx);
+    }, 120);
   });
+  track.addEventListener('touchstart', function () { clearTimeout(timer); });
+  track.addEventListener('touchend', resetTimer);
+  window.addEventListener('resize', function () { track.scrollTo({ left: track.clientWidth * current }); });
+
+  resetTimer();
 })();
 
 /* ==========================================================================
