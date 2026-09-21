@@ -1,5 +1,10 @@
 /* ==========================================================================
    LeuName Softwares — Admin: configuración del sitio (admin/config.html)
+   --------------------------------------------------------------------------
+   Los banners de la home son solo imagen (sin título/texto/botón) y en
+   cantidad libre -- por eso el formulario guarda la lista en memoria
+   (state.slides) y redibuja slidesWrap entero en cada alta/baja, en vez
+   de campos fijos con id "s0", "s1", "s2" como antes.
    ========================================================================== */
 (function () {
   'use strict';
@@ -10,6 +15,7 @@
   var form = document.getElementById('configForm');
   var banner = document.getElementById('apiBanner');
   var slidesWrap = document.getElementById('slidesWrap');
+  var addSlideBtn = document.getElementById('addSlideBtn');
 
   function showBanner(msg, isError) {
     banner.hidden = false;
@@ -17,69 +23,49 @@
     banner.classList.toggle('is-error', !!isError);
   }
 
-  var TEMA_LABELS = { azul: 'Azul (marca)', vermelho: 'Rojo (promoción)', verde: 'Verde (confianza)' };
+  function escapeAttr(s) {
+    var div = document.createElement('div');
+    div.textContent = s == null ? '' : String(s);
+    return div.innerHTML;
+  }
 
-  function slideBlockHTML(i) {
+  var state = { slides: [] };
+
+  function novoSlideVazio() { return { imagem_url: '', link: '' }; }
+
+  function slideBlockHTML(s, i) {
     return (
-      '<div class="admin-slide-block" data-slide="' + i + '" style="border-top:1px solid var(--gray-200);padding-top:14px;margin-top:14px;">' +
-        '<h3 style="margin:0 0 10px;font-size:13px;color:var(--ink-400);text-transform:uppercase;letter-spacing:.4px;">Pantalla ' + (i + 1) + '</h3>' +
-        '<div class="admin-form-grid cols-2">' +
-          '<div class="admin-field"><label class="admin-label" for="s' + i + 'Eyebrow">Etiqueta pequeña (opcional)</label><input class="admin-input" id="s' + i + 'Eyebrow" placeholder="Ej: Producto real"></div>' +
-          '<div class="admin-field"><label class="admin-label" for="s' + i + 'Tema">Color de fondo (sin imagen)</label>' +
-            '<select class="admin-select" id="s' + i + 'Tema">' +
-              Object.keys(TEMA_LABELS).map(function (k) { return '<option value="' + k + '">' + TEMA_LABELS[k] + '</option>'; }).join('') +
-            '</select>' +
-          '</div>' +
+      '<div class="admin-slide-block" data-index="' + i + '" style="border-top:1px solid var(--gray-200);padding-top:14px;margin-top:14px;">' +
+        '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">' +
+          '<h3 style="margin:0;font-size:13px;color:var(--ink-400);text-transform:uppercase;letter-spacing:.4px;">Banner ' + (i + 1) + '</h3>' +
+          (state.slides.length > 1 ? '<button type="button" class="admin-btn admin-btn-outline admin-btn-sm" data-remover-slide="' + i + '">Quitar este banner</button>' : '') +
         '</div>' +
-        '<div class="admin-field" style="margin-top:10px;"><label class="admin-label" for="s' + i + 'Titulo">Título</label><input class="admin-input" id="s' + i + 'Titulo" required></div>' +
-        '<div class="admin-field" style="margin-top:10px;"><label class="admin-label" for="s' + i + 'Texto">Texto</label><textarea class="admin-textarea" id="s' + i + 'Texto" rows="2"></textarea></div>' +
-        '<div class="admin-form-grid cols-2" style="margin-top:10px;">' +
-          '<div class="admin-field"><label class="admin-label" for="s' + i + 'Botao">Texto del botón</label><input class="admin-input" id="s' + i + 'Botao" placeholder="Ver productos →"></div>' +
-          '<div class="admin-field"><label class="admin-label" for="s' + i + 'Link">Link del botón (al hacer clic en el banner)</label><input class="admin-input" id="s' + i + 'Link" placeholder="categoria.html"></div>' +
+        '<div class="admin-field">' +
+          '<label class="admin-label">Imagen del banner</label>' +
+          '<p class="admin-note" style="text-align:left;margin:0 0 8px;background:var(--blue-50);color:var(--ink-900);padding:10px 12px;border-radius:8px;">' +
+            '<strong>Tamaño recomendado:</strong> 1600 × 500 píxeles (bien ancho, tipo faja).<br>' +
+            '<strong>Formatos aceptados:</strong> JPG, PNG, WEBP o GIF. <strong>Tamaño máximo:</strong> 5 MB.' +
+          '</p>' +
+          (s.imagem_url ? (
+            '<div style="margin-bottom:8px;">' +
+              '<img src="' + escapeAttr(s.imagem_url) + '" alt="" style="width:220px;height:70px;object-fit:cover;border-radius:8px;border:1px solid var(--gray-200);"> ' +
+              '<button type="button" class="admin-btn admin-btn-outline admin-btn-sm" data-remover-imagem="' + i + '">Quitar imagen</button>' +
+            '</div>'
+          ) : '') +
+          '<input type="file" data-imagem-file="' + i + '" accept="image/jpeg,image/png,image/webp,image/gif" class="admin-input" style="padding:8px;">' +
+          '<p class="admin-note" data-hint="' + i + '" style="text-align:left;margin-top:6px;">' + (s.imagem_url ? 'Imagen ya guardada. Sube otra para cambiarla.' : 'Ninguna imagen enviada todavía.') + '</p>' +
         '</div>' +
         '<div class="admin-field" style="margin-top:10px;">' +
-          '<label class="admin-label">Imagen de fondo (opcional, reemplaza el color)</label>' +
-          '<input type="hidden" id="s' + i + 'ImagemUrl">' +
-          '<div id="s' + i + 'ImagemPreviewWrap" hidden style="margin-bottom:8px;">' +
-            '<img id="s' + i + 'ImagemPreview" alt="" style="width:160px;height:80px;object-fit:cover;border-radius:8px;border:1px solid var(--gray-200);">' +
-            ' <button type="button" class="admin-btn admin-btn-outline admin-btn-sm" data-remover-imagem="' + i + '">Quitar imagen</button>' +
-          '</div>' +
-          '<input type="file" id="s' + i + 'ImagemFile" accept="image/jpeg,image/png,image/webp,image/gif" class="admin-input" style="padding:8px;">' +
-          '<p class="admin-note" id="s' + i + 'ImagemHint" style="text-align:left;margin-top:6px;">Recomendado: 1200×600px o más, formato paisaje.</p>' +
+          '<label class="admin-label">Link al hacer clic (opcional)</label>' +
+          '<input class="admin-input" data-link="' + i + '" placeholder="categoria.html" value="' + escapeAttr(s.link) + '">' +
         '</div>' +
       '</div>'
     );
   }
 
-  var N_SLIDES = 3;
-  slidesWrap.innerHTML = '';
-  for (var i = 0; i < N_SLIDES; i++) slidesWrap.insertAdjacentHTML('beforeend', slideBlockHTML(i));
-
-  function preencherSlide(i, s) {
-    s = s || {};
-    document.getElementById('s' + i + 'Eyebrow').value = s.eyebrow || '';
-    document.getElementById('s' + i + 'Tema').value = s.tema || 'azul';
-    document.getElementById('s' + i + 'Titulo').value = s.titulo || '';
-    document.getElementById('s' + i + 'Texto').value = s.texto || '';
-    document.getElementById('s' + i + 'Botao').value = s.boton_texto || '';
-    document.getElementById('s' + i + 'Link').value = s.link || '';
-    document.getElementById('s' + i + 'ImagemUrl').value = s.imagem_url || '';
-    if (s.imagem_url) {
-      document.getElementById('s' + i + 'ImagemPreview').src = s.imagem_url;
-      document.getElementById('s' + i + 'ImagemPreviewWrap').hidden = false;
-    }
-  }
-
-  function lerSlide(i) {
-    return {
-      eyebrow: document.getElementById('s' + i + 'Eyebrow').value.trim(),
-      tema: document.getElementById('s' + i + 'Tema').value,
-      titulo: document.getElementById('s' + i + 'Titulo').value.trim(),
-      texto: document.getElementById('s' + i + 'Texto').value.trim(),
-      boton_texto: document.getElementById('s' + i + 'Botao').value.trim(),
-      link: document.getElementById('s' + i + 'Link').value.trim() || 'categoria.html',
-      imagem_url: document.getElementById('s' + i + 'ImagemUrl').value || null
-    };
+  function renderSlides() {
+    if (!state.slides.length) state.slides.push(novoSlideVazio());
+    slidesWrap.innerHTML = state.slides.map(slideBlockHTML).join('');
   }
 
   async function load() {
@@ -94,34 +80,65 @@
         if (cfg.banner_slides) {
           try {
             var slides = JSON.parse(cfg.banner_slides);
-            slides.forEach(function (s, i) { if (i < N_SLIDES) preencherSlide(i, s); });
-          } catch (e) { /* JSON inválido, formulario queda en blanco */ }
+            if (Array.isArray(slides) && slides.length) {
+              state.slides = slides.map(function (s) { return { imagem_url: s.imagem_url || '', link: s.link || '' }; });
+            }
+          } catch (e) { /* JSON inválido, empieza vacío */ }
         }
       }
     } catch (err) {
       showBanner('No se pudo cargar la configuración actual (' + AdminAPI.BASE_URL + ').', true);
     }
+    renderSlides();
   }
 
   form.addEventListener('submit', function (e) {
     e.preventDefault();
+    var slidesValidos = state.slides
+      .filter(function (s) { return s.imagem_url; })
+      .map(function (s) { return { imagem_url: s.imagem_url, link: s.link || '' }; });
     var payload = {
       site: SITE,
-      banner_slides: [lerSlide(0), lerSlide(1), lerSlide(2)]
+      banner_slides: slidesValidos
     };
     AdminAPI.api('/admin/config', { method: 'PUT', body: JSON.stringify(payload) })
       .then(function () { showBanner('Configuración guardada. Ya está activa en el sitio.'); })
       .catch(function () { showBanner('No se pudo guardar.', true); });
   });
 
+  addSlideBtn.addEventListener('click', function () {
+    state.slides.push(novoSlideVazio());
+    renderSlides();
+  });
+
+  slidesWrap.addEventListener('click', function (e) {
+    var remSlide = e.target.closest('[data-remover-slide]');
+    if (remSlide) {
+      state.slides.splice(Number(remSlide.getAttribute('data-remover-slide')), 1);
+      renderSlides();
+      return;
+    }
+    var remImg = e.target.closest('[data-remover-imagem]');
+    if (remImg) {
+      state.slides[Number(remImg.getAttribute('data-remover-imagem'))].imagem_url = '';
+      renderSlides();
+    }
+  });
+
+  slidesWrap.addEventListener('input', function (e) {
+    var link = e.target.closest('input[data-link]');
+    if (!link) return;
+    state.slides[Number(link.getAttribute('data-link'))].link = link.value.trim();
+  });
+
   slidesWrap.addEventListener('change', function (e) {
-    var input = e.target.closest('input[type="file"][id$="ImagemFile"]');
+    var input = e.target.closest('input[type="file"][data-imagem-file]');
     if (!input) return;
     var file = input.files[0];
     if (!file) return;
-    var i = input.id.match(/^s(\d+)ImagemFile$/)[1];
-    var hint = document.getElementById('s' + i + 'ImagemHint');
-    hint.textContent = 'Enviando imagen…';
+    var i = Number(input.getAttribute('data-imagem-file'));
+    var hint = slidesWrap.querySelector('[data-hint="' + i + '"]');
+    if (hint) hint.textContent = 'Enviando imagen…';
     fetch(AdminAPI.BASE_URL + '/admin/upload-imagem?pasta=banners', {
       method: 'POST',
       headers: { 'Authorization': 'Bearer ' + AdminAPI.getToken(), 'Content-Type': file.type },
@@ -129,23 +146,12 @@
     })
       .then(function (res) { return res.json().then(function (data) { if (!res.ok) throw new Error(data.erro || 'error'); return data; }); })
       .then(function (data) {
-        document.getElementById('s' + i + 'ImagemUrl').value = data.imagen_url;
-        document.getElementById('s' + i + 'ImagemPreview').src = data.imagen_url;
-        document.getElementById('s' + i + 'ImagemPreviewWrap').hidden = false;
-        hint.textContent = 'Imagen enviada. Guarda el formulario para confirmar.';
+        state.slides[i].imagem_url = data.imagen_url;
+        renderSlides();
       })
       .catch(function (err) {
-        hint.textContent = 'No se pudo enviar la imagen (' + err.message + ').';
+        if (hint) hint.textContent = 'No se pudo enviar la imagen (' + err.message + ').';
       });
-  });
-
-  slidesWrap.addEventListener('click', function (e) {
-    var btn = e.target.closest('[data-remover-imagem]');
-    if (!btn) return;
-    var i = btn.getAttribute('data-remover-imagem');
-    document.getElementById('s' + i + 'ImagemUrl').value = '';
-    document.getElementById('s' + i + 'ImagemPreviewWrap').hidden = true;
-    document.getElementById('s' + i + 'ImagemFile').value = '';
   });
 
   document.getElementById('logoFile').addEventListener('change', function (e) {
@@ -174,5 +180,6 @@
     location.href = 'login.html';
   });
 
+  renderSlides();
   load();
 })();

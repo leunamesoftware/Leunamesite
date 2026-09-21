@@ -44,7 +44,11 @@
 
     <form id="configForm">
       <div class="admin-card">
-        <h2>Logo</h2>
+        <h2>Logo (cabecera del sitio)</h2>
+        <p class="admin-note" style="text-align:left;margin:0 0 8px;background:var(--blue-50);color:var(--ink-900);padding:10px 12px;border-radius:8px;">
+          <strong>Tamaño recomendado:</strong> altura de 60–80 píxeles (ancho proporcional). PNG con fondo transparente queda mejor.<br>
+          <strong>Formatos aceptados:</strong> JPG, PNG, WEBP o SVG. <strong>Tamaño máximo:</strong> 2 MB.
+        </p>
         <div id="logoPreviewWrap" hidden style="margin-bottom:10px;">
           <img id="logoPreview" alt="" style="height:48px;border-radius:8px;">
         </div>
@@ -53,8 +57,10 @@
       </div>
 
       <div class="admin-card">
-        <h2>Banner de la home (3 pantallas que pasan solas)</h2>
+        <h2>Banners de la home (rotativos, solo imagen)</h2>
+        <p class="admin-note" style="text-align:left;margin:0 0 4px;">Sube la imagen ya lista, como quieras (con texto, promoción, lo que sea). El sitio no escribe nada encima — ni botón. Puedes tener los banners que quieras.</p>
         <div id="slidesWrap"></div>
+        <button class="admin-btn admin-btn-outline" type="button" id="addSlideBtn" style="margin-top:14px;">+ Agregar banner</button>
       </div>
 
       <div class="admin-form-actions">

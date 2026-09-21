@@ -653,12 +653,19 @@ export default {
       // só a URL -- quem chamou decide onde guardar essa URL.
       if (pathname === '/admin/upload-imagem' && request.method === 'POST') {
         const contentType = request.headers.get('Content-Type') || 'application/octet-stream';
-        const extPorTipo = { 'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp', 'image/gif': 'gif' };
+        const extPorTipo = { 'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp', 'image/gif': 'gif', 'video/mp4': 'mp4' };
         const ext = extPorTipo[contentType];
-        if (!ext) return json({ ok: false, erro: 'tipo_no_soportado', detalle: 'Usa JPG, PNG, WEBP o GIF.' }, 400);
+        if (!ext) return json({ ok: false, erro: 'tipo_no_soportado', detalle: 'Usa JPG, PNG, WEBP, GIF o MP4.' }, 400);
 
+        // Video (vídeo de demonstração do produto) tem limite maior que
+        // imagem -- o painel já avisa "máximo 30MB" pro vídeo, então o
+        // backend precisa aceitar o mesmo tamanho, senão o upload falha
+        // silenciosamente mesmo dentro do que a tela promete.
+        const limiteBytes = contentType === 'video/mp4' ? 30 * 1024 * 1024 : 5 * 1024 * 1024;
         const bytes = await request.arrayBuffer();
-        if (bytes.byteLength > 5 * 1024 * 1024) return json({ ok: false, erro: 'archivo_muy_grande', detalle: 'Maximo 5MB.' }, 400);
+        if (bytes.byteLength > limiteBytes) {
+          return json({ ok: false, erro: 'archivo_muy_grande', detalle: `Maximo ${limiteBytes / (1024 * 1024)}MB.` }, 400);
+        }
 
         const pasta = (url.searchParams.get('pasta') || 'uploads').replace(/[^a-z0-9-]/g, '');
         const clave = `${pasta}/${crypto.randomUUID()}.${ext}`;

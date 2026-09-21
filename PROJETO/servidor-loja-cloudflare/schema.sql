@@ -103,7 +103,7 @@ CREATE TABLE IF NOT EXISTS site_config (
   site TEXT PRIMARY KEY,           -- 'br' | 'es'
   logo_url TEXT,                   -- URL da logo (R2). NULL = usa a logo padrão do código
   whatsapp_numero TEXT,            -- só usado pelo site BR
-  banner_slides TEXT,              -- JSON array de {eyebrow, titulo, texto, boton_texto, link, tema}
+  banner_slides TEXT,              -- JSON array de {imagem_url, link} -- só imagem, sem texto; qualquer quantidade
   actualizado_em TEXT NOT NULL
 );
 

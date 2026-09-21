@@ -20,30 +20,24 @@
     return div.innerHTML;
   }
 
-  function slideHTML(s) {
-    var tema = ['azul', 'vermelho', 'verde'].indexOf(s.tema) !== -1 ? s.tema : 'azul';
-    // Com imagem de fundo enviada no painel, ela some por cima da cor do
-    // tema (mesma classe continua no elemento, só não aparece); sem
-    // imagem, usa a cor escolhida normalmente.
+  var THEMES = ['azul', 'vermelho', 'verde'];
+
+  // Banner é só imagem, sem texto: o lojista sobe a foto pronta no painel
+  // e escolhe pra onde ela leva ao clicar (opcional). A cor de tema é só
+  // um fundo de reserva enquanto nenhuma imagem foi enviada ainda.
+  function slideHTML(s, tema) {
     var estilo = s.imagem_url ? ' style="background-image:url(&#39;' + escapeHTML(s.imagem_url) + '&#39;)"' : '';
-    return (
-      '<a class="promo-slide promo-theme-' + tema + '"' + estilo + ' href="' + escapeHTML(s.link || 'categoria.html') + '">' +
-        '<div class="promo-slide-inner container">' +
-          (s.eyebrow ? '<span class="promo-eyebrow">' + escapeHTML(s.eyebrow) + '</span>' : '') +
-          '<h1>' + escapeHTML(s.titulo) + '</h1>' +
-          (s.texto ? '<p>' + escapeHTML(s.texto) + '</p>' : '') +
-          (s.boton_texto ? '<span class="btn btn-primary">' + escapeHTML(s.boton_texto) + '</span>' : '') +
-        '</div>' +
-      '</a>'
-    );
+    var href = escapeHTML(s.link || 'categoria.html');
+    return '<a class="promo-slide promo-theme-' + tema + '"' + estilo + ' href="' + href + '" aria-label="Banner promocional"></a>';
   }
 
   function aplicarBanner(slides) {
-    if (!slides || !slides.length) return;
+    slides = (slides || []).filter(function (s) { return s && s.imagem_url; });
+    if (!slides.length) return;
     var track = document.getElementById('promoTrack');
     var dotsWrap = document.getElementById('promoDots');
     if (!track || !dotsWrap) return;
-    track.innerHTML = slides.map(slideHTML).join('');
+    track.innerHTML = slides.map(function (s, i) { return slideHTML(s, THEMES[i % THEMES.length]); }).join('');
     dotsWrap.innerHTML = slides.map(function (s, i) {
       return '<button class="promo-dot' + (i === 0 ? ' is-active' : '') + '" type="button" aria-current="' + (i === 0 ? 'true' : 'false') + '" aria-label="Slide ' + (i + 1) + '"></button>';
     }).join('');
