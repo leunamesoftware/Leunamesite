@@ -269,8 +269,15 @@
       });
     });
 
-    var related = Store.getProductsByCategory(product.category).filter(function (p) { return p.id !== product.id; }).slice(0, 6);
-    if (!related.length) related = Store.PRODUCTS.filter(function (p) { return p.id !== product.id; }).slice(0, 6);
-    Store.mountProductGrid('relatedGrid', related);
+    function renderRelated() {
+      var related = Store.getProductsByCategory(product.category).filter(function (p) { return p.id !== product.id; }).slice(0, 6);
+      if (!related.length) related = Store.PRODUCTS.filter(function (p) { return p.id !== product.id; }).slice(0, 6);
+      Store.mountProductGrid('relatedGrid', related);
+    }
+    // Re-renderiza quando o catálogo real chega do servidor (a primeira
+    // renderização usa os dados estáticos de fallback, que incluem
+    // exemplos que já foram desativados no backend).
+    document.addEventListener('products:updated', renderRelated);
+    renderRelated();
   });
 })();

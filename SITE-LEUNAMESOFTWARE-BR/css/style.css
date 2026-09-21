@@ -37,9 +37,11 @@
 @media (min-width:1024px){ :root{ --container-pad:36px; } }
 
 *,*::before,*::after{ box-sizing:border-box; }
-html{ scroll-behavior:smooth; }
+html{ scroll-behavior:smooth; min-height:100%; background:var(--gray-50); }
 body{
   margin:0;
+  min-height:100vh;
+  min-height:100dvh;
   font-family:var(--font-body);
   background:var(--gray-50);
   color:var(--ink-900);
@@ -550,6 +552,13 @@ h1,h2,h3,h4{ font-family:var(--font-head); margin:0; }
   font-size:11.5px; font-weight:600; padding:5px 10px; border-radius:6px; white-space:nowrap;
 }
 .pay-badge-playstore{ background:rgba(255,255,255,.12); }
+.pay-badge svg{ flex:none; }
+.pay-badge-mp{ color:#fff; background:#2D9CDB; }
+.pay-badge-pix{ color:#fff; background:#12B5A5; }
+.pay-badge-stripe{ color:#fff; background:#635BFF; }
+.pay-badge-visa,.pay-badge-amex{ padding:5px 9px; font-family:Arial,sans-serif; font-weight:800; font-style:italic; letter-spacing:.5px; font-size:11px; }
+.pay-badge-visa{ color:#1A1F71; background:#fff; }
+.pay-badge-amex{ color:#fff; background:#006FCF; }
 
 /* ==========================================================================
    Página de producto

@@ -60,6 +60,10 @@
 
     applyBtn.addEventListener('click', render);
     sortSelect.addEventListener('change', render);
+    // Re-renderiza quando o catálogo real chega do servidor (a primeira
+    // renderização usa os dados estáticos de fallback, que incluem
+    // exemplos que já foram desativados no backend).
+    document.addEventListener('products:updated', render);
     render();
   });
 })();
