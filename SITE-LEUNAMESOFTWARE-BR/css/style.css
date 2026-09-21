@@ -537,6 +537,20 @@ h1,h2,h3,h4{ font-family:var(--font-head); margin:0; }
 .footer-bottom{ border-top:1px solid rgba(255,255,255,.1); padding-block:14px; display:flex; flex-direction:column; gap:5px; font-size:11.5px; }
 @media (min-width:640px){ .footer-bottom{ flex-direction:row; align-items:center; justify-content:space-between; } }
 
+.footer-badges{
+  border-top:1px solid rgba(255,255,255,.1); padding-block:20px;
+  display:flex; flex-direction:column; gap:16px;
+}
+@media (min-width:640px){ .footer-badges{ flex-direction:row; align-items:center; justify-content:space-between; } }
+.footer-badges-group{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+.footer-badges-label{ font-size:11.5px; font-weight:600; color:rgba(255,255,255,.5); text-transform:uppercase; letter-spacing:.4px; }
+.footer-payment-icons{ display:flex; gap:8px; flex-wrap:wrap; }
+.pay-badge{
+  display:inline-flex; align-items:center; gap:5px; background:rgba(255,255,255,.08); color:rgba(255,255,255,.85);
+  font-size:11.5px; font-weight:600; padding:5px 10px; border-radius:6px; white-space:nowrap;
+}
+.pay-badge-playstore{ background:rgba(255,255,255,.12); }
+
 /* ==========================================================================
    Página de producto
    ========================================================================== */

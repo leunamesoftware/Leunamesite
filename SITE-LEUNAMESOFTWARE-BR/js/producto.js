@@ -20,6 +20,12 @@
     ]
   };
 
+  // Link da ficha na Google Play -- só preencher aqui quando o app for
+  // publicado de verdade lá (o selo "Disponível na Play Store" só aparece
+  // pros produtos com uma entrada nesta lista). Ex.:
+  // 'leuname-gestao': 'https://play.google.com/store/apps/details?id=...'
+  var PRODUCT_PLAYSTORE = {};
+
   // Lightbox simples: abre a foto clicada em tela cheia e deixa passar
   // pras próximas/anteriores sem fechar (seta, teclado ou arrastar o dedo).
   var lightboxEl = null;
@@ -137,6 +143,7 @@
       '<div class="product-info">' +
         '<span class="cat-tag">' + (cat ? cat.name : '') + '</span>' +
         (product.real ? '<span class="cat-tag" style="background:#e2f6ea;color:#1a9a55;margin-left:8px;">Produto real</span>' : '') +
+        (PRODUCT_PLAYSTORE[product.id] ? '<a class="cat-tag" href="' + PRODUCT_PLAYSTORE[product.id] + '" target="_blank" rel="noopener" style="background:#e8f0fe;color:#1a56db;margin-left:8px;">Disponível na Play Store</a>' : '') +
         '<h1>' + product.name + '</h1>' +
         '<div class="product-card-rating">' +
           '<span class="stars">' + Store.starsHTML(product.rating) + '</span>' +
