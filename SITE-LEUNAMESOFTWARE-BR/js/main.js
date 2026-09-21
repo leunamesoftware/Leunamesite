@@ -38,52 +38,66 @@
    Carrossel de banners (home) — passa sozinho a cada 5s, arrasta no touch
    (scroll-snap nativo), pontos e setas sincronizados com a posição real
    do scroll (então funciona igual seja por clique, seta ou arrasto).
+
+   Exposto como window.LeuPromoCarousel.init() porque js/site-config.js
+   pode trocar os slides (vindos do banco, editados pelo painel admin)
+   DEPOIS que a página já carregou -- precisa poder reiniciar o carrossel
+   em cima do novo conteúdo.
    ========================================================================== */
 (function () {
   'use strict';
-  var track = document.getElementById('promoTrack');
-  if (!track) return;
-  var slides = track.querySelectorAll('.promo-slide');
-  var dots = document.querySelectorAll('#promoDots .promo-dot');
-  var prevBtn = document.querySelector('.promo-arrow-prev');
-  var nextBtn = document.querySelector('.promo-arrow-next');
-  if (slides.length < 2) return;
+  var outerTimer = null;
 
-  var current = 0;
-  var timer = null;
+  function init() {
+    clearTimeout(outerTimer);
+    var track = document.getElementById('promoTrack');
+    if (!track) return;
+    var slides = track.querySelectorAll('.promo-slide');
+    var dots = document.querySelectorAll('#promoDots .promo-dot');
+    var prevBtn = document.querySelector('.promo-arrow-prev');
+    var nextBtn = document.querySelector('.promo-arrow-next');
+    if (slides.length < 2) return;
 
-  function setActive(i) {
-    current = i;
-    dots.forEach(function (d, idx) { d.classList.toggle('is-active', idx === i); d.setAttribute('aria-current', idx === i ? 'true' : 'false'); });
+    var current = 0;
+
+    function setActive(i) {
+      current = i;
+      dots.forEach(function (d, idx) { d.classList.toggle('is-active', idx === i); d.setAttribute('aria-current', idx === i ? 'true' : 'false'); });
+    }
+    function goTo(i) {
+      var next = (i + slides.length) % slides.length;
+      track.scrollTo({ left: track.clientWidth * next, behavior: 'smooth' });
+      setActive(next);
+    }
+    function resetTimer() {
+      clearTimeout(outerTimer);
+      outerTimer = setTimeout(function () { goTo(current + 1); }, 5000);
+    }
+
+    dots.forEach(function (dot, idx) { dot.addEventListener('click', function () { goTo(idx); resetTimer(); }); });
+    // .onclick em vez de addEventListener: se init() rodar de novo (config
+    // carregada), os mesmos botões de seta são reaproveitados -- assim o
+    // handler antigo é substituído, nunca duplicado.
+    if (nextBtn) nextBtn.onclick = function () { goTo(current + 1); resetTimer(); };
+    if (prevBtn) prevBtn.onclick = function () { goTo(current - 1); resetTimer(); };
+
+    var scrollTimer;
+    track.onscroll = function () {
+      clearTimeout(scrollTimer);
+      scrollTimer = setTimeout(function () {
+        var idx = Math.round(track.scrollLeft / track.clientWidth);
+        if (idx !== current) setActive(idx);
+      }, 120);
+    };
+    track.ontouchstart = function () { clearTimeout(outerTimer); };
+    track.ontouchend = resetTimer;
+    window.addEventListener('resize', function () { track.scrollTo({ left: track.clientWidth * current }); });
+
+    resetTimer();
   }
-  function goTo(i) {
-    var next = (i + slides.length) % slides.length;
-    track.scrollTo({ left: track.clientWidth * next, behavior: 'smooth' });
-    setActive(next);
-  }
-  function resetTimer() {
-    clearTimeout(timer);
-    timer = setTimeout(function () { goTo(current + 1); }, 5000);
-  }
 
-  dots.forEach(function (dot, idx) { dot.addEventListener('click', function () { goTo(idx); resetTimer(); }); });
-  if (nextBtn) nextBtn.addEventListener('click', function () { goTo(current + 1); resetTimer(); });
-  if (prevBtn) prevBtn.addEventListener('click', function () { goTo(current - 1); resetTimer(); });
-
-  // Sincroniza os pontos quando o usuário arrasta manualmente no celular.
-  var scrollTimer;
-  track.addEventListener('scroll', function () {
-    clearTimeout(scrollTimer);
-    scrollTimer = setTimeout(function () {
-      var idx = Math.round(track.scrollLeft / track.clientWidth);
-      if (idx !== current) setActive(idx);
-    }, 120);
-  });
-  track.addEventListener('touchstart', function () { clearTimeout(timer); });
-  track.addEventListener('touchend', resetTimer);
-  window.addEventListener('resize', function () { track.scrollTo({ left: track.clientWidth * current }); });
-
-  resetTimer();
+  window.LeuPromoCarousel = { init: init };
+  document.addEventListener('DOMContentLoaded', init);
 })();
 
 /* ==========================================================================

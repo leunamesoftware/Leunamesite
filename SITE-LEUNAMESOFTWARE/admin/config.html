@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="es">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Painel Admin — LeuName Softwares</title>
-<meta name="description" content="Painel administrativo central da LeuName Softwares.">
+<title>Configuración del sitio — Admin LeuName Softwares</title>
+<meta name="description" content="Editar logo y banners de la home del sitio LeuName Softwares.">
 <link rel="manifest" href="../admin-manifest.webmanifest">
 <meta name="theme-color" content="#0a2647">
 <link rel="apple-touch-icon" href="../assets/img/icon-192.png">
@@ -28,44 +28,42 @@
     </div>
   </div>
   <nav class="admin-nav">
-    <a href="index.html" class="is-active">Painel</a>
+    <a href="index.html">Painel</a>
     <a href="productos.html">Produtos</a>
     <a href="pedidos.html">Pedidos</a>
-    <a href="config.html">Site</a>
+    <a href="config.html" class="is-active">Site</a>
     <a href="../admin-licencas/painel.html">Licenças</a>
   </nav>
 
   <main class="admin-main">
-    <div class="admin-head"><h1>Painel administrativo</h1></div>
-    <p class="admin-banner">Um único lugar para gerenciar a loja e as licenças do LeuName Gestão. Guarde este link: <code>/admin/</code></p>
-
-    <div class="admin-hub-grid">
-      <div class="admin-hub-card">
-        <h3>🛍️ Produtos</h3>
-        <p>Cadastre, edite ou desative produtos do catálogo da loja (preços, descrições, categorias).</p>
-        <a href="productos.html">Gerenciar produtos →</a>
-      </div>
-      <div class="admin-hub-card">
-        <h3>📦 Pedidos</h3>
-        <p>Veja todos os pedidos feitos na loja: quem comprou, o quê, quando, e se foi pago, pendente ou reembolsado.</p>
-        <a href="pedidos.html">Ver pedidos →</a>
-      </div>
-      <div class="admin-hub-card">
-        <h3>🔑 Licenças</h3>
-        <p>Gere, consulte, revogue (bloqueie) ou reative licenças do LeuName Gestão — por nome do cliente.</p>
-        <a href="../admin-licencas/painel.html">Gerenciar licenças →</a>
-      </div>
+    <div class="admin-head">
+      <h1>Configuración del sitio</h1>
     </div>
+
+    <p class="admin-banner" id="apiBanner" hidden></p>
+
+    <form id="configForm">
+      <div class="admin-card">
+        <h2>Logo</h2>
+        <div id="logoPreviewWrap" hidden style="margin-bottom:10px;">
+          <img id="logoPreview" alt="" style="height:48px;border-radius:8px;">
+        </div>
+        <input type="file" id="logoFile" accept="image/jpeg,image/png,image/webp,image/svg+xml" class="admin-input" style="padding:8px;">
+        <p class="admin-note" id="logoHint" style="text-align:left;margin-top:6px;">Al subir una imagen, reemplaza la logo en todas las páginas del sitio al instante.</p>
+      </div>
+
+      <div class="admin-card">
+        <h2>Banner de la home (3 pantallas que pasan solas)</h2>
+        <div id="slidesWrap"></div>
+      </div>
+
+      <div class="admin-form-actions">
+        <button class="admin-btn admin-btn-primary" type="submit">Guardar</button>
+      </div>
+    </form>
   </main>
 </div>
-
 <script src="admin.js"></script>
-<script>
-  AdminAPI.requireAuth();
-  document.getElementById('logoutBtn').addEventListener('click', function () {
-    AdminAPI.clearToken();
-    location.href = 'login.html';
-  });
-</script>
+<script src="config.js"></script>
 </body>
 </html>

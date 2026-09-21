@@ -94,6 +94,19 @@ CREATE TABLE IF NOT EXISTS webhook_eventos (
   procesado_em TEXT NOT NULL
 );
 
+-- Configuração editável de cada site (logo, banners da home, WhatsApp),
+-- pra não precisar de deploy de código toda vez que o lojista quiser
+-- trocar uma imagem/texto do site. Uma linha por site -- nunca se
+-- misturam (mesmo padrão de precio/precio_br: cada site só edita a
+-- própria linha).
+CREATE TABLE IF NOT EXISTS site_config (
+  site TEXT PRIMARY KEY,           -- 'br' | 'es'
+  logo_url TEXT,                   -- URL da logo (R2). NULL = usa a logo padrão do código
+  whatsapp_numero TEXT,            -- só usado pelo site BR
+  banner_slides TEXT,              -- JSON array de {eyebrow, titulo, texto, boton_texto, link, tema}
+  actualizado_em TEXT NOT NULL
+);
+
 CREATE TABLE IF NOT EXISTS pedido_items (
   id TEXT PRIMARY KEY,
   pedido_id TEXT NOT NULL,

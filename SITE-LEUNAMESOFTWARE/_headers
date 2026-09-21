@@ -1,0 +1,16 @@
+# Garantiza que el sitio siempre cargue la versión más nueva después de un
+# deploy, sin que el cliente (o nosotros) necesite borrar el historial/cache
+# del navegador. HTML, CSS y JS cambian seguido mientras el sitio está en
+# desarrollo activo, así que siempre revalidan (rápido, es solo un
+# roundtrip condicional) en vez de confiar en un cache viejo.
+/*.html
+  Cache-Control: no-cache
+
+/
+  Cache-Control: no-cache
+
+/*.css
+  Cache-Control: no-cache
+
+/*.js
+  Cache-Control: no-cache

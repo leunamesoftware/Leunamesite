@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Configurações do site — Admin LeuName Softwares</title>
+<meta name="description" content="Editar logo, banners da home e WhatsApp do site LeuName Softwares.">
+<link rel="manifest" href="../admin-manifest.webmanifest">
+<meta name="theme-color" content="#0a2647">
+<link rel="apple-touch-icon" href="../assets/img/icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="LeuName Admin">
+<meta name="mobile-web-app-capable" content="yes">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="admin.css">
+</head>
+<body class="admin-body">
+<div class="admin-shell">
+  <div class="admin-topbar">
+    <div class="admin-topbar-brand">
+      <img src="../assets/img/logo-mark.png" alt="" width="32" height="32">
+      <span>LEUNAME<small>ADMIN</small></span>
+    </div>
+    <div class="admin-topbar-actions">
+      <a href="../index.html">Ver site</a>
+      <button type="button" id="logoutBtn">Sair</button>
+    </div>
+  </div>
+  <nav class="admin-nav">
+    <a href="index.html">Painel</a>
+    <a href="productos.html">Produtos</a>
+    <a href="pedidos.html">Pedidos</a>
+    <a href="config.html" class="is-active">Site</a>
+    <a href="../admin-licencas/painel.html">Licenças</a>
+  </nav>
+
+  <main class="admin-main">
+    <div class="admin-head">
+      <h1>Configurações do site</h1>
+    </div>
+
+    <p class="admin-banner" id="apiBanner" hidden></p>
+
+    <form id="configForm">
+      <div class="admin-card">
+        <h2>Logo</h2>
+        <div id="logoPreviewWrap" hidden style="margin-bottom:10px;">
+          <img id="logoPreview" alt="" style="height:48px;border-radius:8px;">
+        </div>
+        <input type="file" id="logoFile" accept="image/jpeg,image/png,image/webp,image/svg+xml" class="admin-input" style="padding:8px;">
+        <p class="admin-note" id="logoHint" style="text-align:left;margin-top:6px;">Enviar substitui a logo em todas as páginas do site na hora.</p>
+      </div>
+
+      <div class="admin-card">
+        <h2>WhatsApp</h2>
+        <div class="admin-field">
+          <label class="admin-label" for="waNumero">Número (só dígitos, com código do país)</label>
+          <input class="admin-input" id="waNumero" placeholder="5524998721557">
+          <p class="admin-note" style="text-align:left;margin-top:4px;">Exemplo: 55 (Brasil) + DDD + número, tudo junto, sem espaços ou símbolos.</p>
+        </div>
+      </div>
+
+      <div class="admin-card">
+        <h2>Banner da home (3 telas que passam sozinhas)</h2>
+        <div id="slidesWrap"></div>
+      </div>
+
+      <div class="admin-form-actions">
+        <button class="admin-btn admin-btn-primary" type="submit">Salvar</button>
+      </div>
+    </form>
+  </main>
+</div>
+<script src="admin.js"></script>
+<script src="config.js"></script>
+</body>
+</html>

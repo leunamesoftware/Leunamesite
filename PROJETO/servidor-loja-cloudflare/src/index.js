@@ -200,15 +200,33 @@ export default {
       return json({ ok: true, producto });
     }
 
+    // GET /config?site=br|es — configuração editável do site (logo,
+    // banners da home, WhatsApp). Sem linha salva ainda (site novo, nunca
+    // editado pelo admin) devolve config: null e o site mantém o
+    // conteúdo estático que já vem no HTML.
+    if (pathname === '/config' && request.method === 'GET') {
+      const site = url.searchParams.get('site');
+      if (site !== 'br' && site !== 'es') return json({ ok: false, erro: 'site_invalido' }, 400);
+      const config = await env.DB.prepare('SELECT * FROM site_config WHERE site = ?').bind(site).first();
+      return json({ ok: true, config: config || null });
+    }
+
     // GET /imagen/productos/<archivo> — sirve la imagen real de un producto,
-    // subida por el panel admin (ver POST /admin/productos/:id/imagen).
+    // subida por el panel admin (ver POST /admin/productos/:id/imagen). La
+    // URL que se guarda en imagen_url ahora siempre trae ?v=<timestamp> (ver
+    // abajo), asi que con version presente el cache puede ser larguisimo
+    // (esa URL exacta nunca cambia); sin version (URLs antiguas guardadas
+    // antes de este cambio) el cache queda corto, para no quedar pegado
+    // en una imagen vieja despues de resubir.
     if (pathname.startsWith('/imagen/') && request.method === 'GET') {
       const clave = pathname.replace('/imagen/', '');
       const obj = await env.IMAGENES.get(clave);
       if (!obj) return new Response('Imagen no encontrada.', { status: 404 });
       const headers = new Headers();
       obj.writeHttpMetadata(headers);
-      headers.set('Cache-Control', 'public, max-age=3600');
+      headers.set('Cache-Control', url.searchParams.has('v')
+        ? 'public, max-age=31536000, immutable'
+        : 'public, max-age=60');
       headers.set('Access-Control-Allow-Origin', '*');
       return new Response(obj.body, { headers });
     }
@@ -569,9 +587,62 @@ export default {
         await env.IMAGENES.put(clave, bytes, { httpMetadata: { contentType } });
 
         // Este mismo Worker sirve la imagen en /imagen/<clave> (ver abajo).
-        const imagenUrl = `${url.origin}/imagen/${clave}`;
+        // ?v=<timestamp> es cache-busting: como la clave en R2 es siempre la
+        // misma (productos/<id>.<ext>), sin esto el navegador y la red de
+        // Cloudflare seguirian mostrando la imagen vieja despues de subir
+        // una nueva -- cada subida ahora genera una URL distinta.
+        const imagenUrl = `${url.origin}/imagen/${clave}?v=${Date.now()}`;
         await env.DB.prepare('UPDATE productos SET imagen_url = ? WHERE id = ?').bind(imagenUrl, id).run();
         return json({ ok: true, id, imagen_url: imagenUrl });
+      }
+
+      // PUT /admin/config — guarda os banners da home e o WhatsApp de um
+      // site (body: { site: 'br'|'es', whatsapp_numero, banner_slides }).
+      // logo_url não é enviado aqui (usa COALESCE): é setado só pelo
+      // upload de logo abaixo, então salvar o resto do formulário nunca
+      // apaga a logo já enviada.
+      if (pathname === '/admin/config' && request.method === 'PUT') {
+        const body = await request.json().catch(() => null);
+        if (!body || (body.site !== 'br' && body.site !== 'es')) {
+          return json({ ok: false, erro: 'datos_invalidos' }, 400);
+        }
+        await env.DB.prepare(
+          `INSERT INTO site_config (site, whatsapp_numero, banner_slides, actualizado_em)
+           VALUES (?, ?, ?, datetime('now'))
+           ON CONFLICT(site) DO UPDATE SET
+             whatsapp_numero = excluded.whatsapp_numero,
+             banner_slides = excluded.banner_slides,
+             actualizado_em = excluded.actualizado_em`
+        ).bind(
+          body.site,
+          body.whatsapp_numero || null,
+          body.banner_slides ? JSON.stringify(body.banner_slides) : null
+        ).run();
+        return json({ ok: true });
+      }
+
+      // POST /admin/config/:site/logo — sobe a logo real de um site (mesmo
+      // padrão da imagem de produto: R2 + URL versionada pra nunca ficar
+      // presa em cache).
+      const logoMatch = pathname.match(/^\/admin\/config\/(br|es)\/logo$/);
+      if (logoMatch && request.method === 'POST') {
+        const site = logoMatch[1];
+        const contentType = request.headers.get('Content-Type') || 'application/octet-stream';
+        const extPorTipo = { 'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp', 'image/svg+xml': 'svg' };
+        const ext = extPorTipo[contentType];
+        if (!ext) return json({ ok: false, erro: 'tipo_no_soportado', detalle: 'Usa JPG, PNG, WEBP o SVG.' }, 400);
+
+        const bytes = await request.arrayBuffer();
+        if (bytes.byteLength > 2 * 1024 * 1024) return json({ ok: false, erro: 'archivo_muy_grande', detalle: 'Maximo 2MB.' }, 400);
+
+        const clave = `logo/${site}.${ext}`;
+        await env.IMAGENES.put(clave, bytes, { httpMetadata: { contentType } });
+        const logoUrl = `${url.origin}/imagen/${clave}?v=${Date.now()}`;
+        await env.DB.prepare(
+          `INSERT INTO site_config (site, logo_url, actualizado_em) VALUES (?, ?, datetime('now'))
+           ON CONFLICT(site) DO UPDATE SET logo_url = excluded.logo_url, actualizado_em = excluded.actualizado_em`
+        ).bind(site, logoUrl).run();
+        return json({ ok: true, logo_url: logoUrl });
       }
 
       if (pathname === '/admin/pedidos' && request.method === 'GET') {
