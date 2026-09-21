@@ -20,15 +20,77 @@
     ]
   };
 
+  // Lightbox simples: abre a foto clicada em tela cheia e deixa passar
+  // pras próximas/anteriores sem fechar (seta, teclado ou arrastar o dedo).
+  var lightboxEl = null;
+  var lbPhotos = [];
+  var lbIndex = 0;
+
+  function lbRender() {
+    lightboxEl.querySelector('.photo-lightbox-img').src = lbPhotos[lbIndex];
+    lightboxEl.querySelector('.photo-lightbox-count').textContent = (lbIndex + 1) + ' / ' + lbPhotos.length;
+  }
+  function lbStep(dir) {
+    lbIndex = (lbIndex + dir + lbPhotos.length) % lbPhotos.length;
+    lbRender();
+  }
+  function lbClose() {
+    lightboxEl.classList.remove('is-open');
+    document.body.style.overflow = '';
+  }
+
+  function ensureLightbox() {
+    if (lightboxEl) return;
+    lightboxEl = document.createElement('div');
+    lightboxEl.className = 'photo-lightbox';
+    lightboxEl.innerHTML =
+      '<button type="button" class="photo-lightbox-close" aria-label="Fechar">&times;</button>' +
+      '<button type="button" class="photo-lightbox-nav photo-lightbox-prev" aria-label="Foto anterior">&#8249;</button>' +
+      '<img class="photo-lightbox-img" alt="">' +
+      '<button type="button" class="photo-lightbox-nav photo-lightbox-next" aria-label="Próxima foto">&#8250;</button>' +
+      '<div class="photo-lightbox-count"></div>';
+    document.body.appendChild(lightboxEl);
+
+    lightboxEl.querySelector('.photo-lightbox-close').addEventListener('click', lbClose);
+    lightboxEl.addEventListener('click', function (e) { if (e.target === lightboxEl) lbClose(); });
+    lightboxEl.querySelector('.photo-lightbox-prev').addEventListener('click', function () { lbStep(-1); });
+    lightboxEl.querySelector('.photo-lightbox-next').addEventListener('click', function () { lbStep(1); });
+
+    var touchStartX = null;
+    lightboxEl.addEventListener('touchstart', function (e) { touchStartX = e.touches[0].clientX; }, { passive: true });
+    lightboxEl.addEventListener('touchend', function (e) {
+      if (touchStartX === null) return;
+      var dx = e.changedTouches[0].clientX - touchStartX;
+      if (Math.abs(dx) > 40) lbStep(dx > 0 ? -1 : 1);
+      touchStartX = null;
+    }, { passive: true });
+
+    document.addEventListener('keydown', function (e) {
+      if (!lightboxEl.classList.contains('is-open')) return;
+      if (e.key === 'Escape') lbClose();
+      if (e.key === 'ArrowLeft') lbStep(-1);
+      if (e.key === 'ArrowRight') lbStep(1);
+    });
+  }
+
+  function openLightbox(photos, startIndex) {
+    ensureLightbox();
+    lbPhotos = photos;
+    lbIndex = startIndex;
+    lbRender();
+    lightboxEl.classList.add('is-open');
+    document.body.style.overflow = 'hidden';
+  }
+
   function galleryHTML(product) {
     var videoSrc = PRODUCT_VIDEOS[product.id];
     var photos = PRODUCT_PHOTOS[product.id] || [];
     if (!videoSrc) return window.LeuStore.productVisualHTML(product);
 
-    var thumbsHTML = photos.map(function (src) {
-      return '<a class="prod-gallery-thumb" href="' + src + '" target="_blank" rel="noopener">' +
+    var thumbsHTML = photos.map(function (src, i) {
+      return '<button type="button" class="prod-gallery-thumb" data-photo-index="' + i + '">' +
         '<img src="' + src + '" alt="Tela de ' + product.name + '" loading="lazy">' +
-      '</a>';
+      '</button>';
     }).join('');
 
     return '<div class="prod-visual prod-visual-video">' +
@@ -68,6 +130,8 @@
     if (breadcrumbCat && cat) { breadcrumbCat.textContent = cat.name; breadcrumbCat.href = 'categoria.html?slug=' + cat.slug; }
     if (breadcrumbName) breadcrumbName.textContent = product.name;
 
+    var productPhotos = PRODUCT_PHOTOS[product.id] || [];
+
     detailEl.innerHTML =
       '<div class="product-gallery">' + galleryHTML(product) + '</div>' +
       '<div class="product-info">' +
@@ -103,6 +167,14 @@
           '<div class="trust-item"><span class="trust-ic"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8Z"/></svg></span><div><h4>Entrega digital imediata</h4></div></div>' +
         '</div>' +
       '</div>';
+
+    if (productPhotos.length) {
+      detailEl.querySelectorAll('.prod-gallery-thumb').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          openLightbox(productPhotos, Number(btn.getAttribute('data-photo-index')));
+        });
+      });
+    }
 
     var buyNow = document.getElementById('buyNowBtn');
     if (buyNow) {
