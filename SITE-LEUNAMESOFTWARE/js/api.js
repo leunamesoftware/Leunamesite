@@ -35,7 +35,9 @@
       badge: row.real ? 'Producto real' : 'Ejemplo',
       imageUrl: row.imagen_url || null,
       demoUrl: row.demo_url || null,
-      tag: row.tag || null
+      tag: row.tag || null,
+      videoUrl: row.video_url || null,
+      galeryPhotos: row.galeria_fotos ? JSON.parse(row.galeria_fotos) : []
     };
   }
 

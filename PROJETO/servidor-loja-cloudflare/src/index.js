@@ -506,8 +506,8 @@ export default {
           return json({ ok: false, erro: 'datos_invalidos' }, 400);
         }
         await env.DB.prepare(
-          `INSERT INTO productos (id, nombre, nombre_br, categoria, descripcion_corta, descripcion_corta_br, descripcion, descripcion_br, precio, precio_br, real, rating, reviews, incluye, incluye_br, caracteristicas, caracteristicas_br, imagen_url, demo_url, tag, activo, creado_em)
-           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, datetime('now'))`
+          `INSERT INTO productos (id, nombre, nombre_br, categoria, descripcion_corta, descripcion_corta_br, descripcion, descripcion_br, precio, precio_br, real, rating, reviews, incluye, incluye_br, caracteristicas, caracteristicas_br, imagen_url, video_url, galeria_fotos, demo_url, tag, activo, creado_em)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, datetime('now'))`
         ).bind(
           body.id, body.nombre || body.nombre_br, body.nombre_br || null, body.categoria,
           body.descripcion_corta || '', body.descripcion_corta_br || null,
@@ -516,7 +516,8 @@ export default {
           body.real ? 1 : 0, Number(body.rating || 4.5), Number(body.reviews || 0),
           JSON.stringify(body.incluye || []), body.incluye_br ? JSON.stringify(body.incluye_br) : null,
           JSON.stringify(body.caracteristicas || []), body.caracteristicas_br ? JSON.stringify(body.caracteristicas_br) : null,
-          body.imagen_url || null, body.demo_url || null, body.tag || null
+          body.imagen_url || null, body.video_url || null, body.galeria_fotos ? JSON.stringify(body.galeria_fotos) : null,
+          body.demo_url || null, body.tag || null
         ).run();
         return json({ ok: true, id: body.id });
       }
@@ -543,7 +544,7 @@ export default {
              real=?, rating=?, reviews=?,
              incluye=COALESCE(?, incluye), incluye_br=COALESCE(?, incluye_br),
              caracteristicas=COALESCE(?, caracteristicas), caracteristicas_br=COALESCE(?, caracteristicas_br),
-             imagen_url=?, demo_url=?, tag=?, activo=?
+             imagen_url=?, video_url=?, galeria_fotos=?, demo_url=?, tag=?, activo=?
            WHERE id=?`
         ).bind(
           body.nombre || null, body.nombre_br || null,
@@ -555,7 +556,8 @@ export default {
           body.real ? 1 : 0, Number(body.rating || 4.5), Number(body.reviews || 0),
           body.incluye ? JSON.stringify(body.incluye) : null, body.incluye_br ? JSON.stringify(body.incluye_br) : null,
           body.caracteristicas ? JSON.stringify(body.caracteristicas) : null, body.caracteristicas_br ? JSON.stringify(body.caracteristicas_br) : null,
-          body.imagen_url || null, body.demo_url || null, body.tag || null,
+          body.imagen_url || null, body.video_url || null, body.galeria_fotos ? JSON.stringify(body.galeria_fotos) : null,
+          body.demo_url || null, body.tag || null,
           body.activo === false ? 0 : 1, id
         ).run();
         return json({ ok: true, id });
@@ -645,6 +647,25 @@ export default {
         return json({ ok: true, logo_url: logoUrl });
       }
 
+      // POST /admin/upload-imagem?pasta=banners — upload genérico de imagem
+      // (usado pra imagem de fundo do banner, e qualquer outra imagem que o
+      // painel precisar no futuro): sobe pro R2 com um nome único e devolve
+      // só a URL -- quem chamou decide onde guardar essa URL.
+      if (pathname === '/admin/upload-imagem' && request.method === 'POST') {
+        const contentType = request.headers.get('Content-Type') || 'application/octet-stream';
+        const extPorTipo = { 'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp', 'image/gif': 'gif' };
+        const ext = extPorTipo[contentType];
+        if (!ext) return json({ ok: false, erro: 'tipo_no_soportado', detalle: 'Usa JPG, PNG, WEBP o GIF.' }, 400);
+
+        const bytes = await request.arrayBuffer();
+        if (bytes.byteLength > 5 * 1024 * 1024) return json({ ok: false, erro: 'archivo_muy_grande', detalle: 'Maximo 5MB.' }, 400);
+
+        const pasta = (url.searchParams.get('pasta') || 'uploads').replace(/[^a-z0-9-]/g, '');
+        const clave = `${pasta}/${crypto.randomUUID()}.${ext}`;
+        await env.IMAGENES.put(clave, bytes, { httpMetadata: { contentType } });
+        return json({ ok: true, imagen_url: `${url.origin}/imagen/${clave}?v=${Date.now()}` });
+      }
+
       if (pathname === '/admin/pedidos' && request.method === 'GET') {
         const { results: pedidos } = await env.DB.prepare('SELECT * FROM pedidos ORDER BY creado_em DESC LIMIT 200').all();
         return json({ ok: true, pedidos });
@@ -656,6 +677,21 @@ export default {
         if (!pedido) return json({ ok: false, erro: 'pedido_no_encontrado' }, 404);
         const { results: items } = await env.DB.prepare('SELECT * FROM pedido_items WHERE pedido_id = ?').bind(pedidoDetalleMatch[1]).all();
         return json({ ok: true, pedido, items });
+      }
+
+      // DELETE /admin/pedidos/:id — exclui um pedido de teste/errado do
+      // painel. Exclusão de verdade (não é "activo=0" como em produtos):
+      // pedidos não aparecem em nenhuma vitrine pública, então não faz
+      // sentido manter "desativado" -- e apaga os itens junto, senão
+      // ficariam orfãos. NÃO revoga nenhuma licença já emitida (isso é
+      // uma ação separada, de propósito, pra nunca travar o app de um
+      // cliente sem querer só por apagar o registro do pedido).
+      if (pedidoDetalleMatch && request.method === 'DELETE') {
+        const id = pedidoDetalleMatch[1];
+        await env.DB.prepare('DELETE FROM pedido_items WHERE pedido_id = ?').bind(id).run();
+        const resultado = await env.DB.prepare('DELETE FROM pedidos WHERE id = ?').bind(id).run();
+        if (!resultado.meta || !resultado.meta.changes) return json({ ok: false, erro: 'pedido_no_encontrado' }, 404);
+        return json({ ok: true, id });
       }
 
       return json({ ok: false, erro: 'rota_nao_encontrada' }, 404);

@@ -98,7 +98,28 @@
       imagenHint.textContent = 'Salve o produto primeiro para poder enviar a imagem.';
     }
 
+    var videoUrl = (product && product.video_url) || '';
+    document.getElementById('pVideoUrl').value = videoUrl;
+    var videoPreviewWrap = document.getElementById('pVideoPreviewWrap');
+    if (videoUrl) { document.getElementById('pVideoPreview').src = videoUrl; videoPreviewWrap.hidden = false; } else { videoPreviewWrap.hidden = true; }
+    document.getElementById('pVideoFile').value = '';
+
+    var galeria = (product && product.galeria_fotos) ? JSON.parse(product.galeria_fotos) : [];
+    document.getElementById('pGaleriaUrls').value = JSON.stringify(galeria);
+    renderGaleriaPreview(galeria);
+    document.getElementById('pGaleriaFile').value = '';
+
     formCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function renderGaleriaPreview(urls) {
+    var wrap = document.getElementById('pGaleriaPreviewWrap');
+    wrap.innerHTML = urls.map(function (u, i) {
+      return '<div style="position:relative;">' +
+        '<img src="' + u + '" alt="" style="width:70px;height:70px;object-fit:cover;border-radius:8px;border:1px solid var(--gray-200);">' +
+        '<button type="button" data-remover-foto="' + i + '" title="Remover" style="position:absolute;top:-6px;right:-6px;width:20px;height:20px;border-radius:50%;background:var(--red-500,#e5484d);color:#fff;border:none;font-size:12px;cursor:pointer;">×</button>' +
+      '</div>';
+    }).join('');
   }
 
   document.getElementById('newProductBtn').addEventListener('click', function () { openForm(null); });
@@ -148,9 +169,12 @@
       real: document.getElementById('pReal').checked,
       tag: document.getElementById('pTag').value || null,
       demo_url: document.getElementById('pDemoUrl').value.trim() || null,
-      // O campo de imagem é enviado separadamente (POST .../imagen); reenviamos
-      // o valor atual aqui para não apagá-lo ao salvar o restante do formulário.
-      imagen_url: document.getElementById('pImagenUrl').value || null
+      // Imagem/vídeo/galeria são enviados separadamente (upload de arquivo);
+      // reenviamos o valor atual aqui pra não apagar nada ao salvar o
+      // restante do formulário.
+      imagen_url: document.getElementById('pImagenUrl').value || null,
+      video_url: document.getElementById('pVideoUrl').value || null,
+      galeria_fotos: JSON.parse(document.getElementById('pGaleriaUrls').value || '[]')
     };
     var request = originalId
       ? AdminAPI.api('/admin/productos/' + originalId, { method: 'PUT', body: JSON.stringify(payload) })
@@ -194,6 +218,75 @@
       .catch(function (err) {
         hint.textContent = 'Não foi possível enviar a imagem (' + err.message + ').';
       });
+  });
+
+  document.getElementById('pVideoFile').addEventListener('change', function (e) {
+    var file = e.target.files[0];
+    if (!file) return;
+    var hint = document.getElementById('pVideoHint');
+    hint.textContent = 'Enviando vídeo…';
+    fetch(AdminAPI.BASE_URL + '/admin/upload-imagem?pasta=videos', {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer ' + AdminAPI.getToken(), 'Content-Type': file.type },
+      body: file
+    })
+      .then(function (res) { return res.json().then(function (data) { if (!res.ok) throw new Error(data.erro || 'error'); return data; }); })
+      .then(function (data) {
+        document.getElementById('pVideoUrl').value = data.imagen_url;
+        document.getElementById('pVideoPreview').src = data.imagen_url;
+        document.getElementById('pVideoPreviewWrap').hidden = false;
+        hint.textContent = 'Vídeo enviado. Clique em "Salvar" para confirmar.';
+      })
+      .catch(function (err) {
+        hint.textContent = 'Não foi possível enviar o vídeo (' + err.message + ').';
+      });
+  });
+
+  document.getElementById('pVideoRemoverBtn').addEventListener('click', function () {
+    document.getElementById('pVideoUrl').value = '';
+    document.getElementById('pVideoPreviewWrap').hidden = true;
+    document.getElementById('pVideoFile').value = '';
+    document.getElementById('pVideoHint').textContent = 'Vídeo removido. Clique em "Salvar" para confirmar.';
+  });
+
+  document.getElementById('pGaleriaFile').addEventListener('change', function (e) {
+    var file = e.target.files[0];
+    if (!file) return;
+    var urls = JSON.parse(document.getElementById('pGaleriaUrls').value || '[]');
+    if (urls.length >= 4) {
+      showBanner('A galeria já tem 4 fotos. Remova uma antes de enviar outra.', true);
+      e.target.value = '';
+      return;
+    }
+    var hint = document.getElementById('pGaleriaHint');
+    hint.textContent = 'Enviando foto…';
+    fetch(AdminAPI.BASE_URL + '/admin/upload-imagem?pasta=galeria', {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer ' + AdminAPI.getToken(), 'Content-Type': file.type },
+      body: file
+    })
+      .then(function (res) { return res.json().then(function (data) { if (!res.ok) throw new Error(data.erro || 'error'); return data; }); })
+      .then(function (data) {
+        urls.push(data.imagen_url);
+        document.getElementById('pGaleriaUrls').value = JSON.stringify(urls);
+        renderGaleriaPreview(urls);
+        document.getElementById('pGaleriaFile').value = '';
+        hint.textContent = 'Foto adicionada (' + urls.length + '/4). Clique em "Salvar" para confirmar.';
+      })
+      .catch(function (err) {
+        hint.textContent = 'Não foi possível enviar a foto (' + err.message + ').';
+      });
+  });
+
+  document.getElementById('pGaleriaPreviewWrap').addEventListener('click', function (e) {
+    var btn = e.target.closest('[data-remover-foto]');
+    if (!btn) return;
+    var idx = Number(btn.getAttribute('data-remover-foto'));
+    var urls = JSON.parse(document.getElementById('pGaleriaUrls').value || '[]');
+    urls.splice(idx, 1);
+    document.getElementById('pGaleriaUrls').value = JSON.stringify(urls);
+    renderGaleriaPreview(urls);
+    document.getElementById('pGaleriaHint').textContent = 'Foto removida. Clique em "Salvar" para confirmar.';
   });
 
   load();

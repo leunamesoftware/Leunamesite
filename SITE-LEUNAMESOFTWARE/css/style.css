@@ -276,6 +276,14 @@ h1,h2,h3,h4{ font-family:var(--font-head); margin:0; }
 .promo-slide{
   flex:0 0 100%; scroll-snap-align:start; display:flex; align-items:center;
   min-height:230px; color:var(--white); position:relative; overflow:hidden;
+  background-size:cover; background-position:center;
+}
+/* Cuando el slide tiene imagen de fondo (subida desde el panel admin), un
+   velo oscuro garantiza que el texto blanco siga siendo legible sobre
+   cualquier foto. */
+.promo-slide[style*="background-image"]::before{
+  content:''; position:absolute; inset:0; z-index:1;
+  background:linear-gradient(180deg, rgba(7,12,20,.45), rgba(7,12,20,.65));
 }
 .promo-theme-azul{ background:linear-gradient(135deg,var(--navy-950) 0%,var(--navy-900) 45%,var(--blue-600) 130%); }
 .promo-theme-vermelho{ background:linear-gradient(135deg,#6e1414 0%,#b8291f 55%,#e5484d 130%); }

@@ -22,8 +22,12 @@
 
   function slideHTML(s) {
     var tema = ['azul', 'vermelho', 'verde'].indexOf(s.tema) !== -1 ? s.tema : 'azul';
+    // Com imagem de fundo enviada no painel, ela some por cima da cor do
+    // tema (mesma classe continua no elemento, só não aparece); sem
+    // imagem, usa a cor escolhida normalmente.
+    var estilo = s.imagem_url ? ' style="background-image:url(&#39;' + escapeHTML(s.imagem_url) + '&#39;)"' : '';
     return (
-      '<a class="promo-slide promo-theme-' + tema + '" href="' + escapeHTML(s.link || 'categoria.html') + '">' +
+      '<a class="promo-slide promo-theme-' + tema + '"' + estilo + ' href="' + escapeHTML(s.link || 'categoria.html') + '">' +
         '<div class="promo-slide-inner container">' +
           (s.eyebrow ? '<span class="promo-eyebrow">' + escapeHTML(s.eyebrow) + '</span>' : '') +
           '<h1>' + escapeHTML(s.titulo) + '</h1>' +

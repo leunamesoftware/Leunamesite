@@ -87,9 +87,9 @@
     // O vídeo real só aparece se o produto tiver um carregado (aqui local,
     // só neste site BR, ou via product.demoVideoUrl); se não, mostra-se a
     // captura real do produto, sem nenhum botão de play falso por cima.
-    var localVideo = PRODUCT_VIDEOS[product.id];
-    var mediaHTML = (localVideo || product.demoVideoUrl)
-      ? '<video controls muted loop playsinline src="' + (localVideo || product.demoVideoUrl) + '"></video>'
+    var videoSrc = product.videoUrl || PRODUCT_VIDEOS[product.id];
+    var mediaHTML = videoSrc
+      ? '<video controls muted loop playsinline src="' + videoSrc + '"></video>'
       : (product.imageUrl ? '<img src="' + product.imageUrl + '" alt="Interface de ' + product.name + '">' : '');
 
     contentEl.innerHTML =

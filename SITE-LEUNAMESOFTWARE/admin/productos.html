@@ -105,6 +105,32 @@
           <p class="admin-note" id="pImagenHint" style="text-align:left;margin-top:6px;">Guarda el producto primero para poder subir su imagen.</p>
         </div>
 
+        <div class="admin-field" style="margin-top:14px;">
+          <label class="admin-label">Video de demostración (opcional)</label>
+          <p class="admin-note" style="text-align:left;margin:0 0 8px;background:var(--blue-50);color:var(--ink-900);padding:10px 12px;border-radius:8px;">
+            Una grabación de pantalla mostrando el producto en uso. Aparece arriba en la página del producto en lugar de la imagen, y en la página de demo.<br>
+            <strong>Formato:</strong> MP4. <strong>Tamaño máximo:</strong> 30 MB.
+          </p>
+          <div id="pVideoPreviewWrap" hidden style="margin-bottom:10px;">
+            <video id="pVideoPreview" muted controls style="width:220px;border-radius:8px;border:1px solid var(--gray-200);"></video>
+            <button type="button" class="admin-btn admin-btn-outline admin-btn-sm" id="pVideoRemoverBtn" style="margin-top:6px;">Quitar video</button>
+          </div>
+          <input type="hidden" id="pVideoUrl">
+          <input type="file" id="pVideoFile" accept="video/mp4" class="admin-input" style="padding:8px;">
+          <p class="admin-note" id="pVideoHint" style="text-align:left;margin-top:6px;">Elige un video MP4 para subirlo ahora; haz clic en "Guardar" al final del formulario para confirmar.</p>
+        </div>
+
+        <div class="admin-field" style="margin-top:14px;">
+          <label class="admin-label">Galería de fotos (opcional, hasta 4 imágenes)</label>
+          <p class="admin-note" style="text-align:left;margin:0 0 8px;background:var(--blue-50);color:var(--ink-900);padding:10px 12px;border-radius:8px;">
+            Capturas de pantalla del producto -- aparecen como miniaturas debajo del video/imagen principal.
+          </p>
+          <input type="hidden" id="pGaleriaUrls">
+          <div id="pGaleriaPreviewWrap" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px;"></div>
+          <input type="file" id="pGaleriaFile" accept="image/jpeg,image/png,image/webp,image/gif" class="admin-input" style="padding:8px;">
+          <p class="admin-note" id="pGaleriaHint" style="text-align:left;margin-top:6px;">Sube una imagen a la vez -- cada envío agrega una foto (hasta 4). Haz clic en "Guardar" al final del formulario para confirmar.</p>
+        </div>
+
         <div class="admin-form-actions">
           <button class="admin-btn admin-btn-primary" type="submit">Guardar</button>
           <button class="admin-btn admin-btn-outline" type="button" id="cancelFormBtn">Cancelar</button>

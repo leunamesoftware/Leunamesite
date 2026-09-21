@@ -48,6 +48,7 @@
         ? '<button class="admin-btn admin-btn-danger admin-btn-sm" data-revogar="' + p.chave_licencia + '">Revogar</button>' +
           '<button class="admin-btn admin-btn-outline admin-btn-sm" data-reativar="' + p.chave_licencia + '">Reativar</button>'
         : '';
+      acao += '<button class="admin-btn admin-btn-danger admin-btn-sm" data-excluir="' + p.id + '">Excluir</button>';
       return '<tr>' +
         '<td><strong>' + (p.cliente_nombre || '—') + '</strong></td>' +
         '<td>' + (p.cliente_email || '—') + '</td>' +
@@ -78,6 +79,16 @@
   document.getElementById('pedidosBody').addEventListener('click', function (e) {
     var revBtn = e.target.closest('[data-revogar]');
     var reatBtn = e.target.closest('[data-reativar]');
+    var excBtn = e.target.closest('[data-excluir]');
+    if (excBtn) {
+      var idExc = excBtn.getAttribute('data-excluir');
+      if (confirm('Excluir este pedido? Isso não revoga nenhuma licença já emitida, só apaga o registro do pedido.')) {
+        AdminAPI.api('/admin/pedidos/' + idExc, { method: 'DELETE' })
+          .then(load)
+          .catch(function () { showBanner('Não foi possível excluir o pedido.', true); });
+      }
+      return;
+    }
     if (revBtn) {
       var chaveRev = revBtn.getAttribute('data-revogar');
       if (confirm('Revogar a licença ' + chaveRev + '? O app do cliente vai travar em seguida.')) {

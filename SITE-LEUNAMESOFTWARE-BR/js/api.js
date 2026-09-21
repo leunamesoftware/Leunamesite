@@ -56,7 +56,12 @@
       badge: row.real ? 'Produto real' : 'Exemplo',
       imageUrl: row.imagen_url || null,
       demoUrl: row.demo_url || (estatico ? estatico.demoUrl : null),
-      tag: row.tag || null
+      tag: row.tag || null,
+      // Vídeo/galeria enviados pelo painel admin (aba "Produtos" → editar
+      // produto). Sem prioridade de idioma como o texto: é uma gravação de
+      // tela do produto, não um texto pra traduzir.
+      videoUrl: row.video_url || null,
+      galeryPhotos: row.galeria_fotos ? JSON.parse(row.galeria_fotos) : []
     };
   }
 

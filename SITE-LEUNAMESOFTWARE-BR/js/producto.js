@@ -89,8 +89,12 @@
   }
 
   function galleryHTML(product) {
-    var videoSrc = PRODUCT_VIDEOS[product.id];
-    var photos = PRODUCT_PHOTOS[product.id] || [];
+    // O vídeo/galeria enviados pelo painel admin (product.videoUrl /
+    // product.galeryPhotos, vindos do banco) têm prioridade; os mapas
+    // acima continuam servindo de respaldo pro LeuName Gestão até que
+    // alguém suba os arquivos de novo pelo painel.
+    var videoSrc = product.videoUrl || PRODUCT_VIDEOS[product.id];
+    var photos = (product.galeryPhotos && product.galeryPhotos.length) ? product.galeryPhotos : (PRODUCT_PHOTOS[product.id] || []);
     if (!videoSrc) return window.LeuStore.productVisualHTML(product);
 
     var thumbsHTML = photos.map(function (src, i) {
@@ -136,7 +140,7 @@
     if (breadcrumbCat && cat) { breadcrumbCat.textContent = cat.name; breadcrumbCat.href = 'categoria.html?slug=' + cat.slug; }
     if (breadcrumbName) breadcrumbName.textContent = product.name;
 
-    var productPhotos = PRODUCT_PHOTOS[product.id] || [];
+    var productPhotos = (product.galeryPhotos && product.galeryPhotos.length) ? product.galeryPhotos : (PRODUCT_PHOTOS[product.id] || []);
 
     detailEl.innerHTML =
       '<div class="product-gallery">' + galleryHTML(product) + '</div>' +

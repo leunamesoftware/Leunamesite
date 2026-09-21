@@ -25,7 +25,7 @@
         '<h3 style="margin:0 0 10px;font-size:13px;color:var(--ink-400);text-transform:uppercase;letter-spacing:.4px;">Pantalla ' + (i + 1) + '</h3>' +
         '<div class="admin-form-grid cols-2">' +
           '<div class="admin-field"><label class="admin-label" for="s' + i + 'Eyebrow">Etiqueta pequeña (opcional)</label><input class="admin-input" id="s' + i + 'Eyebrow" placeholder="Ej: Producto real"></div>' +
-          '<div class="admin-field"><label class="admin-label" for="s' + i + 'Tema">Color de fondo</label>' +
+          '<div class="admin-field"><label class="admin-label" for="s' + i + 'Tema">Color de fondo (sin imagen)</label>' +
             '<select class="admin-select" id="s' + i + 'Tema">' +
               Object.keys(TEMA_LABELS).map(function (k) { return '<option value="' + k + '">' + TEMA_LABELS[k] + '</option>'; }).join('') +
             '</select>' +
@@ -36,6 +36,16 @@
         '<div class="admin-form-grid cols-2" style="margin-top:10px;">' +
           '<div class="admin-field"><label class="admin-label" for="s' + i + 'Botao">Texto del botón</label><input class="admin-input" id="s' + i + 'Botao" placeholder="Ver productos →"></div>' +
           '<div class="admin-field"><label class="admin-label" for="s' + i + 'Link">Link del botón (al hacer clic en el banner)</label><input class="admin-input" id="s' + i + 'Link" placeholder="categoria.html"></div>' +
+        '</div>' +
+        '<div class="admin-field" style="margin-top:10px;">' +
+          '<label class="admin-label">Imagen de fondo (opcional, reemplaza el color)</label>' +
+          '<input type="hidden" id="s' + i + 'ImagemUrl">' +
+          '<div id="s' + i + 'ImagemPreviewWrap" hidden style="margin-bottom:8px;">' +
+            '<img id="s' + i + 'ImagemPreview" alt="" style="width:160px;height:80px;object-fit:cover;border-radius:8px;border:1px solid var(--gray-200);">' +
+            ' <button type="button" class="admin-btn admin-btn-outline admin-btn-sm" data-remover-imagem="' + i + '">Quitar imagen</button>' +
+          '</div>' +
+          '<input type="file" id="s' + i + 'ImagemFile" accept="image/jpeg,image/png,image/webp,image/gif" class="admin-input" style="padding:8px;">' +
+          '<p class="admin-note" id="s' + i + 'ImagemHint" style="text-align:left;margin-top:6px;">Recomendado: 1200×600px o más, formato paisaje.</p>' +
         '</div>' +
       '</div>'
     );
@@ -53,6 +63,11 @@
     document.getElementById('s' + i + 'Texto').value = s.texto || '';
     document.getElementById('s' + i + 'Botao').value = s.boton_texto || '';
     document.getElementById('s' + i + 'Link').value = s.link || '';
+    document.getElementById('s' + i + 'ImagemUrl').value = s.imagem_url || '';
+    if (s.imagem_url) {
+      document.getElementById('s' + i + 'ImagemPreview').src = s.imagem_url;
+      document.getElementById('s' + i + 'ImagemPreviewWrap').hidden = false;
+    }
   }
 
   function lerSlide(i) {
@@ -62,7 +77,8 @@
       titulo: document.getElementById('s' + i + 'Titulo').value.trim(),
       texto: document.getElementById('s' + i + 'Texto').value.trim(),
       boton_texto: document.getElementById('s' + i + 'Botao').value.trim(),
-      link: document.getElementById('s' + i + 'Link').value.trim() || 'categoria.html'
+      link: document.getElementById('s' + i + 'Link').value.trim() || 'categoria.html',
+      imagem_url: document.getElementById('s' + i + 'ImagemUrl').value || null
     };
   }
 
@@ -96,6 +112,40 @@
     AdminAPI.api('/admin/config', { method: 'PUT', body: JSON.stringify(payload) })
       .then(function () { showBanner('Configuración guardada. Ya está activa en el sitio.'); })
       .catch(function () { showBanner('No se pudo guardar.', true); });
+  });
+
+  slidesWrap.addEventListener('change', function (e) {
+    var input = e.target.closest('input[type="file"][id$="ImagemFile"]');
+    if (!input) return;
+    var file = input.files[0];
+    if (!file) return;
+    var i = input.id.match(/^s(\d+)ImagemFile$/)[1];
+    var hint = document.getElementById('s' + i + 'ImagemHint');
+    hint.textContent = 'Enviando imagen…';
+    fetch(AdminAPI.BASE_URL + '/admin/upload-imagem?pasta=banners', {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer ' + AdminAPI.getToken(), 'Content-Type': file.type },
+      body: file
+    })
+      .then(function (res) { return res.json().then(function (data) { if (!res.ok) throw new Error(data.erro || 'error'); return data; }); })
+      .then(function (data) {
+        document.getElementById('s' + i + 'ImagemUrl').value = data.imagen_url;
+        document.getElementById('s' + i + 'ImagemPreview').src = data.imagen_url;
+        document.getElementById('s' + i + 'ImagemPreviewWrap').hidden = false;
+        hint.textContent = 'Imagen enviada. Guarda el formulario para confirmar.';
+      })
+      .catch(function (err) {
+        hint.textContent = 'No se pudo enviar la imagen (' + err.message + ').';
+      });
+  });
+
+  slidesWrap.addEventListener('click', function (e) {
+    var btn = e.target.closest('[data-remover-imagem]');
+    if (!btn) return;
+    var i = btn.getAttribute('data-remover-imagem');
+    document.getElementById('s' + i + 'ImagemUrl').value = '';
+    document.getElementById('s' + i + 'ImagemPreviewWrap').hidden = true;
+    document.getElementById('s' + i + 'ImagemFile').value = '';
   });
 
   document.getElementById('logoFile').addEventListener('change', function (e) {
