@@ -259,7 +259,11 @@
     var Store = window.LeuStore;
     if (!Store) return;
     Store.PRODUCTS.forEach(function (p) {
-      if (PRODUCT_COVERS[p.id]) p.imageUrl = PRODUCT_COVERS[p.id];
+      // PRODUCT_COVERS é só um respaldo (usado enquanto o produto não
+      // tem foto cadastrada no banco). Assim que o lojista sobe uma
+      // imagem própria pelo painel admin (imagen_url), ela tem prioridade
+      // -- nunca fica presa na capa antiga.
+      if (PRODUCT_COVERS[p.id] && !p.imageUrl) p.imageUrl = PRODUCT_COVERS[p.id];
       if (PRODUCT_ORIGINAL_PRICE[p.id]) p.originalPrice = PRODUCT_ORIGINAL_PRICE[p.id];
     });
   }
