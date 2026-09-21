@@ -492,6 +492,7 @@ a{ color:inherit; text-decoration:none; }
   padding:18px;
   box-shadow:var(--shadow-xs);
   transition:box-shadow .15s ease, transform .15s ease;
+  min-width:0;
 }
 .kpi-card:hover{ box-shadow:var(--shadow-card); transform:translateY(-1px); }
 .kpi-card__top{ display:flex; align-items:center; gap:11px; margin-bottom:14px; }
@@ -1543,6 +1544,27 @@ table.dtable tbody tr:hover{ background:var(--bg-surface-alt); }
   .storepick{ display:none; }
   .topbar{ gap:8px; }
 }
+
+/* Cartões usados dentro de grid (Relatórios, Configurações, Estoque
+   etc.) precisam poder encolher abaixo do próprio conteúdo, senão a
+   grade toda fica mais larga que a tela -- mesma causa do bug já
+   corrigido acima nos cartões do Dashboard. */
+.report-panel, .settings-card, .card{ min-width:0; }
+
+/* A regra que reduz report-grid-3/3b pra 1 coluna no celular tinha sido
+   escrita ANTES da regra que define essas classes mais abaixo neste
+   mesmo arquivo -- em CSS, quem vem depois no arquivo ganha quando o
+   peso é igual, então a redução nunca era aplicada. Repetindo aqui (no
+   fim do arquivo, onde sempre vence) resolve sem mexer no que já
+   existia. */
+@media (max-width:1180px){
+  .report-grid-3, .report-grid-3b{ grid-template-columns:1fr; }
+}
+
+/* Rede de segurança: mesmo que apareça algum elemento largo demais
+   que a gente não tenha pego acima, a página nunca fica com barra de
+   rolagem lateral (que é o que fazia o app parecer "quebrado"). */
+html, body{ overflow-x:hidden; max-width:100%; }
 </style>
 </head>
 <body>
