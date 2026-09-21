@@ -406,7 +406,11 @@ h1,h2,h3,h4{ font-family:var(--font-head); margin:0; }
   -webkit-overflow-scrolling:touch; scrollbar-width:none; padding-block:2px 6px;
 }
 .product-carousel::-webkit-scrollbar{ display:none; }
-.product-carousel .product-card{ flex:0 0 auto; width:158px; scroll-snap-align:start; }
+/* No celular, o card ocupa quase a tela toda (imagem grande, bem visível)
+   e só uma tirinha do próximo produto aparece na borda -- sinaliza que dá
+   pra arrastar pros lados sem esconder o resto do catálogo. */
+.product-carousel .product-card{ flex:0 0 auto; width:78vw; max-width:320px; scroll-snap-align:start; }
+@media (min-width:480px){ .product-carousel .product-card{ width:260px; max-width:none; } }
 @media (min-width:640px){ .product-carousel .product-card{ width:210px; } }
 @media (min-width:1024px){ .product-carousel .product-card{ width:220px; } }
 .carousel-arrow{
