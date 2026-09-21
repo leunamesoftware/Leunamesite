@@ -16,6 +16,7 @@
 // recebe seu proprio codigo -- nunca uma licenca unica compartilhada).
 const PRODUTOS_COM_LICENCA = {
   'leuname-gestao': 'leuname-gestao',
+  'construgestao': 'construgestao',
 };
 
 function json(data, status = 200) {

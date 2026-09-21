@@ -1,0 +1,24 @@
+name = "construgestao-app"
+compatibility_date = "2026-09-19"
+
+# Publica o app ConstruGestão (SITE estático, mesmo padrão dos sites
+# leunamesoftware.com/.com.br) como um Worker de "static assets" na
+# Cloudflare. É um app local-first (banco de dados no próprio
+# dispositivo, IndexedDB) — este Worker só serve os arquivos, não tem
+# backend próprio: login, licença e sincronização entre dispositivos
+# usam o MESMO servidor de licenças já existente
+# (PROJETO/servidor-licencas-cloudflare), só muda o app_id
+# ("construgestao").
+[assets]
+directory = "./"
+
+# Domínio customizado: ainda NÃO configurado (o cliente ainda não tem
+# um domínio próprio pra este produto). Por enquanto fica disponível
+# em construgestao-app.<subdominio-da-conta>.workers.dev. Quando
+# houver um domínio (ex: app.construgestao.com.br), repita o mesmo
+# passo manual já feito para os outros domínios (Cloudflare Dashboard
+# -> Workers & Pages -> construgestao-app -> Settings -> Domains &
+# Routes -> Add Custom Domain) e descomente o bloco abaixo.
+# [[routes]]
+# pattern = "app.construgestao.com.br"
+# custom_domain = true

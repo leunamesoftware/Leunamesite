@@ -1527,6 +1527,9 @@ table.dtable tbody tr:hover{ background:var(--bg-surface-alt); }
 </head>
 <body>
 
+<div id="auth-root"></div>
+<div class="modal-backdrop" id="cgModal"><div class="modal" id="cgModalBox" style="max-width:560px;max-height:86vh;overflow-y:auto;"></div></div>
+
 <!-- ================= SPRITE DE ÍCONES ================= -->
 <svg style="display:none">
 <defs>
@@ -1812,7 +1815,7 @@ table.dtable tbody tr:hover{ background:var(--bg-surface-alt); }
       <div id="view-dashboard" class="view">
       <div class="page-head">
         <div>
-          <h1>Olá, João! 👋</h1>
+          <h1 id="dashGreeting">Olá! 👋</h1>
           <p>Veja o que está acontecendo na sua loja hoje.</p>
         </div>
         <div class="date-badge">
@@ -1840,32 +1843,32 @@ table.dtable tbody tr:hover{ background:var(--bg-surface-alt); }
             <span class="kpi-card__icon green"><span class="icon"><svg><use href="#i-trending-up"/></svg></span></span>
             <span class="kpi-card__label">Vendas hoje</span>
           </div>
-          <p class="kpi-card__value">R$ 1.280,50</p>
-          <p class="kpi-card__delta up"><span class="icon"><svg><use href="#i-trending-up"/></svg></span>+12% <span>em relação a ontem</span></p>
+          <p class="kpi-card__value" id="kpiVendasHoje">R$ 0,00</p>
+          <p class="kpi-card__delta up"><span class="icon"><svg><use href="#i-trending-up"/></svg></span><span id="kpiVendasHojeQtd">0 vendas hoje</span></p>
         </div>
         <div class="kpi-card">
           <div class="kpi-card__top">
             <span class="kpi-card__icon blue"><span class="icon"><svg><use href="#i-box"/></svg></span></span>
             <span class="kpi-card__label">Produtos em estoque</span>
           </div>
-          <p class="kpi-card__value">1.245</p>
-          <p class="kpi-card__delta info"><span class="icon"><svg><use href="#i-trending-up"/></svg></span>+28 <span>novos este mês</span></p>
+          <p class="kpi-card__value" id="kpiProdutosEstoque">0</p>
+          <p class="kpi-card__delta info"><span class="icon"><svg><use href="#i-trending-up"/></svg></span><span id="kpiProdutosTotal">0 produtos cadastrados</span></p>
         </div>
         <div class="kpi-card">
           <div class="kpi-card__top">
             <span class="kpi-card__icon orange"><span class="icon"><svg><use href="#i-alert-triangle"/></svg></span></span>
             <span class="kpi-card__label">Alertas</span>
           </div>
-          <p class="kpi-card__value">7</p>
-          <p class="kpi-card__delta warn"><span class="icon"><svg><use href="#i-alert-triangle"/></svg></span><span style="color:inherit;">Precisam de atenção</span></p>
+          <p class="kpi-card__value" id="kpiAlertas">0</p>
+          <p class="kpi-card__delta warn"><span class="icon"><svg><use href="#i-alert-triangle"/></svg></span><span style="color:inherit;">Produtos com estoque baixo ou zerado</span></p>
         </div>
         <div class="kpi-card">
           <div class="kpi-card__top">
             <span class="kpi-card__icon purple"><span class="icon"><svg><use href="#i-cart"/></svg></span></span>
             <span class="kpi-card__label">Pedidos hoje</span>
           </div>
-          <p class="kpi-card__value">18</p>
-          <p class="kpi-card__delta accent"><span class="icon"><svg><use href="#i-trending-up"/></svg></span>+20% <span>em relação a ontem</span></p>
+          <p class="kpi-card__value" id="kpiClientesTotal">0</p>
+          <p class="kpi-card__delta accent"><span class="icon"><svg><use href="#i-trending-up"/></svg></span><span>clientes cadastrados</span></p>
         </div>
       </section>
 
@@ -8951,6 +8954,1008 @@ table.dtable tbody tr:hover{ background:var(--bg-surface-alt); }
     if(e.key === 'Escape'){ closeModal(); closeSidebar(); userPanel.classList.remove('is-open'); }
   });
 })();
+</script>
+<script>
+(function () {
+  'use strict';
+
+  /* ============================================================
+     CONSTRUGESTÃO — núcleo real (licença, login, banco local, CRUD)
+     Segue o mesmo padrão já em produção do LeuName Gestão:
+     banco local (IndexedDB, por dispositivo), licença ativada uma vez
+     (LEU-XXXX-XXXX-XXXX, validada offline) e sincronização opcional
+     entre dispositivos que compartilham a mesma licença, usando o
+     MESMO servidor de licenças (servidor-licencas-cloudflare) — só
+     muda o app_id ("construgestao") e as "stores" sincronizadas.
+     ============================================================ */
+
+  var DB_NAME = 'construgestao_db';
+  var DB_VERSION = 1;
+  var STORES = ['loja', 'usuarios', 'categorias', 'produtos', 'estoque_mov', 'clientes', 'vendas', 'fornecedores', 'compras', 'orcamentos', 'demandas', 'entregas', 'notificacoes', 'config', 'dispositivos', 'logs', '_sync_outbox'];
+  var SYNC_STORES = ['loja', 'usuarios', 'categorias', 'produtos', 'estoque_mov', 'clientes', 'vendas', 'fornecedores', 'compras', 'orcamentos', 'demandas', 'entregas', 'notificacoes', 'config'];
+  var SYNC_API_BASE = 'https://api.leunamesoftware.com';
+  var LICENSE_LOCAL_SECRET = 'LeuName-Ativacao-Local-PrimeiroCliente-2026-v1';
+  var LICENSE_LS_KEY = 'construgestao_licenca_ativa';
+  var LICENSE_REVOKED_LS_KEY = 'construgestao_licenca_revogada';
+  var SESSION_LS_KEY = 'construgestao_session';
+  var LOGO_DATA_URI = null; // sem logo padrão própria ainda -- usa só o ícone da marca já presente no HTML
+
+  var ROLE_LABELS = { administrador: 'Administrador', vendas: 'Vendas', atendimento: 'Atendimento', estoque: 'Estoque', compras: 'Compras', financeiro: 'Financeiro', entregas: 'Entregas' };
+  var ROLE_BADGE = { administrador: 'badge--red', vendas: 'badge--blue', atendimento: 'badge--purple', estoque: 'badge--orange', compras: 'badge--teal', financeiro: 'badge--green', entregas: 'badge--gray' };
+  var ALL_SECTIONS = ['dashboard', 'produtos', 'categorias', 'estoque', 'vendas', 'orcamentos', 'clientes', 'demandas', 'fornecedores', 'compras', 'entregas', 'notificacoes', 'usuarios', 'relatorios', 'configuracoes'];
+  var ROLE_DEFAULT_PERMS = {
+    administrador: Object.fromEntries(ALL_SECTIONS.map(function (s) { return [s, true]; })),
+    vendas: { dashboard: true, produtos: true, categorias: false, estoque: false, vendas: true, orcamentos: true, clientes: true, demandas: false, fornecedores: false, compras: false, entregas: false, notificacoes: true, usuarios: false, relatorios: false, configuracoes: false },
+    atendimento: { dashboard: true, produtos: true, categorias: false, estoque: false, vendas: false, orcamentos: false, clientes: true, demandas: true, fornecedores: false, compras: false, entregas: false, notificacoes: true, usuarios: false, relatorios: false, configuracoes: false },
+    estoque: { dashboard: true, produtos: true, categorias: true, estoque: true, vendas: false, orcamentos: false, clientes: false, demandas: false, fornecedores: true, compras: false, entregas: false, notificacoes: true, usuarios: false, relatorios: false, configuracoes: false },
+    compras: { dashboard: true, produtos: true, categorias: false, estoque: true, vendas: false, orcamentos: false, clientes: false, demandas: false, fornecedores: true, compras: true, entregas: false, notificacoes: true, usuarios: false, relatorios: false, configuracoes: false },
+    financeiro: { dashboard: true, produtos: false, categorias: false, estoque: false, vendas: true, orcamentos: true, clientes: true, demandas: false, fornecedores: false, compras: true, entregas: false, notificacoes: true, usuarios: false, relatorios: true, configuracoes: false },
+    entregas: { dashboard: true, produtos: false, categorias: false, estoque: false, vendas: false, orcamentos: false, clientes: true, demandas: false, fornecedores: false, compras: false, entregas: true, notificacoes: true, usuarios: false, relatorios: false, configuracoes: false }
+  };
+
+  var STATE = { loja: null, user: null };
+
+  /* ---- IndexedDB ---- */
+  var _dbPromise = null;
+  function openDB() {
+    if (_dbPromise) return _dbPromise;
+    _dbPromise = new Promise(function (resolve, reject) {
+      var req;
+      try { req = indexedDB.open(DB_NAME, DB_VERSION); } catch (e) { reject(e); return; }
+      req.onupgradeneeded = function (ev) {
+        var db = ev.target.result;
+        STORES.forEach(function (s) { if (!db.objectStoreNames.contains(s)) db.createObjectStore(s, { keyPath: 'id' }); });
+      };
+      req.onsuccess = function () { resolve(req.result); };
+      req.onerror = function () { reject(req.error); };
+    });
+    return _dbPromise;
+  }
+  function idbTx(storeName, mode) { return openDB().then(function (db) { return db.transaction(storeName, mode).objectStore(storeName); }); }
+  function idbAll(storeName) {
+    return idbTx(storeName, 'readonly').then(function (store) {
+      return new Promise(function (res, rej) { var r = store.getAll(); r.onsuccess = function () { res(r.result || []); }; r.onerror = function () { rej(r.error); }; });
+    });
+  }
+  function idbGet(storeName, id) {
+    return idbTx(storeName, 'readonly').then(function (store) {
+      return new Promise(function (res, rej) { var r = store.get(id); r.onsuccess = function () { res(r.result || null); }; r.onerror = function () { rej(r.error); }; });
+    });
+  }
+  function idbPutLocal(storeName, obj) {
+    return idbTx(storeName, 'readwrite').then(function (store) {
+      return new Promise(function (res, rej) { var r = store.put(obj); r.onsuccess = function () { res(obj); }; r.onerror = function () { rej(r.error); }; });
+    });
+  }
+  function idbDeleteLocal(storeName, id) {
+    return idbTx(storeName, 'readwrite').then(function (store) {
+      return new Promise(function (res, rej) { var r = store.delete(id); r.onsuccess = function () { res(true); }; r.onerror = function () { rej(r.error); }; });
+    });
+  }
+  async function idbPut(storeName, obj) {
+    if (SYNC_STORES.indexOf(storeName) !== -1) {
+      obj._syncTs = Date.now();
+      await idbPutLocal(storeName, obj);
+      await idbPutLocal('_sync_outbox', { id: storeName + '|' + obj.id, store: storeName, registroId: obj.id, payload: obj, atualizadoEm: obj._syncTs, deletado: 0 });
+      syncScheduleSoon();
+      return obj;
+    }
+    return idbPutLocal(storeName, obj);
+  }
+  async function idbDelete(storeName, id) {
+    if (SYNC_STORES.indexOf(storeName) !== -1) {
+      var ts = Date.now();
+      await idbDeleteLocal(storeName, id);
+      await idbPutLocal('_sync_outbox', { id: storeName + '|' + id, store: storeName, registroId: id, payload: null, atualizadoEm: ts, deletado: 1 });
+      syncScheduleSoon();
+      return true;
+    }
+    return idbDeleteLocal(storeName, id);
+  }
+
+  /* ---- sincronização entre dispositivos com a mesma licença (mesmo servidor do LeuName Gestão) ---- */
+  var _syncInFlight = false, _syncTimer = null;
+  function syncScheduleSoon() { if (_syncTimer) clearTimeout(_syncTimer); _syncTimer = setTimeout(function () { syncNow().catch(function () {}); }, 1500); }
+  function syncCursorKey(chave) { return 'construgestao_sync_cursor:' + chave; }
+  function syncGetCursor(chave) { return Number(lsGet(syncCursorKey(chave)) || '0') || 0; }
+  function syncSetCursor(chave, ts) { lsSet(syncCursorKey(chave), String(ts)); }
+  async function syncPush() {
+    var chave = lsGet(LICENSE_LS_KEY);
+    if (!chave) return { ok: false };
+    var pendentes = await idbAll('_sync_outbox');
+    if (!pendentes.length) return { ok: true, enviados: 0 };
+    var alteracoes = pendentes.map(function (p) { return { store: p.store, id: p.registroId, payload: p.payload, atualizado_em: p.atualizadoEm, deletado: p.deletado }; });
+    var resp;
+    try { resp = await fetch(SYNC_API_BASE + '/sync/push', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ chave: chave, alteracoes: alteracoes }) }); }
+    catch (e) { return { ok: false, offline: true }; }
+    if (!resp.ok) return { ok: false };
+    for (var i = 0; i < pendentes.length; i++) {
+      var p = pendentes[i];
+      var atual = await idbGet('_sync_outbox', p.id);
+      if (atual && atual.atualizadoEm === p.atualizadoEm) await idbDeleteLocal('_sync_outbox', p.id);
+    }
+    return { ok: true, enviados: pendentes.length };
+  }
+  async function syncPull() {
+    var chave = lsGet(LICENSE_LS_KEY);
+    if (!chave) return { ok: false };
+    var desde = syncGetCursor(chave);
+    var resp;
+    try { resp = await fetch(SYNC_API_BASE + '/sync/pull?chave=' + encodeURIComponent(chave) + '&desde=' + desde); }
+    catch (e) { return { ok: false, offline: true }; }
+    if (!resp.ok) return { ok: false };
+    var data = await resp.json();
+    if (!data.ok) return { ok: false };
+    var maxTs = desde;
+    for (var i = 0; i < data.alteracoes.length; i++) {
+      var alt = data.alteracoes[i];
+      if (alt.deletado) await idbDeleteLocal(alt.store, alt.id);
+      else if (alt.payload) await idbPutLocal(alt.store, alt.payload);
+      if (alt.atualizado_em > maxTs) maxTs = alt.atualizado_em;
+    }
+    if (maxTs > desde) syncSetCursor(chave, maxTs);
+    return { ok: true, recebidos: data.alteracoes.length };
+  }
+  async function syncNow() {
+    if (_syncInFlight) return { ok: false };
+    if (typeof navigator !== 'undefined' && navigator.onLine === false) return { ok: false, offline: true };
+    if (!lsGet(LICENSE_LS_KEY)) return { ok: false };
+    _syncInFlight = true;
+    try {
+      var push = await syncPush();
+      var pull = await syncPull();
+      if (pull.recebidos) await renderAll();
+      checkLicenseRevoked().then(function (revoked) { if (revoked) renderLicenseRevoked(); });
+      return { ok: !!(push.ok && pull.ok) };
+    } finally { _syncInFlight = false; }
+  }
+
+  /* ---- utilidades ---- */
+  function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function lsSet(k, v) { try { localStorage.setItem(k, v); return true; } catch (e) { return false; } }
+  function lsRemove(k) { try { localStorage.removeItem(k); } catch (e) {} }
+  function uid() { return (crypto.randomUUID ? crypto.randomUUID() : 'id-' + Date.now() + '-' + Math.random().toString(16).slice(2)); }
+  function nowISO() { return new Date().toISOString(); }
+  function fmtBRL(n) { n = Number(n || 0); return n.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }); }
+  function fmtDateTime(iso) { if (!iso) return '—'; var d = new Date(iso); if (isNaN(d)) return '—'; return d.toLocaleDateString('pt-BR') + ' ' + d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }); }
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  function initials(nome) { nome = String(nome || '').trim(); if (!nome) return '?'; var partes = nome.split(/\s+/); return (partes[0][0] + (partes[1] ? partes[1][0] : '')).toUpperCase(); }
+  function avatarColor(seed) { var cores = ['#3b6fe0', '#d9a520', '#e0527a', '#2bb3a3', '#7c4fd9', '#e2673a']; var h = 0; String(seed || '').split('').forEach(function (c) { h = (h * 31 + c.charCodeAt(0)) % cores.length; }); return cores[h]; }
+  function nextNumber(prefix, list) {
+    var nums = (list || []).map(function (x) { return parseInt(String(x.numero || '').replace(prefix, ''), 10); }).filter(function (n) { return !isNaN(n); });
+    var max = nums.length ? Math.max.apply(null, nums) : 0;
+    return prefix + String(max + 1).padStart(6, '0');
+  }
+
+  function toast(msg, type) {
+    var el = document.getElementById('toast'), msgEl = document.getElementById('toastMsg');
+    if (!el || !msgEl) return;
+    msgEl.textContent = msg || '';
+    el.classList.remove('is-danger', 'is-success');
+    if (type === 'error') el.style.setProperty('--_t', '1');
+    el.classList.add('is-open');
+    clearTimeout(el._t);
+    el._t = setTimeout(function () { el.classList.remove('is-open'); }, 3400);
+  }
+
+  async function logAction(acao, detalhes) {
+    try { await idbPut('logs', { id: uid(), usuario_id: STATE.user ? STATE.user.id : null, usuario_nome: STATE.user ? STATE.user.nome : 'Sistema', acao: acao, detalhes: detalhes || '', data: nowISO() }); } catch (e) {}
+  }
+  async function getLoja() { var all = await idbAll('loja'); return all[0] || null; }
+  async function isFirstRun() { var l = await getLoja(); return !l; }
+
+  /* ---- criptografia de senha local (PBKDF2-SHA256, mesmo padrão do LeuName Gestão) ---- */
+  function genSalt() { var a = crypto.getRandomValues(new Uint8Array(16)); return Array.from(a).map(function (b) { return b.toString(16).padStart(2, '0'); }).join(''); }
+  async function hashPassword(password, saltHex) {
+    var enc = new TextEncoder();
+    var saltBytes = new Uint8Array(saltHex.match(/.{2}/g).map(function (h) { return parseInt(h, 16); }));
+    var keyMaterial = await crypto.subtle.importKey('raw', enc.encode(password), { name: 'PBKDF2' }, false, ['deriveBits']);
+    var bits = await crypto.subtle.deriveBits({ name: 'PBKDF2', salt: saltBytes, iterations: 120000, hash: 'SHA-256' }, keyMaterial, 256);
+    return Array.from(new Uint8Array(bits)).map(function (b) { return b.toString(16).padStart(2, '0'); }).join('');
+  }
+  async function verifyPassword(password, saltHex, hashHex) { var h = await hashPassword(password, saltHex); return h === hashHex; }
+
+  /* ---- licença: mesmo formato/checksum/servidor do LeuName Gestão, app_id="construgestao" ---- */
+  function licenseChecksumValid(key) {
+    if (!key) return false;
+    var m = /^LEU-([0-9A-Z]{4})-([0-9A-Z]{4})-([0-9A-Z]{4})$/.exec(key.trim().toUpperCase());
+    return !!m;
+  }
+  async function licenseChecksum(g1, g2) {
+    var enc = new TextEncoder();
+    var keyMaterial = await crypto.subtle.importKey('raw', enc.encode(LICENSE_LOCAL_SECRET), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
+    var sig = await crypto.subtle.sign('HMAC', keyMaterial, enc.encode('LEU-' + g1 + '-' + g2));
+    return Array.from(new Uint8Array(sig)).slice(0, 2).map(function (b) { return b.toString(16).toUpperCase().padStart(2, '0'); }).join('');
+  }
+  async function licenseKeyValid(key) {
+    if (!licenseChecksumValid(key)) return false;
+    var m = /^LEU-([0-9A-Z]{4})-([0-9A-Z]{4})-([0-9A-Z]{4})$/.exec(key.trim().toUpperCase());
+    var esperado = await licenseChecksum(m[1], m[2]);
+    return esperado === m[3];
+  }
+  async function isLicenseActivated() { var key = lsGet(LICENSE_LS_KEY); if (!key) return false; return await licenseKeyValid(key); }
+  async function checkLicenseRevoked() {
+    var chave = lsGet(LICENSE_LS_KEY);
+    if (!chave) return false;
+    var resp;
+    try { resp = await fetch(SYNC_API_BASE + '/licencas/verificar?chave=' + encodeURIComponent(chave)); } catch (e) { return false; }
+    if (!resp.ok) return false;
+    var data;
+    try { data = await resp.json(); } catch (e) { return false; }
+    if (!data || !data.ok || !data.encontrada) return false;
+    if (data.status && data.status !== 'ativa') { lsSet(LICENSE_REVOKED_LS_KEY, '1'); return true; }
+    lsSet(LICENSE_REVOKED_LS_KEY, ''); return false;
+  }
+
+  /* ---- permissões ---- */
+  function can(section) {
+    if (!STATE.user) return false;
+    if (STATE.user.papel === 'administrador') return true;
+    var perms = STATE.user.permissoes || ROLE_DEFAULT_PERMS[STATE.user.papel] || {};
+    return !!perms[section];
+  }
+
+  /* ---- modal genérico (reaproveita .modal-backdrop/.modal já existentes no CSS) ---- */
+  function openFormModal(html) {
+    var box = document.getElementById('cgModalBox');
+    box.innerHTML = html;
+    document.getElementById('cgModal').classList.add('is-open');
+  }
+  function closeFormModal() { document.getElementById('cgModal').classList.remove('is-open'); }
+  document.addEventListener('DOMContentLoaded', function () {
+    var backdrop = document.getElementById('cgModal');
+    if (backdrop) backdrop.addEventListener('click', function (e) { if (e.target === backdrop) closeFormModal(); });
+    document.addEventListener('click', function (e) { if (e.target.closest('[data-close-modal]')) closeFormModal(); });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeFormModal(); });
+  });
+
+  function modalHeaderHTML(titulo) {
+    return '<div style="padding:20px 24px 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border-subtle);">' +
+      '<h3 style="margin:0;font-size:16px;">' + esc(titulo) + '</h3>' +
+      '<button type="button" class="iconbtn" data-close-modal><span class="icon"><svg><use href="#i-x"/></svg></span></button></div>';
+  }
+  function modalFooterHTML(okLabel) {
+    return '<div style="display:flex;gap:10px;padding:18px 24px 24px;">' +
+      '<button type="submit" class="btn btn--primary" style="flex:1;justify-content:center;">' + esc(okLabel || 'Salvar') + '</button>' +
+      '<button type="button" class="btn btn--secondary" data-close-modal>Cancelar</button></div>';
+  }
+
+  /* ============================================================
+     Telas de autenticação: ativação de licença -> onboarding -> login
+     ============================================================ */
+  function authShellHTML(inner) {
+    return '<div style="position:fixed;inset:0;z-index:200;background:var(--bg-app,#f4f5f7);display:flex;align-items:center;justify-content:center;padding:20px;overflow-y:auto;">' +
+      '<div style="width:100%;max-width:420px;background:var(--bg-surface,#fff);border-radius:16px;box-shadow:0 20px 50px rgba(15,23,42,.18);padding:32px 28px;">' +
+      '<div style="display:flex;align-items:center;gap:10px;justify-content:center;margin-bottom:18px;">' +
+      '<span style="width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,var(--orange-500,#f97316),var(--orange-700,#c2410c));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;">CG</span>' +
+      '<span style="font-weight:800;font-size:18px;">ConstruGestão</span></div>' + inner + '</div></div>';
+  }
+
+  function renderLicenseGate(errMsg) {
+    var root = document.getElementById('auth-root');
+    document.querySelector('.app').style.display = 'none';
+    root.innerHTML = authShellHTML(
+      '<h2 style="font-size:16.5px;text-align:center;margin:0 0 6px;">Ativação da licença</h2>' +
+      '<p style="font-size:13px;color:var(--text-secondary);text-align:center;margin:0 0 16px;">Digite a chave de licença enviada pela LeuName Softwares para usar o ConstruGestão.</p>' +
+      '<div class="field"><label>Chave de licença</label><input id="lic-key" placeholder="LEU-XXXX-XXXX-XXXX" style="text-transform:uppercase;"></div>' +
+      (errMsg ? '<div class="alert alert--danger" style="margin-top:10px;">' + esc(errMsg) + '</div>' : '') +
+      '<button class="btn btn--primary" id="lic-activate" style="width:100%;justify-content:center;margin-top:16px;">Ativar licença</button>'
+    );
+    var input = document.getElementById('lic-key');
+    var doActivate = async function () {
+      var btn = document.getElementById('lic-activate');
+      var raw = input.value.trim().toUpperCase();
+      if (!raw) { renderLicenseGate('Digite a chave de licença.'); return; }
+      btn.disabled = true; btn.textContent = 'Verificando...';
+      var valid = await licenseKeyValid(raw);
+      if (!valid) { renderLicenseGate('Chave de licença inválida. Verifique e tente novamente.'); return; }
+      lsSet(LICENSE_LS_KEY, raw);
+      toast('Licença ativada com sucesso!');
+      __booted = false; boot();
+    };
+    document.getElementById('lic-activate').onclick = doActivate;
+    input.addEventListener('keydown', function (e) { if (e.key === 'Enter') doActivate(); });
+    input.focus();
+  }
+
+  function renderLicenseRevoked() {
+    document.querySelector('.app').style.display = 'none';
+    var root = document.getElementById('auth-root');
+    root.innerHTML = authShellHTML(
+      '<h2 style="font-size:16.5px;text-align:center;margin:0 0 6px;">Licença desativada</h2>' +
+      '<div class="alert alert--danger">Sua licença foi desativada. Fale com a LeuName Softwares para reativar o acesso.</div>' +
+      '<button class="btn btn--secondary" id="lic-recheck" style="width:100%;justify-content:center;margin-top:16px;">Verificar novamente</button>'
+    );
+    document.getElementById('lic-recheck').onclick = async function () {
+      var revoked = await checkLicenseRevoked();
+      if (!revoked) { __booted = false; boot(); } else { toast('Licença ainda está desativada.', 'error'); }
+    };
+  }
+
+  async function renderLogin() {
+    document.querySelector('.app').style.display = 'none';
+    var loja = await getLoja();
+    var root = document.getElementById('auth-root');
+    root.innerHTML = authShellHTML(
+      '<h2 style="font-size:16.5px;text-align:center;margin:0 0 2px;">Entrar' + (loja ? ' — ' + esc(loja.nome) : '') + '</h2>' +
+      '<p style="font-size:13px;color:var(--text-secondary);text-align:center;margin:0 0 16px;">Acesse o sistema da sua loja</p>' +
+      '<div class="field"><label>E-mail</label><input type="email" id="lg-email" placeholder="voce@loja.com" autocomplete="username"></div>' +
+      '<div class="field" style="margin-top:10px;"><label>Senha</label><input type="password" id="lg-senha" placeholder="••••••••" autocomplete="current-password"></div>' +
+      '<div id="lg-error" class="alert alert--danger" style="display:none;margin-top:12px;"></div>' +
+      '<button class="btn btn--primary" id="lg-submit" style="width:100%;justify-content:center;margin-top:16px;">Entrar</button>'
+    );
+    var submit = async function () {
+      var email = document.getElementById('lg-email').value.trim();
+      var senha = document.getElementById('lg-senha').value;
+      var errBox = document.getElementById('lg-error');
+      errBox.style.display = 'none';
+      if (!email || !senha) { errBox.textContent = 'Preencha e-mail e senha.'; errBox.style.display = ''; return; }
+      var r = await doLogin(email, senha);
+      if (!r.ok) { errBox.textContent = r.msg; errBox.style.display = ''; return; }
+      startApp();
+    };
+    document.getElementById('lg-submit').onclick = submit;
+    root.querySelectorAll('input').forEach(function (i) { i.addEventListener('keydown', function (e) { if (e.key === 'Enter') submit(); }); });
+  }
+
+  async function doLogin(email, senha) {
+    var usuarios = await idbAll('usuarios');
+    var user = usuarios.find(function (u) { return u.email.toLowerCase() === String(email).toLowerCase().trim(); });
+    if (!user) return { ok: false, msg: 'E-mail não encontrado.' };
+    if (user.status === 'bloqueado') return { ok: false, msg: 'Este usuário está bloqueado. Fale com o administrador.' };
+    var valid = await verifyPassword(senha, user.salt, user.senha_hash);
+    if (!valid) return { ok: false, msg: 'Senha incorreta.' };
+    STATE.user = user; STATE.loja = await getLoja();
+    lsSet(SESSION_LS_KEY, user.id);
+    user.ultimo_login = nowISO();
+    await idbPut('usuarios', user);
+    await logAction('login', 'Login realizado');
+    return { ok: true };
+  }
+  async function tryRestoreSession() {
+    var uidSaved = lsGet(SESSION_LS_KEY);
+    if (!uidSaved) return false;
+    var user = await idbGet('usuarios', uidSaved);
+    if (!user || user.status === 'bloqueado') return false;
+    STATE.user = user; STATE.loja = await getLoja();
+    return true;
+  }
+  async function doLogout() {
+    await logAction('logout', 'Logout realizado');
+    lsRemove(SESSION_LS_KEY);
+    STATE.user = null;
+    document.querySelector('.app').style.display = 'none';
+    __booted = false;
+    boot();
+  }
+
+  var OB = { data: { resp_nome: '', resp_email: '', resp_senha: '', resp_senha2: '', loja_nome: '' } };
+  function renderOnboarding() {
+    document.querySelector('.app').style.display = 'none';
+    var root = document.getElementById('auth-root');
+    var d = OB.data;
+    root.innerHTML = authShellHTML(
+      '<h2 style="font-size:16.5px;text-align:center;margin:0 0 4px;">Bem-vindo(a) ao ConstruGestão</h2>' +
+      '<p style="font-size:13px;color:var(--text-secondary);text-align:center;margin:0 0 18px;">Vamos criar o administrador e a sua loja.</p>' +
+      '<div class="field"><label>Nome da loja</label><input id="ob-loja-nome" value="' + esc(d.loja_nome) + '" placeholder="Ex: Construmais Materiais"></div>' +
+      '<div class="field" style="margin-top:10px;"><label>Seu nome</label><input id="ob-nome" value="' + esc(d.resp_nome) + '" placeholder="Seu nome"></div>' +
+      '<div class="field" style="margin-top:10px;"><label>E-mail de acesso</label><input id="ob-email" type="email" value="' + esc(d.resp_email) + '" placeholder="voce@loja.com"></div>' +
+      '<div class="field" style="margin-top:10px;"><label>Senha</label><input id="ob-senha" type="password" placeholder="mín. 6 caracteres"></div>' +
+      '<div class="field" style="margin-top:10px;"><label>Confirmar senha</label><input id="ob-senha2" type="password"></div>' +
+      '<div id="ob-err" class="alert alert--danger" style="display:none;margin-top:12px;"></div>' +
+      '<button class="btn btn--primary" id="ob-finish" style="width:100%;justify-content:center;margin-top:16px;">Criar minha loja</button>'
+    );
+    document.getElementById('ob-finish').onclick = async function () {
+      var err = document.getElementById('ob-err');
+      d.loja_nome = document.getElementById('ob-loja-nome').value.trim();
+      d.resp_nome = document.getElementById('ob-nome').value.trim();
+      d.resp_email = document.getElementById('ob-email').value.trim();
+      d.resp_senha = document.getElementById('ob-senha').value;
+      d.resp_senha2 = document.getElementById('ob-senha2').value;
+      if (!d.loja_nome || !d.resp_nome || !d.resp_email || !d.resp_senha) { err.textContent = 'Preencha todos os campos.'; err.style.display = ''; return; }
+      if (d.resp_senha.length < 6) { err.textContent = 'A senha deve ter ao menos 6 caracteres.'; err.style.display = ''; return; }
+      if (d.resp_senha !== d.resp_senha2) { err.textContent = 'As senhas não coincidem.'; err.style.display = ''; return; }
+      if (!/^\S+@\S+\.\S+$/.test(d.resp_email)) { err.textContent = 'Informe um e-mail válido.'; err.style.display = ''; return; }
+      await finishOnboarding();
+    };
+  }
+  async function finishOnboarding() {
+    var d = OB.data;
+    var loja = { id: uid(), nome: d.loja_nome, criado_em: nowISO() };
+    await idbPut('loja', loja);
+    var salt = genSalt();
+    var hash = await hashPassword(d.resp_senha, salt);
+    var admin = { id: uid(), nome: d.resp_nome, email: d.resp_email, salt: salt, senha_hash: hash, papel: 'administrador', status: 'ativo', permissoes: ROLE_DEFAULT_PERMS.administrador, criado_em: nowISO(), ultimo_login: null };
+    await idbPut('usuarios', admin);
+    // Categorias padrão pra loja não começar vazia (mesmas usadas nos filtros do mockup original).
+    var categoriasPadrao = [
+      ['Cimentos', 'Cimentos e argamassas'], ['Alvenaria', 'Tijolos, blocos e afins'],
+      ['Cobertura', 'Telhas e estruturas de cobertura'], ['Areia e Pedra', 'Areia, brita e agregados'],
+      ['Hidráulica', 'Tubos, conexões e material hidráulico'], ['Acabamento', 'Pisos, revestimentos e tintas'],
+      ['Ferragem', 'Ferramentas e ferragens em geral']
+    ];
+    for (var i = 0; i < categoriasPadrao.length; i++) {
+      await idbPut('categorias', { id: uid(), ordem: i + 1, nome: categoriasPadrao[i][0], descricao: categoriasPadrao[i][1], status: 'ativa', criado_em: nowISO() });
+    }
+    STATE.loja = loja; STATE.user = admin;
+    lsSet(SESSION_LS_KEY, admin.id);
+    await logAction('loja_criada', 'Loja "' + loja.nome + '" criada no primeiro acesso');
+    toast('Loja criada com sucesso! Bem-vindo ao ConstruGestão.');
+    startApp();
+  }
+
+  /* ============================================================
+     CATEGORIAS
+     ============================================================ */
+  function categoriaRowHTML(cat, qtdProdutos) {
+    var statusBadge = cat.status === 'ativa' ? 'badge--green' : 'badge--gray';
+    var statusLabel = cat.status === 'ativa' ? 'Ativa' : 'Inativa';
+    return '<tr data-id="' + cat.id + '">' +
+      '<td><input type="checkbox" class="checkbox"></td>' +
+      '<td><span class="order-cell"><span class="icon"><svg><use href="#i-grip"/></svg></span><span class="order-cell__num">' + (cat.ordem || 1) + '</span></span></td>' +
+      '<td><span class="prod-thumb" style="width:36px;height:36px;background:linear-gradient(135deg,#e2673a,#c8481f);"><span class="icon" style="width:17px;height:17px;"><svg><use href="#i-archive"/></svg></span></span></td>' +
+      '<td><p class="prod-name">' + esc(cat.nome) + '</p></td>' +
+      '<td><span class="prod-sub">' + esc(cat.descricao || '') + '</span></td>' +
+      '<td><span class="count-cell">' + qtdProdutos + '</span></td>' +
+      '<td><span class="badge ' + statusBadge + '">' + statusLabel + '</span></td>' +
+      '<td><div class="row-actions">' +
+        '<button class="iconbtn" type="button" title="Editar" data-cat-edit="' + cat.id + '"><span class="icon"><svg><use href="#i-pencil"/></svg></span></button>' +
+        '<button class="iconbtn is-danger" type="button" title="Excluir" data-cat-del="' + cat.id + '"><span class="icon"><svg><use href="#i-trash"/></svg></span></button>' +
+      '</div></td></tr>';
+  }
+  async function renderCategorias() {
+    var tbody = document.getElementById('categoriasTbody');
+    if (!tbody) return;
+    var categorias = (await idbAll('categorias')).sort(function (a, b) { return (a.ordem || 0) - (b.ordem || 0); });
+    var produtos = await idbAll('produtos');
+    if (!categorias.length) { tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:24px;color:var(--text-tertiary);">Nenhuma categoria cadastrada ainda.</td></tr>'; return; }
+    tbody.innerHTML = categorias.map(function (c) {
+      var qtd = produtos.filter(function (p) { return p.categoria_id === c.id; }).length;
+      return categoriaRowHTML(c, qtd);
+    }).join('');
+  }
+  function categoriaFormModal(cat) {
+    cat = cat || { id: null, ordem: 1, nome: '', descricao: '', status: 'ativa' };
+    openFormModal(
+      modalHeaderHTML(cat.id ? 'Editar categoria' : 'Nova categoria') +
+      '<form id="catForm" style="padding:20px 24px;display:flex;flex-direction:column;gap:14px;">' +
+        '<div class="field"><label>Nome da categoria</label><input id="catNome" value="' + esc(cat.nome) + '" required></div>' +
+        '<div class="field"><label>Descrição</label><input id="catDescricao" value="' + esc(cat.descricao || '') + '"></div>' +
+        '<div class="field"><label>Ordem de exibição</label><input id="catOrdem" type="number" min="1" value="' + (cat.ordem || 1) + '"></div>' +
+        '<div class="field"><label>Status</label><select id="catStatus"><option value="ativa"' + (cat.status === 'ativa' ? ' selected' : '') + '>Ativa</option><option value="inativa"' + (cat.status === 'inativa' ? ' selected' : '') + '>Inativa</option></select></div>' +
+        modalFooterHTML('Salvar categoria') +
+      '</form>'
+    );
+    document.getElementById('catForm').addEventListener('submit', async function (e) {
+      e.preventDefault();
+      var nome = document.getElementById('catNome').value.trim();
+      if (!nome) { toast('Informe o nome da categoria.', 'error'); return; }
+      var obj = { id: cat.id || uid(), nome: nome, descricao: document.getElementById('catDescricao').value.trim(), ordem: Number(document.getElementById('catOrdem').value || 1), status: document.getElementById('catStatus').value, criado_em: cat.criado_em || nowISO() };
+      await idbPut('categorias', obj);
+      await logAction(cat.id ? 'categoria_editada' : 'categoria_criada', obj.nome);
+      closeFormModal();
+      toast('Categoria salva.');
+      await renderCategorias(); await renderProdutos(); await renderDashboard();
+    });
+  }
+  document.addEventListener('click', async function (e) {
+    var editBtn = e.target.closest('[data-cat-edit]');
+    if (editBtn) { var cat = await idbGet('categorias', editBtn.getAttribute('data-cat-edit')); if (cat) categoriaFormModal(cat); return; }
+    var delBtn = e.target.closest('[data-cat-del]');
+    if (delBtn) {
+      var id = delBtn.getAttribute('data-cat-del');
+      if (confirm('Excluir esta categoria? Produtos já cadastrados nela não serão apagados.')) {
+        await idbDelete('categorias', id);
+        await logAction('categoria_excluida', id);
+        toast('Categoria excluída.');
+        await renderCategorias(); await renderDashboard();
+      }
+    }
+  });
+
+  /* ============================================================
+     PRODUTOS
+     ============================================================ */
+  var STATUS_ESTOQUE_INFO = {
+    ok: { badgeClass: 'badge--green', badgeText: 'Em estoque', numClass: 'ok' },
+    low: { badgeClass: 'badge--orange', badgeText: 'Estoque baixo', numClass: 'low' },
+    out: { badgeClass: 'badge--red', badgeText: 'Sem estoque', numClass: 'out' }
+  };
+  function calcularStatusEstoque(atual, minimo) { if (atual <= 0) return 'out'; if (atual <= minimo) return 'low'; return 'ok'; }
+
+  function produtoRowHTML(p, categoriaNome) {
+    var status = calcularStatusEstoque(Number(p.estoque_atual || 0), Number(p.estoque_minimo || 0));
+    var info = STATUS_ESTOQUE_INFO[status];
+    return '<tr data-id="' + p.id + '">' +
+      '<td><input type="checkbox" class="checkbox"></td>' +
+      '<td><span class="prod-thumb" style="background:linear-gradient(135deg,#8a8f99,#5f6472);"><span class="icon" style="width:19px;height:19px;"><svg><use href="#i-bag"/></svg></span></span></td>' +
+      '<td><p class="prod-name">' + esc(p.nome) + '</p><p class="prod-sub">' + esc(p.descricao || '') + '</p></td>' +
+      '<td><span class="cat-cell"><span class="icon"><svg><use href="#i-archive"/></svg></span>' + esc(categoriaNome || '—') + '</span></td>' +
+      '<td><span class="sku-cell">' + esc(p.sku || '—') + '</span></td>' +
+      '<td><span class="stock-num ' + info.numClass + '">' + Number(p.estoque_atual || 0) + '</span></td>' +
+      '<td><span class="price-cell">' + fmtBRL(p.preco) + '</span></td>' +
+      '<td><span class="badge ' + info.badgeClass + '">' + info.badgeText + '</span></td>' +
+      '<td><div class="row-actions">' +
+        '<button class="iconbtn" type="button" title="Editar" data-prod-edit="' + p.id + '"><span class="icon"><svg><use href="#i-pencil"/></svg></span></button>' +
+        '<button class="iconbtn is-danger" type="button" title="Excluir" data-prod-del="' + p.id + '"><span class="icon"><svg><use href="#i-trash"/></svg></span></button>' +
+      '</div></td></tr>';
+  }
+  async function renderProdutos() {
+    var tbody = document.getElementById('produtosTbody');
+    var estoqueTbody = document.getElementById('estoqueTbody');
+    var produtos = await idbAll('produtos');
+    var categorias = await idbAll('categorias');
+    var catMap = {}; categorias.forEach(function (c) { catMap[c.id] = c.nome; });
+    if (tbody) {
+      tbody.innerHTML = produtos.length ? produtos.map(function (p) { return produtoRowHTML(p, catMap[p.categoria_id]); }).join('') :
+        '<tr><td colspan="9" style="text-align:center;padding:24px;color:var(--text-tertiary);">Nenhum produto cadastrado ainda. Clique em "Novo Produto" para começar.</td></tr>';
+    }
+    if (estoqueTbody) {
+      estoqueTbody.innerHTML = produtos.length ? produtos.map(function (p) {
+        var status = calcularStatusEstoque(Number(p.estoque_atual || 0), Number(p.estoque_minimo || 0));
+        var info = STATUS_ESTOQUE_INFO[status];
+        return '<tr data-id="' + p.id + '">' +
+          '<td><input type="checkbox" class="checkbox"></td>' +
+          '<td><span class="prod-thumb" style="background:linear-gradient(135deg,#8a8f99,#5f6472);"><span class="icon" style="width:19px;height:19px;"><svg><use href="#i-bag"/></svg></span></span></td>' +
+          '<td><p class="prod-name">' + esc(p.nome) + '</p><p class="prod-sub">' + esc(p.descricao || '') + '</p></td>' +
+          '<td><span class="sku-cell">' + esc(p.sku || '—') + '</span></td>' +
+          '<td><span class="cat-cell"><span class="icon"><svg><use href="#i-archive"/></svg></span>' + esc(catMap[p.categoria_id] || '—') + '</span></td>' +
+          '<td><span class="stock-num ' + info.numClass + '">' + Number(p.estoque_atual || 0) + '</span></td>' +
+          '<td>' + Number(p.estoque_minimo || 0) + '</td>' +
+          '<td><span class="badge ' + info.badgeClass + '">' + info.badgeText + '</span></td>' +
+          '<td><span class="move-cell"><span class="move-cell__date">—</span></span></td>' +
+          '<td><div class="row-actions"><button class="iconbtn" type="button" title="Editar" data-prod-edit="' + p.id + '"><span class="icon"><svg><use href="#i-pencil"/></svg></span></button></div></td></tr>';
+      }).join('') : '<tr><td colspan="10" style="text-align:center;padding:24px;color:var(--text-tertiary);">Nenhum produto cadastrado ainda.</td></tr>';
+    }
+  }
+  async function produtoFormModal(prod) {
+    prod = prod || { id: null, nome: '', descricao: '', categoria_id: '', sku: '', preco: '', estoque_atual: 0, estoque_minimo: 0, estoque_ideal: 0 };
+    var categorias = (await idbAll('categorias')).filter(function (c) { return c.status === 'ativa'; });
+    var options = categorias.map(function (c) { return '<option value="' + c.id + '"' + (prod.categoria_id === c.id ? ' selected' : '') + '>' + esc(c.nome) + '</option>'; }).join('');
+    openFormModal(
+      modalHeaderHTML(prod.id ? 'Editar produto' : 'Novo produto') +
+      '<form id="prodForm" style="padding:20px 24px;display:flex;flex-direction:column;gap:14px;">' +
+        '<div class="field"><label>Nome do produto</label><input id="prodNome" value="' + esc(prod.nome) + '" required></div>' +
+        '<div class="field"><label>Descrição curta</label><input id="prodDescricao" value="' + esc(prod.descricao || '') + '"></div>' +
+        '<div class="field"><label>Categoria</label><select id="prodCategoria">' + (options || '<option value="">Cadastre uma categoria primeiro</option>') + '</select></div>' +
+        '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">' +
+          '<div class="field"><label>SKU / Código</label><input id="prodSku" value="' + esc(prod.sku || '') + '"></div>' +
+          '<div class="field"><label>Preço (R$)</label><input id="prodPreco" type="number" step="0.01" min="0" value="' + (prod.preco != null ? prod.preco : '') + '" required></div>' +
+        '</div>' +
+        '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;">' +
+          '<div class="field"><label>Estoque atual</label><input id="prodEstoqueAtual" type="number" min="0" value="' + Number(prod.estoque_atual || 0) + '"></div>' +
+          '<div class="field"><label>Estoque mínimo</label><input id="prodEstoqueMinimo" type="number" min="0" value="' + Number(prod.estoque_minimo || 0) + '"></div>' +
+          '<div class="field"><label>Estoque ideal</label><input id="prodEstoqueIdeal" type="number" min="0" value="' + Number(prod.estoque_ideal || 0) + '"></div>' +
+        '</div>' +
+        modalFooterHTML('Salvar produto') +
+      '</form>'
+    );
+    document.getElementById('prodForm').addEventListener('submit', async function (e) {
+      e.preventDefault();
+      var nome = document.getElementById('prodNome').value.trim();
+      var preco = Number(document.getElementById('prodPreco').value);
+      if (!nome) { toast('Informe o nome do produto.', 'error'); return; }
+      if (!(preco >= 0)) { toast('Informe um preço válido.', 'error'); return; }
+      var obj = {
+        id: prod.id || uid(), nome: nome, descricao: document.getElementById('prodDescricao').value.trim(),
+        categoria_id: document.getElementById('prodCategoria').value || null, sku: document.getElementById('prodSku').value.trim(),
+        preco: preco, estoque_atual: Number(document.getElementById('prodEstoqueAtual').value || 0),
+        estoque_minimo: Number(document.getElementById('prodEstoqueMinimo').value || 0), estoque_ideal: Number(document.getElementById('prodEstoqueIdeal').value || 0),
+        criado_em: prod.criado_em || nowISO()
+      };
+      await idbPut('produtos', obj);
+      await logAction(prod.id ? 'produto_editado' : 'produto_criado', obj.nome);
+      closeFormModal();
+      toast('Produto salvo.');
+      await renderProdutos(); await renderDashboard();
+    });
+  }
+  document.addEventListener('click', async function (e) {
+    var editBtn = e.target.closest('[data-prod-edit]');
+    if (editBtn) { var p = await idbGet('produtos', editBtn.getAttribute('data-prod-edit')); if (p) produtoFormModal(p); return; }
+    var delBtn = e.target.closest('[data-prod-del]');
+    if (delBtn) {
+      var id = delBtn.getAttribute('data-prod-del');
+      if (confirm('Excluir este produto? Essa ação não pode ser desfeita.')) {
+        await idbDelete('produtos', id);
+        await logAction('produto_excluido', id);
+        toast('Produto excluído.');
+        await renderProdutos(); await renderDashboard();
+      }
+    }
+  });
+
+  /* ============================================================
+     CLIENTES
+     ============================================================ */
+  function clienteRowHTML(c) {
+    var tipoBadge = c.tipo === 'juridica' ? 'Pessoa Jurídica' : 'Pessoa Física';
+    var statusBadge = c.status === 'ativo' ? 'badge--green' : 'badge--gray';
+    var statusLabel = c.status === 'ativo' ? 'Ativo' : 'Inativo';
+    return '<tr data-id="' + c.id + '">' +
+      '<td><input type="checkbox" class="checkbox"></td>' +
+      '<td><div class="customer-cell"><span class="customer-avatar" style="background:' + avatarColor(c.nome) + ';">' + initials(c.nome) + '</span><span class="customer-name">' + esc(c.nome) + '</span></div></td>' +
+      '<td><span class="badge badge--blue">' + tipoBadge + '</span></td>' +
+      '<td>' + esc(c.documento || '—') + '</td>' +
+      '<td>' + esc(c.telefone || '—') + '</td>' +
+      '<td>' + esc(c.email || '—') + '</td>' +
+      '<td>' + esc(c.cidade || '—') + '</td>' +
+      '<td><span class="price-cell">' + fmtBRL(c._totalCompras || 0) + '</span></td>' +
+      '<td><span class="badge ' + statusBadge + '">' + statusLabel + '</span></td>' +
+      '<td><div class="row-actions">' +
+        '<button class="iconbtn" type="button" title="Editar" data-cli-edit="' + c.id + '"><span class="icon"><svg><use href="#i-pencil"/></svg></span></button>' +
+        '<button class="iconbtn is-danger" type="button" title="Excluir" data-cli-del="' + c.id + '"><span class="icon"><svg><use href="#i-trash"/></svg></span></button>' +
+      '</div></td></tr>';
+  }
+  async function renderClientes() {
+    var tbody = document.getElementById('clientesTbody');
+    if (!tbody) return;
+    var clientes = await idbAll('clientes');
+    var vendas = await idbAll('vendas');
+    clientes.forEach(function (c) {
+      c._totalCompras = vendas.filter(function (v) { return v.cliente_id === c.id; }).reduce(function (s, v) { return s + Number(v.total || 0); }, 0);
+    });
+    tbody.innerHTML = clientes.length ? clientes.map(clienteRowHTML).join('') :
+      '<tr><td colspan="10" style="text-align:center;padding:24px;color:var(--text-tertiary);">Nenhum cliente cadastrado ainda.</td></tr>';
+  }
+  function clienteFormModal(cli) {
+    cli = cli || { id: null, nome: '', tipo: 'fisica', documento: '', telefone: '', email: '', cidade: '', status: 'ativo' };
+    openFormModal(
+      modalHeaderHTML(cli.id ? 'Editar cliente' : 'Novo cliente') +
+      '<form id="cliForm" style="padding:20px 24px;display:flex;flex-direction:column;gap:14px;">' +
+        '<div class="field"><label>Nome / Razão social</label><input id="cliNome" value="' + esc(cli.nome) + '" required></div>' +
+        '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">' +
+          '<div class="field"><label>Tipo</label><select id="cliTipo"><option value="fisica"' + (cli.tipo === 'fisica' ? ' selected' : '') + '>Pessoa Física</option><option value="juridica"' + (cli.tipo === 'juridica' ? ' selected' : '') + '>Pessoa Jurídica</option></select></div>' +
+          '<div class="field"><label>CPF / CNPJ</label><input id="cliDocumento" value="' + esc(cli.documento || '') + '"></div>' +
+        '</div>' +
+        '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">' +
+          '<div class="field"><label>Telefone</label><input id="cliTelefone" value="' + esc(cli.telefone || '') + '"></div>' +
+          '<div class="field"><label>E-mail</label><input id="cliEmail" type="email" value="' + esc(cli.email || '') + '"></div>' +
+        '</div>' +
+        '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">' +
+          '<div class="field"><label>Cidade</label><input id="cliCidade" value="' + esc(cli.cidade || '') + '"></div>' +
+          '<div class="field"><label>Status</label><select id="cliStatus"><option value="ativo"' + (cli.status === 'ativo' ? ' selected' : '') + '>Ativo</option><option value="inativo"' + (cli.status === 'inativo' ? ' selected' : '') + '>Inativo</option></select></div>' +
+        '</div>' +
+        modalFooterHTML('Salvar cliente') +
+      '</form>'
+    );
+    document.getElementById('cliForm').addEventListener('submit', async function (e) {
+      e.preventDefault();
+      var nome = document.getElementById('cliNome').value.trim();
+      if (!nome) { toast('Informe o nome do cliente.', 'error'); return; }
+      var obj = {
+        id: cli.id || uid(), nome: nome, tipo: document.getElementById('cliTipo').value, documento: document.getElementById('cliDocumento').value.trim(),
+        telefone: document.getElementById('cliTelefone').value.trim(), email: document.getElementById('cliEmail').value.trim(),
+        cidade: document.getElementById('cliCidade').value.trim(), status: document.getElementById('cliStatus').value, criado_em: cli.criado_em || nowISO()
+      };
+      await idbPut('clientes', obj);
+      await logAction(cli.id ? 'cliente_editado' : 'cliente_criado', obj.nome);
+      closeFormModal();
+      toast('Cliente salvo.');
+      await renderClientes(); await renderDashboard();
+    });
+  }
+  document.addEventListener('click', async function (e) {
+    var editBtn = e.target.closest('[data-cli-edit]');
+    if (editBtn) { var c = await idbGet('clientes', editBtn.getAttribute('data-cli-edit')); if (c) clienteFormModal(c); return; }
+    var delBtn = e.target.closest('[data-cli-del]');
+    if (delBtn) {
+      var id = delBtn.getAttribute('data-cli-del');
+      if (confirm('Excluir este cliente?')) {
+        await idbDelete('clientes', id);
+        await logAction('cliente_excluido', id);
+        toast('Cliente excluído.');
+        await renderClientes();
+      }
+    }
+  });
+
+  /* ============================================================
+     VENDAS
+     ============================================================ */
+  var PAY_METHODS = ['Dinheiro', 'Pix', 'Cartão de Débito', 'Cartão de Crédito', 'Transferência'];
+  function vendaRowHTML(v, clienteNome) {
+    var d = new Date(v.criado_em);
+    return '<tr data-id="' + v.id + '">' +
+      '<td><input type="checkbox" class="checkbox"></td>' +
+      '<td><span class="order-id">#' + esc(v.numero) + '</span></td>' +
+      '<td><span class="date-cell"><span class="date-cell__d">' + d.toLocaleDateString('pt-BR') + '</span><span class="date-cell__t">' + d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) + '</span></span></td>' +
+      '<td><div class="customer-cell"><span class="customer-avatar" style="background:' + avatarColor(clienteNome) + ';">' + initials(clienteNome) + '</span><span class="customer-name">' + esc(clienteNome || 'Cliente avulso') + '</span></div></td>' +
+      '<td>' + (v.itens || []).length + ' ' + ((v.itens || []).length === 1 ? 'item' : 'itens') + '</td>' +
+      '<td><span class="price-cell">' + fmtBRL(v.total) + '</span></td>' +
+      '<td><span class="badge badge--green">Concluída</span></td>' +
+      '<td><span class="badge badge--blue">' + esc(v.forma_pagamento || '—') + '</span></td>' +
+      '<td><div class="row-actions">' +
+        '<button class="iconbtn" type="button" title="Ver itens" data-venda-ver="' + v.id + '"><span class="icon"><svg><use href="#i-eye"/></svg></span></button>' +
+        '<button class="iconbtn is-danger" type="button" title="Excluir" data-venda-del="' + v.id + '"><span class="icon"><svg><use href="#i-trash"/></svg></span></button>' +
+      '</div></td></tr>';
+  }
+  async function renderVendas() {
+    var tbody = document.getElementById('vendasTbody');
+    if (!tbody) return;
+    var vendas = (await idbAll('vendas')).sort(function (a, b) { return new Date(b.criado_em) - new Date(a.criado_em); });
+    var clientes = await idbAll('clientes');
+    var cliMap = {}; clientes.forEach(function (c) { cliMap[c.id] = c.nome; });
+    tbody.innerHTML = vendas.length ? vendas.map(function (v) { return vendaRowHTML(v, cliMap[v.cliente_id]); }).join('') :
+      '<tr><td colspan="9" style="text-align:center;padding:24px;color:var(--text-tertiary);">Nenhuma venda registrada ainda.</td></tr>';
+  }
+
+  var _vendaItens = [];
+  async function vendaFormModal() {
+    _vendaItens = [];
+    var clientes = await idbAll('clientes');
+    var produtos = await idbAll('produtos');
+    var cliOptions = '<option value="">Cliente avulso (sem cadastro)</option>' + clientes.map(function (c) { return '<option value="' + c.id + '">' + esc(c.nome) + '</option>'; }).join('');
+    var prodOptions = '<option value="">Selecione um produto...</option>' + produtos.map(function (p) { return '<option value="' + p.id + '" data-preco="' + p.preco + '" data-estoque="' + p.estoque_atual + '">' + esc(p.nome) + ' (' + Number(p.estoque_atual || 0) + ' em estoque)</option>'; }).join('');
+    openFormModal(
+      modalHeaderHTML('Nova venda') +
+      '<form id="vendaForm" style="padding:20px 24px;display:flex;flex-direction:column;gap:14px;">' +
+        '<div class="field"><label>Cliente</label><select id="vdCliente">' + cliOptions + '</select></div>' +
+        '<div class="field"><label>Forma de pagamento</label><select id="vdPagamento">' + PAY_METHODS.map(function (m) { return '<option>' + m + '</option>'; }).join('') + '</select></div>' +
+        '<div style="border-top:1px solid var(--border-subtle);padding-top:12px;">' +
+          '<div style="display:flex;gap:8px;align-items:flex-end;">' +
+            '<div class="field" style="flex:1;"><label>Produto</label><select id="vdProduto">' + prodOptions + '</select></div>' +
+            '<div class="field" style="width:80px;"><label>Qtd</label><input id="vdQtd" type="number" min="1" value="1"></div>' +
+            '<button type="button" class="btn btn--secondary" id="vdAddItem">Adicionar</button>' +
+          '</div>' +
+        '</div>' +
+        '<div id="vdItensWrap" style="display:flex;flex-direction:column;gap:6px;"></div>' +
+        '<div style="text-align:right;font-weight:700;font-size:15px;" id="vdTotal">Total: R$ 0,00</div>' +
+        modalFooterHTML('Finalizar venda') +
+      '</form>'
+    );
+    function renderItens() {
+      var wrap = document.getElementById('vdItensWrap');
+      if (!_vendaItens.length) { wrap.innerHTML = '<p style="font-size:12.5px;color:var(--text-tertiary);">Nenhum item adicionado ainda.</p>'; }
+      else {
+        wrap.innerHTML = _vendaItens.map(function (it, i) {
+          return '<div style="display:flex;justify-content:space-between;align-items:center;font-size:13.5px;padding:6px 0;border-bottom:1px solid var(--border-subtle);">' +
+            '<span>' + it.qtd + 'x ' + esc(it.nome) + '</span><span style="display:flex;gap:10px;align-items:center;">' + fmtBRL(it.qtd * it.preco) + '<button type="button" class="iconbtn is-danger" data-rm-item="' + i + '" style="width:26px;height:26px;"><span class="icon" style="width:14px;height:14px;"><svg><use href="#i-x"/></svg></span></button></span></div>';
+        }).join('');
+      }
+      var total = _vendaItens.reduce(function (s, it) { return s + it.qtd * it.preco; }, 0);
+      document.getElementById('vdTotal').textContent = 'Total: ' + fmtBRL(total);
+    }
+    renderItens();
+    document.getElementById('vdAddItem').addEventListener('click', function () {
+      var sel = document.getElementById('vdProduto');
+      var opt = sel.options[sel.selectedIndex];
+      var qtd = Number(document.getElementById('vdQtd').value || 1);
+      if (!sel.value) { toast('Selecione um produto.', 'error'); return; }
+      var estoqueDisp = Number(opt.getAttribute('data-estoque') || 0);
+      if (qtd < 1) { toast('Quantidade inválida.', 'error'); return; }
+      if (qtd > estoqueDisp) { toast('Estoque insuficiente (' + estoqueDisp + ' disponível).', 'error'); return; }
+      _vendaItens.push({ produto_id: sel.value, nome: opt.textContent.replace(/\s*\(\d+ em estoque\)$/, ''), qtd: qtd, preco: Number(opt.getAttribute('data-preco') || 0) });
+      renderItens();
+    });
+    document.getElementById('vdItensWrap').addEventListener('click', function (e) {
+      var rm = e.target.closest('[data-rm-item]');
+      if (rm) { _vendaItens.splice(Number(rm.getAttribute('data-rm-item')), 1); renderItens(); }
+    });
+    document.getElementById('vendaForm').addEventListener('submit', async function (e) {
+      e.preventDefault();
+      if (!_vendaItens.length) { toast('Adicione ao menos um item à venda.', 'error'); return; }
+      var total = _vendaItens.reduce(function (s, it) { return s + it.qtd * it.preco; }, 0);
+      var vendasExistentes = await idbAll('vendas');
+      var venda = {
+        id: uid(), numero: nextNumber('', vendasExistentes).replace(/^0+/, '') || '1',
+        cliente_id: document.getElementById('vdCliente').value || null, itens: _vendaItens.slice(),
+        total: total, forma_pagamento: document.getElementById('vdPagamento').value, status: 'concluida', criado_em: nowISO()
+      };
+      await idbPut('vendas', venda);
+      for (var i = 0; i < _vendaItens.length; i++) {
+        var it = _vendaItens[i];
+        var produto = await idbGet('produtos', it.produto_id);
+        if (produto) {
+          produto.estoque_atual = Math.max(0, Number(produto.estoque_atual || 0) - it.qtd);
+          await idbPut('produtos', produto);
+          await idbPut('estoque_mov', { id: uid(), produto_id: it.produto_id, tipo: 'saida', quantidade: it.qtd, motivo: 'Venda #' + venda.numero, criado_em: nowISO() });
+        }
+      }
+      await logAction('venda_registrada', 'Venda #' + venda.numero + ' — ' + fmtBRL(total));
+      closeFormModal();
+      toast('Venda registrada com sucesso.');
+      await renderVendas(); await renderProdutos(); await renderClientes(); await renderDashboard();
+    });
+  }
+  document.addEventListener('click', async function (e) {
+    var verBtn = e.target.closest('[data-venda-ver]');
+    if (verBtn) {
+      var v = await idbGet('vendas', verBtn.getAttribute('data-venda-ver'));
+      if (v) {
+        openFormModal(modalHeaderHTML('Venda #' + v.numero) +
+          '<div style="padding:20px 24px;">' +
+          (v.itens || []).map(function (it) { return '<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border-subtle);font-size:13.5px;"><span>' + it.qtd + 'x ' + esc(it.nome) + '</span><span>' + fmtBRL(it.qtd * it.preco) + '</span></div>'; }).join('') +
+          '<div style="text-align:right;font-weight:700;margin-top:10px;">Total: ' + fmtBRL(v.total) + '</div>' +
+          '<div style="margin-top:6px;font-size:12.5px;color:var(--text-tertiary);">Pagamento: ' + esc(v.forma_pagamento || '—') + '</div></div>');
+      }
+      return;
+    }
+    var delBtn = e.target.closest('[data-venda-del]');
+    if (delBtn) {
+      var id = delBtn.getAttribute('data-venda-del');
+      if (confirm('Excluir esta venda? O estoque não será devolvido automaticamente.')) {
+        await idbDelete('vendas', id);
+        await logAction('venda_excluida', id);
+        toast('Venda excluída.');
+        await renderVendas(); await renderDashboard();
+      }
+    }
+  });
+
+  /* ============================================================
+     USUÁRIOS
+     ============================================================ */
+  function usuarioRowHTML(u) {
+    var statusBadge = u.status === 'ativo' ? 'badge--green' : 'badge--gray';
+    var statusLabel = u.status === 'ativo' ? 'Ativo' : 'Bloqueado';
+    return '<tr data-id="' + u.id + '">' +
+      '<td><input type="checkbox" class="checkbox"></td>' +
+      '<td><div class="customer-cell"><span class="customer-avatar" style="background:' + avatarColor(u.nome) + ';">' + initials(u.nome) + '</span><span class="customer-name">' + esc(u.nome) + '</span></div></td>' +
+      '<td>' + esc(u.email) + '</td>' +
+      '<td>' + esc(ROLE_LABELS[u.papel] || u.papel) + '</td>' +
+      '<td><span class="badge ' + (ROLE_BADGE[u.papel] || 'badge--gray') + '">' + esc(ROLE_LABELS[u.papel] || u.papel) + '</span></td>' +
+      '<td><span class="badge ' + statusBadge + '">' + statusLabel + '</span></td>' +
+      '<td>' + fmtDateTime(u.ultimo_login) + '</td>' +
+      '<td><div class="row-actions">' +
+        '<button class="iconbtn" type="button" title="Editar" data-usr-edit="' + u.id + '"><span class="icon"><svg><use href="#i-pencil"/></svg></span></button>' +
+        (STATE.user && STATE.user.id !== u.id ? '<button class="iconbtn is-danger" type="button" title="Excluir" data-usr-del="' + u.id + '"><span class="icon"><svg><use href="#i-trash"/></svg></span></button>' : '') +
+      '</div></td></tr>';
+  }
+  async function renderUsuarios() {
+    var tbody = document.getElementById('usuariosTbody');
+    if (!tbody) return;
+    var usuarios = await idbAll('usuarios');
+    tbody.innerHTML = usuarios.length ? usuarios.map(usuarioRowHTML).join('') : '<tr><td colspan="8"></td></tr>';
+  }
+  function usuarioFormModal(u) {
+    u = u || { id: null, nome: '', email: '', papel: 'vendas', status: 'ativo' };
+    var roleOptions = Object.keys(ROLE_LABELS).map(function (k) { return '<option value="' + k + '"' + (u.papel === k ? ' selected' : '') + '>' + ROLE_LABELS[k] + '</option>'; }).join('');
+    openFormModal(
+      modalHeaderHTML(u.id ? 'Editar usuário' : 'Novo usuário') +
+      '<form id="usrForm" style="padding:20px 24px;display:flex;flex-direction:column;gap:14px;">' +
+        '<div class="field"><label>Nome</label><input id="usrNome" value="' + esc(u.nome) + '" required></div>' +
+        '<div class="field"><label>E-mail de acesso</label><input id="usrEmail" type="email" value="' + esc(u.email) + '" required></div>' +
+        '<div class="field"><label>Perfil de acesso</label><select id="usrPapel">' + roleOptions + '</select></div>' +
+        '<div class="field"><label>' + (u.id ? 'Nova senha (deixe em branco para manter)' : 'Senha') + '</label><input id="usrSenha" type="password" placeholder="mín. 6 caracteres"></div>' +
+        '<div class="field"><label>Status</label><select id="usrStatus"><option value="ativo"' + (u.status === 'ativo' ? ' selected' : '') + '>Ativo</option><option value="bloqueado"' + (u.status === 'bloqueado' ? ' selected' : '') + '>Bloqueado</option></select></div>' +
+        modalFooterHTML('Salvar usuário') +
+      '</form>'
+    );
+    document.getElementById('usrForm').addEventListener('submit', async function (e) {
+      e.preventDefault();
+      var nome = document.getElementById('usrNome').value.trim();
+      var email = document.getElementById('usrEmail').value.trim();
+      var senha = document.getElementById('usrSenha').value;
+      if (!nome || !email) { toast('Preencha nome e e-mail.', 'error'); return; }
+      if (!u.id && !senha) { toast('Defina uma senha para o novo usuário.', 'error'); return; }
+      if (senha && senha.length < 6) { toast('A senha deve ter ao menos 6 caracteres.', 'error'); return; }
+      var todosUsuarios = await idbAll('usuarios');
+      var emailEmUso = todosUsuarios.find(function (x) { return x.email.toLowerCase() === email.toLowerCase() && x.id !== u.id; });
+      if (emailEmUso) { toast('Já existe um usuário com este e-mail.', 'error'); return; }
+      var papel = document.getElementById('usrPapel').value;
+      var obj = {
+        id: u.id || uid(), nome: nome, email: email, papel: papel, permissoes: ROLE_DEFAULT_PERMS[papel],
+        status: document.getElementById('usrStatus').value, criado_em: u.criado_em || nowISO(), ultimo_login: u.ultimo_login || null,
+        salt: u.salt, senha_hash: u.senha_hash
+      };
+      if (senha) { obj.salt = genSalt(); obj.senha_hash = await hashPassword(senha, obj.salt); }
+      await idbPut('usuarios', obj);
+      await logAction(u.id ? 'usuario_editado' : 'usuario_criado', obj.nome);
+      closeFormModal();
+      toast('Usuário salvo.');
+      await renderUsuarios();
+    });
+  }
+  document.addEventListener('click', async function (e) {
+    var editBtn = e.target.closest('[data-usr-edit]');
+    if (editBtn) { var u = await idbGet('usuarios', editBtn.getAttribute('data-usr-edit')); if (u) usuarioFormModal(u); return; }
+    var delBtn = e.target.closest('[data-usr-del]');
+    if (delBtn) {
+      var id = delBtn.getAttribute('data-usr-del');
+      if (confirm('Excluir este usuário?')) {
+        await idbDelete('usuarios', id);
+        await logAction('usuario_excluido', id);
+        toast('Usuário excluído.');
+        await renderUsuarios();
+      }
+    }
+  });
+
+  /* ============================================================
+     DASHBOARD
+     ============================================================ */
+  async function renderDashboard() {
+    var produtos = await idbAll('produtos');
+    var clientes = await idbAll('clientes');
+    var vendas = await idbAll('vendas');
+    var hojeStr = new Date().toDateString();
+    var vendasHoje = vendas.filter(function (v) { return new Date(v.criado_em).toDateString() === hojeStr; });
+    var totalHoje = vendasHoje.reduce(function (s, v) { return s + Number(v.total || 0); }, 0);
+    var alertas = produtos.filter(function (p) { return calcularStatusEstoque(Number(p.estoque_atual || 0), Number(p.estoque_minimo || 0)) !== 'ok'; }).length;
+
+    var elGreeting = document.getElementById('dashGreeting');
+    if (elGreeting && STATE.user) elGreeting.textContent = 'Olá, ' + STATE.user.nome.split(' ')[0] + '! 👋';
+    var setText = function (id, txt) { var el = document.getElementById(id); if (el) el.textContent = txt; };
+    setText('kpiVendasHoje', fmtBRL(totalHoje));
+    setText('kpiVendasHojeQtd', vendasHoje.length + (vendasHoje.length === 1 ? ' venda hoje' : ' vendas hoje'));
+    setText('kpiProdutosEstoque', String(produtos.length));
+    setText('kpiProdutosTotal', produtos.length + (produtos.length === 1 ? ' produto cadastrado' : ' produtos cadastrados'));
+    setText('kpiAlertas', String(alertas));
+    setText('kpiClientesTotal', String(clientes.length));
+  }
+
+  async function renderAll() {
+    await Promise.all([renderDashboard(), renderCategorias(), renderProdutos(), renderClientes(), renderVendas(), renderUsuarios()]);
+  }
+
+  /* ============================================================
+     Boot / wiring dos botões reais por cima dos "showToast" antigos
+     ============================================================ */
+  function rewire(id, handler) {
+    var el = document.getElementById(id);
+    if (!el) return null;
+    var clean = el.cloneNode(true);
+    el.parentNode.replaceChild(clean, el);
+    clean.addEventListener('click', handler);
+    return clean;
+  }
+  function wireButtons() {
+    rewire('novoProdutoBtn', function () { produtoFormModal(null); });
+    rewire('novaCategoriaBtn', function () { categoriaFormModal(null); });
+    rewire('novoClienteBtn', function () { clienteFormModal(null); });
+    rewire('novaVendaBtn', function () { vendaFormModal(); });
+    rewire('novoUsuarioBtn', function () { usuarioFormModal(null); });
+    var signoutConfirm = document.getElementById('signoutConfirm');
+    if (signoutConfirm) {
+      var clean = signoutConfirm.cloneNode(true);
+      signoutConfirm.parentNode.replaceChild(clean, signoutConfirm);
+      clean.addEventListener('click', function () {
+        var backdrop = document.getElementById('signoutModal');
+        if (backdrop) backdrop.classList.remove('is-open');
+        doLogout();
+      });
+    }
+  }
+
+  async function startApp() {
+    document.getElementById('auth-root').innerHTML = '';
+    document.querySelector('.app').style.display = '';
+    wireButtons();
+    await renderAll();
+    syncNow().catch(function () {});
+  }
+
+  var __booted = false;
+  async function boot() {
+    if (__booted) return; __booted = true;
+    document.querySelector('.app').style.display = 'none';
+    try { await openDB(); } catch (e) { console.error('Falha ao abrir banco local', e); }
+    if (!(await isLicenseActivated())) { renderLicenseGate(); return; }
+    if (lsGet(LICENSE_REVOKED_LS_KEY) === '1') {
+      renderLicenseRevoked();
+      checkLicenseRevoked().then(function (revoked) { if (!revoked) { __booted = false; boot(); } });
+      return;
+    }
+    var revogadaNoBoot = await Promise.race([checkLicenseRevoked(), new Promise(function (resolve) { setTimeout(function () { resolve(false); }, 4000); })]);
+    if (revogadaNoBoot) { renderLicenseRevoked(); return; }
+    var restored = await tryRestoreSession();
+    if (restored) { await startApp(); return; }
+    var firstRun = await isFirstRun();
+    if (firstRun) {
+      try { await syncPull(); } catch (e) {}
+      firstRun = await isFirstRun();
+    }
+    if (firstRun) { OB = { data: { resp_nome: '', resp_email: '', resp_senha: '', resp_senha2: '', loja_nome: '' } }; renderOnboarding(); }
+    else { await renderLogin(); }
+  }
+
+  if (document.readyState === 'complete' || document.readyState === 'interactive') { boot(); }
+  else { document.addEventListener('DOMContentLoaded', boot); }
+  window.addEventListener('online', function () { syncNow().catch(function () {}); });
+  setInterval(function () { syncNow().catch(function () {}); }, 90000);
+})();
+
 </script>
 </body>
 </html>
