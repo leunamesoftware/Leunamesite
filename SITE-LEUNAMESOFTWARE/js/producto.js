@@ -49,7 +49,9 @@
           (product.demoUrl ? ' Haz clic en «Ver demo» (el botón naranja) y mira una vista previa de cómo funciona.' : '') +
         '</p>' +
         '<!-- PRECIO DE EJEMPLO: reemplazar por el precio real -->' +
-        '<div class="price-row"><span class="price-big">' + Store.formatPrice(product.price) + '</span>' + (product.real ? '' : '<span class="price-badge">Precio de ejemplo</span>') + '</div>' +
+        '<div class="price-row"><span class="price-big">' + Store.priceHTML(product) + '</span>' +
+          (Store.discountPercent(product) ? '<span class="price-discount-pill">-' + Store.discountPercent(product) + '%</span>' : '') +
+          (product.real ? '' : '<span class="price-badge">Precio de ejemplo</span>') + '</div>' +
         '<div class="product-actions">' +
           '<div class="product-actions-cart">' +
             '<div class="qty-stepper">' +

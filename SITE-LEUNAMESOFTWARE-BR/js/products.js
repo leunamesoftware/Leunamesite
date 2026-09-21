@@ -296,6 +296,13 @@
     return formatPrice(product.price);
   }
 
+  // % de desconto arredondado, pra etiqueta tipo "-17%". null quando o
+  // produto não tem promoção (sem originalPrice).
+  function discountPercent(product) {
+    if (!product.originalPrice || product.originalPrice <= product.price) return null;
+    return Math.round((1 - product.price / product.originalPrice) * 100);
+  }
+
   function starsHTML(rating) {
     var full = Math.round(rating * 2) / 2;
     var out = '';
@@ -333,12 +340,14 @@
 
   function productCardHTML(product) {
     var priceComment = '<!-- PREÇO DE EXEMPLO: substituir pelo preço real -->';
+    var desconto = discountPercent(product);
     return (
       '<article class="product-card">' +
         '<a class="product-card-media" href="producto.html?id=' + product.id + '">' +
           productVisualHTML(product) +
           (product.real ? '<span class="product-real-badge">Produto real</span>' : '') +
           (product.tag && TAG_LABELS[product.tag] ? '<span class="product-tag product-tag-' + product.tag + '">' + TAG_LABELS[product.tag] + '</span>' : '') +
+          (desconto ? '<span class="product-discount-badge">-' + desconto + '%</span>' : '') +
         '</a>' +
         '<div class="product-card-body">' +
           '<a class="product-card-name" href="producto.html?id=' + product.id + '">' + product.name + '</a>' +
@@ -388,6 +397,7 @@
     getProductsByCategory: getProductsByCategory,
     formatPrice: formatPrice,
     priceHTML: priceHTML,
+    discountPercent: discountPercent,
     starsHTML: starsHTML,
     productVisualHTML: productVisualHTML,
     productCardHTML: productCardHTML,

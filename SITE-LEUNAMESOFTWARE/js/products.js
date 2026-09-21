@@ -286,6 +286,22 @@
     return value.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €';
   }
 
+  // Precio "de/por": si el producto tiene originalPrice (promoción), muestra
+  // el valor tachado antes del precio actual. Sin originalPrice, solo el precio.
+  function priceHTML(product) {
+    if (product.originalPrice && product.originalPrice > product.price) {
+      return '<span class="price-old">' + formatPrice(product.originalPrice) + '</span>' + formatPrice(product.price);
+    }
+    return formatPrice(product.price);
+  }
+
+  // % de descuento redondeado, para la etiqueta tipo "-17%". null si el
+  // producto no tiene promoción (sin originalPrice).
+  function discountPercent(product) {
+    if (!product.originalPrice || product.originalPrice <= product.price) return null;
+    return Math.round((1 - product.price / product.originalPrice) * 100);
+  }
+
   function starsHTML(rating) {
     var full = Math.round(rating * 2) / 2;
     var out = '';
@@ -323,12 +339,14 @@
 
   function productCardHTML(product) {
     var priceComment = '<!-- PRECIO DE EJEMPLO: reemplazar por el precio real -->';
+    var descuento = discountPercent(product);
     return (
       '<article class="product-card">' +
         '<a class="product-card-media" href="producto.html?id=' + product.id + '">' +
           productVisualHTML(product) +
           (product.real ? '<span class="product-real-badge">Producto real</span>' : '') +
           (product.tag && TAG_LABELS[product.tag] ? '<span class="product-tag product-tag-' + product.tag + '">' + TAG_LABELS[product.tag] + '</span>' : '') +
+          (descuento ? '<span class="product-discount-badge">-' + descuento + '%</span>' : '') +
         '</a>' +
         '<div class="product-card-body">' +
           '<a class="product-card-name" href="producto.html?id=' + product.id + '">' + product.name + '</a>' +
@@ -338,7 +356,7 @@
             '<span class="rating-count">(' + product.reviews + ')</span>' +
           '</div>' +
           priceComment +
-          '<p class="product-card-price">' + formatPrice(product.price) + '</p>' +
+          '<p class="product-card-price">' + priceHTML(product) + '</p>' +
           '<a class="btn btn-outline-block" href="producto.html?id=' + product.id + '">Ver producto</a>' +
         '</div>' +
       '</article>'
@@ -377,6 +395,8 @@
     getProduct: getProduct,
     getProductsByCategory: getProductsByCategory,
     formatPrice: formatPrice,
+    priceHTML: priceHTML,
+    discountPercent: discountPercent,
     starsHTML: starsHTML,
     productVisualHTML: productVisualHTML,
     productCardHTML: productCardHTML,
