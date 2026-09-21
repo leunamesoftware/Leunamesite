@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Productos — Admin LeuName Softwares</title>
+<meta name="description" content="Gestión del catálogo de productos de la tienda LeuName Softwares.">
+<link rel="manifest" href="../admin-manifest.webmanifest">
+<meta name="theme-color" content="#0a2647">
+<link rel="apple-touch-icon" href="../assets/img/icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="LeuName Admin">
+<meta name="mobile-web-app-capable" content="yes">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="admin.css">
+</head>
+<body class="admin-body">
+<div class="admin-shell">
+  <div class="admin-topbar">
+    <div class="admin-topbar-brand">
+      <img src="../assets/img/logo-mark.png" alt="" width="32" height="32">
+      <span>LEUNAME<small>ADMIN</small></span>
+    </div>
+    <div class="admin-topbar-actions">
+      <a href="../index.html">Ver tienda</a>
+      <button type="button" id="logoutBtn">Cerrar sesión</button>
+    </div>
+  </div>
+  <nav class="admin-nav">
+    <a href="index.html">Painel</a>
+    <a href="productos.html" class="is-active">Produtos</a>
+    <a href="pedidos.html">Pedidos</a>
+    <a href="../admin-licencas/painel.html">Licenças</a>
+  </nav>
+
+  <main class="admin-main">
+    <div class="admin-head">
+      <h1>Productos</h1>
+      <button class="admin-btn admin-btn-primary" id="newProductBtn" type="button">+ Nuevo producto</button>
+    </div>
+
+    <p class="admin-banner" id="apiBanner" hidden></p>
+
+    <div class="admin-card" id="formCard" hidden>
+      <h2 id="formTitle">Nuevo producto</h2>
+      <form id="productForm">
+        <input type="hidden" id="pOriginalId">
+        <input type="hidden" id="pImagenUrl">
+        <div class="admin-form-grid cols-2">
+          <div class="admin-field"><label class="admin-label" for="pId">ID (slug único)</label><input class="admin-input" id="pId" required pattern="[a-z0-9-]+" placeholder="mi-producto"></div>
+          <div class="admin-field"><label class="admin-label" for="pNombre">Nombre</label><input class="admin-input" id="pNombre" required></div>
+          <div class="admin-field">
+            <label class="admin-label" for="pCategoria">Categoría</label>
+            <select class="admin-select" id="pCategoria">
+              <option value="aplicaciones">Aplicaciones y Sistemas</option>
+              <option value="templates">Templates</option>
+              <option value="libros">Libros</option>
+              <option value="recetas">Recetas</option>
+              <option value="diseno">Diseño y Logos</option>
+              <option value="otros">Otros productos</option>
+            </select>
+          </div>
+          <div class="admin-field"><label class="admin-label" for="pPrecio">Precio (€)</label><input class="admin-input" id="pPrecio" type="number" step="0.01" min="0" required></div>
+          <div class="admin-field"><label class="admin-label" for="pRating">Rating (0–5)</label><input class="admin-input" id="pRating" type="number" step="0.1" min="0" max="5" value="4.5"></div>
+          <div class="admin-field"><label class="admin-label" for="pReviews">Cantidad de valoraciones</label><input class="admin-input" id="pReviews" type="number" step="1" min="0" value="0"></div>
+        </div>
+        <div class="admin-field" style="margin-top:14px;"><label class="admin-label" for="pCorta">Descripción corta</label><input class="admin-input" id="pCorta"></div>
+        <div class="admin-field" style="margin-top:14px;"><label class="admin-label" for="pDescripcion">Descripción</label><textarea class="admin-textarea" id="pDescripcion"></textarea></div>
+        <div class="admin-form-grid cols-2" style="margin-top:14px;">
+          <div class="admin-field"><label class="admin-label" for="pIncluye">Qué incluye (una línea por ítem)</label><textarea class="admin-textarea" id="pIncluye"></textarea></div>
+          <div class="admin-field"><label class="admin-label" for="pCaracteristicas">Características (una línea por ítem)</label><textarea class="admin-textarea" id="pCaracteristicas"></textarea></div>
+        </div>
+        <div class="admin-form-grid cols-2" style="margin-top:14px;">
+          <div class="admin-field">
+            <label class="admin-label" for="pTag">Etiqueta destacada (opcional)</label>
+            <select class="admin-select" id="pTag">
+              <option value="">Ninguna</option>
+              <option value="novedad">Novedad</option>
+              <option value="recomendado">Recomendado</option>
+            </select>
+          </div>
+          <div class="admin-field">
+            <label class="admin-label" for="pDemoUrl">URL de demo (opcional)</label>
+            <input class="admin-input" id="pDemoUrl" placeholder="demo.html?id=mi-producto o un enlace externo">
+            <p class="admin-note" style="text-align:left;margin-top:4px;">Link de uma página ou vídeo de demonstração desse produto. Pode deixar em branco — a maioria dos produtos não precisa. Exemplo: <code>demo.html?id=leuname-gestao</code></p>
+          </div>
+        </div>
+        <label style="display:flex;align-items:center;gap:8px;margin-top:14px;font-size:13px;color:var(--ink-600);">
+          <input type="checkbox" id="pReal"> Es un producto real (no un ejemplo de catálogo)
+        </label>
+
+        <div class="admin-field" style="margin-top:14px;">
+          <label class="admin-label">Imagen del producto</label>
+          <p class="admin-note" style="text-align:left;margin:0 0 8px;background:var(--blue-50);color:var(--ink-900);padding:10px 12px;border-radius:8px;">
+            <strong>Tamanho da imagem:</strong> 800 x 600 pixels (proporção 4:3).<br>
+            <strong>Formatos aceitos:</strong> JPG, PNG, WEBP ou GIF.<br>
+            <strong>Tamanho máximo do arquivo:</strong> 5 MB.
+          </p>
+          <div id="pImagenPreviewWrap" hidden style="margin-bottom:10px;">
+            <img id="pImagenPreview" alt="" style="width:120px;height:90px;object-fit:cover;border-radius:8px;border:1px solid var(--gray-200);">
+          </div>
+          <input type="file" id="pImagenFile" accept="image/jpeg,image/png,image/webp,image/gif" class="admin-input" style="padding:8px;">
+          <p class="admin-note" id="pImagenHint" style="text-align:left;margin-top:6px;">Guarda el producto primero para poder subir su imagen.</p>
+        </div>
+
+        <div class="admin-form-actions">
+          <button class="admin-btn admin-btn-primary" type="submit">Guardar</button>
+          <button class="admin-btn admin-btn-outline" type="button" id="cancelFormBtn">Cancelar</button>
+        </div>
+      </form>
+    </div>
+
+    <div class="admin-card">
+      <h2>Catálogo (<span id="productCount">0</span>)</h2>
+      <div class="admin-table-wrap">
+        <table class="admin-table">
+          <thead><tr><th>ID</th><th>Nombre</th><th>Categoría</th><th>Precio</th><th>Estado</th><th></th></tr></thead>
+          <tbody id="productsBody"><tr><td colspan="6" class="admin-empty">Cargando…</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="admin.js"></script>
+<script src="productos.js"></script>
+</body>
+</html>
