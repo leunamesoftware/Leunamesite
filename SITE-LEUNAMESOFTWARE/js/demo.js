@@ -211,38 +211,6 @@
       }
     }
 
-    // Barra fija abajo (solo mobile, ver CSS): mantiene el precio y el
-    // botón de compra siempre visibles mientras el cliente se desplaza,
-    // apareciendo recién cuando pasa la sección de bienvenida inicial.
-    if (stickyEl) {
-      stickyEl.innerHTML =
-        '<span class="demo-sticky-bar-price">' + Store.formatPrice(product.price) + '</span>' +
-        '<button type="button" id="demoStickyBuyBtn" class="btn btn-primary">Comprar ahora</button>';
-      var stickyBuy = stickyEl.querySelector('#demoStickyBuyBtn');
-      if (stickyBuy) stickyBuy.addEventListener('click', irAComprar);
-
-      // Visible solo entre el hero y el CTA final -- si no, se duplica
-      // con el botón "Comprar ahora" que ya está dentro del CTA.
-      var heroEl = contentEl.querySelector('.demo-hero');
-      var ctaEl = contentEl.querySelector('.demo-cta');
-      if (heroEl && ctaEl && 'IntersectionObserver' in window) {
-        var heroVisible = true;
-        var ctaVisible = false;
-        function actualizarSticky() {
-          stickyEl.classList.toggle('is-visible', !heroVisible && !ctaVisible);
-        }
-        var heroObserver = new IntersectionObserver(function (entries) {
-          heroVisible = entries[0].isIntersecting;
-          actualizarSticky();
-        }, { threshold: 0 });
-        heroObserver.observe(heroEl);
-        var ctaObserver = new IntersectionObserver(function (entries) {
-          ctaVisible = entries[0].isIntersecting;
-          actualizarSticky();
-        }, { threshold: 0 });
-        ctaObserver.observe(ctaEl);
-      }
-    }
   }
 
   window.LeuDemo = { render: renderDemo };

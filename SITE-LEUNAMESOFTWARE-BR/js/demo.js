@@ -88,10 +88,7 @@
     contentEl.innerHTML =
       '<section class="demo-hero">' +
         '<div class="demo-hero-mascot">' +
-          '<video id="demoMascotVideo" playsinline poster="assets/img/demo/poster-frame.png">' +
-            '<source src="assets/img/demo/apresentador-transparente.webm" type="video/webm">' +
-            '<source src="assets/img/demo/apresentador.mp4" type="video/mp4">' +
-          '</video>' +
+          '<video id="demoMascotVideo" playsinline poster="assets/img/demo/poster-frame.png" src="assets/img/demo/apresentador.mp4"></video>' +
           '<button type="button" id="demoMascotPlay" class="demo-hero-play" aria-label="Ativar o som" hidden>' +
             '<svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M8 5v14l11-7Z"/></svg>' +
             '<span>Ativar som</span>' +
@@ -212,38 +209,6 @@
       }
     }
 
-    // Barra fixa embaixo (só mobile, ver CSS): mantém o preço e o botão
-    // de compra sempre visíveis enquanto o cliente rola a página,
-    // aparecendo só quando passa da seção de boas-vindas inicial.
-    if (stickyEl) {
-      stickyEl.innerHTML =
-        '<span class="demo-sticky-bar-price">' + Store.formatPrice(product.price) + '</span>' +
-        '<button type="button" id="demoStickyBuyBtn" class="btn btn-primary">Comprar agora</button>';
-      var stickyBuy = stickyEl.querySelector('#demoStickyBuyBtn');
-      if (stickyBuy) stickyBuy.addEventListener('click', irAComprar);
-
-      // Visível só entre o hero e o CTA final -- senão, duplica com o
-      // botão "Comprar agora" que já está dentro do CTA.
-      var heroEl = contentEl.querySelector('.demo-hero');
-      var ctaEl = contentEl.querySelector('.demo-cta');
-      if (heroEl && ctaEl && 'IntersectionObserver' in window) {
-        var heroVisible = true;
-        var ctaVisible = false;
-        function actualizarSticky() {
-          stickyEl.classList.toggle('is-visible', !heroVisible && !ctaVisible);
-        }
-        var heroObserver = new IntersectionObserver(function (entries) {
-          heroVisible = entries[0].isIntersecting;
-          actualizarSticky();
-        }, { threshold: 0 });
-        heroObserver.observe(heroEl);
-        var ctaObserver = new IntersectionObserver(function (entries) {
-          ctaVisible = entries[0].isIntersecting;
-          actualizarSticky();
-        }, { threshold: 0 });
-        ctaObserver.observe(ctaEl);
-      }
-    }
   }
 
   window.LeuDemo = { render: renderDemo };
