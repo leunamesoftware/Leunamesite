@@ -563,9 +563,24 @@ export default {
         return json({ ok: true, id });
       }
 
+      // DELETE /admin/productos/:id — apaga o produto de verdade. Antes
+      // isso só marcava activo=0 ("exclusão lógica"), mas o painel segue
+      // listando produtos inativos (pra poder reativar), então pro lojista
+      // parecia que "excluir nunca funciona" -- o produto nunca sumia da
+      // tela. Agora apaga a linha de verdade, exceto quando o produto já
+      // foi vendido alguma vez (tem pedido_items apontando pra ele): nesse
+      // caso apagar quebraria o histórico de pedidos (FOREIGN KEY), então
+      // só desativa, some da loja mas continua no painel como "Inativo".
       if (adminProductoMatch && request.method === 'DELETE') {
-        await env.DB.prepare('UPDATE productos SET activo = 0 WHERE id = ?').bind(adminProductoMatch[1]).run();
-        return json({ ok: true, id: adminProductoMatch[1], eliminado_logico: true });
+        const id = adminProductoMatch[1];
+        const jaFoiVendido = await env.DB.prepare('SELECT 1 FROM pedido_items WHERE producto_id = ? LIMIT 1').bind(id).first();
+        if (jaFoiVendido) {
+          await env.DB.prepare('UPDATE productos SET activo = 0 WHERE id = ?').bind(id).run();
+          return json({ ok: true, id, eliminado_logico: true });
+        }
+        const resultado = await env.DB.prepare('DELETE FROM productos WHERE id = ?').bind(id).run();
+        if (!resultado.meta || !resultado.meta.changes) return json({ ok: false, erro: 'producto_no_encontrado' }, 404);
+        return json({ ok: true, id, eliminado_logico: false });
       }
 
       // POST /admin/productos/:id/imagen — sube la imagen real del producto

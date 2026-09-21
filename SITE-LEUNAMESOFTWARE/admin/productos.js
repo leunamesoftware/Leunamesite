@@ -134,9 +134,12 @@
     }
     if (delBtn) {
       var id = delBtn.getAttribute('data-delete');
-      if (confirm('¿Eliminar (desactivar) el producto "' + id + '"?')) {
+      if (confirm('¿Eliminar el producto "' + id + '"? Si ya fue vendido alguna vez, queda desactivado en vez de borrado (para no romper el historial de pedidos).')) {
         AdminAPI.api('/admin/productos/' + id, { method: 'DELETE' })
-          .then(load)
+          .then(function (data) {
+            showBanner(data.eliminado_logico ? 'Producto ya fue vendido: desactivado (desaparece de la tienda, pero sigue en el panel).' : 'Producto eliminado.');
+            return load();
+          })
           .catch(function () { showBanner('No se pudo eliminar el producto.', true); });
       }
     }

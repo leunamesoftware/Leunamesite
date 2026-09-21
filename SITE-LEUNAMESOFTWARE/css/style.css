@@ -302,11 +302,6 @@ h1,h2,h3,h4{ font-family:var(--font-head); margin:0; }
 .promo-arrow-next{ right:14px; }
 @media (max-width:639px){
   .promo-slide{ min-height:210px; }
-  .promo-slide-inner{ padding-inline:20px; }
-  .promo-slide h1{ font-size:clamp(19px,6vw,24px); }
-  .promo-slide p{ font-size:13px; margin-top:6px; }
-  .promo-slide .btn{ margin-top:12px; padding:8px 14px; font-size:12px; }
-  .promo-arrow{ display:none; }
 }
 
 /* Hero (about) -- .hero-art/.hero-art-laptop/.hero-blob son usados en
