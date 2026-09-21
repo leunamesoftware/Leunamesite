@@ -238,7 +238,7 @@
     aplicaciones: [
       { q: 'Como recebo o produto depois de comprar?', a: 'O acesso para download é liberado na sua conta imediatamente após a confirmação do pagamento. Você também receberá um e-mail com as instruções.' },
       { q: 'O sistema funciona sem conexão com a internet?', a: 'Depende do produto: confira a descrição de cada aplicativo. Vários dos nossos sistemas foram pensados para funcionar de forma offline.' },
-      { q: 'O que acontece se eu tiver um problema técnico?', a: 'Você pode nos escrever para suporte@leunamesoftware.com e vamos te ajudar a resolver.' }
+      { q: 'O que acontece se eu tiver um problema técnico?', a: 'Você pode nos escrever para suporte@leunamesoftware.com.br e vamos te ajudar a resolver.' }
     ],
     templates: [
       { q: 'Preciso de conhecimentos técnicos para usar o template?', a: 'Os templates incluem documentação básica de instalação. Conhecimentos de HTML/CSS ajudam para personalizações mais avançadas.' },
@@ -263,7 +263,7 @@
     otros: [
       { q: 'Como faço o download do produto?', a: 'O link de download fica disponível na sua conta, na seção "Meus produtos", depois que o pagamento for confirmado.' },
       { q: 'Os arquivos têm atualizações?', a: 'Quando aplicável, as atualizações são anunciadas na sua conta e por e-mail.' },
-      { q: 'Posso pedir suporte?', a: 'Sim, escreva para suporte@leunamesoftware.com com qualquer dúvida.' }
+      { q: 'Posso pedir suporte?', a: 'Sim, escreva para suporte@leunamesoftware.com.br com qualquer dúvida.' }
     ]
   };
 

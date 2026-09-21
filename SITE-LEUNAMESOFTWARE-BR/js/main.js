@@ -203,3 +203,22 @@
     input.dispatchEvent(new Event('change'));
   });
 })();
+
+/* ==========================================================================
+   Botão flutuante do WhatsApp — aparece em todas as páginas, abre uma
+   conversa direta com o número da empresa no Brasil.
+   ========================================================================== */
+(function () {
+  'use strict';
+  var WHATSAPP_NUMBER = '5524998721557';
+  var link = document.createElement('a');
+  link.className = 'whatsapp-float';
+  link.href = 'https://wa.me/' + WHATSAPP_NUMBER + '?text=' + encodeURIComponent('Olá! Vim pelo site da LeuName Softwares.');
+  link.target = '_blank';
+  link.rel = 'noopener';
+  link.setAttribute('aria-label', 'Falar no WhatsApp');
+  link.innerHTML = '<svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.29-1.39a9.9 9.9 0 0 0 4.75 1.21h.01c5.46 0 9.91-4.45 9.91-9.91C21.96 6.45 17.5 2 12.04 2Zm5.8 14.03c-.24.68-1.39 1.3-1.92 1.34-.49.05-1.03.24-3.44-.72-2.9-1.15-4.77-4.12-4.92-4.31-.15-.2-1.17-1.56-1.17-2.98 0-1.42.74-2.11 1-2.4.26-.29.58-.36.77-.36.19 0 .39 0 .56.01.18.01.42-.07.66.5.24.58.81 2 .88 2.14.07.15.12.32.02.52-.1.2-.15.32-.29.5-.15.18-.31.4-.44.53-.15.15-.3.31-.13.6.17.29.77 1.27 1.65 2.06 1.14 1.02 2.1 1.33 2.39 1.48.29.15.46.13.63-.08.17-.2.72-.84.92-1.13.19-.29.39-.24.65-.14.27.1 1.71.81 2 .96.29.15.48.22.55.34.07.13.07.75-.17 1.43Z"/></svg>';
+  document.addEventListener('DOMContentLoaded', function () {
+    document.body.appendChild(link);
+  });
+})();
