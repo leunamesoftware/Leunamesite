@@ -6,7 +6,7 @@
 
   AdminAPI.requireAuth();
 
-  var LICENCAS_URL = 'https://api.leunamesoftware.com';
+  var LICENCAS_URL = 'https://api.leunamesoftware.com.br';
   var banner = document.getElementById('apiBanner');
 
   function showBanner(msg, isError) {

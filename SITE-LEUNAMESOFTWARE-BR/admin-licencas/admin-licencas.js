@@ -8,7 +8,7 @@
   'use strict';
 
   var STORAGE_KEY = 'leuname_admin_token';
-  var BASE_URL = 'https://api.leunamesoftware.com';
+  var BASE_URL = 'https://api.leunamesoftware.com.br';
 
   function getToken() {
     try { return localStorage.getItem(STORAGE_KEY) || ''; } catch (e) { return ''; }

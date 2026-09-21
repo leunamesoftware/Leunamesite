@@ -15,8 +15,8 @@
   // pelos workflows de build, nunca mudam de endereço).
   var DOWNLOAD_LINKS = {
     'leuname-gestao': {
-      android: 'https://api.leunamesoftware.com/download/leuname-gestao.apk',
-      windows: 'https://api.leunamesoftware.com/download/leuname-gestao.exe'
+      android: 'https://api.leunamesoftware.com.br/download/leuname-gestao.apk',
+      windows: 'https://api.leunamesoftware.com.br/download/leuname-gestao.exe'
     }
   };
 

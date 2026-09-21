@@ -16,8 +16,14 @@ database_id = "4f3f9185-7743-4c36-b86e-92c557847c1e"
 binding = "DOWNLOADS"
 bucket_name = "leuname-downloads"
 
-# Domínio customizado: o "wrangler deploy" cria isso automaticamente,
+# Dominios customizados: o "wrangler deploy" cria isso automaticamente,
 # junto com o resto (script + binding do banco), numa unica chamada.
+# O mesmo Worker/banco atende os dois dominios (site espanhol e site
+# brasileiro usam o mesmo backend de licencas e downloads).
 [[routes]]
 pattern = "api.leunamesoftware.com"
+custom_domain = true
+
+[[routes]]
+pattern = "api.leunamesoftware.com.br"
 custom_domain = true
