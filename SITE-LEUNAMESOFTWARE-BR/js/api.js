@@ -22,13 +22,14 @@
   // a tentativa de rede e o site usa só os dados estáticos.
   var BACKEND_URL = 'https://leuname-loja.emanuelantunes2024.workers.dev';
 
-  // Textos (nome, descrição, o que inclui, características) SEMPRE vêm dos
-  // dados estáticos em português (js/products.js), nunca do backend: o
-  // banco é compartilhado com o site em espanhol e "nombre"/"descripcion"
-  // lá estão em espanhol. Guardamos uma cópia deles ANTES do backend
-  // responder, por id, só pra usar como fonte de texto -- o backend segue
-  // sendo a fonte de preço (precio_br), avaliação, estoque/ativo, imagem
-  // e afins, que não têm problema de idioma.
+  // Textos (nome, descrição, o que inclui, características): o banco tem
+  // colunas próprias em português (nombre_br, descripcion_br, etc.),
+  // separadas das colunas em espanhol do site .com -- nunca se misturam.
+  // Se o produto ainda não tem texto _br cadastrado no banco (novo produto,
+  // ainda não editado no painel do Brasil), usamos os dados estáticos em
+  // português (js/products.js) como respaldo. O texto em espanhol
+  // ("nombre", "descripcion"...) nunca é usado neste site, em hipótese
+  // nenhuma.
   var textoEstaticoPorId = {};
   (global.LeuStore ? global.LeuStore.PRODUCTS : []).forEach(function (p) {
     textoEstaticoPorId[p.id] = p;
@@ -38,7 +39,7 @@
     var estatico = textoEstaticoPorId[row.id];
     return {
       id: row.id,
-      name: estatico ? estatico.name : row.nombre,
+      name: row.nombre_br || (estatico ? estatico.name : null) || row.id,
       category: row.categoria,
       real: !!row.real,
       // Preço do Brasil (precio_br) é uma coluna própria no banco,
@@ -48,10 +49,10 @@
       price: row.precio_br != null ? Number(row.precio_br) : 0,
       rating: Number(row.rating || 4.5),
       reviews: Number(row.reviews || 0),
-      short: estatico ? estatico.short : (row.descripcion_corta || ''),
-      description: estatico ? estatico.description : (row.descripcion || ''),
-      includes: estatico ? estatico.includes : (row.incluye ? JSON.parse(row.incluye) : []),
-      features: estatico ? estatico.features : (row.caracteristicas ? JSON.parse(row.caracteristicas) : []),
+      short: row.descripcion_corta_br || (estatico ? estatico.short : '') || '',
+      description: row.descripcion_br || (estatico ? estatico.description : '') || '',
+      includes: row.incluye_br ? JSON.parse(row.incluye_br) : ((estatico && estatico.includes) || []),
+      features: row.caracteristicas_br ? JSON.parse(row.caracteristicas_br) : ((estatico && estatico.features) || []),
       badge: row.real ? 'Produto real' : 'Exemplo',
       imageUrl: row.imagen_url || null,
       demoUrl: row.demo_url || (estatico ? estatico.demoUrl : null),

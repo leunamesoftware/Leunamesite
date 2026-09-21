@@ -33,7 +33,7 @@
     body.innerHTML = productos.map(function (p) {
       return '<tr data-id="' + p.id + '">' +
         '<td>' + p.id + '</td>' +
-        '<td><strong>' + p.nombre + '</strong></td>' +
+        '<td><strong>' + (p.nombre_br || p.nombre) + '</strong></td>' +
         '<td>' + (CATEGORY_NAMES[p.categoria] || p.categoria) + '</td>' +
         '<td>' + (p.precio_br != null ? fmtPrice(p.precio_br) : '—') + '</td>' +
         '<td>' +
@@ -67,15 +67,20 @@
     document.getElementById('pOriginalId').value = product ? product.id : '';
     document.getElementById('pId').value = product ? product.id : '';
     document.getElementById('pId').disabled = !!product;
-    document.getElementById('pNombre').value = product ? product.nombre : '';
+    // Nome/descrição/inclui/características: este painel é só do Brasil,
+    // então lê e edita sempre a versão _br (português) desses campos --
+    // nunca a versão em espanhol do site .com, mesmo que o produto ainda
+    // não tenha texto próprio em português cadastrado (aí começa em branco,
+    // em vez de mostrar o texto espanhol pra editar por engano).
+    document.getElementById('pNombre').value = product ? (product.nombre_br || '') : '';
     document.getElementById('pCategoria').value = product ? product.categoria : 'aplicaciones';
     document.getElementById('pPrecio').value = product && product.precio_br != null ? product.precio_br : '';
     document.getElementById('pRating').value = product ? product.rating : 4.5;
     document.getElementById('pReviews').value = product ? product.reviews : 0;
-    document.getElementById('pCorta').value = product ? product.descripcion_corta : '';
-    document.getElementById('pDescripcion').value = product ? product.descripcion : '';
-    document.getElementById('pIncluye').value = product && product.incluye ? JSON.parse(product.incluye).join('\n') : '';
-    document.getElementById('pCaracteristicas').value = product && product.caracteristicas ? JSON.parse(product.caracteristicas).join('\n') : '';
+    document.getElementById('pCorta').value = product ? (product.descripcion_corta_br || '') : '';
+    document.getElementById('pDescripcion').value = product ? (product.descripcion_br || '') : '';
+    document.getElementById('pIncluye').value = product && product.incluye_br ? JSON.parse(product.incluye_br).join('\n') : '';
+    document.getElementById('pCaracteristicas').value = product && product.caracteristicas_br ? JSON.parse(product.caracteristicas_br).join('\n') : '';
     document.getElementById('pReal').checked = !!(product && product.real);
     document.getElementById('pTag').value = (product && product.tag) || '';
     document.getElementById('pDemoUrl').value = (product && product.demo_url) || '';
@@ -127,19 +132,19 @@
     var newId = document.getElementById('pId').value.trim();
     var payload = {
       id: newId,
-      nombre: document.getElementById('pNombre').value.trim(),
+      // Este painel edita só os campos do Brasil (sufixo _br): nome,
+      // preço, descrições e listas em português. Os campos em espanhol
+      // do site .com nunca são enviados, então o backend preserva o que
+      // já estava salvo lá -- nunca são sobrescritos por este formulário.
+      nombre_br: document.getElementById('pNombre').value.trim(),
       categoria: document.getElementById('pCategoria').value,
-      // Este painel edita só o preço do Brasil (precio_br). O preço em
-      // euros do site .com (precio) não é enviado, então o backend
-      // preserva o valor que já estava salvo lá -- nunca é sobrescrito
-      // por este formulário.
       precio_br: parseFloat(document.getElementById('pPrecio').value),
       rating: parseFloat(document.getElementById('pRating').value),
       reviews: parseInt(document.getElementById('pReviews').value, 10),
-      descripcion_corta: document.getElementById('pCorta').value.trim(),
-      descripcion: document.getElementById('pDescripcion').value.trim(),
-      incluye: document.getElementById('pIncluye').value.split('\n').map(function (s) { return s.trim(); }).filter(Boolean),
-      caracteristicas: document.getElementById('pCaracteristicas').value.split('\n').map(function (s) { return s.trim(); }).filter(Boolean),
+      descripcion_corta_br: document.getElementById('pCorta').value.trim(),
+      descripcion_br: document.getElementById('pDescripcion').value.trim(),
+      incluye_br: document.getElementById('pIncluye').value.split('\n').map(function (s) { return s.trim(); }).filter(Boolean),
+      caracteristicas_br: document.getElementById('pCaracteristicas').value.split('\n').map(function (s) { return s.trim(); }).filter(Boolean),
       real: document.getElementById('pReal').checked,
       tag: document.getElementById('pTag').value || null,
       demo_url: document.getElementById('pDemoUrl').value.trim() || null,

@@ -484,17 +484,20 @@ export default {
 
       if (pathname === '/admin/productos' && request.method === 'POST') {
         const body = await request.json().catch(() => null);
-        if (!body || !body.id || !body.nombre || !body.categoria || (body.precio == null && body.precio_br == null)) {
+        if (!body || !body.id || !body.categoria || (!body.nombre && !body.nombre_br) || (body.precio == null && body.precio_br == null)) {
           return json({ ok: false, erro: 'datos_invalidos' }, 400);
         }
         await env.DB.prepare(
-          `INSERT INTO productos (id, nombre, categoria, descripcion_corta, descripcion, precio, precio_br, real, rating, reviews, incluye, caracteristicas, imagen_url, demo_url, tag, activo, creado_em)
-           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, datetime('now'))`
+          `INSERT INTO productos (id, nombre, nombre_br, categoria, descripcion_corta, descripcion_corta_br, descripcion, descripcion_br, precio, precio_br, real, rating, reviews, incluye, incluye_br, caracteristicas, caracteristicas_br, imagen_url, demo_url, tag, activo, creado_em)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, datetime('now'))`
         ).bind(
-          body.id, body.nombre, body.categoria, body.descripcion_corta || '', body.descripcion || '',
+          body.id, body.nombre || body.nombre_br, body.nombre_br || null, body.categoria,
+          body.descripcion_corta || '', body.descripcion_corta_br || null,
+          body.descripcion || '', body.descripcion_br || null,
           Number(body.precio || 0), body.precio_br != null ? Number(body.precio_br) : null,
           body.real ? 1 : 0, Number(body.rating || 4.5), Number(body.reviews || 0),
-          JSON.stringify(body.incluye || []), JSON.stringify(body.caracteristicas || []),
+          JSON.stringify(body.incluye || []), body.incluye_br ? JSON.stringify(body.incluye_br) : null,
+          JSON.stringify(body.caracteristicas || []), body.caracteristicas_br ? JSON.stringify(body.caracteristicas_br) : null,
           body.imagen_url || null, body.demo_url || null, body.tag || null
         ).run();
         return json({ ok: true, id: body.id });
@@ -505,18 +508,35 @@ export default {
         const id = adminProductoMatch[1];
         const body = await request.json().catch(() => null);
         if (!body) return json({ ok: false, erro: 'datos_invalidos' }, 400);
-        // precio (site .com, EUR) e precio_br (site .com.br, BRL) usam
-        // COALESCE: o painel admin de cada site só envia o seu próprio
-        // campo de preço, então o preço do outro site nunca é sobrescrito
-        // (nem zerado) por um salvamento feito no painel do outro idioma.
+        // Todo campo de texto/preço tem uma versão .com (espanhol) e uma
+        // versão _br (português), com COALESCE: o painel de cada site só
+        // envia os campos do seu próprio idioma, então o texto/preço do
+        // outro site nunca é sobrescrito (nem apagado) por um salvamento
+        // feito no painel do outro idioma. Categoria, avaliação, imagem,
+        // demo, tag e ativo continuam compartilhados (não são texto de
+        // idioma, os dois painéis já enviam os mesmos valores).
         await env.DB.prepare(
-          `UPDATE productos SET nombre=?, categoria=?, descripcion_corta=?, descripcion=?, precio=COALESCE(?, precio), precio_br=COALESCE(?, precio_br), real=?, rating=?, reviews=?, incluye=?, caracteristicas=?, imagen_url=?, demo_url=?, tag=?, activo=? WHERE id=?`
+          `UPDATE productos SET
+             nombre=COALESCE(?, nombre), nombre_br=COALESCE(?, nombre_br),
+             categoria=?,
+             descripcion_corta=COALESCE(?, descripcion_corta), descripcion_corta_br=COALESCE(?, descripcion_corta_br),
+             descripcion=COALESCE(?, descripcion), descripcion_br=COALESCE(?, descripcion_br),
+             precio=COALESCE(?, precio), precio_br=COALESCE(?, precio_br),
+             real=?, rating=?, reviews=?,
+             incluye=COALESCE(?, incluye), incluye_br=COALESCE(?, incluye_br),
+             caracteristicas=COALESCE(?, caracteristicas), caracteristicas_br=COALESCE(?, caracteristicas_br),
+             imagen_url=?, demo_url=?, tag=?, activo=?
+           WHERE id=?`
         ).bind(
-          body.nombre, body.categoria, body.descripcion_corta || '', body.descripcion || '',
+          body.nombre || null, body.nombre_br || null,
+          body.categoria,
+          body.descripcion_corta || null, body.descripcion_corta_br || null,
+          body.descripcion || null, body.descripcion_br || null,
           body.precio != null ? Number(body.precio) : null,
           body.precio_br != null ? Number(body.precio_br) : null,
           body.real ? 1 : 0, Number(body.rating || 4.5), Number(body.reviews || 0),
-          JSON.stringify(body.incluye || []), JSON.stringify(body.caracteristicas || []),
+          body.incluye ? JSON.stringify(body.incluye) : null, body.incluye_br ? JSON.stringify(body.incluye_br) : null,
+          body.caracteristicas ? JSON.stringify(body.caracteristicas) : null, body.caracteristicas_br ? JSON.stringify(body.caracteristicas_br) : null,
           body.imagen_url || null, body.demo_url || null, body.tag || null,
           body.activo === false ? 0 : 1, id
         ).run();

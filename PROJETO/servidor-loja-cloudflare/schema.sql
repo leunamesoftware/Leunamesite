@@ -6,17 +6,22 @@
 
 CREATE TABLE IF NOT EXISTS productos (
   id TEXT PRIMARY KEY,              -- slug, ex: 'leuname-gestao'
-  nombre TEXT NOT NULL,
+  nombre TEXT NOT NULL,             -- nome do site em espanhol (.com)
+  nombre_br TEXT,                   -- nome do site brasileiro (.com.br), em português. NULL = ainda não tem texto próprio pro Brasil
   categoria TEXT NOT NULL,          -- aplicaciones | templates | libros | recetas | diseno | otros
-  descripcion_corta TEXT,
-  descripcion TEXT,
+  descripcion_corta TEXT,           -- descrição curta do site .com, em espanhol
+  descripcion_corta_br TEXT,        -- descrição curta do site .com.br, em português
+  descripcion TEXT,                 -- descrição longa do site .com, em espanhol
+  descripcion_br TEXT,              -- descrição longa do site .com.br, em português
   precio REAL NOT NULL,             -- preço do site em espanhol (.com), em EUR. PRECIO DE EJEMPLO en los productos que no son reales
   precio_br REAL,                   -- preço do site brasileiro (.com.br), em BRL. NULL = ainda não tem preço próprio pro Brasil (o site BR não usa "precio" como fallback de valor)
   real INTEGER NOT NULL DEFAULT 0,  -- 1 = producto real de la empresa, 0 = ejemplo de catalogo
   rating REAL NOT NULL DEFAULT 4.5,
   reviews INTEGER NOT NULL DEFAULT 0,
-  incluye TEXT,                     -- JSON array de strings
-  caracteristicas TEXT,             -- JSON array de strings
+  incluye TEXT,                     -- JSON array de strings, site .com (espanhol)
+  incluye_br TEXT,                  -- JSON array de strings, site .com.br (português)
+  caracteristicas TEXT,             -- JSON array de strings, site .com (espanhol)
+  caracteristicas_br TEXT,          -- JSON array de strings, site .com.br (português)
   imagen_url TEXT,                  -- URL publica de la imagen real (subida via el panel admin a R2)
   demo_url TEXT,                    -- URL de la pagina/video de demo del producto (opcional)
   tag TEXT,                         -- etiqueta editorial opcional: 'novedad' | 'recomendado'
