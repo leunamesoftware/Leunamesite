@@ -484,15 +484,16 @@ export default {
 
       if (pathname === '/admin/productos' && request.method === 'POST') {
         const body = await request.json().catch(() => null);
-        if (!body || !body.id || !body.nombre || !body.categoria || body.precio == null) {
+        if (!body || !body.id || !body.nombre || !body.categoria || (body.precio == null && body.precio_br == null)) {
           return json({ ok: false, erro: 'datos_invalidos' }, 400);
         }
         await env.DB.prepare(
-          `INSERT INTO productos (id, nombre, categoria, descripcion_corta, descripcion, precio, real, rating, reviews, incluye, caracteristicas, imagen_url, demo_url, tag, activo, creado_em)
-           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, datetime('now'))`
+          `INSERT INTO productos (id, nombre, categoria, descripcion_corta, descripcion, precio, precio_br, real, rating, reviews, incluye, caracteristicas, imagen_url, demo_url, tag, activo, creado_em)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, datetime('now'))`
         ).bind(
           body.id, body.nombre, body.categoria, body.descripcion_corta || '', body.descripcion || '',
-          Number(body.precio), body.real ? 1 : 0, Number(body.rating || 4.5), Number(body.reviews || 0),
+          Number(body.precio || 0), body.precio_br != null ? Number(body.precio_br) : null,
+          body.real ? 1 : 0, Number(body.rating || 4.5), Number(body.reviews || 0),
           JSON.stringify(body.incluye || []), JSON.stringify(body.caracteristicas || []),
           body.imagen_url || null, body.demo_url || null, body.tag || null
         ).run();
@@ -504,11 +505,17 @@ export default {
         const id = adminProductoMatch[1];
         const body = await request.json().catch(() => null);
         if (!body) return json({ ok: false, erro: 'datos_invalidos' }, 400);
+        // precio (site .com, EUR) e precio_br (site .com.br, BRL) usam
+        // COALESCE: o painel admin de cada site só envia o seu próprio
+        // campo de preço, então o preço do outro site nunca é sobrescrito
+        // (nem zerado) por um salvamento feito no painel do outro idioma.
         await env.DB.prepare(
-          `UPDATE productos SET nombre=?, categoria=?, descripcion_corta=?, descripcion=?, precio=?, real=?, rating=?, reviews=?, incluye=?, caracteristicas=?, imagen_url=?, demo_url=?, tag=?, activo=? WHERE id=?`
+          `UPDATE productos SET nombre=?, categoria=?, descripcion_corta=?, descripcion=?, precio=COALESCE(?, precio), precio_br=COALESCE(?, precio_br), real=?, rating=?, reviews=?, incluye=?, caracteristicas=?, imagen_url=?, demo_url=?, tag=?, activo=? WHERE id=?`
         ).bind(
           body.nombre, body.categoria, body.descripcion_corta || '', body.descripcion || '',
-          Number(body.precio), body.real ? 1 : 0, Number(body.rating || 4.5), Number(body.reviews || 0),
+          body.precio != null ? Number(body.precio) : null,
+          body.precio_br != null ? Number(body.precio_br) : null,
+          body.real ? 1 : 0, Number(body.rating || 4.5), Number(body.reviews || 0),
           JSON.stringify(body.incluye || []), JSON.stringify(body.caracteristicas || []),
           body.imagen_url || null, body.demo_url || null, body.tag || null,
           body.activo === false ? 0 : 1, id

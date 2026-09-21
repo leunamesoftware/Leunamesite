@@ -35,7 +35,7 @@
         '<td>' + p.id + '</td>' +
         '<td><strong>' + p.nombre + '</strong></td>' +
         '<td>' + (CATEGORY_NAMES[p.categoria] || p.categoria) + '</td>' +
-        '<td>' + fmtPrice(p.precio) + '</td>' +
+        '<td>' + (p.precio_br != null ? fmtPrice(p.precio_br) : '—') + '</td>' +
         '<td>' +
           '<span class="admin-badge ' + (p.real ? 'real' : 'ejemplo') + '">' + (p.real ? 'Real' : 'Exemplo') + '</span> ' +
           (p.activo ? '' : '<span class="admin-badge inactivo">Inativo</span>') +
@@ -69,7 +69,7 @@
     document.getElementById('pId').disabled = !!product;
     document.getElementById('pNombre').value = product ? product.nombre : '';
     document.getElementById('pCategoria').value = product ? product.categoria : 'aplicaciones';
-    document.getElementById('pPrecio').value = product ? product.precio : '';
+    document.getElementById('pPrecio').value = product && product.precio_br != null ? product.precio_br : '';
     document.getElementById('pRating').value = product ? product.rating : 4.5;
     document.getElementById('pReviews').value = product ? product.reviews : 0;
     document.getElementById('pCorta').value = product ? product.descripcion_corta : '';
@@ -129,7 +129,11 @@
       id: newId,
       nombre: document.getElementById('pNombre').value.trim(),
       categoria: document.getElementById('pCategoria').value,
-      precio: parseFloat(document.getElementById('pPrecio').value),
+      // Este painel edita só o preço do Brasil (precio_br). O preço em
+      // euros do site .com (precio) não é enviado, então o backend
+      // preserva o valor que já estava salvo lá -- nunca é sobrescrito
+      // por este formulário.
+      precio_br: parseFloat(document.getElementById('pPrecio').value),
       rating: parseFloat(document.getElementById('pRating').value),
       reviews: parseInt(document.getElementById('pReviews').value, 10),
       descripcion_corta: document.getElementById('pCorta').value.trim(),

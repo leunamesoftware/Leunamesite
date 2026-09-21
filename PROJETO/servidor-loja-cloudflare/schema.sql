@@ -10,7 +10,8 @@ CREATE TABLE IF NOT EXISTS productos (
   categoria TEXT NOT NULL,          -- aplicaciones | templates | libros | recetas | diseno | otros
   descripcion_corta TEXT,
   descripcion TEXT,
-  precio REAL NOT NULL,             -- PRECIO DE EJEMPLO en los productos que no son reales
+  precio REAL NOT NULL,             -- preço do site em espanhol (.com), em EUR. PRECIO DE EJEMPLO en los productos que no son reales
+  precio_br REAL,                   -- preço do site brasileiro (.com.br), em BRL. NULL = ainda não tem preço próprio pro Brasil (o site BR não usa "precio" como fallback de valor)
   real INTEGER NOT NULL DEFAULT 0,  -- 1 = producto real de la empresa, 0 = ejemplo de catalogo
   rating REAL NOT NULL DEFAULT 4.5,
   reviews INTEGER NOT NULL DEFAULT 0,
