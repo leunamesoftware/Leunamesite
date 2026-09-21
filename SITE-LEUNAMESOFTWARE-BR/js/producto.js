@@ -3,6 +3,25 @@
    ========================================================================== */
 (function () {
   'use strict';
+
+  // Vídeo curto (tela do sistema em uso) pra mostrar no topo da página do
+  // produto. Fica só aqui no site BR (as telas estão em português) -- não
+  // é um campo do catálogo compartilhado, pra não vazar pro site em
+  // espanhol.
+  var PRODUCT_VIDEOS = {
+    'leuname-gestao': 'assets/img/demo/leuname-gestao-preview.mp4'
+  };
+
+  function galleryHTML(product) {
+    var videoSrc = PRODUCT_VIDEOS[product.id];
+    if (videoSrc) {
+      return '<div class="prod-visual prod-visual-video">' +
+        '<video src="' + videoSrc + '" autoplay muted loop playsinline></video>' +
+      '</div>';
+    }
+    return window.LeuStore.productVisualHTML(product);
+  }
+
   document.addEventListener('DOMContentLoaded', function () {
     var Store = window.LeuStore;
     if (!Store) return;
@@ -35,7 +54,7 @@
     if (breadcrumbName) breadcrumbName.textContent = product.name;
 
     detailEl.innerHTML =
-      '<div class="product-gallery">' + Store.productVisualHTML(product) + '</div>' +
+      '<div class="product-gallery">' + galleryHTML(product) + '</div>' +
       '<div class="product-info">' +
         '<span class="cat-tag">' + (cat ? cat.name : '') + '</span>' +
         (product.real ? '<span class="cat-tag" style="background:#e2f6ea;color:#1a9a55;margin-left:8px;">Produto real</span>' : '') +
