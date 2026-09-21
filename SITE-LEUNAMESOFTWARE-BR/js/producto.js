@@ -4,22 +4,37 @@
 (function () {
   'use strict';
 
-  // Vídeo curto (tela do sistema em uso) pra mostrar no topo da página do
-  // produto. Fica só aqui no site BR (as telas estão em português) -- não
-  // é um campo do catálogo compartilhado, pra não vazar pro site em
-  // espanhol.
+  // Vídeo e fotos de telas reais (tela do sistema em uso) pra mostrar no
+  // topo da página do produto. Ficam só aqui no site BR (as telas estão
+  // em português) -- não são campo do catálogo compartilhado, pra não
+  // vazar pro site em espanhol.
   var PRODUCT_VIDEOS = {
     'leuname-gestao': 'assets/img/demo/leuname-gestao-preview.mp4'
+  };
+  var PRODUCT_PHOTOS = {
+    'leuname-gestao': [
+      'assets/img/products/leuname-gestao-tela-1.jpg',
+      'assets/img/products/leuname-gestao-tela-2.jpg',
+      'assets/img/products/leuname-gestao-tela-3.jpg',
+      'assets/img/products/leuname-gestao-tela-4.jpg'
+    ]
   };
 
   function galleryHTML(product) {
     var videoSrc = PRODUCT_VIDEOS[product.id];
-    if (videoSrc) {
-      return '<div class="prod-visual prod-visual-video">' +
+    var photos = PRODUCT_PHOTOS[product.id] || [];
+    if (!videoSrc) return window.LeuStore.productVisualHTML(product);
+
+    var thumbsHTML = photos.map(function (src) {
+      return '<a class="prod-gallery-thumb" href="' + src + '" target="_blank" rel="noopener">' +
+        '<img src="' + src + '" alt="Tela de ' + product.name + '" loading="lazy">' +
+      '</a>';
+    }).join('');
+
+    return '<div class="prod-visual prod-visual-video">' +
         '<video src="' + videoSrc + '" autoplay muted loop playsinline></video>' +
-      '</div>';
-    }
-    return window.LeuStore.productVisualHTML(product);
+      '</div>' +
+      (thumbsHTML ? '<div class="prod-gallery-thumbs">' + thumbsHTML + '</div>' : '');
   }
 
   document.addEventListener('DOMContentLoaded', function () {

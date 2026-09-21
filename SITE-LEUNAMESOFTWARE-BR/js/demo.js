@@ -28,6 +28,12 @@
 (function () {
   'use strict';
 
+  // Vídeo curto (tela do sistema em uso), só deste site BR -- ver mesma
+  // lista em producto.js.
+  var PRODUCT_VIDEOS = {
+    'leuname-gestao': 'assets/img/demo/leuname-gestao-preview.mp4'
+  };
+
   var COLORS = ['ic-green', 'ic-blue', 'ic-amber', 'ic-purple', 'ic-pink'];
   var FEATURE_ICONS = [
     '<path d="M2.5 3h2.2l2.4 12.2a2 2 0 0 0 2 1.6h8.2a2 2 0 0 0 2-1.6L21 7H6"/>', // carrinho (vendas)
@@ -78,11 +84,12 @@
       return '<li><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.6"><path d="m5 13 4 4 10-10"/></svg>' + f + '</li>';
     }).join('');
 
-    // O vídeo real só aparece se o produto tiver um carregado
-    // (product.demoVideoUrl); se não, mostra-se a captura real do
-    // produto, sem nenhum botão de play falso por cima.
-    var mediaHTML = product.demoVideoUrl
-      ? '<video controls src="' + product.demoVideoUrl + '"></video>'
+    // O vídeo real só aparece se o produto tiver um carregado (aqui local,
+    // só neste site BR, ou via product.demoVideoUrl); se não, mostra-se a
+    // captura real do produto, sem nenhum botão de play falso por cima.
+    var localVideo = PRODUCT_VIDEOS[product.id];
+    var mediaHTML = (localVideo || product.demoVideoUrl)
+      ? '<video controls muted loop playsinline src="' + (localVideo || product.demoVideoUrl) + '"></video>'
       : (product.imageUrl ? '<img src="' + product.imageUrl + '" alt="Interface de ' + product.name + '">' : '');
 
     contentEl.innerHTML =
