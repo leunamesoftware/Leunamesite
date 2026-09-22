@@ -1781,7 +1781,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
       Notificações
       <span class="icon navitem__chev"><svg><use href="#i-chevron-right"/></svg></span>
     </button>
-    <button class="navitem" type="button">
+    <button class="navitem" type="button" id="navFinanceiroBtn">
       <span class="icon"><svg><use href="#i-dollar"/></svg></span>
       Financeiro
       <span class="icon navitem__chev"><svg><use href="#i-chevron-right"/></svg></span>
@@ -3676,8 +3676,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
             <select id="filtroStatusCritico">
               <option>Todos</option>
               <option>Crítico</option>
-              <option>Em risco</option>
-              <option>Normal</option>
+              <option>Atenção</option>
             </select>
           </div>
           <div class="filter-actions">
@@ -4674,9 +4673,9 @@ html, body{ overflow-x:hidden; max-width:100%; }
               <option>Todos</option>
               <option>Pendente</option>
               <option>Em Cotação</option>
-              <option>Encontrado</option>
-              <option>Avisar Cliente</option>
-              <option>Finalizado</option>
+              <option>Em Andamento</option>
+              <option>Resolvida</option>
+              <option>Cancelada</option>
             </select>
           </div>
           <div class="filter-field">
@@ -7391,11 +7390,6 @@ html, body{ overflow-x:hidden; max-width:100%; }
             <select id="filtroTipoNotif">
               <option>Todos os tipos</option>
               <option>Estoque</option>
-              <option>Venda</option>
-              <option>Entrega</option>
-              <option>Compra</option>
-              <option>Cliente</option>
-              <option>Financeiro</option>
               <option>Sistema</option>
             </select>
           </div>
@@ -7731,7 +7725,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
             <select id="filtroStatusUsuario">
               <option>Todos</option>
               <option>Ativo</option>
-              <option>Inativo</option>
+              <option>Bloqueado</option>
             </select>
           </div>
           <div class="filter-actions">
@@ -8685,7 +8679,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
   <button class="tabbar-item tabbar-item--center" type="button" id="mobileFab">
     <span class="tabbar-item__fab"><span class="icon"><svg><use href="#i-plus"/></svg></span></span>
   </button>
-  <button class="tabbar-item" type="button">
+  <button class="tabbar-item" type="button" data-view="Vendas">
     <span class="icon"><svg><use href="#i-cart"/></svg></span>
     Vendas
   </button>
@@ -9181,6 +9175,75 @@ html, body{ overflow-x:hidden; max-width:100%; }
     return prefix + String(max + 1).padStart(6, '0');
   }
 
+  /* ---- filtros de lista: leitura ao vivo dos campos, sem estado
+     separado -- o próprio filtro/busca fica sempre "aplicado" ao
+     que está preenchido na tela, igual apps de loja de verdade. ---- */
+  function normText(s) { return String(s == null ? '' : s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, ''); }
+  function valOf(id) { var el = document.getElementById(id); return el ? el.value : ''; }
+  function isTodos(v) { return !v || /^todo/i.test(v) || /^todas/i.test(v); }
+  function bateBusca(campos, termo) {
+    if (!termo) return true;
+    return normText(campos.join(' ')).indexOf(normText(termo)) !== -1;
+  }
+  /* Reconstrói as opções de um <select> de filtro a partir de dados reais
+     (categorias, fornecedores, clientes, cidades cadastradas etc.), no
+     lugar da lista de exemplo fixa que vinha no mockup -- preserva a
+     opção selecionada quando ela continua existindo. */
+  function syncFilterOptions(selectId, placeholder, valores) {
+    var sel = document.getElementById(selectId);
+    if (!sel) return;
+    var atual = sel.value;
+    var uniq = [];
+    (valores || []).forEach(function (v) { v = String(v || '').trim(); if (v && uniq.indexOf(v) === -1) uniq.push(v); });
+    uniq.sort(function (a, b) { return a.localeCompare(b, 'pt-BR'); });
+    sel.innerHTML = '<option>' + esc(placeholder) + '</option>' + uniq.map(function (v) { return '<option' + (v === atual ? ' selected' : '') + '>' + esc(v) + '</option>'; }).join('');
+    if (uniq.indexOf(atual) === -1) sel.value = placeholder;
+  }
+  /* Filtro de período usado em telas como Notificações / Central de
+     Demandas / Cliente Pediu e Não Tem (selects de "Últimos 7 dias" etc). */
+  function dataNoPeriodo(iso, periodoLabel) {
+    if (!periodoLabel || /todo/i.test(periodoLabel)) return true;
+    var d = new Date(iso);
+    if (isNaN(d)) return true;
+    var agora = new Date();
+    if (/hoje/i.test(periodoLabel)) { return d.toDateString() === agora.toDateString(); }
+    if (/este mês|este mes/i.test(periodoLabel)) { return d.getFullYear() === agora.getFullYear() && d.getMonth() === agora.getMonth(); }
+    var m = /(\d+)\s*dias/.exec(periodoLabel);
+    if (m) { var limite = new Date(agora.getTime() - Number(m[1]) * 86400000); return d >= limite; }
+    return true;
+  }
+  function dataNoIntervalo(iso, inicioId, fimId) {
+    var ini = valOf(inicioId), fim = valOf(fimId);
+    if (!ini && !fim) return true;
+    var d = new Date(iso);
+    if (isNaN(d)) return true;
+    if (ini) { var di = new Date(ini + 'T00:00:00'); if (d < di) return false; }
+    if (fim) { var dfim = new Date(fim + 'T23:59:59'); if (d > dfim) return false; }
+    return true;
+  }
+  /* Liga um grupo de campos de filtro (busca + selects/datas) de uma tela:
+     Aplicar/Limpar reagem de verdade, e cada campo já refiltra sozinho ao
+     mudar -- não precisa nem clicar em "Filtrar" pra funcionar. */
+  function wireFiltros(cfg) {
+    var campos = cfg.campos || [];
+    if (cfg.aplicarId) rewire(cfg.aplicarId, function (e) { if (e) e.stopPropagation(); cfg.render(); toast('Filtros aplicados.'); });
+    if (cfg.limparId) rewire(cfg.limparId, function (e) {
+      if (e) e.stopPropagation();
+      campos.forEach(function (id) {
+        var el = document.getElementById(id);
+        if (!el) return;
+        if (el.tagName === 'SELECT') el.selectedIndex = 0; else el.value = '';
+      });
+      cfg.render();
+      toast('Filtros limpos.');
+    });
+    campos.forEach(function (id) {
+      var el = document.getElementById(id);
+      if (!el) return;
+      el.addEventListener(el.tagName === 'SELECT' || el.type === 'date' ? 'change' : 'input', function () { cfg.render(); });
+    });
+  }
+
   function toast(msg, type) {
     var el = document.getElementById('toast'), msgEl = document.getElementById('toastMsg');
     if (!el || !msgEl) return;
@@ -9463,11 +9526,20 @@ html, body{ overflow-x:hidden; max-width:100%; }
     if (!tbody) return;
     var categorias = (await idbAll('categorias')).sort(function (a, b) { return (a.ordem || 0) - (b.ordem || 0); });
     var produtos = await idbAll('produtos');
+    var qtdMap = {};
+    categorias.forEach(function (c) { qtdMap[c.id] = produtos.filter(function (p) { return p.categoria_id === c.id; }).length; });
     if (!categorias.length) { tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:24px;color:var(--text-tertiary);">Nenhuma categoria cadastrada ainda.</td></tr>'; return; }
-    tbody.innerHTML = categorias.map(function (c) {
-      var qtd = produtos.filter(function (p) { return p.categoria_id === c.id; }).length;
-      return categoriaRowHTML(c, qtd);
-    }).join('');
+    var busca = valOf('categoriasSearchInput'), statusF = valOf('filtroStatusCategoria'), ordF = valOf('filtroOrdenarCategoria');
+    var lista = categorias.filter(function (c) {
+      if (!bateBusca([c.nome, c.descricao || ''], busca)) return false;
+      if (!isTodos(statusF) && (c.status === 'ativa' ? 'Ativa' : 'Inativa') !== statusF) return false;
+      return true;
+    });
+    if (ordF === 'Nome (A-Z)') lista.sort(function (a, b) { return a.nome.localeCompare(b.nome, 'pt-BR'); });
+    else if (ordF === 'Produtos (mais-menos)') lista.sort(function (a, b) { return qtdMap[b.id] - qtdMap[a.id]; });
+    else if (ordF !== 'Ordem de exibição') lista.sort(function (a, b) { return new Date(b.criado_em || 0) - new Date(a.criado_em || 0); });
+    tbody.innerHTML = lista.length ? lista.map(function (c) { return categoriaRowHTML(c, qtdMap[c.id]); }).join('') :
+      '<tr><td colspan="8" style="text-align:center;padding:24px;color:var(--text-tertiary);">Nenhuma categoria encontrada com esses filtros.</td></tr>';
   }
   function categoriaFormModal(cat) {
     cat = cat || { id: null, ordem: 1, nome: '', descricao: '', status: 'ativa' };
@@ -9517,6 +9589,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
     out: { badgeClass: 'badge--red', badgeText: 'Sem estoque', numClass: 'out' }
   };
   function calcularStatusEstoque(atual, minimo) { if (atual <= 0) return 'out'; if (atual <= minimo) return 'low'; return 'ok'; }
+  function calcularSugestaoReposicao(atual, ideal) { return Math.max(Number(ideal || 0) - Number(atual || 0), 0); }
 
   function produtoRowHTML(p, categoriaNome) {
     var status = calcularStatusEstoque(Number(p.estoque_atual || 0), Number(p.estoque_minimo || 0));
@@ -9540,13 +9613,46 @@ html, body{ overflow-x:hidden; max-width:100%; }
     var estoqueTbody = document.getElementById('estoqueTbody');
     var produtos = await idbAll('produtos');
     var categorias = await idbAll('categorias');
+    var fornecedores = await idbAll('fornecedores');
+    var movs = await idbAll('estoque_mov');
     var catMap = {}; categorias.forEach(function (c) { catMap[c.id] = c.nome; });
+    var fMap = {}; fornecedores.forEach(function (f) { fMap[f.id] = f.nome; });
+    var ultimaMovMap = {};
+    movs.forEach(function (m) {
+      var atual = ultimaMovMap[m.produto_id];
+      if (!atual || new Date(m.criado_em) > new Date(atual.criado_em)) ultimaMovMap[m.produto_id] = m;
+    });
+    var nomesCategorias = categorias.map(function (c) { return c.nome; });
+    var nomesFornecedores = fornecedores.map(function (f) { return f.nome; });
+    syncFilterOptions('filtroCategoria', 'Todas', nomesCategorias);
+    syncFilterOptions('filtroCategoriaEstoque', 'Todas', nomesCategorias);
+    syncFilterOptions('filtroFornecedorEstoque', 'Todos', nomesFornecedores);
+
     if (tbody) {
-      tbody.innerHTML = produtos.length ? produtos.map(function (p) { return produtoRowHTML(p, catMap[p.categoria_id]); }).join('') :
-        '<tr><td colspan="9" style="text-align:center;padding:24px;color:var(--text-tertiary);">Nenhum produto cadastrado ainda. Clique em "Novo Produto" para começar.</td></tr>';
+      var busca = valOf('produtosSearchInput'), catF = valOf('filtroCategoria'), statusF = valOf('filtroStatus'), ordF = valOf('filtroOrdenar');
+      var lista = produtos.filter(function (p) {
+        if (!bateBusca([p.nome, p.sku || '', p.descricao || ''], busca)) return false;
+        if (!isTodos(catF) && catMap[p.categoria_id] !== catF) return false;
+        if (!isTodos(statusF) && STATUS_ESTOQUE_INFO[calcularStatusEstoque(Number(p.estoque_atual || 0), Number(p.estoque_minimo || 0))].badgeText !== statusF) return false;
+        return true;
+      });
+      if (ordF === 'Nome (A-Z)') lista.sort(function (a, b) { return a.nome.localeCompare(b.nome, 'pt-BR'); });
+      else if (ordF === 'Estoque (menor-maior)') lista.sort(function (a, b) { return Number(a.estoque_atual || 0) - Number(b.estoque_atual || 0); });
+      else if (ordF === 'Preço (menor-maior)') lista.sort(function (a, b) { return Number(a.preco || 0) - Number(b.preco || 0); });
+      tbody.innerHTML = lista.length ? lista.map(function (p) { return produtoRowHTML(p, catMap[p.categoria_id]); }).join('') :
+        (produtos.length ? '<tr><td colspan="9" style="text-align:center;padding:24px;color:var(--text-tertiary);">Nenhum produto encontrado com esses filtros.</td></tr>' :
+        '<tr><td colspan="9" style="text-align:center;padding:24px;color:var(--text-tertiary);">Nenhum produto cadastrado ainda. Clique em "Novo Produto" para começar.</td></tr>');
     }
     if (estoqueTbody) {
-      estoqueTbody.innerHTML = produtos.length ? produtos.map(function (p) {
+      var buscaE = valOf('estoqueSearchInput'), catE = valOf('filtroCategoriaEstoque'), statusE = valOf('filtroStatusEstoque'), fornE = valOf('filtroFornecedorEstoque');
+      var listaE = produtos.filter(function (p) {
+        if (!bateBusca([p.nome, p.sku || '', p.descricao || ''], buscaE)) return false;
+        if (!isTodos(catE) && catMap[p.categoria_id] !== catE) return false;
+        if (!isTodos(statusE) && STATUS_ESTOQUE_INFO[calcularStatusEstoque(Number(p.estoque_atual || 0), Number(p.estoque_minimo || 0))].badgeText !== statusE) return false;
+        if (!isTodos(fornE) && fMap[p.fornecedor_id] !== fornE) return false;
+        return true;
+      });
+      estoqueTbody.innerHTML = listaE.length ? listaE.map(function (p) {
         var status = calcularStatusEstoque(Number(p.estoque_atual || 0), Number(p.estoque_minimo || 0));
         var info = STATUS_ESTOQUE_INFO[status];
         return '<tr data-id="' + p.id + '">' +
@@ -9558,21 +9664,27 @@ html, body{ overflow-x:hidden; max-width:100%; }
           '<td><span class="stock-num ' + info.numClass + '">' + Number(p.estoque_atual || 0) + '</span></td>' +
           '<td>' + Number(p.estoque_minimo || 0) + '</td>' +
           '<td><span class="badge ' + info.badgeClass + '">' + info.badgeText + '</span></td>' +
-          '<td><span class="move-cell"><span class="move-cell__date">—</span></span></td>' +
+          '<td><span class="move-cell">' + (ultimaMovMap[p.id] ? '<span class="move-cell__date">' + fmtDateOnly(ultimaMovMap[p.id].criado_em) + '</span><span class="move-cell__type ' + (ultimaMovMap[p.id].tipo === 'saida' ? 'out' : 'in') + '">' + (ultimaMovMap[p.id].tipo === 'saida' ? 'Saída' : 'Entrada') + '</span>' : '<span class="move-cell__date">—</span>') + '</span></td>' +
           '<td><div class="row-actions"><button class="iconbtn" type="button" title="Editar" data-prod-edit="' + p.id + '"><span class="icon"><svg><use href="#i-pencil"/></svg></span></button></div></td></tr>';
-      }).join('') : '<tr><td colspan="10" style="text-align:center;padding:24px;color:var(--text-tertiary);">Nenhum produto cadastrado ainda.</td></tr>';
+      }).join('') : (produtos.length ? '<tr><td colspan="10" style="text-align:center;padding:24px;color:var(--text-tertiary);">Nenhum produto encontrado com esses filtros.</td></tr>' :
+        '<tr><td colspan="10" style="text-align:center;padding:24px;color:var(--text-tertiary);">Nenhum produto cadastrado ainda.</td></tr>');
     }
   }
   async function produtoFormModal(prod) {
-    prod = prod || { id: null, nome: '', descricao: '', categoria_id: '', sku: '', preco: '', estoque_atual: 0, estoque_minimo: 0, estoque_ideal: 0 };
+    prod = prod || { id: null, nome: '', descricao: '', categoria_id: '', fornecedor_id: '', sku: '', preco: '', estoque_atual: 0, estoque_minimo: 0, estoque_ideal: 0 };
     var categorias = (await idbAll('categorias')).filter(function (c) { return c.status === 'ativa'; });
     var options = categorias.map(function (c) { return '<option value="' + c.id + '"' + (prod.categoria_id === c.id ? ' selected' : '') + '>' + esc(c.nome) + '</option>'; }).join('');
+    var fornecedores = await idbAll('fornecedores');
+    var fornOptions = '<option value="">Sem fornecedor definido</option>' + fornecedores.map(function (f) { return '<option value="' + f.id + '"' + (prod.fornecedor_id === f.id ? ' selected' : '') + '>' + esc(f.nome) + '</option>'; }).join('');
     openFormModal(
       modalHeaderHTML(prod.id ? 'Editar produto' : 'Novo produto') +
       '<form id="prodForm" style="padding:20px 24px;display:flex;flex-direction:column;gap:14px;">' +
         '<div class="field"><label>Nome do produto</label><input id="prodNome" value="' + esc(prod.nome) + '" required></div>' +
         '<div class="field"><label>Descrição curta</label><input id="prodDescricao" value="' + esc(prod.descricao || '') + '"></div>' +
-        '<div class="field"><label>Categoria</label><select id="prodCategoria">' + (options || '<option value="">Cadastre uma categoria primeiro</option>') + '</select></div>' +
+        '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">' +
+          '<div class="field"><label>Categoria</label><select id="prodCategoria">' + (options || '<option value="">Cadastre uma categoria primeiro</option>') + '</select></div>' +
+          '<div class="field"><label>Fornecedor principal</label><select id="prodFornecedor">' + fornOptions + '</select></div>' +
+        '</div>' +
         '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">' +
           '<div class="field"><label>SKU / Código</label><input id="prodSku" value="' + esc(prod.sku || '') + '"></div>' +
           '<div class="field"><label>Preço (R$)</label><input id="prodPreco" type="number" step="0.01" min="0" value="' + (prod.preco != null ? prod.preco : '') + '" required></div>' +
@@ -9593,7 +9705,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
       if (!(preco >= 0)) { toast('Informe um preço válido.', 'error'); return; }
       var obj = {
         id: prod.id || uid(), nome: nome, descricao: document.getElementById('prodDescricao').value.trim(),
-        categoria_id: document.getElementById('prodCategoria').value || null, sku: document.getElementById('prodSku').value.trim(),
+        categoria_id: document.getElementById('prodCategoria').value || null, fornecedor_id: document.getElementById('prodFornecedor').value || null, sku: document.getElementById('prodSku').value.trim(),
         preco: preco, estoque_atual: Number(document.getElementById('prodEstoqueAtual').value || 0),
         estoque_minimo: Number(document.getElementById('prodEstoqueMinimo').value || 0), estoque_ideal: Number(document.getElementById('prodEstoqueIdeal').value || 0),
         criado_em: prod.criado_em || nowISO()
@@ -9650,8 +9762,19 @@ html, body{ overflow-x:hidden; max-width:100%; }
     clientes.forEach(function (c) {
       c._totalCompras = vendas.filter(function (v) { return v.cliente_id === c.id; }).reduce(function (s, v) { return s + Number(v.total || 0); }, 0);
     });
-    tbody.innerHTML = clientes.length ? clientes.map(clienteRowHTML).join('') :
-      '<tr><td colspan="10" style="text-align:center;padding:24px;color:var(--text-tertiary);">Nenhum cliente cadastrado ainda.</td></tr>';
+    syncFilterOptions('filtroCidadeCliente', 'Todas', clientes.map(function (c) { return c.cidade; }));
+    syncFilterOptions('filtroClienteHistorico', 'Todos', clientes.map(function (c) { return c.nome; }));
+    if (!clientes.length) { tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;padding:24px;color:var(--text-tertiary);">Nenhum cliente cadastrado ainda.</td></tr>'; return; }
+    var busca = valOf('clientesSearchInput'), tipoF = valOf('filtroTipoCliente'), statusF = valOf('filtroStatusCliente'), cidadeF = valOf('filtroCidadeCliente');
+    var lista = clientes.filter(function (c) {
+      if (!bateBusca([c.nome, c.documento || '', c.telefone || '', c.email || ''], busca)) return false;
+      if (!isTodos(tipoF) && (c.tipo === 'juridica' ? 'Pessoa Jurídica' : 'Pessoa Física') !== tipoF) return false;
+      if (!isTodos(statusF) && (c.status === 'ativo' ? 'Ativo' : 'Inativo') !== statusF) return false;
+      if (!isTodos(cidadeF) && (c.cidade || '') !== cidadeF) return false;
+      return true;
+    });
+    tbody.innerHTML = lista.length ? lista.map(clienteRowHTML).join('') :
+      '<tr><td colspan="10" style="text-align:center;padding:24px;color:var(--text-tertiary);">Nenhum cliente encontrado com esses filtros.</td></tr>';
   }
   function clienteFormModal(cli) {
     cli = cli || { id: null, nome: '', tipo: 'fisica', documento: '', telefone: '', email: '', cidade: '', status: 'ativo' };
@@ -9731,8 +9854,16 @@ html, body{ overflow-x:hidden; max-width:100%; }
     var vendas = (await idbAll('vendas')).sort(function (a, b) { return new Date(b.criado_em) - new Date(a.criado_em); });
     var clientes = await idbAll('clientes');
     var cliMap = {}; clientes.forEach(function (c) { cliMap[c.id] = c.nome; });
-    tbody.innerHTML = vendas.length ? vendas.map(function (v) { return vendaRowHTML(v, cliMap[v.cliente_id]); }).join('') :
-      '<tr><td colspan="9" style="text-align:center;padding:24px;color:var(--text-tertiary);">Nenhuma venda registrada ainda.</td></tr>';
+    if (!vendas.length) { tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:24px;color:var(--text-tertiary);">Nenhuma venda registrada ainda.</td></tr>'; return; }
+    var busca = valOf('vendasSearchInput'), statusF = valOf('filtroStatusVenda');
+    var lista = vendas.filter(function (v) {
+      if (!bateBusca(['#' + v.numero, cliMap[v.cliente_id] || '', v.forma_pagamento || ''], busca)) return false;
+      if (!isTodos(statusF) && statusF !== 'Concluída') return false;
+      if (!dataNoIntervalo(v.criado_em, 'dataInicialVenda', 'dataFinalVenda')) return false;
+      return true;
+    });
+    tbody.innerHTML = lista.length ? lista.map(function (v) { return vendaRowHTML(v, cliMap[v.cliente_id]); }).join('') :
+      '<tr><td colspan="9" style="text-align:center;padding:24px;color:var(--text-tertiary);">Nenhuma venda encontrada com esses filtros.</td></tr>';
   }
 
   var _vendaItens = [];
@@ -9861,7 +9992,16 @@ html, body{ overflow-x:hidden; max-width:100%; }
     var tbody = document.getElementById('usuariosTbody');
     if (!tbody) return;
     var usuarios = await idbAll('usuarios');
-    tbody.innerHTML = usuarios.length ? usuarios.map(usuarioRowHTML).join('') : '<tr><td colspan="8"></td></tr>';
+    if (!usuarios.length) { tbody.innerHTML = '<tr><td colspan="8"></td></tr>'; return; }
+    var busca = valOf('usuariosSearchInput'), perfilF = valOf('filtroPerfilUsuario'), statusF = valOf('filtroStatusUsuario');
+    var lista = usuarios.filter(function(u){
+      if (!bateBusca([u.nome, u.email || ''], busca)) return false;
+      if (!isTodos(perfilF) && (ROLE_LABELS[u.papel] || u.papel) !== perfilF) return false;
+      if (!isTodos(statusF) && (u.status === 'ativo' ? 'Ativo' : 'Bloqueado') !== statusF) return false;
+      return true;
+    });
+    tbody.innerHTML = lista.length ? lista.map(usuarioRowHTML).join('') :
+      '<tr><td colspan="8" style="text-align:center;padding:24px;color:var(--text-tertiary);">Nenhum usuário encontrado com esses filtros.</td></tr>';
   }
   function usuarioFormModal(u) {
     u = u || { id: null, nome: '', email: '', papel: 'vendas', status: 'ativo' };
@@ -10038,8 +10178,25 @@ html, body{ overflow-x:hidden; max-width:100%; }
       var deste = compras.filter(function(c){ return c.fornecedor_id === f.id; }).sort(function(a,b){ return new Date(b.criado_em)-new Date(a.criado_em); });
       f._ultimaCompra = deste.length ? deste[0].criado_em : null;
     });
-    tbody.innerHTML = fornecedores.length ? fornecedores.map(fornecedorRowHTML).join('') :
-      '<tr><td colspan="10" style="text-align:center;padding:24px;color:var(--text-tertiary);">Nenhum fornecedor cadastrado ainda.</td></tr>';
+    var nomes = fornecedores.map(function(f){ return f.nome; });
+    syncFilterOptions('filtroFornecedorEstoque', 'Todos', nomes);
+    syncFilterOptions('filtroFornecedorComprar', 'Todos', nomes);
+    syncFilterOptions('filtroFornecedorCritico', 'Todos', nomes);
+    syncFilterOptions('filtroFornecedorCompra', 'Todos', nomes);
+    syncFilterOptions('filtroFornecedorRecebimento', 'Todos', nomes);
+    syncFilterOptions('filtroCidadeFornecedor', 'Todas', fornecedores.map(function(f){ return f.cidade; }));
+    if (!fornecedores.length) { tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;padding:24px;color:var(--text-tertiary);">Nenhum fornecedor cadastrado ainda.</td></tr>'; return; }
+    var busca = valOf('fornecedoresSearchInput'), catF = valOf('filtroCategoriaFornecedor'), statusF = valOf('filtroStatusFornecedor'), cidadeF = valOf('filtroCidadeFornecedor');
+    var statusLabel = { ativo: 'Ativo', inativo: 'Inativo', negociacao: 'Em Negociação' };
+    var lista = fornecedores.filter(function(f){
+      if (!bateBusca([f.nome, f.documento || '', f.telefone || '', f.email || ''], busca)) return false;
+      if (!isTodos(catF) && (f.categoria || '') !== catF) return false;
+      if (!isTodos(statusF) && (statusLabel[f.status] || '') !== statusF) return false;
+      if (!isTodos(cidadeF) && (f.cidade || '') !== cidadeF) return false;
+      return true;
+    });
+    tbody.innerHTML = lista.length ? lista.map(fornecedorRowHTML).join('') :
+      '<tr><td colspan="10" style="text-align:center;padding:24px;color:var(--text-tertiary);">Nenhum fornecedor encontrado com esses filtros.</td></tr>';
   }
   function fornecedorFormModal(f){
     f = f || { id:null, nome:'', documento:'', categoria:FORNECEDOR_CATEGORIAS[0], telefone:'', email:'', cidade:'', status:'ativo' };
@@ -10115,8 +10272,17 @@ html, body{ overflow-x:hidden; max-width:100%; }
     var compras = (await idbAll('compras')).sort(function(a,b){ return new Date(b.criado_em)-new Date(a.criado_em); });
     var fornecedores = await idbAll('fornecedores');
     var fMap = {}; fornecedores.forEach(function(f){ fMap[f.id] = f.nome; });
-    tbody.innerHTML = compras.length ? compras.map(function(c){ return compraRowHTML(c, fMap[c.fornecedor_id]); }).join('') :
-      '<tr><td colspan="10" style="text-align:center;padding:24px;color:var(--text-tertiary);">Nenhuma compra registrada ainda.</td></tr>';
+    if (!compras.length) { tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;padding:24px;color:var(--text-tertiary);">Nenhuma compra registrada ainda.</td></tr>'; return; }
+    var busca = valOf('comprasSearchInput'), fornF = valOf('filtroFornecedorCompra'), statusF = valOf('filtroStatusCompra');
+    var lista = compras.filter(function(c){
+      if (!bateBusca(['#' + c.numero, fMap[c.fornecedor_id] || '', c.observacao || ''], busca)) return false;
+      if (!isTodos(fornF) && fMap[c.fornecedor_id] !== fornF) return false;
+      if (!isTodos(statusF) && c.status !== statusF) return false;
+      if (!dataNoIntervalo(c.criado_em, 'dataInicialCompra', 'dataFinalCompra')) return false;
+      return true;
+    });
+    tbody.innerHTML = lista.length ? lista.map(function(c){ return compraRowHTML(c, fMap[c.fornecedor_id]); }).join('') :
+      '<tr><td colspan="10" style="text-align:center;padding:24px;color:var(--text-tertiary);">Nenhuma compra encontrada com esses filtros.</td></tr>';
   }
   async function renderRecebimento(){
     var tbody = document.getElementById('recebimentoTbody');
@@ -10124,6 +10290,14 @@ html, body{ overflow-x:hidden; max-width:100%; }
     var recs = (await idbAll('recebimentos')).sort(function(a,b){ return new Date(b.criado_em)-new Date(a.criado_em); });
     var fornecedores = await idbAll('fornecedores');
     var fMap = {}; fornecedores.forEach(function(f){ fMap[f.id] = f.nome; });
+    var busca = valOf('recebimentoSearchInput'), fornF = valOf('filtroFornecedorRecebimento'), statusF = valOf('filtroStatusRecebimento');
+    recs = recs.filter(function(r){
+      if (!bateBusca(['#' + r.numero, '#' + r.compra_numero, fMap[r.fornecedor_id] || '', r.conferido_por || ''], busca)) return false;
+      if (!isTodos(fornF) && fMap[r.fornecedor_id] !== fornF) return false;
+      if (!isTodos(statusF) && statusF !== 'Concluído') return false;
+      if (!dataNoIntervalo(r.criado_em, 'dataInicialRecebimento', 'dataFinalRecebimento')) return false;
+      return true;
+    });
     tbody.innerHTML = recs.length ? recs.map(function(r){
       return '<tr data-id="' + r.id + '">' +
         '<td><input type="checkbox" class="checkbox"></td>' +
@@ -10210,6 +10384,21 @@ html, body{ overflow-x:hidden; max-width:100%; }
       await renderCompras(); await renderFornecedores(); await renderDashboard();
     });
   }
+  async function receberCompra(compra){
+    for (var i = 0; i < (compra.itens||[]).length; i++) {
+      var it = compra.itens[i];
+      var produto = await idbGet('produtos', it.produto_id);
+      if (produto) { produto.estoque_atual = Number(produto.estoque_atual || 0) + it.qtd; await idbPut('produtos', produto); await idbPut('estoque_mov', { id: uid(), produto_id: it.produto_id, tipo:'entrada', quantidade: it.qtd, motivo:'Recebimento da compra #' + compra.numero, criado_em: nowISO() }); }
+    }
+    compra.status = 'Recebida';
+    await idbPut('compras', compra);
+    var recsExistentes = await idbAll('recebimentos');
+    var rec = { id: uid(), numero: nextNumber('RC', recsExistentes).replace(/^0+/,'') || '1', compra_id: compra.id, compra_numero: compra.numero, fornecedor_id: compra.fornecedor_id, itens_recebidos: (compra.itens||[]).length + ' de ' + (compra.itens||[]).length, conferido_por: STATE.user ? STATE.user.nome : '', criado_em: nowISO() };
+    await idbPut('recebimentos', rec);
+    await logAction('recebimento_registrado', 'Recebimento da compra #' + compra.numero);
+    toast('Recebimento registrado. Estoque atualizado.');
+    await renderCompras(); await renderRecebimento(); await renderProdutos(); await renderEstoqueDerivados(); await renderDashboard();
+  }
   document.addEventListener('click', async function(e){
     var delBtn = e.target.closest('[data-compra-del]');
     if (delBtn) {
@@ -10223,21 +10412,103 @@ html, body{ overflow-x:hidden; max-width:100%; }
       var compra = await idbGet('compras', compraId);
       if (!compra) return;
       if (!confirm('Confirmar recebimento da compra #' + compra.numero + '? O estoque dos produtos será atualizado.')) return;
-      for (var i = 0; i < (compra.itens||[]).length; i++) {
-        var it = compra.itens[i];
-        var produto = await idbGet('produtos', it.produto_id);
-        if (produto) { produto.estoque_atual = Number(produto.estoque_atual || 0) + it.qtd; await idbPut('produtos', produto); await idbPut('estoque_mov', { id: uid(), produto_id: it.produto_id, tipo:'entrada', quantidade: it.qtd, motivo:'Recebimento da compra #' + compra.numero, criado_em: nowISO() }); }
-      }
-      compra.status = 'Recebida';
-      await idbPut('compras', compra);
-      var recsExistentes = await idbAll('recebimentos');
-      var rec = { id: uid(), numero: nextNumber('RC', recsExistentes).replace(/^0+/,'') || '1', compra_id: compra.id, compra_numero: compra.numero, fornecedor_id: compra.fornecedor_id, itens_recebidos: (compra.itens||[]).length + ' de ' + (compra.itens||[]).length, conferido_por: STATE.user ? STATE.user.nome : '', criado_em: nowISO() };
-      await idbPut('recebimentos', rec);
-      await logAction('recebimento_registrado', 'Recebimento da compra #' + compra.numero);
-      toast('Recebimento registrado. Estoque atualizado.');
-      await renderCompras(); await renderRecebimento(); await renderProdutos(); await renderEstoqueDerivados(); await renderDashboard();
+      await receberCompra(compra);
+      return;
+    }
+    var recModalBtn = e.target.closest('[data-recmodal-receber]');
+    if (recModalBtn) {
+      var compra2 = await idbGet('compras', recModalBtn.getAttribute('data-recmodal-receber'));
+      if (!compra2) return;
+      if (!confirm('Confirmar recebimento da compra #' + compra2.numero + '? O estoque dos produtos será atualizado.')) return;
+      await receberCompra(compra2);
+      closeFormModal();
     }
   });
+  /* Gera automaticamente compra(s) de reposição a partir do estoque
+     crítico, agrupando os produtos por fornecedor principal (um pedido
+     de compra só tem um fornecedor). Usado por "Gerar Lista", "Gerar
+     Lista Crítico" e "Confirmar Compras Selecionadas". */
+  async function gerarListaCompra(filtroFn){
+    var produtos = await idbAll('produtos');
+    var criticos = produtos.filter(function(p){ return calcularStatusEstoque(Number(p.estoque_atual||0), Number(p.estoque_minimo||0)) !== 'ok'; });
+    if (filtroFn) criticos = criticos.filter(filtroFn);
+    if (!criticos.length) { toast('Nenhum produto em falta selecionado.', 'error'); return; }
+    var comFornecedor = criticos.filter(function(p){ return p.fornecedor_id; });
+    var semFornecedor = criticos.length - comFornecedor.length;
+    if (!comFornecedor.length) { toast('Defina um fornecedor principal nos produtos em falta (editar produto) para gerar a lista de compra.', 'error'); return; }
+    var porFornecedor = {};
+    comFornecedor.forEach(function(p){ (porFornecedor[p.fornecedor_id] = porFornecedor[p.fornecedor_id] || []).push(p); });
+    var compras = await idbAll('compras');
+    var criadas = 0;
+    for (var fid in porFornecedor) {
+      var itens = porFornecedor[fid].map(function(p){
+        var qtd = Math.max(1, calcularSugestaoReposicao(Number(p.estoque_atual||0), Number(p.estoque_ideal||0)));
+        return { produto_id: p.id, nome: p.nome, qtd: qtd, custo: Number(p.preco||0) };
+      });
+      var total = itens.reduce(function(s,it){ return s + it.qtd*it.custo; }, 0);
+      var compra = { id: uid(), numero: nextNumber('', compras).replace(/^0+/,'') || '1', fornecedor_id: fid, itens: itens, total: total, previsao_entrega: '', status: 'Confirmada', observacao: 'Gerado automaticamente a partir do estoque crítico', criado_em: nowISO() };
+      await idbPut('compras', compra);
+      compras.push(compra);
+      criadas++;
+    }
+    await logAction('lista_compra_gerada', criadas + ' compra(s) geradas automaticamente');
+    toast(criadas + ' compra(s) de reposição gerada(s).' + (semFornecedor ? ' ' + semFornecedor + ' produto(s) sem fornecedor definido foram ignorados.' : ''));
+    await renderCompras(); await renderFornecedores(); await renderDashboard();
+  }
+  async function movimentacaoFormModal(){
+    var produtos = await idbAll('produtos');
+    if (!produtos.length) { toast('Cadastre um produto antes de registrar uma movimentação.', 'error'); return; }
+    var prodOptions = '<option value="">Selecione um produto...</option>' + produtos.map(function(p){ return '<option value="' + p.id + '">' + esc(p.nome) + ' (' + Number(p.estoque_atual||0) + ' em estoque)</option>'; }).join('');
+    openFormModal(
+      modalHeaderHTML('Nova movimentação de estoque') +
+      '<form id="movForm" style="padding:20px 24px;display:flex;flex-direction:column;gap:14px;">' +
+        '<div class="field"><label>Produto</label><select id="movProduto" required>' + prodOptions + '</select></div>' +
+        '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">' +
+          '<div class="field"><label>Tipo</label><select id="movTipo"><option value="entrada">Entrada</option><option value="saida">Saída</option></select></div>' +
+          '<div class="field"><label>Quantidade</label><input id="movQtd" type="number" min="1" value="1" required></div>' +
+        '</div>' +
+        '<div class="field"><label>Motivo</label><input id="movMotivo" placeholder="Ex: Ajuste de inventário, avaria, etc."></div>' +
+        modalFooterHTML('Registrar movimentação') +
+      '</form>'
+    );
+    document.getElementById('movForm').addEventListener('submit', async function(e){
+      e.preventDefault();
+      var produtoId = document.getElementById('movProduto').value;
+      var tipo = document.getElementById('movTipo').value;
+      var qtd = Number(document.getElementById('movQtd').value || 0);
+      if (!produtoId) { toast('Selecione um produto.', 'error'); return; }
+      if (!(qtd > 0)) { toast('Informe uma quantidade válida.', 'error'); return; }
+      var produto = await idbGet('produtos', produtoId);
+      if (!produto) return;
+      if (tipo === 'saida' && qtd > Number(produto.estoque_atual||0)) { toast('Estoque insuficiente (' + Number(produto.estoque_atual||0) + ' disponível).', 'error'); return; }
+      produto.estoque_atual = tipo === 'saida' ? Number(produto.estoque_atual||0) - qtd : Number(produto.estoque_atual||0) + qtd;
+      await idbPut('produtos', produto);
+      var motivo = document.getElementById('movMotivo').value.trim() || (tipo === 'saida' ? 'Saída manual' : 'Entrada manual');
+      await idbPut('estoque_mov', { id: uid(), produto_id: produtoId, tipo: tipo, quantidade: qtd, motivo: motivo, criado_em: nowISO() });
+      await logAction('movimentacao_estoque', motivo + ' — ' + produto.nome);
+      closeFormModal();
+      toast('Movimentação registrada.');
+      await renderProdutos(); await renderEstoqueDerivados(); await renderDashboard();
+    });
+  }
+  async function registrarRecebimentoModal(){
+    var compras = (await idbAll('compras')).filter(function(c){ return c.status !== 'Recebida' && c.status !== 'Cancelada'; });
+    var fornecedores = await idbAll('fornecedores');
+    var fMap = {}; fornecedores.forEach(function(f){ fMap[f.id] = f.nome; });
+    if (!compras.length) { toast('Não há compras pendentes de recebimento.', 'error'); return; }
+    openFormModal(
+      modalHeaderHTML('Registrar recebimento') +
+      '<div style="padding:8px 24px 24px;display:flex;flex-direction:column;gap:8px;">' +
+        '<p style="font-size:12.5px;color:var(--text-tertiary);margin:0 0 6px;">Selecione a compra recebida. O estoque dos produtos será atualizado automaticamente.</p>' +
+        compras.map(function(c){
+          return '<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--border-subtle);border-radius:10px;">' +
+            '<span><strong>#' + esc(c.numero) + '</strong> — ' + esc(fMap[c.fornecedor_id] || 'Fornecedor não informado') + '<br><span style="font-size:12px;color:var(--text-tertiary);">' + (c.itens||[]).length + ' itens · ' + fmtBRL(c.total) + '</span></span>' +
+            '<button type="button" class="btn btn--primary btn--sm" data-recmodal-receber="' + c.id + '">Confirmar</button>' +
+          '</div>';
+        }).join('') +
+      '</div>'
+    );
+  }
 
   /* ============================================================
      ORÇAMENTOS
@@ -10267,8 +10538,16 @@ html, body{ overflow-x:hidden; max-width:100%; }
     var orcamentos = (await idbAll('orcamentos')).sort(function(a,b){ return new Date(b.criado_em)-new Date(a.criado_em); });
     var clientes = await idbAll('clientes');
     var cMap = {}; clientes.forEach(function(c){ cMap[c.id] = c.nome; });
-    tbody.innerHTML = orcamentos.length ? orcamentos.map(function(o){ return orcamentoRowHTML(o, cMap[o.cliente_id]); }).join('') :
-      '<tr><td colspan="9" style="text-align:center;padding:24px;color:var(--text-tertiary);">Nenhum orçamento registrado ainda.</td></tr>';
+    if (!orcamentos.length) { tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:24px;color:var(--text-tertiary);">Nenhum orçamento registrado ainda.</td></tr>'; return; }
+    var busca = valOf('orcamentosSearchInput'), statusF = valOf('filtroStatusOrcamento');
+    var lista = orcamentos.filter(function(o){
+      if (!bateBusca(['#' + o.numero, cMap[o.cliente_id] || ''], busca)) return false;
+      if (!isTodos(statusF) && o.status !== statusF) return false;
+      if (!dataNoIntervalo(o.criado_em, 'dataInicialOrcamento', 'dataFinalOrcamento')) return false;
+      return true;
+    });
+    tbody.innerHTML = lista.length ? lista.map(function(o){ return orcamentoRowHTML(o, cMap[o.cliente_id]); }).join('') :
+      '<tr><td colspan="9" style="text-align:center;padding:24px;color:var(--text-tertiary);">Nenhum orçamento encontrado com esses filtros.</td></tr>';
   }
   var _orcamentoItens = [];
   async function orcamentoFormModal(){
@@ -10383,12 +10662,35 @@ html, body{ overflow-x:hidden; max-width:100%; }
     var demandas = (await idbAll('demandas')).sort(function(a,b){ return new Date(b.criado_em)-new Date(a.criado_em); });
     var clientes = await idbAll('clientes');
     var cMap = {}; clientes.forEach(function(c){ cMap[c.id] = c.nome; });
+    var categoriasUsadas = demandas.map(function(d){ return d.categoria; });
+    syncFilterOptions('filtroCategoriaDemanda', 'Todas', categoriasUsadas);
+    syncFilterOptions('filtroCategoriaCentral', 'Todas', categoriasUsadas);
     var t1 = document.getElementById('demandaTbody');
-    if (t1) t1.innerHTML = demandas.length ? demandas.map(function(d){ return demandaRowHTML(d, cMap[d.cliente_id], true); }).join('') :
-      '<tr><td colspan="9" style="text-align:center;padding:24px;color:var(--text-tertiary);">Nenhuma solicitação registrada ainda.</td></tr>';
+    if (t1) {
+      var busca1 = valOf('demandaSearchInput'), status1 = valOf('filtroStatusDemanda'), cat1 = valOf('filtroCategoriaDemanda'), periodo1 = valOf('filtroDataDemanda');
+      var lista1 = demandas.filter(function(d){
+        if (!bateBusca([d.produto_solicitado, cMap[d.cliente_id] || '', d.observacao || ''], busca1)) return false;
+        if (!isTodos(status1) && d.status !== status1) return false;
+        if (!isTodos(cat1) && (d.categoria || '') !== cat1) return false;
+        if (!dataNoPeriodo(d.criado_em, periodo1)) return false;
+        return true;
+      });
+      t1.innerHTML = lista1.length ? lista1.map(function(d){ return demandaRowHTML(d, cMap[d.cliente_id], true); }).join('') :
+        '<tr><td colspan="9" style="text-align:center;padding:24px;color:var(--text-tertiary);">' + (demandas.length ? 'Nenhuma solicitação encontrada com esses filtros.' : 'Nenhuma solicitação registrada ainda.') + '</td></tr>';
+    }
     var t2 = document.getElementById('centralTbody');
-    if (t2) t2.innerHTML = demandas.length ? demandas.map(function(d){ return demandaRowHTML(d, cMap[d.cliente_id], false); }).join('') :
-      '<tr><td colspan="10" style="text-align:center;padding:24px;color:var(--text-tertiary);">Nenhuma demanda registrada ainda.</td></tr>';
+    if (t2) {
+      var busca2 = valOf('centralSearchInput'), status2 = valOf('filtroStatusCentral'), cat2 = valOf('filtroCategoriaCentral'), periodo2 = valOf('filtroPeriodoCentral');
+      var lista2 = demandas.filter(function(d){
+        if (!bateBusca([d.produto_solicitado, cMap[d.cliente_id] || '', d.observacao || ''], busca2)) return false;
+        if (!isTodos(status2) && d.status !== status2) return false;
+        if (!isTodos(cat2) && (d.categoria || '') !== cat2) return false;
+        if (!dataNoPeriodo(d.criado_em, periodo2)) return false;
+        return true;
+      });
+      t2.innerHTML = lista2.length ? lista2.map(function(d){ return demandaRowHTML(d, cMap[d.cliente_id], false); }).join('') :
+        '<tr><td colspan="10" style="text-align:center;padding:24px;color:var(--text-tertiary);">' + (demandas.length ? 'Nenhuma demanda encontrada com esses filtros.' : 'Nenhuma demanda registrada ainda.') + '</td></tr>';
+    }
   }
   async function demandaFormModal(){
     var clientes = await idbAll('clientes');
@@ -10474,11 +10776,22 @@ html, body{ overflow-x:hidden; max-width:100%; }
     var entregas = (await idbAll('entregas')).sort(function(a,b){ return new Date(b.criado_em)-new Date(a.criado_em); });
     var clientes = await idbAll('clientes');
     var cMap = {}; clientes.forEach(function(c){ cMap[c.id] = c.nome; });
-    tbody.innerHTML = entregas.length ? entregas.map(function(en){ return entregaRowHTML(en, cMap[en.cliente_id]); }).join('') :
-      '<tr><td colspan="10" style="text-align:center;padding:24px;color:var(--text-tertiary);">Nenhuma entrega registrada ainda.</td></tr>';
+    syncFilterOptions('filtroCidadeEntrega', 'Todas', entregas.map(function(en){ return en.cidade; }));
+    if (!entregas.length) { tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;padding:24px;color:var(--text-tertiary);">Nenhuma entrega registrada ainda.</td></tr>'; return; }
+    var busca = valOf('entregasSearchInput'), statusF = valOf('filtroStatusEntrega'), cidadeF = valOf('filtroCidadeEntrega'), tipoF = valOf('filtroTipoEntrega');
+    var lista = entregas.filter(function(en){
+      if (!bateBusca(['#' + en.numero, cMap[en.cliente_id] || '', en.endereco || '', en.pedido_ref || ''], busca)) return false;
+      if (!isTodos(statusF) && en.status !== statusF) return false;
+      if (!isTodos(cidadeF) && (en.cidade || '') !== cidadeF) return false;
+      if (!isTodos(tipoF) && en.tipo !== tipoF) return false;
+      if (!dataNoIntervalo(en.criado_em, 'dataInicialEntrega', 'dataFinalEntrega')) return false;
+      return true;
+    });
+    tbody.innerHTML = lista.length ? lista.map(function(en){ return entregaRowHTML(en, cMap[en.cliente_id]); }).join('') :
+      '<tr><td colspan="10" style="text-align:center;padding:24px;color:var(--text-tertiary);">Nenhuma entrega encontrada com esses filtros.</td></tr>';
   }
   async function entregaFormModal(en){
-    en = en || { id:null, cliente_id:'', pedido_ref:'', endereco:'', tipo:ENTREGA_TIPOS[0], status:ENTREGA_STATUS[0], responsavel:'' };
+    en = en || { id:null, cliente_id:'', pedido_ref:'', endereco:'', cidade:'', tipo:ENTREGA_TIPOS[0], status:ENTREGA_STATUS[0], responsavel:'' };
     var clientes = await idbAll('clientes');
     var cliOptions = clientes.map(function(c){ return '<option value="' + c.id + '"' + (en.cliente_id===c.id?' selected':'') + '>' + esc(c.nome) + '</option>'; }).join('');
     openFormModal(
@@ -10487,6 +10800,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
         '<div class="field"><label>Cliente</label><select id="entCliente"><option value="">Selecione...</option>' + cliOptions + '</select></div>' +
         '<div class="field"><label>Referência do pedido (opcional)</label><input id="entPedidoRef" value="' + esc(en.pedido_ref||'') + '"></div>' +
         '<div class="field"><label>Endereço</label><input id="entEndereco" value="' + esc(en.endereco||'') + '" required></div>' +
+        '<div class="field"><label>Cidade</label><input id="entCidade" value="' + esc(en.cidade||'') + '" placeholder="Ex: São Paulo - SP"></div>' +
         '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">' +
           '<div class="field"><label>Tipo</label><select id="entTipo">' + ENTREGA_TIPOS.map(function(t){ return '<option' + (en.tipo===t?' selected':'') + '>' + t + '</option>'; }).join('') + '</select></div>' +
           '<div class="field"><label>Status</label><select id="entStatus">' + ENTREGA_STATUS.map(function(s){ return '<option' + (en.status===s?' selected':'') + '>' + s + '</option>'; }).join('') + '</select></div>' +
@@ -10503,7 +10817,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
       var obj = {
         id: en.id || uid(), numero: en.numero || ('ENT' + nextNumber('', todasEntregas).replace(/^0+/,'')),
         cliente_id: document.getElementById('entCliente').value || null, pedido_ref: document.getElementById('entPedidoRef').value.trim(),
-        endereco: endereco, tipo: document.getElementById('entTipo').value, status: document.getElementById('entStatus').value,
+        endereco: endereco, cidade: document.getElementById('entCidade').value.trim(), tipo: document.getElementById('entTipo').value, status: document.getElementById('entStatus').value,
         responsavel: document.getElementById('entResponsavel').value.trim(), criado_em: en.criado_em || nowISO()
       };
       await idbPut('entregas', obj);
@@ -10534,19 +10848,30 @@ html, body{ overflow-x:hidden; max-width:100%; }
     var logs = (await idbAll('logs')).sort(function(a,b){ return new Date(b.data)-new Date(a.data); }).slice(0, 30);
     var lidas = {};
     try { lidas = JSON.parse(lsGet('construgestao_notif_lidas') || '{}'); } catch(e){}
+    var excluidas = {};
+    try { excluidas = JSON.parse(lsGet('construgestao_notif_excluidas') || '{}'); } catch(e){}
     var itens = [];
     produtos.forEach(function(p){
       var status = calcularStatusEstoque(Number(p.estoque_atual||0), Number(p.estoque_minimo||0));
       if (status !== 'ok') {
         var nid = 'estoque:' + p.id;
+        if (excluidas[nid]) return;
         itens.push({ id: nid, tipo: 'Estoque', msg: (status==='out' ? 'Produto sem estoque: ' : 'Estoque baixo: ') + p.nome, data: p.criado_em, lida: !!lidas[nid] });
       }
     });
     logs.forEach(function(l){
       var nid = 'log:' + l.id;
+      if (excluidas[nid]) return;
       itens.push({ id: nid, tipo: 'Sistema', msg: l.acao.replace(/_/g,' ') + (l.detalhes ? ' — ' + l.detalhes : ''), data: l.data, lida: !!lidas[nid] });
     });
     itens.sort(function(a,b){ return new Date(b.data)-new Date(a.data); });
+    var busca = valOf('notifSearchInput'), tipoF = valOf('filtroTipoNotif'), periodoF = valOf('filtroPeriodoNotif');
+    itens = itens.filter(function(n){
+      if (!bateBusca([n.msg], busca)) return false;
+      if (!isTodos(tipoF) && n.tipo !== tipoF) return false;
+      if (!dataNoPeriodo(n.data, periodoF)) return false;
+      return true;
+    });
     tbody.innerHTML = itens.length ? itens.slice(0,40).map(function(n){
       return '<tr data-id="' + n.id + '"' + (n.lida ? ' style="opacity:.55;"' : '') + '>' +
         '<td><input type="checkbox" class="checkbox"></td>' +
@@ -10629,6 +10954,89 @@ html, body{ overflow-x:hidden; max-width:100%; }
       renderEntregas(), renderNotificacoes(), renderConfiguracoes()
     ]);
   }
+  function wireTodosFiltros(){
+    wireFiltros({ campos: ['produtosSearchInput','filtroCategoria','filtroStatus','filtroOrdenar'], aplicarId: 'aplicarFiltrosBtn', limparId: 'limparFiltrosBtn', render: renderProdutos });
+    wireFiltros({ campos: ['categoriasSearchInput','filtroStatusCategoria','filtroOrdenarCategoria'], aplicarId: 'aplicarFiltrosCategoriaBtn', limparId: 'limparFiltrosCategoriaBtn', render: renderCategorias });
+    wireFiltros({ campos: ['estoqueSearchInput','filtroCategoriaEstoque','filtroStatusEstoque','filtroFornecedorEstoque'], aplicarId: 'aplicarFiltrosEstoqueBtn', limparId: 'limparFiltrosEstoqueBtn', render: renderProdutos });
+    wireFiltros({ campos: ['comprarSearchInput','filtroCategoriaComprar','filtroFornecedorComprar','filtroStatusComprar'], aplicarId: 'aplicarFiltrosComprarBtn', limparId: 'limparFiltrosComprarBtn', render: renderEstoqueDerivados });
+    wireFiltros({ campos: ['vendasSearchInput','filtroStatusVenda','dataInicialVenda','dataFinalVenda'], aplicarId: 'aplicarFiltrosVendaBtn', limparId: 'limparFiltrosVendaBtn', render: renderVendas });
+    wireFiltros({ campos: ['criticoSearchInput','filtroCategoriaCritico','filtroFornecedorCritico','filtroStatusCritico'], aplicarId: 'aplicarFiltrosCriticoBtn', limparId: 'limparFiltrosCriticoBtn', render: renderEstoqueDerivados });
+    wireFiltros({ campos: ['orcamentosSearchInput','filtroStatusOrcamento','dataInicialOrcamento','dataFinalOrcamento'], aplicarId: 'aplicarFiltrosOrcamentoBtn', limparId: 'limparFiltrosOrcamentoBtn', render: renderOrcamentos });
+    wireFiltros({ campos: ['clientesSearchInput','filtroTipoCliente','filtroStatusCliente','filtroCidadeCliente'], aplicarId: 'aplicarFiltrosClienteBtn', limparId: 'limparFiltrosClienteBtn', render: renderClientes });
+    wireFiltros({ campos: ['demandaSearchInput','filtroStatusDemanda','filtroCategoriaDemanda','filtroDataDemanda'], aplicarId: 'aplicarFiltrosDemandaBtn', limparId: 'limparFiltrosDemandaBtn', render: renderDemandas });
+    wireFiltros({ campos: ['centralSearchInput','filtroStatusCentral','filtroCategoriaCentral','filtroPeriodoCentral'], aplicarId: 'aplicarFiltrosCentralBtn', limparId: 'limparFiltrosCentralBtn', render: renderDemandas });
+    wireFiltros({ campos: ['historicoSearchInput','dataInicialHistorico','dataFinalHistorico','filtroClienteHistorico','filtroPagamentoHistorico','filtroStatusHistorico'], aplicarId: 'aplicarFiltrosHistoricoBtn', limparId: 'limparFiltrosHistoricoBtn', render: renderHistoricoVendas });
+    wireFiltros({ campos: ['fornecedoresSearchInput','filtroCategoriaFornecedor','filtroStatusFornecedor','filtroCidadeFornecedor'], aplicarId: 'aplicarFiltrosFornecedorBtn', limparId: 'limparFiltrosFornecedorBtn', render: renderFornecedores });
+    wireFiltros({ campos: ['comprasSearchInput','dataInicialCompra','dataFinalCompra','filtroFornecedorCompra','filtroStatusCompra'], aplicarId: 'aplicarFiltrosCompraBtn', limparId: 'limparFiltrosCompraBtn', render: renderCompras });
+    wireFiltros({ campos: ['recebimentoSearchInput','dataInicialRecebimento','dataFinalRecebimento','filtroFornecedorRecebimento','filtroStatusRecebimento'], aplicarId: 'aplicarFiltrosRecebimentoBtn', limparId: 'limparFiltrosRecebimentoBtn', render: renderRecebimento });
+    wireFiltros({ campos: ['entregasSearchInput','dataInicialEntrega','dataFinalEntrega','filtroStatusEntrega','filtroCidadeEntrega','filtroTipoEntrega'], aplicarId: 'aplicarFiltrosEntregaBtn', limparId: 'limparFiltrosEntregaBtn', render: renderEntregas });
+    wireFiltros({ campos: ['notifSearchInput','filtroTipoNotif','filtroPeriodoNotif'], render: renderNotificacoes });
+    wireFiltros({ campos: ['usuariosSearchInput','filtroPerfilUsuario','filtroStatusUsuario'], aplicarId: 'aplicarFiltrosUsuarioBtn', limparId: 'limparFiltrosUsuarioBtn', render: renderUsuarios });
+  }
+  function irParaTela(nome){
+    var el = document.querySelector('.navitem[data-view="' + nome + '"]') || document.querySelector('[data-view="' + nome + '"]');
+    if (el) el.click();
+  }
+  async function exportarBackupJSON(){
+    var dados = {};
+    for (var i = 0; i < SYNC_STORES.length; i++) { dados[SYNC_STORES[i]] = await idbAll(SYNC_STORES[i]); }
+    var blob = new Blob([JSON.stringify({ gerado_em: nowISO(), app: 'ConstruGestão', dados: dados }, null, 2)], { type: 'application/json' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url; a.download = 'construgestao-backup-' + new Date().toISOString().slice(0, 10) + '.json';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    setTimeout(function () { URL.revokeObjectURL(url); }, 4000);
+    await logAction('backup_exportado', 'Backup manual gerado');
+    toast('Backup baixado com sucesso.');
+  }
+  async function gerenciarLicencaModal(){
+    var chave = lsGet(LICENSE_LS_KEY) || '—';
+    var loja = await getLoja();
+    openFormModal(
+      modalHeaderHTML('Gerenciar licença') +
+      '<div style="padding:8px 24px 24px;display:flex;flex-direction:column;gap:10px;font-size:13.5px;">' +
+        '<div><strong>Chave de licença</strong><br>' + esc(chave) + '</div>' +
+        '<div><strong>Loja</strong><br>' + esc(loja ? loja.nome : '—') + '</div>' +
+        '<div><strong>Status</strong><br><span class="badge badge--green">Ativa</span></div>' +
+        '<p style="font-size:12px;color:var(--text-tertiary);margin-top:4px;">Para trocar de chave, renovar ou transferir a licença para outro dispositivo, fale com a LeuName Software.</p>' +
+      '</div>'
+    );
+  }
+  function wireAcoesExtras(){
+    rewire('gerarListaBtn', function(){ gerarListaCompra(); });
+    rewire('gerarListaCriticoBtn', function(){ gerarListaCompra(function(p){ return calcularStatusEstoque(Number(p.estoque_atual||0), Number(p.estoque_minimo||0)) === 'out'; }); });
+    rewire('confirmarComprasBtn', function(){
+      var marcados = Array.prototype.slice.call(document.querySelectorAll('#comprarTbody tr[data-id] .checkbox:checked'));
+      if (!marcados.length) { toast('Selecione ao menos um produto na lista para confirmar a compra.', 'error'); return; }
+      var ids = marcados.map(function(cb){ return cb.closest('tr').getAttribute('data-id'); });
+      gerarListaCompra(function(p){ return ids.indexOf(p.id) !== -1; });
+    });
+    rewire('registrarRecebimentoBtn', function(){ registrarRecebimentoModal(); });
+    rewire('novaMovimentacaoBtn', function(){ movimentacaoFormModal(); });
+    rewire('excluirLidasBtn', async function(){
+      var lidas = {};
+      try { lidas = JSON.parse(lsGet('construgestao_notif_lidas') || '{}'); } catch (e) {}
+      var excluidas = {};
+      try { excluidas = JSON.parse(lsGet('construgestao_notif_excluidas') || '{}'); } catch (e) {}
+      Object.keys(lidas).forEach(function(nid){ if (lidas[nid]) excluidas[nid] = true; });
+      lsSet('construgestao_notif_excluidas', JSON.stringify(excluidas));
+      toast('Notificações lidas removidas da lista.');
+      await renderNotificacoes();
+    });
+    rewire('editarUsuarioBtn', function(){ if (STATE.user) usuarioFormModal(STATE.user); });
+    rewire('controleAcessoBtn', function(){ irParaTela('Permissões'); });
+    rewire('maisSegurancaBtn', function(){ irParaTela('Permissões'); });
+    rewire('trabalhoEquipeBtn', function(){ usuarioFormModal(null); });
+    rewire('waCloseInfoBtn', function(){ var p = document.querySelector('.wa-panel--info'); if (p) p.style.display = 'none'; });
+    rewire('gerarRelatorioBtn', function(){ renderRelatorios(); toast('Relatório atualizado.'); });
+    rewire('fazerBackupBtn', function(){ exportarBackupJSON(); });
+    rewire('exportarDadosBtn', function(){ exportarBackupJSON(); });
+    rewire('gerenciarLicencaBtn', function(){ gerenciarLicencaModal(); });
+    rewire('restaurarPadroesBtn', async function(){ await renderConfiguracoes(); toast('Alterações não salvas foram descartadas.'); });
+    ['verRelatorioVendasBtn','verRelatorioOrcamentosBtn','verRelatorioClientesBtn','relatorioDemandaBtn','relatorioProdutosSolicitadosBtn','exportarRelatorioBtn','relatorioCompletoBtn','relatorioFornecedoresBtn','relatorioComprasBtn','relatorioRecebimentosBtn','relatorioEntregasBtn'].forEach(function(id){
+      rewire(id, function(){ irParaTela('Relatórios'); });
+    });
+  }
   function wireButtons(){
     rewire('novoProdutoBtn', function(){ produtoFormModal(null); });
     rewire('novaCategoriaBtn', function(){ categoriaFormModal(null); });
@@ -10643,6 +11051,8 @@ html, body{ overflow-x:hidden; max-width:100%; }
     rewire('novaEntregaBtn', function(){ entregaFormModal(null); });
     wireMarcarTodasLidas();
     wireSalvarConfiguracoes();
+    wireTodosFiltros();
+    wireAcoesExtras();
     var signoutConfirm = document.getElementById('signoutConfirm');
     if (signoutConfirm) {
       var clean = signoutConfirm.cloneNode(true);
@@ -10665,12 +11075,25 @@ html, body{ overflow-x:hidden; max-width:100%; }
   async function renderEstoqueDerivados(){
     var produtos = await idbAll('produtos');
     var categorias = await idbAll('categorias');
+    var fornecedores = await idbAll('fornecedores');
     var catMap = {}; categorias.forEach(function(c){ catMap[c.id] = c.nome; });
+    var fMap = {}; fornecedores.forEach(function(f){ fMap[f.id] = f.nome; });
+    syncFilterOptions('filtroCategoriaComprar', 'Todas', categorias.map(function(c){ return c.nome; }));
+    syncFilterOptions('filtroCategoriaCritico', 'Todas', categorias.map(function(c){ return c.nome; }));
     var criticos = produtos.filter(function(p){ return calcularStatusEstoque(Number(p.estoque_atual||0), Number(p.estoque_minimo||0)) !== 'ok'; });
 
     var criticoTbody = document.getElementById('criticoTbody');
     if (criticoTbody) {
-      criticoTbody.innerHTML = criticos.length ? criticos.map(function(p){
+      var buscaC = valOf('criticoSearchInput'), catC = valOf('filtroCategoriaCritico'), fornC = valOf('filtroFornecedorCritico'), statusC = valOf('filtroStatusCritico');
+      var listaC = criticos.filter(function(p){
+        if (!bateBusca([p.nome, p.sku||''], buscaC)) return false;
+        if (!isTodos(catC) && catMap[p.categoria_id] !== catC) return false;
+        if (!isTodos(fornC) && fMap[p.fornecedor_id] !== fornC) return false;
+        var statusLabel = calcularStatusEstoque(Number(p.estoque_atual||0), Number(p.estoque_minimo||0)) === 'out' ? 'Crítico' : 'Atenção';
+        if (!isTodos(statusC) && statusLabel !== statusC) return false;
+        return true;
+      });
+      criticoTbody.innerHTML = listaC.length ? listaC.map(function(p){
         var status = calcularStatusEstoque(Number(p.estoque_atual||0), Number(p.estoque_minimo||0));
         var info = STATUS_ESTOQUE_INFO[status];
         return '<tr data-id="' + p.id + '">' +
@@ -10681,14 +11104,26 @@ html, body{ overflow-x:hidden; max-width:100%; }
           '<td><span class="stock-num ' + info.numClass + '">' + Number(p.estoque_atual||0) + ' un</span></td>' +
           '<td>' + Number(p.estoque_minimo||0) + ' un</td>' +
           '<td><span class="badge ' + info.badgeClass + '">' + (status==='out'?'Crítico':'Atenção') + '</span></td>' +
-          '<td><span class="supplier-cell">—</span></td>' +
-          '<td><div class="row-actions"><button class="iconbtn" type="button" title="Editar" data-prod-edit="' + p.id + '"><span class="icon"><svg><use href="#i-pencil"/></svg></span></button></div></td></tr>';
-      }).join('') : '<tr><td colspan="8" style="text-align:center;padding:24px;color:var(--text-tertiary);">Nenhum produto em estado crítico. 🎉</td></tr>';
+          '<td><span class="supplier-cell">' + esc(fMap[p.fornecedor_id] || '—') + '</span></td>' +
+          '<td><div class="row-actions">' +
+            '<button class="iconbtn" type="button" title="Adicionar à lista"><span class="icon"><svg><use href="#i-cart"/></svg></span></button>' +
+            '<button class="iconbtn" type="button" title="Editar" data-prod-edit="' + p.id + '"><span class="icon"><svg><use href="#i-pencil"/></svg></span></button>' +
+          '</div></td></tr>';
+      }).join('') : '<tr><td colspan="8" style="text-align:center;padding:24px;color:var(--text-tertiary);">' + (criticos.length ? 'Nenhum produto encontrado com esses filtros.' : 'Nenhum produto em estado crítico. 🎉') + '</td></tr>';
     }
 
     var comprarTbody = document.getElementById('comprarTbody');
     if (comprarTbody) {
-      comprarTbody.innerHTML = criticos.length ? criticos.map(function(p){
+      var buscaP = valOf('comprarSearchInput'), catP = valOf('filtroCategoriaComprar'), fornP = valOf('filtroFornecedorComprar'), statusP = valOf('filtroStatusComprar');
+      var listaP = criticos.filter(function(p){
+        if (!bateBusca([p.nome, p.sku||''], buscaP)) return false;
+        if (!isTodos(catP) && catMap[p.categoria_id] !== catP) return false;
+        if (!isTodos(fornP) && fMap[p.fornecedor_id] !== fornP) return false;
+        var statusLabel = calcularStatusEstoque(Number(p.estoque_atual||0), Number(p.estoque_minimo||0)) === 'out' ? 'Sem estoque' : 'Estoque crítico';
+        if (!isTodos(statusP) && statusLabel !== statusP) return false;
+        return true;
+      });
+      comprarTbody.innerHTML = listaP.length ? listaP.map(function(p){
         var status = calcularStatusEstoque(Number(p.estoque_atual||0), Number(p.estoque_minimo||0));
         var info = STATUS_ESTOQUE_INFO[status];
         var sugestao = calcularSugestaoReposicao(Number(p.estoque_atual||0), Number(p.estoque_ideal||0));
@@ -10702,9 +11137,12 @@ html, body{ overflow-x:hidden; max-width:100%; }
           '<td>' + fmtBRL(p.preco) + '</td>' +
           '<td><span class="price-cell">' + fmtBRL(sugestao * Number(p.preco||0)) + '</span></td>' +
           '<td><span class="badge ' + info.badgeClass + '">' + (status==='out'?'Sem estoque':'Estoque crítico') + '</span></td>' +
-          '<td><span class="supplier-cell">—</span></td>' +
-          '<td><div class="row-actions"><button class="iconbtn" type="button" title="Editar" data-prod-edit="' + p.id + '"><span class="icon"><svg><use href="#i-pencil"/></svg></span></button></div></td></tr>';
-      }).join('') : '<tr><td colspan="11" style="text-align:center;padding:24px;color:var(--text-tertiary);">Nada precisa ser comprado agora. 🎉</td></tr>';
+          '<td><span class="supplier-cell">' + esc(fMap[p.fornecedor_id] || '—') + '</span></td>' +
+          '<td><div class="row-actions">' +
+            '<button class="iconbtn" type="button" title="Adicionar à lista"><span class="icon"><svg><use href="#i-cart"/></svg></span></button>' +
+            '<button class="iconbtn" type="button" title="Editar" data-prod-edit="' + p.id + '"><span class="icon"><svg><use href="#i-pencil"/></svg></span></button>' +
+          '</div></td></tr>';
+      }).join('') : '<tr><td colspan="11" style="text-align:center;padding:24px;color:var(--text-tertiary);">' + (criticos.length ? 'Nenhum produto encontrado com esses filtros.' : 'Nada precisa ser comprado agora. 🎉') + '</td></tr>';
     }
   }
   async function renderHistoricoVendas(){
@@ -10713,6 +11151,17 @@ html, body{ overflow-x:hidden; max-width:100%; }
     var vendas = (await idbAll('vendas')).sort(function(a,b){ return new Date(b.criado_em)-new Date(a.criado_em); });
     var clientes = await idbAll('clientes');
     var cMap = {}; clientes.forEach(function(c){ cMap[c.id] = c.nome; });
+    syncFilterOptions('filtroPagamentoHistorico', 'Todas', vendas.map(function(v){ return v.forma_pagamento; }));
+    var busca = valOf('historicoSearchInput'), cliF = valOf('filtroClienteHistorico'), pagF = valOf('filtroPagamentoHistorico'), statusF = valOf('filtroStatusHistorico');
+    vendas = vendas.filter(function(v){
+      var nome = cMap[v.cliente_id];
+      if (!bateBusca(['#' + v.numero, nome || '', v.forma_pagamento || ''], busca)) return false;
+      if (!isTodos(cliF) && (nome || '') !== cliF) return false;
+      if (!isTodos(pagF) && (v.forma_pagamento || '') !== pagF) return false;
+      if (!isTodos(statusF) && statusF !== 'Concluída') return false;
+      if (!dataNoIntervalo(v.criado_em, 'dataInicialHistorico', 'dataFinalHistorico')) return false;
+      return true;
+    });
     tbody.innerHTML = vendas.length ? vendas.map(function(v){
       var nome = cMap[v.cliente_id];
       return '<tr data-id="' + v.id + '">' +
@@ -10780,6 +11229,69 @@ html, body{ overflow-x:hidden; max-width:100%; }
       renderRelatorios()
     ]);
   }
+
+
+  /* ============================================================
+     Botões que ficaram sem reação nenhuma ao clicar (nem o aviso
+     padrão aparecia): item do menu "Financeiro" (tela ainda não
+     existe no sistema original) e o botão "Vendas" da barra de baixo
+     no celular (não tinha o atributo que liga ele à tela -- corrigido
+     direto no HTML). "Financeiro" continua sem tela própria por
+     enquanto, mas agora pelo menos avisa em vez de não fazer nada.
+     ============================================================ */
+  rewire('navFinanceiroBtn', function () {
+    toast('Módulo Financeiro chega em uma próxima etapa.');
+    var sb = document.getElementById('sidebar'), bd = document.getElementById('sidebarBackdrop');
+    if (sb) sb.classList.remove('is-open');
+    if (bd) bd.classList.remove('is-open');
+  });
+
+  /* Botão "+" flutuante do celular: abre o cadastro mais provável de
+     acordo com a tela em que a pessoa está, em vez de só mostrar um
+     aviso genérico. */
+  var FAB_HANDLERS = {
+    'Produtos': function () { produtoFormModal(null); },
+    'Categorias': function () { categoriaFormModal(null); },
+    'Clientes': function () { clienteFormModal(null); },
+    'Vendas': function () { vendaFormModal(); },
+    'Fornecedores': function () { fornecedorFormModal(null); },
+    'Compras': function () { compraFormModal(); },
+    'Orçamentos': function () { orcamentoFormModal(); },
+    'Cliente Pediu e Não Tem': function () { demandaFormModal(); },
+    'Central de Demandas': function () { demandaFormModal(); },
+    'Entregas': function () { entregaFormModal(null); },
+    'Usuários': function () { usuarioFormModal(null); }
+  };
+  rewire('mobileFab', function () {
+    var titleEl = document.getElementById('topbarTitle');
+    var atual = titleEl ? titleEl.textContent.trim() : '';
+    var handler = FAB_HANDLERS[atual] || FAB_HANDLERS['Produtos'];
+    handler();
+  });
+
+  /* "Adicionar à lista" (ícone de carrinho) nas linhas de Estoque
+     Crítico e Precisa Comprar: abre uma nova compra já com esse
+     produto adicionado, em vez de não fazer nada. */
+  document.addEventListener('click', async function (e) {
+    var addBtn = e.target.closest('[title="Adicionar à lista"]');
+    if (!addBtn) return;
+    var tr = addBtn.closest('tr[data-id]');
+    if (!tr) return;
+    var produto = await idbGet('produtos', tr.getAttribute('data-id'));
+    if (!produto) return;
+    var fornecedores = await idbAll('fornecedores');
+    if (!fornecedores.length) { toast('Cadastre um fornecedor antes de gerar a compra.', 'error'); return; }
+    await compraFormModal();
+    var sel = document.getElementById('cpProduto');
+    var opt = Array.prototype.find.call(sel.options, function (o) { return o.value === produto.id; });
+    if (opt) {
+      sel.value = produto.id;
+      document.getElementById('cpCusto').value = opt.getAttribute('data-custo') || produto.preco;
+      document.getElementById('cpQtd').value = Math.max(1, calcularSugestaoReposicao(Number(produto.estoque_atual || 0), Number(produto.estoque_ideal || 0)));
+      document.getElementById('cpAddItem').click();
+    }
+    toast('Produto adicionado à nova compra.');
+  });
 
   if (document.readyState === 'complete' || document.readyState === 'interactive') { boot(); }
   else { document.addEventListener('DOMContentLoaded', boot); }
