@@ -879,12 +879,25 @@ function renderLicenseGate(errMsg){
     const valid=await licenseKeyValid(raw);
     if(!valid){ renderLicenseGate('Chave de licença inválida. Verifique e tente novamente.'); return; }
     lsSet(LICENSE_LS_KEY,raw);
+    if(isTrialKey(raw) && !lsGet(TRIAL_INICIO_LS_KEY)){ lsSet(TRIAL_INICIO_LS_KEY,String(Date.now())); }
     toast('Licença ativada com sucesso!','success');
     __booted=false; boot();
   };
   document.getElementById('lic-activate').onclick=doActivate;
   input.addEventListener('keydown',(e)=>{ if(e.key==='Enter') doActivate(); });
   input.focus();
+}
+
+function renderTrialExpirado(){
+  document.getElementById('app-root').classList.remove('ready');
+  const root=document.getElementById('auth-root');
+  root.innerHTML=`
+  <div class="auth-screen"><div class="auth-card">
+    ${authBrandHTML()}
+    <h2 style="font-size:17px;text-align:center;margin-top:6px;">Período de teste encerrado</h2>
+    <div class="callout warn" style="margin-top:10px;"><span>${ic('warn',15)}</span><span>Seus ${TRIAL_DIAS} dias de teste do Gestacell terminaram. Gostou do sistema? Fale com a LeuName Softwares pra adquirir a licença completa.</span></div>
+    ${authFooterHTML()}
+  </div></div>`;
 }
 
 function renderLicenseRevoked(){
@@ -2676,6 +2689,23 @@ async function isLicenseActivated(){
   if(!key) return false;
   return await licenseKeyValid(key);
 }
+/* Chaves de teste (grupo "TRIA", ex: LEU-TRIA-0001-XXXX) travam sozinhas
+   depois de TRIAL_DIAS -- usadas pra distribuir o app pra um grupo grande
+   de pessoas conhecerem antes de comprar, sem precisar controlar isso na
+   mão. Chaves normais (qualquer outro grupo) nunca expiram. */
+const TRIAL_DIAS=17;
+const TRIAL_INICIO_LS_KEY='leuname_trial_iniciado_em';
+function isTrialKey(key){
+  const m=/^LEU-([0-9A-Z]{4})-/.exec((key||'').trim().toUpperCase());
+  return !!m && m[1]==='TRIA';
+}
+function trialExpirado(){
+  const key=lsGet(LICENSE_LS_KEY);
+  if(!isTrialKey(key)) return false;
+  const inicio=Number(lsGet(TRIAL_INICIO_LS_KEY)||0);
+  if(!inicio) return false;
+  return (Date.now()-inicio) > TRIAL_DIAS*86400000;
+}
 const LICENSE_REVOKED_LS_KEY='leuname_licenca_revogada';
 /* Consulta o servidor de licencas para saber se a chave foi revogada (ex:
    cliente inadimplente). So bloqueia com confirmacao explicita do servidor
@@ -2999,6 +3029,7 @@ async function boot(){
   try{ await syncMigrateExisting(); }catch(e){ console.error('Falha ao preparar sincronizacao',e); }
   setupPWA();
   if(!(await isLicenseActivated())){ renderLicenseGate(); return; }
+  if(trialExpirado()){ renderTrialExpirado(); return; }
   if(lsGet(LICENSE_REVOKED_LS_KEY)==='1'){
     renderLicenseRevoked();
     checkLicenseRevoked().then(revoked=>{ if(!revoked){ __booted=false; boot(); } });
@@ -3037,7 +3068,7 @@ if('serviceWorker' in navigator){ navigator.serviceWorker.register('/sw.js').cat
    de vez em quando e compara o APP_BUILD_ID; se for diferente do que já
    está rodando na tela, recarrega sozinho -- assim ninguém precisa
    desinstalar/reinstalar o app pra ver uma correção nova. */
-var APP_BUILD_ID = 'BUILD-2026-09-22-03';
+var APP_BUILD_ID = 'BUILD-2026-09-22-04';
 var jaRecarregouGestao = false;
 function verificarVersaoNovaGestao(){
   if(jaRecarregouGestao) return;
