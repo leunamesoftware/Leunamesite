@@ -2314,9 +2314,6 @@ html, body{ overflow-x:hidden; max-width:100%; }
               <span class="icon"><svg><use href="#i-chevron-right"/></svg></span>
               <span class="breadcrumb__current">Categorias</span>
             </nav>
-            <button class="btn btn--secondary" type="button" id="importarCategoriasBtnCategorias">
-              <span class="icon"><svg><use href="#i-layers"/></svg></span>Importar Categorias Sugeridas
-            </button>
             <button class="btn btn--primary" type="button" id="novaCategoriaBtn">
               <span class="icon"><svg><use href="#i-plus"/></svg></span>Nova Categoria
             </button>
@@ -8346,11 +8343,6 @@ html, body{ overflow-x:hidden; max-width:100%; }
             <span><h4>Apagar Registros de Teste</h4><p>Apaga só produtos, categorias, clientes, fornecedores e solicitações com a palavra "teste" no nome (ex: "teste pão", "cliente teste"). O resto dos seus dados fica intacto.</p></span>
             <span class="icon wa-promo-card__arrow"><svg><use href="#i-chevron-right"/></svg></span>
           </button>
-          <button class="wa-promo-card wa-promo-card--blue" type="button" id="importarCategoriasBtn">
-            <span class="wa-promo-card__icon"><span class="icon" style="width:20px;height:20px;"><svg><use href="#i-layers"/></svg></span></span>
-            <span><h4>Importar Categorias Sugeridas</h4><p>Cria de uma vez as categorias mais comuns de material de construção (elétrica, hidráulica, tintas, ferramentas etc.). Você edita ou apaga qualquer uma depois.</p></span>
-            <span class="icon wa-promo-card__arrow"><svg><use href="#i-chevron-right"/></svg></span>
-          </button>
         </div>
 
         <div class="settings-save-row">
@@ -8707,7 +8699,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
      atualização mais abaixo), já que o service worker não recarrega
      nada por conta própria (é sempre o mesmo arquivo sw.js, só o
      index.html muda a cada deploy). */
-  var APP_BUILD_ID = 'BUILD-2026-09-22-09';
+  var APP_BUILD_ID = 'BUILD-2026-09-22-10';
 
   /* ============================================================
      CONSTRUGESTÃO — núcleo real (licença, login, banco local, CRUD)
@@ -11283,17 +11275,6 @@ html, body{ overflow-x:hidden; max-width:100%; }
     toast(total + ' registro(s) de teste apagados. O resto continua igual.');
     await renderAll();
   }
-  /* Lista de categorias que o lojista pediu pra já vir sugerida (não
-     cria produto nenhum -- só a categoria, sem preço/estoque
-     inventado; o lojista cadastra os produtos reais depois). */
-  var CATEGORIAS_SUGERIDAS = [
-    'Materiais Básicos', 'Blocos e Alvenaria', 'Ferragens e Estruturas', 'Hidráulica', 'Elétrica',
-    'Tintas e Pintura', 'Impermeabilização', 'Telhados e Coberturas', 'Madeira', 'Ferramentas',
-    'Parafusos e Fixadores', 'Pisos e Revestimentos', 'Portas e Janelas', 'Louças e Metais', 'Banheiro',
-    'Cozinha', 'Químicos e Aditivos', 'EPI e Segurança', 'Limpeza e Conservação', 'Materiais para Obra',
-    'Jardim e Área Externa', 'Piscina', 'Ferragens Gerais', 'Acabamentos', 'Drywall e Gesso',
-    'Escadas e Acessórios', 'Materiais para Transporte e Obra', 'Materiais Metálicos'
-  ];
   /* Catálogo de nomes de produto sugeridos (autocompletar), pra loja não
      precisar digitar do zero cada item comum de material de construção --
      só digita um pedaço do nome, escolhe da lista, e completa detalhe
@@ -11470,22 +11451,6 @@ html, body{ overflow-x:hidden; max-width:100%; }
     toast(criados + ' produto(s) criado(s) com preço e estoque zerados. Edite cada um com os dados reais.');
     await renderAll();
   }
-  async function importarCategoriasSugeridas() {
-    var existentes = await idbAll('categorias');
-    var nomesExistentes = existentes.map(function (c) { return String(c.nome || '').trim().toLowerCase(); });
-    var novas = CATEGORIAS_SUGERIDAS.filter(function (n) { return nomesExistentes.indexOf(n.toLowerCase()) === -1; });
-    if (!novas.length) { toast('Todas as categorias sugeridas já estão cadastradas.'); return; }
-    var ok = confirm('Isso vai criar ' + novas.length + ' categoria(s) sugerida(s) de material de construção. Nenhum produto é criado junto -- só as categorias, pra você cadastrar os produtos reais dentro delas. Dá pra editar ou apagar qualquer uma depois.\n\nConfirmar?');
-    if (!ok) return;
-    var maxOrdem = existentes.reduce(function (m, c) { return Math.max(m, Number(c.ordem || 0)); }, 0);
-    for (var i = 0; i < novas.length; i++) {
-      maxOrdem++;
-      await idbPut('categorias', { id: uid(), ordem: maxOrdem, nome: novas[i], descricao: '', status: 'ativa', criado_em: nowISO() });
-    }
-    await logAction('categorias_sugeridas_importadas', novas.length + ' categoria(s) importada(s)');
-    toast(novas.length + ' categoria(s) criada(s). Edite ou apague o que não precisar.');
-    await renderAll();
-  }
   /* Busca global do topbar -- antes era só um botão de mentira que
      mostrava aviso de "não implementado"; agora busca de verdade em
      produtos, clientes, vendas e fornecedores enquanto digita. */
@@ -11634,8 +11599,6 @@ html, body{ overflow-x:hidden; max-width:100%; }
     rewire('gerenciarLicencaBtn', function(){ gerenciarLicencaModal(); });
     rewire('restaurarPadroesBtn', async function(){ await renderConfiguracoes(); toast('Alterações não salvas foram descartadas.'); });
     rewire('zerarDadosBtn', async function(){ await apagarRegistrosDeTeste(); });
-    rewire('importarCategoriasBtn', async function(){ await importarCategoriasSugeridas(); });
-    rewire('importarCategoriasBtnCategorias', async function(){ await importarCategoriasSugeridas(); });
     rewire('importarProdutosBtn', async function(){ await importarProdutosSugeridos(); });
     rewire('topbarHelpBtn', function(){ toast('Central de Ajuda chega em uma próxima etapa.'); });
     rewire('configContaBtn', function(){ irParaTela('Configurações'); });
