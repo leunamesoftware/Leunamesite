@@ -8692,7 +8692,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
      atualização mais abaixo), já que o service worker não recarrega
      nada por conta própria (é sempre o mesmo arquivo sw.js, só o
      index.html muda a cada deploy). */
-  var APP_BUILD_ID = 'BUILD-2026-09-22-03';
+  var APP_BUILD_ID = 'BUILD-2026-09-22-04';
 
   /* ============================================================
      CONSTRUGESTÃO — núcleo real (licença, login, banco local, CRUD)
@@ -11060,7 +11060,12 @@ html, body{ overflow-x:hidden; max-width:100%; }
     logs.forEach(function(l){
       var nid = 'log:' + l.id;
       if (excluidas[nid]) return;
-      itens.push({ id: nid, tipo: 'Sistema', msg: l.acao.replace(/_/g,' ') + (l.detalhes ? ' — ' + l.detalhes : ''), data: l.data, lida: !!lidas[nid] });
+      /* Log de sistema é histórico de ação que a própria loja fez
+         (cadastrou produto, editou categoria etc.) -- não é alerta
+         que precisa de atenção, então não conta como "não lida" nem
+         acende o sininho (senão qualquer clique no sistema deixava o
+         sininho preso em "1" pra sempre). Só "Estoque" é alerta real. */
+      itens.push({ id: nid, tipo: 'Sistema', msg: l.acao.replace(/_/g,' ') + (l.detalhes ? ' — ' + l.detalhes : ''), data: l.data, lida: true });
     });
     itens.sort(function(a,b){ return new Date(b.data)-new Date(a.data); });
     var naoLidas = itens.filter(function(n){ return !n.lida; }).length;
