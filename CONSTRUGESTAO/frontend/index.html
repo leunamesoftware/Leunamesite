@@ -2030,6 +2030,9 @@ html, body{ overflow-x:hidden; max-width:100%; }
               <button class="btn btn--primary btn--sm" type="button" id="prodViewListaBtn" title="Lista"><span class="icon" style="width:15px;height:15px;"><svg><use href="#i-bars"/></svg></span>Lista</button>
               <button class="btn btn--secondary btn--sm" type="button" id="prodViewGaleriaBtn" title="Galeria"><span class="icon" style="width:15px;height:15px;"><svg><use href="#i-grid"/></svg></span>Galeria</button>
             </div>
+            <button class="btn btn--secondary" type="button" id="importarProdutosBtn">
+              <span class="icon"><svg><use href="#i-layers"/></svg></span>Importar Produtos Sugeridos
+            </button>
             <button class="btn btn--primary" type="button" id="novoProdutoBtn">
               <span class="icon"><svg><use href="#i-plus"/></svg></span>Novo Produto
             </button>
@@ -8704,7 +8707,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
      atualização mais abaixo), já que o service worker não recarrega
      nada por conta própria (é sempre o mesmo arquivo sw.js, só o
      index.html muda a cada deploy). */
-  var APP_BUILD_ID = 'BUILD-2026-09-22-07';
+  var APP_BUILD_ID = 'BUILD-2026-09-22-08';
 
   /* ============================================================
      CONSTRUGESTÃO — núcleo real (licença, login, banco local, CRUD)
@@ -9560,7 +9563,9 @@ html, body{ overflow-x:hidden; max-width:100%; }
             '</div>' +
           '</div>' +
         '</div>' +
-        '<div class="field"><label>Nome do produto</label><input id="prodNome" value="' + esc(prod.nome) + '" required></div>' +
+        '<div class="field"><label>Nome do produto</label><input id="prodNome" list="prodNomeSugestoes" value="' + esc(prod.nome) + '" required>' +
+          '<datalist id="prodNomeSugestoes">' + PRODUTOS_SUGERIDOS.map(function (p) { return '<option value="' + esc(p.nome) + '">'; }).join('') + '</datalist>' +
+        '</div>' +
         '<div class="field"><label>Descrição curta</label><input id="prodDescricao" value="' + esc(prod.descricao || '') + '"></div>' +
         '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">' +
           '<div class="field"><label>Categoria</label><select id="prodCategoria">' + (options || '<option value="">Cadastre uma categoria primeiro</option>') + '</select></div>' +
@@ -9578,6 +9583,20 @@ html, body{ overflow-x:hidden; max-width:100%; }
         modalFooterHTML('Salvar produto') +
       '</form>'
     );
+    var nomeInputEl = document.getElementById('prodNome');
+    var categoriaSelEl = document.getElementById('prodCategoria');
+    var categoriaTocadaPeloUsuario = false;
+    categoriaSelEl.addEventListener('change', function () { categoriaTocadaPeloUsuario = true; });
+    if (!prod.id) {
+      nomeInputEl.addEventListener('input', function () {
+        if (categoriaTocadaPeloUsuario) return;
+        var valorDigitado = nomeInputEl.value.trim().toLowerCase();
+        var sugestao = PRODUTOS_SUGERIDOS.find(function (p) { return p.nome.toLowerCase() === valorDigitado; });
+        if (!sugestao) return;
+        var catCorrespondente = categorias.find(function (c) { return String(c.nome || '').trim().toLowerCase() === sugestao.categoria.toLowerCase(); });
+        if (catCorrespondente) categoriaSelEl.value = catCorrespondente.id;
+      });
+    }
     var fotoAtual = fotoInicial;
     var fotoInputEl = document.getElementById('prodFotoInput');
     var fotoPreviewEl = document.getElementById('prodFotoPreview');
@@ -11275,6 +11294,182 @@ html, body{ overflow-x:hidden; max-width:100%; }
     'Jardim e Área Externa', 'Piscina', 'Ferragens Gerais', 'Acabamentos', 'Drywall e Gesso',
     'Escadas e Acessórios', 'Materiais para Transporte e Obra', 'Materiais Metálicos'
   ];
+  /* Catálogo de nomes de produto sugeridos (autocompletar), pra loja não
+     precisar digitar do zero cada item comum de material de construção --
+     só digita um pedaço do nome, escolhe da lista, e completa detalhe
+     (marca/cor/medida) se precisar. Nenhum produto é criado sozinho por
+     causa disso -- é só a lista de sugestão do campo "Nome do produto". */
+  var PRODUTOS_SUGERIDOS = [
+    { nome: 'Cimento CP-II 50kg', categoria: 'Materiais Básicos' },
+    { nome: 'Cal Hidratada 20kg', categoria: 'Materiais Básicos' },
+    { nome: 'Areia Média', categoria: 'Materiais Básicos' },
+    { nome: 'Areia Fina', categoria: 'Materiais Básicos' },
+    { nome: 'Pedra Brita 1', categoria: 'Materiais Básicos' },
+    { nome: 'Cascalho', categoria: 'Materiais Básicos' },
+    { nome: 'Bloco de Concreto 9 furos', categoria: 'Blocos e Alvenaria' },
+    { nome: 'Bloco Cerâmico 9 furos', categoria: 'Blocos e Alvenaria' },
+    { nome: 'Tijolo Baiano 8 furos', categoria: 'Blocos e Alvenaria' },
+    { nome: 'Tijolo Maciço', categoria: 'Blocos e Alvenaria' },
+    { nome: 'Bloco de Concreto Estrutural', categoria: 'Blocos e Alvenaria' },
+    { nome: 'Vergalhão CA-50 8mm', categoria: 'Ferragens e Estruturas' },
+    { nome: 'Vergalhão CA-50 10mm', categoria: 'Ferragens e Estruturas' },
+    { nome: 'Tela Soldada', categoria: 'Ferragens e Estruturas' },
+    { nome: 'Arame Recozido', categoria: 'Ferragens e Estruturas' },
+    { nome: 'Treliça de Aço', categoria: 'Ferragens e Estruturas' },
+    { nome: 'Tubo PVC Soldável 25mm', categoria: 'Hidráulica' },
+    { nome: 'Tubo PVC Esgoto 100mm', categoria: 'Hidráulica' },
+    { nome: 'Joelho PVC 90°', categoria: 'Hidráulica' },
+    { nome: 'Registro de Gaveta', categoria: 'Hidráulica' },
+    { nome: 'Torneira de Jardim', categoria: 'Hidráulica' },
+    { nome: 'Caixa d\'Água 500L', categoria: 'Hidráulica' },
+    { nome: 'Fio Elétrico 2,5mm', categoria: 'Elétrica' },
+    { nome: 'Fio Elétrico 4mm', categoria: 'Elétrica' },
+    { nome: 'Disjuntor Bipolar', categoria: 'Elétrica' },
+    { nome: 'Tomada 2P+T', categoria: 'Elétrica' },
+    { nome: 'Interruptor Simples', categoria: 'Elétrica' },
+    { nome: 'Fita Isolante', categoria: 'Elétrica' },
+    { nome: 'Tinta Acrílica Branca 18L', categoria: 'Tintas e Pintura' },
+    { nome: 'Tinta Látex PVA', categoria: 'Tintas e Pintura' },
+    { nome: 'Massa Corrida', categoria: 'Tintas e Pintura' },
+    { nome: 'Rolo de Pintura', categoria: 'Tintas e Pintura' },
+    { nome: 'Pincel Trincha', categoria: 'Tintas e Pintura' },
+    { nome: 'Lixa para Parede', categoria: 'Tintas e Pintura' },
+    { nome: 'Manta Asfáltica', categoria: 'Impermeabilização' },
+    { nome: 'Impermeabilizante Acrílico', categoria: 'Impermeabilização' },
+    { nome: 'Rejunte Impermeável', categoria: 'Impermeabilização' },
+    { nome: 'Cimento Cristalizante', categoria: 'Impermeabilização' },
+    { nome: 'Telha Cerâmica', categoria: 'Telhados e Coberturas' },
+    { nome: 'Telha de Fibrocimento', categoria: 'Telhados e Coberturas' },
+    { nome: 'Telha Metálica', categoria: 'Telhados e Coberturas' },
+    { nome: 'Cumeeira', categoria: 'Telhados e Coberturas' },
+    { nome: 'Calha de PVC', categoria: 'Telhados e Coberturas' },
+    { nome: 'Caibro 5x6', categoria: 'Madeira' },
+    { nome: 'Ripão', categoria: 'Madeira' },
+    { nome: 'Tábua de Pinus', categoria: 'Madeira' },
+    { nome: 'Compensado 10mm', categoria: 'Madeira' },
+    { nome: 'Sarrafo', categoria: 'Madeira' },
+    { nome: 'Furadeira de Impacto', categoria: 'Ferramentas' },
+    { nome: 'Serra Circular', categoria: 'Ferramentas' },
+    { nome: 'Trena 5m', categoria: 'Ferramentas' },
+    { nome: 'Nível de Bolha', categoria: 'Ferramentas' },
+    { nome: 'Martelo', categoria: 'Ferramentas' },
+    { nome: 'Chave de Fenda', categoria: 'Ferramentas' },
+    { nome: 'Estilete', categoria: 'Ferramentas' },
+    { nome: 'Parafuso Chipboard', categoria: 'Parafusos e Fixadores' },
+    { nome: 'Parafuso Drywall', categoria: 'Parafusos e Fixadores' },
+    { nome: 'Bucha de Nylon', categoria: 'Parafusos e Fixadores' },
+    { nome: 'Prego 18x30', categoria: 'Parafusos e Fixadores' },
+    { nome: 'Arruela', categoria: 'Parafusos e Fixadores' },
+    { nome: 'Rebite', categoria: 'Parafusos e Fixadores' },
+    { nome: 'Porcelanato 60x60', categoria: 'Pisos e Revestimentos' },
+    { nome: 'Piso Cerâmico', categoria: 'Pisos e Revestimentos' },
+    { nome: 'Rejunte Cinza', categoria: 'Pisos e Revestimentos' },
+    { nome: 'Argamassa AC-II', categoria: 'Pisos e Revestimentos' },
+    { nome: 'Rodapé de MDF', categoria: 'Pisos e Revestimentos' },
+    { nome: 'Porta de Madeira', categoria: 'Portas e Janelas' },
+    { nome: 'Porta de Alumínio', categoria: 'Portas e Janelas' },
+    { nome: 'Janela de Alumínio', categoria: 'Portas e Janelas' },
+    { nome: 'Fechadura', categoria: 'Portas e Janelas' },
+    { nome: 'Dobradiça', categoria: 'Portas e Janelas' },
+    { nome: 'Vaso Sanitário', categoria: 'Louças e Metais' },
+    { nome: 'Pia de Cozinha', categoria: 'Louças e Metais' },
+    { nome: 'Torneira Monocomando', categoria: 'Louças e Metais' },
+    { nome: 'Assento Sanitário', categoria: 'Louças e Metais' },
+    { nome: 'Válvula de Descarga', categoria: 'Louças e Metais' },
+    { nome: 'Chuveiro Elétrico', categoria: 'Banheiro' },
+    { nome: 'Ducha Higiênica', categoria: 'Banheiro' },
+    { nome: 'Box de Vidro', categoria: 'Banheiro' },
+    { nome: 'Suporte de Papel Higiênico', categoria: 'Banheiro' },
+    { nome: 'Cuba de Aço Inox', categoria: 'Cozinha' },
+    { nome: 'Torneira de Cozinha', categoria: 'Cozinha' },
+    { nome: 'Coifa', categoria: 'Cozinha' },
+    { nome: 'Filtro de Água', categoria: 'Cozinha' },
+    { nome: 'Aditivo Plastificante', categoria: 'Químicos e Aditivos' },
+    { nome: 'Desmoldante', categoria: 'Químicos e Aditivos' },
+    { nome: 'Cola Branca', categoria: 'Químicos e Aditivos' },
+    { nome: 'Cola de Contato', categoria: 'Químicos e Aditivos' },
+    { nome: 'Silicone Acético', categoria: 'Químicos e Aditivos' },
+    { nome: 'Removedor de Ferrugem', categoria: 'Químicos e Aditivos' },
+    { nome: 'Capacete de Segurança', categoria: 'EPI e Segurança' },
+    { nome: 'Luva de Raspa', categoria: 'EPI e Segurança' },
+    { nome: 'Bota de Segurança', categoria: 'EPI e Segurança' },
+    { nome: 'Óculos de Proteção', categoria: 'EPI e Segurança' },
+    { nome: 'Protetor Auricular', categoria: 'EPI e Segurança' },
+    { nome: 'Vassoura', categoria: 'Limpeza e Conservação' },
+    { nome: 'Rodo', categoria: 'Limpeza e Conservação' },
+    { nome: 'Pá de Lixo', categoria: 'Limpeza e Conservação' },
+    { nome: 'Balde 20L', categoria: 'Limpeza e Conservação' },
+    { nome: 'Andaime', categoria: 'Materiais para Obra' },
+    { nome: 'Carrinho de Mão', categoria: 'Materiais para Obra' },
+    { nome: 'Betoneira', categoria: 'Materiais para Obra' },
+    { nome: 'Escada de Alumínio', categoria: 'Materiais para Obra' },
+    { nome: 'Lona Plástica', categoria: 'Materiais para Obra' },
+    { nome: 'Grama Sintética', categoria: 'Jardim e Área Externa' },
+    { nome: 'Terra Adubada', categoria: 'Jardim e Área Externa' },
+    { nome: 'Vaso de Cerâmica', categoria: 'Jardim e Área Externa' },
+    { nome: 'Mangueira de Jardim', categoria: 'Jardim e Área Externa' },
+    { nome: 'Adubo Orgânico', categoria: 'Jardim e Área Externa' },
+    { nome: 'Cloro Granulado', categoria: 'Piscina' },
+    { nome: 'Bomba de Piscina', categoria: 'Piscina' },
+    { nome: 'Kit Teste de pH', categoria: 'Piscina' },
+    { nome: 'Peneira de Piscina', categoria: 'Piscina' },
+    { nome: 'Cadeado', categoria: 'Ferragens Gerais' },
+    { nome: 'Trinco', categoria: 'Ferragens Gerais' },
+    { nome: 'Corrente Galvanizada', categoria: 'Ferragens Gerais' },
+    { nome: 'Gancho Metálico', categoria: 'Ferragens Gerais' },
+    { nome: 'Rodateto de Gesso', categoria: 'Acabamentos' },
+    { nome: 'Perfil de Alumínio', categoria: 'Acabamentos' },
+    { nome: 'Massa Acrílica', categoria: 'Acabamentos' },
+    { nome: 'Selador Acrílico', categoria: 'Acabamentos' },
+    { nome: 'Placa de Drywall', categoria: 'Drywall e Gesso' },
+    { nome: 'Gesso em Pó', categoria: 'Drywall e Gesso' },
+    { nome: 'Fita Telada', categoria: 'Drywall e Gesso' },
+    { nome: 'Massa para Drywall', categoria: 'Drywall e Gesso' },
+    { nome: 'Perfil Metálico para Drywall', categoria: 'Drywall e Gesso' },
+    { nome: 'Escada Marinheiro', categoria: 'Escadas e Acessórios' },
+    { nome: 'Corrimão de Alumínio', categoria: 'Escadas e Acessórios' },
+    { nome: 'Guarda-Corpo', categoria: 'Escadas e Acessórios' },
+    { nome: 'Carrinho de Carga', categoria: 'Materiais para Transporte e Obra' },
+    { nome: 'Cavalete de Madeira', categoria: 'Materiais para Transporte e Obra' },
+    { nome: 'Lona para Caçamba', categoria: 'Materiais para Transporte e Obra' },
+    { nome: 'Corda de Sisal', categoria: 'Materiais para Transporte e Obra' },
+    { nome: 'Chapa de Aço', categoria: 'Materiais Metálicos' },
+    { nome: 'Cantoneira de Aço', categoria: 'Materiais Metálicos' },
+    { nome: 'Tubo Metálico', categoria: 'Materiais Metálicos' },
+    { nome: 'Perfil U', categoria: 'Materiais Metálicos' },
+    { nome: 'Barra Chata', categoria: 'Materiais Metálicos' }
+  ];
+  async function importarProdutosSugeridos() {
+    var categoriasExistentes = await idbAll('categorias');
+    var produtosExistentes = await idbAll('produtos');
+    var nomesProdutosExistentes = produtosExistentes.map(function (p) { return String(p.nome || '').trim().toLowerCase(); });
+    var novos = PRODUTOS_SUGERIDOS.filter(function (p) { return nomesProdutosExistentes.indexOf(p.nome.toLowerCase()) === -1; });
+    if (!novos.length) { toast('Todos os produtos sugeridos já estão cadastrados.'); return; }
+    var ok = confirm('Isso vai criar ' + novos.length + ' produto(s) sugerido(s), já com nome e categoria certos (criando a categoria também, se ainda não existir). Preço e estoque ficam em zero -- você edita cada um com o preço e a quantidade real da sua loja depois.\n\nConfirmar?');
+    if (!ok) return;
+    var catMapNome = {};
+    categoriasExistentes.forEach(function (c) { catMapNome[String(c.nome || '').trim().toLowerCase()] = c; });
+    var maxOrdemCat = categoriasExistentes.reduce(function (m, c) { return Math.max(m, Number(c.ordem || 0)); }, 0);
+    var criados = 0;
+    for (var i = 0; i < novos.length; i++) {
+      var item = novos[i];
+      var cat = catMapNome[item.categoria.toLowerCase()];
+      if (!cat) {
+        maxOrdemCat++;
+        cat = { id: uid(), ordem: maxOrdemCat, nome: item.categoria, descricao: '', status: 'ativa', criado_em: nowISO() };
+        await idbPut('categorias', cat);
+        catMapNome[item.categoria.toLowerCase()] = cat;
+      }
+      await idbPut('produtos', {
+        id: uid(), nome: item.nome, descricao: '', categoria_id: cat.id, fornecedor_id: null, sku: '',
+        preco: 0, estoque_atual: 0, estoque_minimo: 0, estoque_ideal: 0, foto: null, criado_em: nowISO()
+      });
+      criados++;
+    }
+    await logAction('produtos_sugeridos_importados', criados + ' produto(s) importado(s)');
+    toast(criados + ' produto(s) criado(s) com preço e estoque zerados. Edite cada um com os dados reais.');
+    await renderAll();
+  }
   async function importarCategoriasSugeridas() {
     var existentes = await idbAll('categorias');
     var nomesExistentes = existentes.map(function (c) { return String(c.nome || '').trim().toLowerCase(); });
@@ -11441,6 +11636,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
     rewire('zerarDadosBtn', async function(){ await apagarRegistrosDeTeste(); });
     rewire('importarCategoriasBtn', async function(){ await importarCategoriasSugeridas(); });
     rewire('importarCategoriasBtnCategorias', async function(){ await importarCategoriasSugeridas(); });
+    rewire('importarProdutosBtn', async function(){ await importarProdutosSugeridos(); });
     rewire('topbarHelpBtn', function(){ toast('Central de Ajuda chega em uma próxima etapa.'); });
     rewire('configContaBtn', function(){ irParaTela('Configurações'); });
     rewire('topbarInstallBtn', function(){ acaoInstalarApp(); });
