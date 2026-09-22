@@ -9421,16 +9421,17 @@ html, body{ overflow-x:hidden; max-width:100%; }
     var hash = await hashPassword(d.resp_senha, salt);
     var admin = { id: uid(), nome: d.resp_nome, email: d.resp_email, salt: salt, senha_hash: hash, papel: 'administrador', status: 'ativo', permissoes: ROLE_DEFAULT_PERMS.administrador, criado_em: nowISO(), ultimo_login: null };
     await idbPut('usuarios', admin);
-    // Categorias padrão pra loja não começar vazia (mesmas usadas nos filtros do mockup original).
-    var categoriasPadrao = [
-      ['Cimentos', 'Cimentos e argamassas'], ['Alvenaria', 'Tijolos, blocos e afins'],
-      ['Cobertura', 'Telhas e estruturas de cobertura'], ['Areia e Pedra', 'Areia, brita e agregados'],
-      ['Hidráulica', 'Tubos, conexões e material hidráulico'], ['Acabamento', 'Pisos, revestimentos e tintas'],
-      ['Ferragem', 'Ferramentas e ferragens em geral']
-    ];
-    for (var i = 0; i < categoriasPadrao.length; i++) {
-      await idbPut('categorias', { id: uid(), ordem: i + 1, nome: categoriasPadrao[i][0], descricao: categoriasPadrao[i][1], status: 'ativa', criado_em: nowISO() });
-    }
+    // Só 1 categoria e 1 produto de exemplo no primeiro acesso -- só pra
+    // mostrar o formato esperado, não pra vir com o sistema "cheio" de
+    // dados de mentira. O lojista edita, apaga ou cadastra o que quiser
+    // à vontade (categorias e produtos têm CRUD completo).
+    var categoriaExemplo = { id: uid(), ordem: 1, nome: 'Cimentos', descricao: 'Cimentos e argamassas', status: 'ativa', criado_em: nowISO() };
+    await idbPut('categorias', categoriaExemplo);
+    await idbPut('produtos', {
+      id: uid(), nome: 'Cimento CP-II 50kg', descricao: 'Cimento Portland composto',
+      categoria_id: categoriaExemplo.id, sku: 'CIM001', preco: 32.90,
+      estoque_atual: 10, estoque_minimo: 5, estoque_ideal: 30, criado_em: nowISO()
+    });
     STATE.loja = loja; STATE.user = admin;
     lsSet(SESSION_LS_KEY, admin.id);
     await logAction('loja_criada', 'Loja "' + loja.nome + '" criada no primeiro acesso');
