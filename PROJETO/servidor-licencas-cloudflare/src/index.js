@@ -104,6 +104,55 @@ const PRIVACY_PAGES = {
       <strong>contato@leunamesoftware.com</strong>.</p>
     `,
   },
+  'construgestao': {
+    nomeApp: 'ConstruGestão',
+    corpo: `
+      <p><strong>Última atualização:</strong> 22 de setembro de 2026.</p>
+      <p>O ConstruGestão é um aplicativo de gestão empresarial (produtos,
+      estoque, vendas, clientes, fornecedores, compras e relatórios) para
+      lojas de material de construção, desenvolvido pela LeuName
+      Softwares.</p>
+      <h2>Onde ficam os seus dados</h2>
+      <p>Todos os dados que você cadastra no ConstruGestão — produtos,
+      categorias, clientes, vendas, fornecedores, informações financeiras
+      — ficam armazenados no seu próprio dispositivo, em um banco de dados
+      local (IndexedDB), e o aplicativo funciona 100% offline: você pode
+      usar o sistema inteiro sem internet.</p>
+      <h2>Sincronização entre os seus dispositivos</h2>
+      <p>Se você ativa a mesma chave de licença em mais de um dispositivo
+      (por exemplo, celular e computador da mesma loja), o aplicativo
+      envia os dados cadastrados para um servidor da LeuName Softwares
+      (hospedado na Cloudflare), de forma automática e sempre que houver
+      conexão com a internet, para que os demais dispositivos com a
+      <strong>mesma chave de licença</strong> recebam essas mesmas
+      informações. Esse envio é protegido por HTTPS (criptografado em
+      trânsito) e os dados ficam associados apenas à sua chave de
+      licença — a LeuName Softwares não acessa, analisa nem compartilha
+      esses dados com terceiros, e eles não são usados para publicidade.
+      Você pode solicitar a exclusão dos dados sincronizados da sua loja
+      a qualquer momento pelo contato abaixo.</p>
+      <h2>Ativação da licença</h2>
+      <p>A chave de licença informada na ativação é validada localmente,
+      dentro do próprio aplicativo, sem depender de internet para a
+      primeira ativação.</p>
+      <h2>Permissões do aplicativo</h2>
+      <p>O aplicativo pode solicitar permissão de câmera/galeria apenas
+      para você anexar fotos de produtos ou categorias que você mesmo
+      escolher enviar, e permissão de armazenamento para salvar ou
+      importar arquivos de backup. Essas permissões não são usadas para
+      coletar ou transmitir dados a terceiros.</p>
+      <h2>Compartilhamento de dados com terceiros</h2>
+      <p>A LeuName Softwares não vende, não compartilha e não usa para
+      publicidade nenhum dado cadastrado no aplicativo. Os dados
+      sincronizados (ver seção acima) ficam apenas no servidor da
+      LeuName Softwares, pelo tempo necessário para o funcionamento do
+      sistema.</p>
+      <h2>Contato</h2>
+      <p>Dúvidas sobre esta política, ou pedidos de exclusão de dados,
+      podem ser enviados para
+      <strong>contato@leunamesoftware.com</strong>.</p>
+    `,
+  },
 };
 
 function privacyPageHTML(app) {

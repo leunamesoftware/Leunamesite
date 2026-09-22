@@ -1,0 +1,17 @@
+{
+  "name": "construgestao-android",
+  "version": "1.0.0",
+  "private": true,
+  "description": "ConstruGestão — empacotamento Android (Capacitor) — LeuName Softwares",
+  "scripts": {
+    "sync": "npx cap sync android",
+    "open": "npx cap open android"
+  },
+  "dependencies": {
+    "@capacitor/android": "^6.1.2",
+    "@capacitor/core": "^6.1.2"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^6.1.2"
+  }
+}
