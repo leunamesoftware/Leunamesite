@@ -1847,7 +1847,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
       <div class="topbar__actions">
         <button class="iconbtn" id="notifBtn" aria-label="Notificações" title="Notificações" data-nav-target="Notificações">
           <span class="icon"><svg><use href="#i-bell"/></svg></span>
-          <span class="iconbtn__badge">12</span>
+          <span class="iconbtn__badge" id="notifBadgeCount" style="display:none;">0</span>
         </button>
         <button class="iconbtn" aria-label="Ajuda" title="Ajuda">
           <span class="icon"><svg><use href="#i-help"/></svg></span>
@@ -10078,6 +10078,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
     setText('kpiProdutosTotal', produtos.length + (produtos.length === 1 ? ' produto cadastrado' : ' produtos cadastrados'));
     setText('kpiAlertas', String(alertas));
     setText('kpiClientesTotal', String(clientes.length));
+    await renderNotificacoes();
   }
 
   async function renderAll() {
@@ -10865,6 +10866,12 @@ html, body{ overflow-x:hidden; max-width:100%; }
       itens.push({ id: nid, tipo: 'Sistema', msg: l.acao.replace(/_/g,' ') + (l.detalhes ? ' — ' + l.detalhes : ''), data: l.data, lida: !!lidas[nid] });
     });
     itens.sort(function(a,b){ return new Date(b.data)-new Date(a.data); });
+    var naoLidas = itens.filter(function(n){ return !n.lida; }).length;
+    var badge = document.getElementById('notifBadgeCount');
+    if (badge) {
+      badge.textContent = naoLidas > 99 ? '99+' : String(naoLidas);
+      badge.style.display = naoLidas > 0 ? '' : 'none';
+    }
     var busca = valOf('notifSearchInput'), tipoF = valOf('filtroTipoNotif'), periodoF = valOf('filtroPeriodoNotif');
     itens = itens.filter(function(n){
       if (!bateBusca([n.msg], busca)) return false;
