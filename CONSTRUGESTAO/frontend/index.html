@@ -1856,6 +1856,9 @@ html, body{ overflow-x:hidden; max-width:100%; }
           <span class="icon"><svg><use href="#i-bell"/></svg></span>
           <span class="iconbtn__badge" id="notifBadgeCount" style="display:none;">0</span>
         </button>
+        <button class="iconbtn" id="topbarInstallBtn" aria-label="Instalar aplicativo" title="Instalar aplicativo no celular" style="display:none;">
+          <span class="icon"><svg><use href="#i-arrow-down-tray"/></svg></span>
+        </button>
         <button class="iconbtn" id="topbarHelpBtn" aria-label="Ajuda" title="Ajuda">
           <span class="icon"><svg><use href="#i-help"/></svg></span>
         </button>
@@ -8296,6 +8299,15 @@ html, body{ overflow-x:hidden; max-width:100%; }
               <button class="btn btn--info" type="button" id="fazerBackupBtn" style="width:100%; margin-top:14px; justify-content:center;"><span class="icon"><svg><use href="#i-cloud"/></svg></span>Fazer backup agora</button>
             </div>
 
+            <div class="settings-card">
+              <div class="settings-card__head">
+                <span class="settings-card__icon" style="background:linear-gradient(135deg,#f97316,#fb923c);"><span class="icon" style="width:18px;height:18px;"><svg><use href="#i-smartphone"/></svg></span></span>
+                <div><h3>Instalar no Celular</h3><p>Use o sistema como um aplicativo, sem navegador.</p></div>
+              </div>
+              <p id="instalarAppStatus" style="margin:0 0 14px;font-size:13px;color:var(--text-secondary);line-height:1.5;">Instale na tela inicial do celular para abrir em tela cheia, com ícone próprio e sem a barra de endereço do navegador.</p>
+              <button class="btn btn--info" type="button" id="instalarAppBtnConfig" style="width:100%; justify-content:center;"><span class="icon"><svg><use href="#i-arrow-down-tray"/></svg></span>Instalar aplicativo</button>
+            </div>
+
             <div class="settings-info-card">
               <div class="settings-info-card__head">
                 <span class="settings-info-card__icon"><span class="icon" style="width:15px;height:15px;"><svg><use href="#i-info"/></svg></span></span>
@@ -8692,7 +8704,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
      atualização mais abaixo), já que o service worker não recarrega
      nada por conta própria (é sempre o mesmo arquivo sw.js, só o
      index.html muda a cada deploy). */
-  var APP_BUILD_ID = 'BUILD-2026-09-22-06';
+  var APP_BUILD_ID = 'BUILD-2026-09-22-07';
 
   /* ============================================================
      CONSTRUGESTÃO — núcleo real (licença, login, banco local, CRUD)
@@ -11431,6 +11443,9 @@ html, body{ overflow-x:hidden; max-width:100%; }
     rewire('importarCategoriasBtnCategorias', async function(){ await importarCategoriasSugeridas(); });
     rewire('topbarHelpBtn', function(){ toast('Central de Ajuda chega em uma próxima etapa.'); });
     rewire('configContaBtn', function(){ irParaTela('Configurações'); });
+    rewire('topbarInstallBtn', function(){ acaoInstalarApp(); });
+    rewire('instalarAppBtnConfig', function(){ acaoInstalarApp(); });
+    atualizarUIInstalarApp();
     wireBuscaGlobal();
     ['verRelatorioVendasBtn','verRelatorioOrcamentosBtn','verRelatorioClientesBtn','relatorioDemandaBtn','relatorioProdutosSolicitadosBtn','exportarRelatorioBtn','relatorioCompletoBtn','relatorioFornecedoresBtn','relatorioComprasBtn','relatorioRecebimentosBtn','relatorioEntregasBtn'].forEach(function(id){
       rewire(id, function(){ irParaTela('Relatórios'); });
@@ -11911,6 +11926,72 @@ html, body{ overflow-x:hidden; max-width:100%; }
     }
     toast('Produto adicionado à nova compra.');
   });
+
+  /* ---- Instalar app (PWA) no celular ---- */
+  var deferredInstallPrompt = null;
+  var appJaInstalado = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+  window.addEventListener('beforeinstallprompt', function (e) {
+    e.preventDefault();
+    deferredInstallPrompt = e;
+    atualizarUIInstalarApp();
+  });
+  window.addEventListener('appinstalled', function () {
+    deferredInstallPrompt = null;
+    appJaInstalado = true;
+    atualizarUIInstalarApp();
+    toast('App instalado! Agora ele abre em tela cheia, sem a barra do navegador.');
+  });
+  function atualizarUIInstalarApp() {
+    var topBtn = document.getElementById('topbarInstallBtn');
+    var cfgBtn = document.getElementById('instalarAppBtnConfig');
+    var cfgTxt = document.getElementById('instalarAppStatus');
+    if (topBtn) topBtn.style.display = appJaInstalado ? 'none' : '';
+    if (cfgBtn) cfgBtn.style.display = appJaInstalado ? 'none' : '';
+    if (cfgTxt && appJaInstalado) cfgTxt.textContent = 'Este app já está instalado neste aparelho e abre em modo aplicativo, sem navegador.';
+  }
+  async function acaoInstalarApp() {
+    if (deferredInstallPrompt) {
+      deferredInstallPrompt.prompt();
+      var escolha = await deferredInstallPrompt.userChoice.catch(function () { return null; });
+      deferredInstallPrompt = null;
+      if (escolha && escolha.outcome === 'accepted') { toast('Instalando o app...'); return; }
+    }
+    abrirInstrucoesInstalarApp();
+  }
+  function abrirInstrucoesInstalarApp() {
+    var ua = navigator.userAgent || '';
+    var isIOS = /iphone|ipad|ipod/i.test(ua) && !window.MSStream;
+    var isAndroid = /android/i.test(ua);
+    var passos;
+    if (isIOS) {
+      passos = [
+        'Toque no botão <b>Compartilhar</b> (o quadrado com a seta pra cima) na barra do Safari.',
+        'Role a lista de opções e toque em <b>"Adicionar à Tela de Início"</b>.',
+        'Toque em <b>"Adicionar"</b> no canto superior direito.'
+      ];
+    } else if (isAndroid) {
+      passos = [
+        'Toque no menu <b>⋮</b> no canto superior direito do navegador (Chrome).',
+        'Toque em <b>"Instalar aplicativo"</b> ou <b>"Adicionar à tela inicial"</b>.',
+        'Toque em <b>"Instalar"</b> para confirmar.'
+      ];
+    } else {
+      passos = [
+        'Abra este endereço pelo navegador do seu celular (Chrome ou Safari).',
+        'Toque no menu do navegador e procure <b>"Instalar aplicativo"</b> ou <b>"Adicionar à tela inicial"</b>.',
+        'Confirme a instalação.'
+      ];
+    }
+    var html = modalHeaderHTML('Instalar o app no celular') +
+      '<div style="padding:0 24px 8px;font-size:13.5px;color:var(--text-secondary);line-height:1.6;">' +
+      '<p style="margin:0 0 12px;">Depois de instalado, o app abre em tela cheia, com ícone próprio na tela inicial, sem a barra de endereço do navegador -- igual um aplicativo de verdade.</p>' +
+      '<ol style="margin:0;padding-left:20px;">' + passos.map(function (p) { return '<li style="margin-bottom:8px;">' + p + '</li>'; }).join('') + '</ol>' +
+      '</div>' +
+      '<div style="display:flex;gap:10px;padding:18px 24px 24px;">' +
+      '<button type="button" class="btn btn--primary" data-close-modal style="flex:1;justify-content:center;">Entendi</button></div>';
+    openFormModal(html);
+  }
+  atualizarUIInstalarApp();
 
   if (document.readyState === 'complete' || document.readyState === 'interactive') { boot(); }
   else { document.addEventListener('DOMContentLoaded', boot); }
