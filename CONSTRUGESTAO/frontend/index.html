@@ -2866,34 +2866,12 @@ html, body{ overflow-x:hidden; max-width:100%; }
               <span class="chip-legend__item"><span class="chip-legend__dot" style="background:var(--orange-500);"></span>Estoque crítico</span>
               <span class="chip-legend__item"><span class="chip-legend__dot" style="background:var(--amber-400);"></span>Abaixo do mínimo</span>
             </div>
-            <div class="status-chart">
-              <div class="status-chart__col">
-                <span class="status-chart__value">16</span>
-                <div class="status-chart__bar" style="height:55%; background:var(--red-500);"></div>
-                <span class="status-chart__label">Sem estoque</span>
-              </div>
-              <div class="status-chart__col">
-                <span class="status-chart__value">32</span>
-                <div class="status-chart__bar" style="height:100%; background:var(--orange-500);"></div>
-                <span class="status-chart__label">Estoque crítico</span>
-              </div>
-              <div class="status-chart__col">
-                <span class="status-chart__value">24</span>
-                <div class="status-chart__bar" style="height:78%; background:var(--amber-400);"></div>
-                <span class="status-chart__label">Abaixo do mínimo</span>
-              </div>
-            </div>
+            <div class="status-chart" id="pcStatusChart"></div>
           </div>
 
           <div class="panel">
             <div class="panel__head"><h3>Principais categorias</h3></div>
-            <div class="hbar-list">
-              <div class="hbar-row"><span class="hbar-row__label">Hidráulica</span><span class="hbar-row__track"><span class="hbar-row__fill" style="width:100%;"></span></span><span class="hbar-row__value">18</span></div>
-              <div class="hbar-row"><span class="hbar-row__label">Elétrica</span><span class="hbar-row__track"><span class="hbar-row__fill" style="width:67%;"></span></span><span class="hbar-row__value">12</span></div>
-              <div class="hbar-row"><span class="hbar-row__label">Alvenaria</span><span class="hbar-row__track"><span class="hbar-row__fill" style="width:44%;"></span></span><span class="hbar-row__value">8</span></div>
-              <div class="hbar-row"><span class="hbar-row__label">Cobertura</span><span class="hbar-row__track"><span class="hbar-row__fill" style="width:33%;"></span></span><span class="hbar-row__value">6</span></div>
-              <div class="hbar-row"><span class="hbar-row__label">Acabamento</span><span class="hbar-row__track"><span class="hbar-row__fill" style="width:22%;"></span></span><span class="hbar-row__value">4</span></div>
-            </div>
+            <div class="hbar-list" id="pcCategoriasHbar"></div>
           </div>
 
           <div class="notice-card">
@@ -8176,7 +8154,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
         </section>
 
         <!-- Abas -->
-        <nav class="wa-tabs">
+        <nav class="wa-tabs" id="relatoriosTabs">
           <button class="wa-tab is-active" type="button">Visão Geral</button>
           <button class="wa-tab" type="button">Vendas</button>
           <button class="wa-tab" type="button">Compras</button>
@@ -8196,87 +8174,17 @@ html, body{ overflow-x:hidden; max-width:100%; }
               <h3>Vendas no Período</h3>
               <button class="report-period-select" type="button" id="reportPeriodBtn">Por dia<span class="icon"><svg><use href="#i-chevron-down"/></svg></span></button>
             </div>
-            <div class="line-chart">
-              <svg viewBox="0 0 700 210" xmlns="http://www.w3.org/2000/svg">
-                <line x1="10" y1="15" x2="10" y2="195" stroke="var(--border-subtle)" stroke-width="1"/>
-                <line x1="10" y1="195" x2="690" y2="195" stroke="var(--border-subtle)" stroke-width="1"/>
-                <text x="0" y="18" font-size="11" fill="var(--text-tertiary)">2.000</text>
-                <text x="0" y="63" font-size="11" fill="var(--text-tertiary)">1.500</text>
-                <text x="0" y="108" font-size="11" fill="var(--text-tertiary)">1.000</text>
-                <text x="8" y="153" font-size="11" fill="var(--text-tertiary)">500</text>
-                <text x="12" y="199" font-size="11" fill="var(--text-tertiary)">0</text>
-                <defs>
-                  <linearGradient id="areaFill" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stop-color="#0ea968" stop-opacity="0.28"/>
-                    <stop offset="100%" stop-color="#0ea968" stop-opacity="0"/>
-                  </linearGradient>
-                </defs>
-                <path d="M10.0,195 L10.0,136.5 L80.3,118.5 L150.7,141.0 L221.0,91.5 L291.4,109.5 L361.7,100.5 L432.1,114.0 L502.4,78.0 L572.8,37.5 L643.1,91.5 L690.0,69.0 L690.0,195 Z" fill="url(#areaFill)"/>
-                <polyline points="10.0,136.5 80.3,118.5 150.7,141.0 221.0,91.5 291.4,109.5 361.7,100.5 432.1,114.0 502.4,78.0 572.8,37.5 643.1,91.5 690.0,69.0" fill="none" stroke="#0ea968" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
-                <circle cx="10.0" cy="136.5" r="3.5" fill="#fff" stroke="#0ea968" stroke-width="2"/>
-                <circle cx="80.3" cy="118.5" r="3.5" fill="#fff" stroke="#0ea968" stroke-width="2"/>
-                <circle cx="150.7" cy="141.0" r="3.5" fill="#fff" stroke="#0ea968" stroke-width="2"/>
-                <circle cx="221.0" cy="91.5" r="3.5" fill="#fff" stroke="#0ea968" stroke-width="2"/>
-                <circle cx="291.4" cy="109.5" r="3.5" fill="#fff" stroke="#0ea968" stroke-width="2"/>
-                <circle cx="361.7" cy="100.5" r="3.5" fill="#fff" stroke="#0ea968" stroke-width="2"/>
-                <circle cx="432.1" cy="114.0" r="3.5" fill="#fff" stroke="#0ea968" stroke-width="2"/>
-                <circle cx="502.4" cy="78.0" r="3.5" fill="#fff" stroke="#0ea968" stroke-width="2"/>
-                <circle cx="572.8" cy="37.5" r="3.5" fill="#fff" stroke="#0ea968" stroke-width="2"/>
-                <circle cx="643.1" cy="91.5" r="3.5" fill="#fff" stroke="#0ea968" stroke-width="2"/>
-                <circle cx="690.0" cy="69.0" r="3.5" fill="#fff" stroke="#0ea968" stroke-width="2"/>
-              </svg>
-              <div class="line-chart__labels"><span>01/09</span><span>05/09</span><span>10/09</span><span>15/09</span><span>20/09</span><span>25/09</span><span>30/09</span></div>
-            </div>
+            <div class="line-chart" id="relLineChart"></div>
           </div>
 
           <div class="report-panel">
             <div class="report-panel__head"><h3>Vendas por Categoria</h3></div>
-            <div class="donut-wrap">
-              <div class="donut-svg-wrap">
-                <svg viewBox="0 0 160 160">
-                  <circle cx="80" cy="80" r="60" fill="none" stroke="#3b6fe0" stroke-width="24" stroke-dasharray="107.07 269.93" stroke-dashoffset="0.00" transform="rotate(-90 80 80)"/>
-                  <circle cx="80" cy="80" r="60" fill="none" stroke="#0ea968" stroke-width="24" stroke-dasharray="70.50 306.49" stroke-dashoffset="-107.07" transform="rotate(-90 80 80)"/>
-                  <circle cx="80" cy="80" r="60" fill="none" stroke="#f97316" stroke-width="24" stroke-dasharray="58.81 318.18" stroke-dashoffset="-177.56" transform="rotate(-90 80 80)"/>
-                  <circle cx="80" cy="80" r="60" fill="none" stroke="#6a49b8" stroke-width="24" stroke-dasharray="46.37 330.62" stroke-dashoffset="-236.37" transform="rotate(-90 80 80)"/>
-                  <circle cx="80" cy="80" r="60" fill="none" stroke="#e0527a" stroke-width="24" stroke-dasharray="40.72 336.28" stroke-dashoffset="-282.74" transform="rotate(-90 80 80)"/>
-                  <circle cx="80" cy="80" r="60" fill="none" stroke="#7c8698" stroke-width="24" stroke-dasharray="32.04 344.95" stroke-dashoffset="-323.46" transform="rotate(-90 80 80)"/>
-                  <circle cx="80" cy="80" r="60" fill="none" stroke="#cbd0d9" stroke-width="24" stroke-dasharray="21.49 355.50" stroke-dashoffset="-355.50" transform="rotate(-90 80 80)"/>
-                </svg>
-                <div class="donut-center"><span class="donut-center__value">R$ 28.450,00</span><span class="donut-center__label">Total</span></div>
-              </div>
-              <div class="donut-legend">
-                <div class="donut-legend__row"><span class="donut-legend__dot" style="background:#3b6fe0;"></span><span class="donut-legend__label">Cimento</span><span class="donut-legend__pct">28,4%</span></div>
-                <div class="donut-legend__row"><span class="donut-legend__dot" style="background:#0ea968;"></span><span class="donut-legend__label">Tintas</span><span class="donut-legend__pct">18,7%</span></div>
-                <div class="donut-legend__row"><span class="donut-legend__dot" style="background:#f97316;"></span><span class="donut-legend__label">Hidráulica</span><span class="donut-legend__pct">15,6%</span></div>
-                <div class="donut-legend__row"><span class="donut-legend__dot" style="background:#6a49b8;"></span><span class="donut-legend__label">Elétrica</span><span class="donut-legend__pct">12,3%</span></div>
-                <div class="donut-legend__row"><span class="donut-legend__dot" style="background:#e0527a;"></span><span class="donut-legend__label">Ferramentas</span><span class="donut-legend__pct">10,8%</span></div>
-                <div class="donut-legend__row"><span class="donut-legend__dot" style="background:#7c8698;"></span><span class="donut-legend__label">Acabamento</span><span class="donut-legend__pct">8,5%</span></div>
-                <div class="donut-legend__row"><span class="donut-legend__dot" style="background:#cbd0d9;"></span><span class="donut-legend__label">Outros</span><span class="donut-legend__pct">5,7%</span></div>
-              </div>
-            </div>
+            <div class="donut-wrap" id="relDonutCategoria"></div>
           </div>
 
           <div class="report-panel">
             <div class="report-panel__head"><h3>Formas de Pagamento</h3></div>
-            <div class="donut-wrap">
-              <div class="donut-svg-wrap">
-                <svg viewBox="0 0 160 160">
-                  <circle cx="80" cy="80" r="60" fill="none" stroke="#3b6fe0" stroke-width="24" stroke-dasharray="160.98 216.02" stroke-dashoffset="0.00" transform="rotate(-90 80 80)"/>
-                  <circle cx="80" cy="80" r="60" fill="none" stroke="#0ea968" stroke-width="24" stroke-dasharray="106.31 270.68" stroke-dashoffset="-160.98" transform="rotate(-90 80 80)"/>
-                  <circle cx="80" cy="80" r="60" fill="none" stroke="#f97316" stroke-width="24" stroke-dasharray="69.74 307.25" stroke-dashoffset="-267.29" transform="rotate(-90 80 80)"/>
-                  <circle cx="80" cy="80" r="60" fill="none" stroke="#6a49b8" stroke-width="24" stroke-dasharray="27.52 349.47" stroke-dashoffset="-337.03" transform="rotate(-90 80 80)"/>
-                  <circle cx="80" cy="80" r="60" fill="none" stroke="#e0527a" stroke-width="24" stroke-dasharray="12.44 364.55" stroke-dashoffset="-364.55" transform="rotate(-90 80 80)"/>
-                </svg>
-                <div class="donut-center"><span class="donut-center__value">124</span><span class="donut-center__label">Pedidos</span></div>
-              </div>
-              <div class="donut-legend">
-                <div class="donut-legend__row"><span class="donut-legend__dot" style="background:#3b6fe0;"></span><span class="donut-legend__label">PIX</span><span class="donut-legend__pct">42,7%</span></div>
-                <div class="donut-legend__row"><span class="donut-legend__dot" style="background:#0ea968;"></span><span class="donut-legend__label">Cartão de Crédito</span><span class="donut-legend__pct">28,2%</span></div>
-                <div class="donut-legend__row"><span class="donut-legend__dot" style="background:#f97316;"></span><span class="donut-legend__label">Cartão de Débito</span><span class="donut-legend__pct">18,5%</span></div>
-                <div class="donut-legend__row"><span class="donut-legend__dot" style="background:#6a49b8;"></span><span class="donut-legend__label">Dinheiro</span><span class="donut-legend__pct">7,3%</span></div>
-                <div class="donut-legend__row"><span class="donut-legend__dot" style="background:#e0527a;"></span><span class="donut-legend__label">Boleto</span><span class="donut-legend__pct">3,3%</span></div>
-              </div>
-            </div>
+            <div class="donut-wrap" id="relDonutPagamento"></div>
           </div>
         </div>
 
@@ -8287,39 +8195,19 @@ html, body{ overflow-x:hidden; max-width:100%; }
             <div class="table-wrap" style="border:none;">
               <table class="dtable">
                 <thead><tr><th>#</th><th>Produto</th><th>Qtde Vendida</th><th>Faturamento</th></tr></thead>
-                <tbody>
-                  <tr><td><span class="rank-num">1</span></td><td><div class="prod-cell"><span class="prod-thumb" style="width:30px;height:30px;background:linear-gradient(135deg,#8a8f99,#5f6472);"><span class="icon" style="width:15px;height:15px;"><svg><use href="#i-bag"/></svg></span></span><span class="prod-name" style="font-size:12.5px;">Cimento CP II 50kg</span></div></td><td>89</td><td><span class="price-cell">R$ 2.670,00</span></td></tr>
-                  <tr><td><span class="rank-num">2</span></td><td><div class="prod-cell"><span class="prod-thumb" style="width:30px;height:30px;background:linear-gradient(135deg,#8f6cd6,#6a49b8);"><span class="icon" style="width:15px;height:15px;"><svg><use href="#i-palette"/></svg></span></span><span class="prod-name" style="font-size:12.5px;">Tinta Acrílica 18L</span></div></td><td>45</td><td><span class="price-cell">R$ 2.250,00</span></td></tr>
-                  <tr><td><span class="rank-num">3</span></td><td><div class="prod-cell"><span class="prod-thumb" style="width:30px;height:30px;background:linear-gradient(135deg,#e07a3f,#c25a1f);"><span class="icon" style="width:15px;height:15px;"><svg><use href="#i-layers"/></svg></span></span><span class="prod-name" style="font-size:12.5px;">Piso Porcelanato 60x60</span></div></td><td>38</td><td><span class="price-cell">R$ 1.900,00</span></td></tr>
-                  <tr><td><span class="rank-num">4</span></td><td><div class="prod-cell"><span class="prod-thumb" style="width:30px;height:30px;background:linear-gradient(135deg,#7c8698,#535c6c);"><span class="icon" style="width:15px;height:15px;"><svg><use href="#i-bolt"/></svg></span></span><span class="prod-name" style="font-size:12.5px;">Cabo Flexível 2,5mm</span></div></td><td>32</td><td><span class="price-cell">R$ 960,00</span></td></tr>
-                  <tr><td><span class="rank-num">5</span></td><td><div class="prod-cell"><span class="prod-thumb" style="width:30px;height:30px;background:linear-gradient(135deg,#4f8fe0,#2f6fc4);"><span class="icon" style="width:15px;height:15px;"><svg><use href="#i-droplet"/></svg></span></span><span class="prod-name" style="font-size:12.5px;">Tubo PVC 50mm</span></div></td><td>28</td><td><span class="price-cell">R$ 840,00</span></td></tr>
-                  <tr><td><span class="rank-num">6</span></td><td><div class="prod-cell"><span class="prod-thumb" style="width:30px;height:30px;background:linear-gradient(135deg,#8a8f99,#5f6472);"><span class="icon" style="width:15px;height:15px;"><svg><use href="#i-archive"/></svg></span></span><span class="prod-name" style="font-size:12.5px;">Argamassa ACIII 20kg</span></div></td><td>26</td><td><span class="price-cell">R$ 780,00</span></td></tr>
-                  <tr><td><span class="rank-num">7</span></td><td><div class="prod-cell"><span class="prod-thumb" style="width:30px;height:30px;background:linear-gradient(135deg,#f2c94c,#d9a520);"><span class="icon" style="width:15px;height:15px;"><svg><use href="#i-lightbulb"/></svg></span></span><span class="prod-name" style="font-size:12.5px;">Lâmpada LED 9W</span></div></td><td>24</td><td><span class="price-cell">R$ 480,00</span></td></tr>
-                  <tr><td><span class="rank-num">8</span></td><td><div class="prod-cell"><span class="prod-thumb" style="width:30px;height:30px;background:linear-gradient(135deg,#7c8698,#535c6c);"><span class="icon" style="width:15px;height:15px;"><svg><use href="#i-droplet"/></svg></span></span><span class="prod-name" style="font-size:12.5px;">Torneira Metálica</span></div></td><td>20</td><td><span class="price-cell">R$ 700,00</span></td></tr>
-                  <tr><td><span class="rank-num">9</span></td><td><div class="prod-cell"><span class="prod-thumb" style="width:30px;height:30px;background:linear-gradient(135deg,#4f8fe0,#2f6fc4);"><span class="icon" style="width:15px;height:15px;"><svg><use href="#i-droplet"/></svg></span></span><span class="prod-name" style="font-size:12.5px;">Caixa d'água 500L</span></div></td><td>18</td><td><span class="price-cell">R$ 1.620,00</span></td></tr>
-                  <tr><td><span class="rank-num">10</span></td><td><div class="prod-cell"><span class="prod-thumb" style="width:30px;height:30px;background:linear-gradient(135deg,#c9a876,#a4824f);"><span class="icon" style="width:15px;height:15px;"><svg><use href="#i-archive"/></svg></span></span><span class="prod-name" style="font-size:12.5px;">Rejunte 1kg</span></div></td><td>16</td><td><span class="price-cell">R$ 320,00</span></td></tr>
-                </tbody>
+                <tbody id="relTopProdutosTbody"></tbody>
               </table>
             </div>
           </div>
 
           <div class="report-panel">
             <div class="report-panel__head"><h3>Vendas por Vendedor</h3></div>
-            <div class="rank-row"><span class="customer-avatar" style="background:#3b6fe0; width:28px; height:28px; font-size:10.5px;">JS</span><span class="rank-row__label">João da Silva</span><span class="rank-row__track"><span class="rank-row__fill" style="width:100%; background:#3b6fe0;"></span></span><span class="rank-row__value">R$ 8.450,00</span></div>
-            <div class="rank-row"><span class="customer-avatar" style="background:#e0527a; width:28px; height:28px; font-size:10.5px;">MO</span><span class="rank-row__label">Maria Oliveira</span><span class="rank-row__track"><span class="rank-row__fill" style="width:75%; background:#0ea968;"></span></span><span class="rank-row__value">R$ 6.320,00</span></div>
-            <div class="rank-row"><span class="customer-avatar" style="background:#1c8a7d; width:28px; height:28px; font-size:10.5px;">CL</span><span class="rank-row__label">Carlos Lima</span><span class="rank-row__track"><span class="rank-row__fill" style="width:68%; background:#f97316;"></span></span><span class="rank-row__value">R$ 5.780,00</span></div>
-            <div class="rank-row"><span class="customer-avatar" style="background:#e0813f; width:28px; height:28px; font-size:10.5px;">AC</span><span class="rank-row__label">Ana Costa</span><span class="rank-row__track"><span class="rank-row__fill" style="width:55%; background:#6a49b8;"></span></span><span class="rank-row__value">R$ 4.620,00</span></div>
-            <div class="rank-row"><span class="customer-avatar" style="background:#c4941c; width:28px; height:28px; font-size:10.5px;">RF</span><span class="rank-row__label">Rafael Ferreira</span><span class="rank-row__track"><span class="rank-row__fill" style="width:39%; background:#e0527a;"></span></span><span class="rank-row__value">R$ 3.280,00</span></div>
+            <div id="relVendedorRows"></div>
           </div>
 
           <div class="report-panel">
             <div class="report-panel__head"><h3>Clientes por Cidade</h3></div>
-            <div class="rank-row"><span class="rank-row__label" style="width:120px;">São Paulo - SP</span><span class="rank-row__track"><span class="rank-row__fill" style="width:100%; background:#3b6fe0;"></span></span><span class="rank-row__value">42</span></div>
-            <div class="rank-row"><span class="rank-row__label" style="width:120px;">Osasco - SP</span><span class="rank-row__track"><span class="rank-row__fill" style="width:43%; background:#0ea968;"></span></span><span class="rank-row__value">18</span></div>
-            <div class="rank-row"><span class="rank-row__label" style="width:120px;">Guarulhos - SP</span><span class="rank-row__track"><span class="rank-row__fill" style="width:36%; background:#f97316;"></span></span><span class="rank-row__value">15</span></div>
-            <div class="rank-row"><span class="rank-row__label" style="width:120px;">Santo André - SP</span><span class="rank-row__track"><span class="rank-row__fill" style="width:29%; background:#6a49b8;"></span></span><span class="rank-row__value">12</span></div>
-            <div class="rank-row"><span class="rank-row__label" style="width:120px;">São Bernardo - SP</span><span class="rank-row__track"><span class="rank-row__fill" style="width:24%; background:#e0527a;"></span></span><span class="rank-row__value">10</span></div>
-            <div class="rank-row"><span class="rank-row__label" style="width:120px;">Outras</span><span class="rank-row__track"><span class="rank-row__fill" style="width:64%; background:#9aa3b2;"></span></span><span class="rank-row__value">27</span></div>
+            <div id="relCidadeRows"></div>
           </div>
         </div>
 
@@ -9821,7 +9709,8 @@ html, body{ overflow-x:hidden; max-width:100%; }
       var venda = {
         id: uid(), numero: nextNumber('', vendasExistentes).replace(/^0+/, '') || '1',
         cliente_id: document.getElementById('vdCliente').value || null, itens: _vendaItens.slice(),
-        total: total, forma_pagamento: document.getElementById('vdPagamento').value, status: 'concluida', criado_em: nowISO()
+        total: total, forma_pagamento: document.getElementById('vdPagamento').value, status: 'concluida', criado_em: nowISO(),
+        usuario_id: STATE.user ? STATE.user.id : null, usuario_nome: STATE.user ? STATE.user.nome : null
       };
       await idbPut('vendas', venda);
       for (var i = 0; i < _vendaItens.length; i++) {
@@ -11109,6 +10998,19 @@ html, body{ overflow-x:hidden; max-width:100%; }
     rewire('painelEstoqueCriticoVerTodos', function(){ irParaTela('Estoque Crítico'); });
     rewire('painelClientesPediramVerTodos', function(){ irParaTela('Cliente Pediu e Não Tem'); });
     rewire('painelAtividadesVerTodas', function(){ irParaTela('Notificações'); });
+    var relTabsGroup = document.getElementById('relatoriosTabs');
+    if (relTabsGroup) {
+      var relTabsAtuais = Array.prototype.slice.call(relTabsGroup.querySelectorAll('.wa-tab'));
+      relTabsAtuais.forEach(function(tab, idx){
+        var clean = tab.cloneNode(true);
+        tab.parentNode.replaceChild(clean, tab);
+        clean.addEventListener('click', function(){
+          relTabsGroup.querySelectorAll('.wa-tab').forEach(function(t){ t.classList.remove('is-active'); });
+          clean.classList.add('is-active');
+          if (idx !== 0) toast('Esse recorte chega em uma próxima atualização — por enquanto todos os dados já aparecem juntos na Visão Geral.');
+        });
+      });
+    }
     [['chipNotifTodas','Todas'],['chipNotifNaoLidas','Não lidas'],['chipNotifUrgentes','Urgentes'],['chipNotifEstoque','Estoque'],['chipNotifSistema','Sistema']].forEach(function(par){
       rewire(par[0], function(){
         NOTIF_CHIP = par[1];
@@ -11206,6 +11108,32 @@ html, body{ overflow-x:hidden; max-width:100%; }
     setKpi('kpiECEmRisco', lowCount);
     setKpi('kpiECNormal', okCount);
     setKpi('kpiECTotal', produtos.length);
+
+    var abaixoMinimo = criticos.filter(function(p){ return calcularStatusEstoque(Number(p.estoque_atual||0), Number(p.estoque_minimo||0)) === 'low' && Number(p.estoque_atual||0) > Number(p.estoque_minimo||0) * 0.5; }).length;
+    var estoqueCriticoBucket = lowCount - abaixoMinimo;
+    var statusChartEl = document.getElementById('pcStatusChart');
+    if (statusChartEl) {
+      var maxBucket = Math.max(outCount, estoqueCriticoBucket, abaixoMinimo, 1);
+      var buckets = [
+        { valor: outCount, cor: 'var(--red-500)', label: 'Sem estoque' },
+        { valor: estoqueCriticoBucket, cor: 'var(--orange-500)', label: 'Estoque crítico' },
+        { valor: abaixoMinimo, cor: 'var(--amber-400)', label: 'Abaixo do mínimo' }
+      ];
+      statusChartEl.innerHTML = buckets.map(function(b){
+        var altura = Math.round((b.valor / maxBucket) * 100);
+        return '<div class="status-chart__col"><span class="status-chart__value">' + b.valor + '</span><div class="status-chart__bar" style="height:' + (b.valor > 0 ? Math.max(altura, 6) : 2) + '%; background:' + b.cor + ';"></div><span class="status-chart__label">' + b.label + '</span></div>';
+      }).join('');
+    }
+    var hbarEl = document.getElementById('pcCategoriasHbar');
+    if (hbarEl) {
+      var porCategoria = {};
+      criticos.forEach(function(p){ var nome = catMap[p.categoria_id] || 'Sem categoria'; porCategoria[nome] = (porCategoria[nome] || 0) + 1; });
+      var listaCat = Object.keys(porCategoria).map(function(k){ return { nome: k, qtd: porCategoria[k] }; }).sort(function(a,b){ return b.qtd - a.qtd; }).slice(0, 5);
+      var maxCat = listaCat.length ? listaCat[0].qtd : 1;
+      hbarEl.innerHTML = listaCat.length ? listaCat.map(function(c){
+        return '<div class="hbar-row"><span class="hbar-row__label">' + esc(c.nome) + '</span><span class="hbar-row__track"><span class="hbar-row__fill" style="width:' + Math.round((c.qtd / maxCat) * 100) + '%;"></span></span><span class="hbar-row__value">' + c.qtd + '</span></div>';
+      }).join('') : '<p style="padding:12px 0;font-size:13px;color:var(--text-tertiary);">Nenhum produto em falta ainda.</p>';
+    }
 
     var criticoTbody = document.getElementById('criticoTbody');
     if (criticoTbody) {
@@ -11346,19 +11274,144 @@ html, body{ overflow-x:hidden; max-width:100%; }
      mais elaborados dessa tela continuam como exemplo visual por
      enquanto, é a próxima etapa).
      ============================================================ */
+  function buildDonutSVG(segments, cores){
+    var total = segments.reduce(function(s,x){ return s + x.valor; }, 0);
+    var CIRC = 2 * Math.PI * 60;
+    if (total <= 0) return { svg: '<circle cx="80" cy="80" r="60" fill="none" stroke="var(--border-subtle)" stroke-width="24"/>', legend: '', vazio: true };
+    var acumulado = 0, circles = '', legend = '';
+    segments.forEach(function(s, i){
+      var pct = s.valor / total;
+      var dash = pct * CIRC;
+      var offset = -acumulado * CIRC;
+      var cor = cores[i % cores.length];
+      circles += '<circle cx="80" cy="80" r="60" fill="none" stroke="' + cor + '" stroke-width="24" stroke-dasharray="' + dash.toFixed(2) + ' ' + (CIRC - dash).toFixed(2) + '" stroke-dashoffset="' + offset.toFixed(2) + '" transform="rotate(-90 80 80)"/>';
+      legend += '<div class="donut-legend__row"><span class="donut-legend__dot" style="background:' + cor + ';"></span><span class="donut-legend__label">' + esc(s.label) + '</span><span class="donut-legend__pct">' + (pct * 100).toFixed(1).replace('.', ',') + '%</span></div>';
+      acumulado += pct;
+    });
+    return { svg: circles, legend: legend, vazio: false };
+  }
+  var CORES_GRAFICO = ['#3b6fe0', '#0ea968', '#f97316', '#6a49b8', '#e0527a', '#7c8698', '#cbd0d9'];
   async function renderRelatorios(){
     var el = document.getElementById('relVendasTotais');
     if (!el) return;
     var vendas = await idbAll('vendas');
     var clientes = await idbAll('clientes');
+    var produtos = await idbAll('produtos');
+    var categorias = await idbAll('categorias');
+    var catMap = {}; categorias.forEach(function(c){ catMap[c.id] = c.nome; });
+    var prodMap = {}; produtos.forEach(function(p){ prodMap[p.id] = p; });
     var totalVendas = vendas.reduce(function(s,v){ return s + Number(v.total||0); }, 0);
     var produtosVendidos = vendas.reduce(function(s,v){ return s + (v.itens||[]).reduce(function(s2,it){ return s2 + Number(it.qtd||0); }, 0); }, 0);
-    var setText = function(id, txt){ var e = document.getElementById(id); if (e) e.textContent = txt; };
-    setText('relVendasTotais', fmtBRL(totalVendas));
-    setText('relPedidos', String(vendas.length));
-    setText('relProdutosVendidos', String(produtosVendidos));
-    setText('relTotalClientes', String(clientes.length));
-    setText('relTicketMedio', fmtBRL(vendas.length ? totalVendas / vendas.length : 0));
+    setKpi('relVendasTotais', fmtBRL(totalVendas));
+    setKpi('relPedidos', String(vendas.length));
+    setKpi('relProdutosVendidos', String(produtosVendidos));
+    setKpi('relTotalClientes', String(clientes.length));
+    setKpi('relTicketMedio', fmtBRL(vendas.length ? totalVendas / vendas.length : 0));
+
+    var vazioMsg = function(msg){ return '<p style="padding:28px 0;text-align:center;font-size:13px;color:var(--text-tertiary);">' + msg + '</p>'; };
+
+    var lineEl = document.getElementById('relLineChart');
+    if (lineEl) {
+      var agora = new Date(), ano = agora.getFullYear(), mesAtual = agora.getMonth();
+      var diasNoMes = new Date(ano, mesAtual + 1, 0).getDate();
+      var porDia = new Array(diasNoMes).fill(0);
+      vendas.forEach(function(v){
+        var d = new Date(v.criado_em);
+        if (d.getFullYear() === ano && d.getMonth() === mesAtual) porDia[d.getDate() - 1] += Number(v.total || 0);
+      });
+      var totalMes = porDia.reduce(function(s,v){ return s + v; }, 0);
+      if (totalMes <= 0) {
+        lineEl.innerHTML = vazioMsg('Nenhuma venda registrada este mês ainda.');
+      } else {
+        var maxDia = Math.max.apply(null, porDia.concat([1]));
+        var padL = 40, padT = 15, padB = 20, w = 700, h = 210;
+        var plotW = w - padL - 10, plotH = h - padT - padB;
+        var pontos = porDia.map(function(v, i){
+          return { x: padL + (diasNoMes > 1 ? (i / (diasNoMes - 1)) * plotW : 0), y: padT + plotH - (v / maxDia) * plotH };
+        });
+        var pathPts = pontos.map(function(p){ return p.x.toFixed(1) + ',' + p.y.toFixed(1); }).join(' ');
+        var areaD = 'M' + pathPts.split(' ').join(' L') + ' L' + pontos[pontos.length-1].x.toFixed(1) + ',' + (padT+plotH) + ' L' + pontos[0].x.toFixed(1) + ',' + (padT+plotH) + ' Z';
+        var circles = pontos.map(function(p){ return '<circle cx="' + p.x.toFixed(1) + '" cy="' + p.y.toFixed(1) + '" r="3" fill="#fff" stroke="#0ea968" stroke-width="2"/>'; }).join('');
+        var passoLabel = Math.max(1, Math.ceil(diasNoMes / 7));
+        var labels = [];
+        for (var di = 0; di < diasNoMes; di += passoLabel) labels.push('<span>' + (di+1) + '/' + String(mesAtual+1).padStart(2,'0') + '</span>');
+        lineEl.innerHTML = '<svg viewBox="0 0 700 210" xmlns="http://www.w3.org/2000/svg">' +
+          '<line x1="' + padL + '" y1="' + padT + '" x2="' + padL + '" y2="' + (padT+plotH) + '" stroke="var(--border-subtle)" stroke-width="1"/>' +
+          '<line x1="' + padL + '" y1="' + (padT+plotH) + '" x2="690" y2="' + (padT+plotH) + '" stroke="var(--border-subtle)" stroke-width="1"/>' +
+          '<text x="0" y="' + (padT+4) + '" font-size="11" fill="var(--text-tertiary)">' + Math.round(maxDia).toLocaleString('pt-BR') + '</text>' +
+          '<text x="12" y="' + (padT+plotH+4) + '" font-size="11" fill="var(--text-tertiary)">0</text>' +
+          '<defs><linearGradient id="areaFill" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#0ea968" stop-opacity="0.28"/><stop offset="100%" stop-color="#0ea968" stop-opacity="0"/></linearGradient></defs>' +
+          '<path d="' + areaD + '" fill="url(#areaFill)"/>' +
+          '<polyline points="' + pathPts + '" fill="none" stroke="#0ea968" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>' +
+          circles + '</svg>' +
+          '<div class="line-chart__labels">' + labels.join('') + '</div>';
+      }
+    }
+
+    var porCategoriaRevenue = {};
+    vendas.forEach(function(v){
+      (v.itens||[]).forEach(function(it){
+        var prod = prodMap[it.produto_id];
+        var catNome = prod ? (catMap[prod.categoria_id] || 'Sem categoria') : 'Sem categoria';
+        porCategoriaRevenue[catNome] = (porCategoriaRevenue[catNome]||0) + Number(it.qtd||0) * Number(it.preco||0);
+      });
+    });
+    var segsCat = Object.keys(porCategoriaRevenue).map(function(k){ return { label: k, valor: porCategoriaRevenue[k] }; }).sort(function(a,b){ return b.valor - a.valor; });
+    var donutCat = buildDonutSVG(segsCat, CORES_GRAFICO);
+    var donutCatEl = document.getElementById('relDonutCategoria');
+    if (donutCatEl) {
+      donutCatEl.innerHTML = donutCat.vazio ? vazioMsg('Nenhuma venda registrada ainda.') :
+        '<div class="donut-svg-wrap"><svg viewBox="0 0 160 160">' + donutCat.svg + '</svg><div class="donut-center"><span class="donut-center__value">' + fmtBRL(totalVendas) + '</span><span class="donut-center__label">Total</span></div></div><div class="donut-legend">' + donutCat.legend + '</div>';
+    }
+
+    var porPagamento = {};
+    vendas.forEach(function(v){ var fp = v.forma_pagamento || 'Não informado'; porPagamento[fp] = (porPagamento[fp]||0) + 1; });
+    var segsPag = Object.keys(porPagamento).map(function(k){ return { label: k, valor: porPagamento[k] }; }).sort(function(a,b){ return b.valor - a.valor; });
+    var donutPag = buildDonutSVG(segsPag, CORES_GRAFICO);
+    var donutPagEl = document.getElementById('relDonutPagamento');
+    if (donutPagEl) {
+      donutPagEl.innerHTML = donutPag.vazio ? vazioMsg('Nenhuma venda registrada ainda.') :
+        '<div class="donut-svg-wrap"><svg viewBox="0 0 160 160">' + donutPag.svg + '</svg><div class="donut-center"><span class="donut-center__value">' + vendas.length + '</span><span class="donut-center__label">Pedidos</span></div></div><div class="donut-legend">' + donutPag.legend + '</div>';
+    }
+
+    var porProduto = {};
+    vendas.forEach(function(v){
+      (v.itens||[]).forEach(function(it){
+        var key = it.produto_id || it.nome;
+        if (!porProduto[key]) porProduto[key] = { nome: it.nome, qtd: 0, receita: 0 };
+        porProduto[key].qtd += Number(it.qtd||0);
+        porProduto[key].receita += Number(it.qtd||0) * Number(it.preco||0);
+      });
+    });
+    var topProdutos = Object.keys(porProduto).map(function(k){ return porProduto[k]; }).sort(function(a,b){ return b.qtd - a.qtd; }).slice(0, 10);
+    var tbodyTop = document.getElementById('relTopProdutosTbody');
+    if (tbodyTop) {
+      tbodyTop.innerHTML = topProdutos.length ? topProdutos.map(function(p, i){
+        return '<tr><td><span class="rank-num">' + (i+1) + '</span></td><td><div class="prod-cell"><span class="prod-thumb" style="width:30px;height:30px;background:linear-gradient(135deg,#8a8f99,#5f6472);"><span class="icon" style="width:15px;height:15px;"><svg><use href="#i-bag"/></svg></span></span><span class="prod-name" style="font-size:12.5px;">' + esc(p.nome) + '</span></div></td><td>' + p.qtd + '</td><td><span class="price-cell">' + fmtBRL(p.receita) + '</span></td></tr>';
+      }).join('') : '<tr><td colspan="4" style="text-align:center;padding:20px;color:var(--text-tertiary);">Nenhuma venda registrada ainda.</td></tr>';
+    }
+
+    var porVendedor = {};
+    vendas.forEach(function(v){ if (v.usuario_nome) porVendedor[v.usuario_nome] = (porVendedor[v.usuario_nome]||0) + Number(v.total||0); });
+    var listaVend = Object.keys(porVendedor).map(function(k){ return { nome: k, valor: porVendedor[k] }; }).sort(function(a,b){ return b.valor - a.valor; });
+    var maxVend = listaVend.length ? listaVend[0].valor : 1;
+    var vendedorEl = document.getElementById('relVendedorRows');
+    if (vendedorEl) {
+      vendedorEl.innerHTML = listaVend.length ? listaVend.map(function(x){
+        return '<div class="rank-row"><span class="customer-avatar" style="background:' + avatarColor(x.nome) + '; width:28px; height:28px; font-size:10.5px;">' + initials(x.nome) + '</span><span class="rank-row__label">' + esc(x.nome) + '</span><span class="rank-row__track"><span class="rank-row__fill" style="width:' + Math.round(x.valor/maxVend*100) + '%; background:' + avatarColor(x.nome) + ';"></span></span><span class="rank-row__value">' + fmtBRL(x.valor) + '</span></div>';
+      }).join('') : vazioMsg('Nenhuma venda registrada ainda.');
+    }
+
+    var porCidade = {};
+    clientes.forEach(function(c){ var cid = c.cidade || 'Não informada'; porCidade[cid] = (porCidade[cid]||0) + 1; });
+    var listaCidade = Object.keys(porCidade).map(function(k){ return { cidade: k, qtd: porCidade[k] }; }).sort(function(a,b){ return b.qtd - a.qtd; }).slice(0, 6);
+    var maxCidade = listaCidade.length ? listaCidade[0].qtd : 1;
+    var cidadeEl = document.getElementById('relCidadeRows');
+    if (cidadeEl) {
+      cidadeEl.innerHTML = listaCidade.length ? listaCidade.map(function(x, i){
+        return '<div class="rank-row"><span class="rank-row__label" style="width:120px;">' + esc(x.cidade) + '</span><span class="rank-row__track"><span class="rank-row__fill" style="width:' + Math.round(x.qtd/maxCidade*100) + '%; background:' + CORES_GRAFICO[i % CORES_GRAFICO.length] + ';"></span></span><span class="rank-row__value">' + x.qtd + '</span></div>';
+      }).join('') : vazioMsg('Nenhum cliente cadastrado ainda.');
+    }
   }
   document.addEventListener('click', function(e){
     if (e.target.closest('[data-view="Relatórios"]')) setTimeout(function(){ renderRelatorios(); }, 50);
