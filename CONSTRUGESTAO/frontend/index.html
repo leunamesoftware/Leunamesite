@@ -2308,6 +2308,9 @@ html, body{ overflow-x:hidden; max-width:100%; }
               <span class="icon"><svg><use href="#i-chevron-right"/></svg></span>
               <span class="breadcrumb__current">Categorias</span>
             </nav>
+            <button class="btn btn--secondary" type="button" id="importarCategoriasBtnCategorias">
+              <span class="icon"><svg><use href="#i-layers"/></svg></span>Importar Categorias Sugeridas
+            </button>
             <button class="btn btn--primary" type="button" id="novaCategoriaBtn">
               <span class="icon"><svg><use href="#i-plus"/></svg></span>Nova Categoria
             </button>
@@ -8684,6 +8687,13 @@ html, body{ overflow-x:hidden; max-width:100%; }
 (function () {
   'use strict';
 
+  /* Marcador de versão do app -- muda a cada publicação. Serve pra
+     detectar sozinho quando saiu uma versão nova (ver checagem de
+     atualização mais abaixo), já que o service worker não recarrega
+     nada por conta própria (é sempre o mesmo arquivo sw.js, só o
+     index.html muda a cada deploy). */
+  var APP_BUILD_ID = 'BUILD-2026-09-22-03';
+
   /* ============================================================
      CONSTRUGESTÃO — núcleo real (licença, login, banco local, CRUD)
      Segue o mesmo padrão já em produção do LeuName Gestão:
@@ -11413,6 +11423,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
     rewire('restaurarPadroesBtn', async function(){ await renderConfiguracoes(); toast('Alterações não salvas foram descartadas.'); });
     rewire('zerarDadosBtn', async function(){ await apagarRegistrosDeTeste(); });
     rewire('importarCategoriasBtn', async function(){ await importarCategoriasSugeridas(); });
+    rewire('importarCategoriasBtnCategorias', async function(){ await importarCategoriasSugeridas(); });
     rewire('topbarHelpBtn', function(){ toast('Central de Ajuda chega em uma próxima etapa.'); });
     rewire('configContaBtn', function(){ irParaTela('Configurações'); });
     wireBuscaGlobal();
@@ -11901,26 +11912,34 @@ html, body{ overflow-x:hidden; max-width:100%; }
   window.addEventListener('online', function () { syncNow().catch(function () {}); });
   setInterval(function () { syncNow().catch(function () {}); }, 90000);
 
-  // Registra o service worker (habilita "Instalar app") e detecta
-  // sozinho quando sai uma versão nova publicada: recarrega a página
-  // na hora, sem precisar que a pessoa dê refresh, limpe cache ou
-  // desinstale o app pra ver a atualização.
+  // Registra o service worker (habilita "Instalar app").
   if ('serviceWorker' in navigator) {
-    var recarregandoPorAtualizacao = false;
-    navigator.serviceWorker.addEventListener('controllerchange', function () {
-      if (recarregandoPorAtualizacao) return;
-      recarregandoPorAtualizacao = true;
-      window.location.reload();
-    });
-    navigator.serviceWorker.register('/sw.js').then(function (registro) {
-      registro.update().catch(function () {});
-      document.addEventListener('visibilitychange', function () {
-        if (document.visibilityState === 'visible') registro.update().catch(function () {});
-      });
-      window.addEventListener('focus', function () { registro.update().catch(function () {}); });
-      setInterval(function () { registro.update().catch(function () {}); }, 120000);
+    navigator.serviceWorker.register('/sw.js').catch(function () {});
+  }
+
+  /* Checagem de versão nova: o sw.js nunca muda de conteúdo (só o
+     index.html muda a cada deploy), então o "controllerchange" do
+     service worker praticamente nunca dispara -- não serve pra
+     detectar atualização de verdade. Em vez disso, busca o
+     index.html direto da rede (sem cache) de vez em quando e compara
+     o BUILD_ID; se for diferente do que já está rodando na tela,
+     recarrega sozinho. Isso é o que faz a pessoa nunca precisar dar
+     refresh, limpar cache ou desinstalar o app pra ver uma correção
+     nova -- o app instalado (WebAPK) só roda esse código quando a
+     aba/app está em primeiro plano, então a checagem roda ao abrir,
+     ao voltar pra tela e a cada 1 minuto enquanto estiver aberto. */
+  var jaRecarregou = false;
+  function verificarVersaoNova() {
+    if (jaRecarregou) return;
+    fetch('/index.html', { cache: 'no-store' }).then(function (r) { return r.text(); }).then(function (html) {
+      var m = /APP_BUILD_ID\s*=\s*'([^']+)'/.exec(html);
+      if (m && m[1] && m[1] !== APP_BUILD_ID) { jaRecarregou = true; window.location.reload(); }
     }).catch(function () {});
   }
+  document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible') verificarVersaoNova(); });
+  window.addEventListener('focus', verificarVersaoNova);
+  setInterval(verificarVersaoNova, 60000);
+  verificarVersaoNova();
 })();
 
 </script>
