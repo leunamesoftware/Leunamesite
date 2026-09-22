@@ -8285,40 +8285,40 @@ html, body{ overflow-x:hidden; max-width:100%; }
               <span class="kpi-card__icon green"><span class="icon"><svg><use href="#i-bars"/></svg></span></span>
               <span class="kpi-card__label">Vendas totais</span>
             </div>
-            <p class="kpi-card__value">R$ 28.450,00</p>
-            <div class="kpi-card__foot"><span class="kpi-card__foot-delta up"><span class="icon"><svg><use href="#i-trending-up"/></svg></span>+12,5% <span>em relação ao mês anterior</span></span></div>
+            <p class="kpi-card__value" id="relVendasTotais">R$ 0,00</p>
+            <div class="kpi-card__foot"><span class="kpi-card__foot-delta up"><span class="icon"><svg><use href="#i-trending-up"/></svg></span><span id="relVendasTotaisSub">total de vendas registradas</span></span></div>
           </div>
           <div class="kpi-card">
             <div class="kpi-card__top">
               <span class="kpi-card__icon blue"><span class="icon"><svg><use href="#i-cart"/></svg></span></span>
               <span class="kpi-card__label">Pedidos</span>
             </div>
-            <p class="kpi-card__value">124</p>
-            <div class="kpi-card__foot"><span class="kpi-card__foot-delta up"><span class="icon"><svg><use href="#i-trending-up"/></svg></span>+18,1% <span>em relação ao mês anterior</span></span></div>
+            <p class="kpi-card__value" id="relPedidos">0</p>
+            <div class="kpi-card__foot"><span class="kpi-card__foot-delta up"><span class="icon"><svg><use href="#i-trending-up"/></svg></span><span>pedidos concluídos</span></span></div>
           </div>
           <div class="kpi-card">
             <div class="kpi-card__top">
               <span class="kpi-card__icon orange"><span class="icon"><svg><use href="#i-box"/></svg></span></span>
               <span class="kpi-card__label">Produtos vendidos</span>
             </div>
-            <p class="kpi-card__value">356</p>
-            <div class="kpi-card__foot"><span class="kpi-card__foot-delta up"><span class="icon"><svg><use href="#i-trending-up"/></svg></span>+15,4% <span>em relação ao mês anterior</span></span></div>
+            <p class="kpi-card__value" id="relProdutosVendidos">0</p>
+            <div class="kpi-card__foot"><span class="kpi-card__foot-delta up"><span class="icon"><svg><use href="#i-trending-up"/></svg></span><span>unidades vendidas</span></span></div>
           </div>
           <div class="kpi-card">
             <div class="kpi-card__top">
               <span class="kpi-card__icon purple"><span class="icon"><svg><use href="#i-users"/></svg></span></span>
               <span class="kpi-card__label">Novos clientes</span>
             </div>
-            <p class="kpi-card__value">48</p>
-            <div class="kpi-card__foot"><span class="kpi-card__foot-delta up"><span class="icon"><svg><use href="#i-trending-up"/></svg></span>+20,0% <span>em relação ao mês anterior</span></span></div>
+            <p class="kpi-card__value" id="relTotalClientes">0</p>
+            <div class="kpi-card__foot"><span class="kpi-card__foot-delta up"><span class="icon"><svg><use href="#i-trending-up"/></svg></span><span>clientes cadastrados</span></span></div>
           </div>
           <div class="kpi-card">
             <div class="kpi-card__top">
               <span class="kpi-card__icon" style="background:linear-gradient(135deg,#e5484d,#ef7478);"><span class="icon"><svg><use href="#i-dollar"/></svg></span></span>
               <span class="kpi-card__label">Ticket médio</span>
             </div>
-            <p class="kpi-card__value">R$ 229,44</p>
-            <div class="kpi-card__foot"><span class="kpi-card__foot-delta up"><span class="icon"><svg><use href="#i-trending-up"/></svg></span>+5,8% <span>em relação ao mês anterior</span></span></div>
+            <p class="kpi-card__value" id="relTicketMedio">R$ 0,00</p>
+            <div class="kpi-card__foot"><span class="kpi-card__foot-delta up"><span class="icon"><svg><use href="#i-trending-up"/></svg></span><span>valor médio por venda</span></span></div>
           </div>
         </section>
 
@@ -9024,9 +9024,9 @@ html, body{ overflow-x:hidden; max-width:100%; }
      ============================================================ */
 
   var DB_NAME = 'construgestao_db';
-  var DB_VERSION = 1;
-  var STORES = ['loja', 'usuarios', 'categorias', 'produtos', 'estoque_mov', 'clientes', 'vendas', 'fornecedores', 'compras', 'orcamentos', 'demandas', 'entregas', 'notificacoes', 'config', 'dispositivos', 'logs', '_sync_outbox'];
-  var SYNC_STORES = ['loja', 'usuarios', 'categorias', 'produtos', 'estoque_mov', 'clientes', 'vendas', 'fornecedores', 'compras', 'orcamentos', 'demandas', 'entregas', 'notificacoes', 'config'];
+  var DB_VERSION = 2;
+  var STORES = ['loja', 'usuarios', 'categorias', 'produtos', 'estoque_mov', 'clientes', 'vendas', 'fornecedores', 'compras', 'recebimentos', 'orcamentos', 'demandas', 'entregas', 'notificacoes', 'config', 'dispositivos', 'logs', '_sync_outbox'];
+  var SYNC_STORES = ['loja', 'usuarios', 'categorias', 'produtos', 'estoque_mov', 'clientes', 'vendas', 'fornecedores', 'compras', 'recebimentos', 'orcamentos', 'demandas', 'entregas', 'notificacoes', 'config'];
   var SYNC_API_BASE = 'https://api.leunamesoftware.com';
   var LICENSE_LOCAL_SECRET = 'LeuName-Ativacao-Local-PrimeiroCliente-2026-v1';
   var LICENSE_LS_KEY = 'construgestao_licenca_ativa';
@@ -9489,7 +9489,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
       await logAction(cat.id ? 'categoria_editada' : 'categoria_criada', obj.nome);
       closeFormModal();
       toast('Categoria salva.');
-      await renderCategorias(); await renderProdutos(); await renderDashboard();
+      await renderCategorias(); await renderProdutos(); await renderEstoqueDerivados(); await renderDashboard();
     });
   }
   document.addEventListener('click', async function (e) {
@@ -9601,7 +9601,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
       await logAction(prod.id ? 'produto_editado' : 'produto_criado', obj.nome);
       closeFormModal();
       toast('Produto salvo.');
-      await renderProdutos(); await renderDashboard();
+      await renderProdutos(); await renderEstoqueDerivados(); await renderDashboard();
     });
   }
   document.addEventListener('click', async function (e) {
@@ -9614,7 +9614,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
         await idbDelete('produtos', id);
         await logAction('produto_excluido', id);
         toast('Produto excluído.');
-        await renderProdutos(); await renderDashboard();
+        await renderProdutos(); await renderEstoqueDerivados(); await renderDashboard();
       }
     }
   });
@@ -9809,7 +9809,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
       await logAction('venda_registrada', 'Venda #' + venda.numero + ' — ' + fmtBRL(total));
       closeFormModal();
       toast('Venda registrada com sucesso.');
-      await renderVendas(); await renderProdutos(); await renderClientes(); await renderDashboard();
+      await renderVendas(); await renderHistoricoVendas(); await renderProdutos(); await renderEstoqueDerivados(); await renderClientes(); await renderDashboard();
     });
   }
   document.addEventListener('click', async function (e) {
@@ -9832,7 +9832,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
         await idbDelete('vendas', id);
         await logAction('venda_excluida', id);
         toast('Venda excluída.');
-        await renderVendas(); await renderDashboard();
+        await renderVendas(); await renderHistoricoVendas(); await renderDashboard();
       }
     }
   });
@@ -10002,6 +10002,782 @@ html, body{ overflow-x:hidden; max-width:100%; }
     }
     if (firstRun) { OB = { data: { resp_nome: '', resp_email: '', resp_senha: '', resp_senha2: '', loja_nome: '' } }; renderOnboarding(); }
     else { await renderLogin(); }
+  }
+
+
+  /* ============================================================
+     FORNECEDORES
+     ============================================================ */
+  var FORNECEDOR_CATEGORIAS = ['Hidráulica','Cimentos e Argamassas','Revestimentos','Metais','Tintas','Ferramentas','Elétrica','Outros'];
+  function fornecedorRowHTML(f){
+    var statusBadge = f.status === 'ativo' ? 'badge--green' : (f.status === 'negociacao' ? 'badge--orange' : 'badge--gray');
+    var statusLabel = f.status === 'ativo' ? 'Ativo' : (f.status === 'negociacao' ? 'Em Negociação' : 'Inativo');
+    return '<tr data-id="' + f.id + '">' +
+      '<td><input type="checkbox" class="checkbox"></td>' +
+      '<td><div class="customer-cell"><span class="customer-avatar" style="background:' + avatarColor(f.nome) + ';">' + initials(f.nome) + '</span><span class="customer-name">' + esc(f.nome) + '</span></div></td>' +
+      '<td><span class="sku-cell">' + esc(f.documento || '—') + '</span></td>' +
+      '<td><span class="badge badge--blue">' + esc(f.categoria || '—') + '</span></td>' +
+      '<td>' + esc(f.telefone || '—') + '</td>' +
+      '<td>' + esc(f.email || '—') + '</td>' +
+      '<td>' + esc(f.cidade || '—') + '</td>' +
+      '<td><span class="badge ' + statusBadge + '">' + statusLabel + '</span></td>' +
+      '<td>' + (f._ultimaCompra ? fmtDateOnly(f._ultimaCompra) : '—') + '</td>' +
+      '<td><div class="row-actions">' +
+        '<button class="iconbtn" type="button" title="Editar" data-forn-edit="' + f.id + '"><span class="icon"><svg><use href="#i-pencil"/></svg></span></button>' +
+        '<button class="iconbtn is-danger" type="button" title="Excluir" data-forn-del="' + f.id + '"><span class="icon"><svg><use href="#i-trash"/></svg></span></button>' +
+      '</div></td></tr>';
+  }
+  function fmtDateOnly(iso){ if(!iso) return '—'; var d = new Date(iso); if (isNaN(d)) return '—'; return d.toLocaleDateString('pt-BR'); }
+  async function renderFornecedores(){
+    var tbody = document.getElementById('fornecedoresTbody');
+    if (!tbody) return;
+    var fornecedores = await idbAll('fornecedores');
+    var compras = await idbAll('compras');
+    fornecedores.forEach(function(f){
+      var deste = compras.filter(function(c){ return c.fornecedor_id === f.id; }).sort(function(a,b){ return new Date(b.criado_em)-new Date(a.criado_em); });
+      f._ultimaCompra = deste.length ? deste[0].criado_em : null;
+    });
+    tbody.innerHTML = fornecedores.length ? fornecedores.map(fornecedorRowHTML).join('') :
+      '<tr><td colspan="10" style="text-align:center;padding:24px;color:var(--text-tertiary);">Nenhum fornecedor cadastrado ainda.</td></tr>';
+  }
+  function fornecedorFormModal(f){
+    f = f || { id:null, nome:'', documento:'', categoria:FORNECEDOR_CATEGORIAS[0], telefone:'', email:'', cidade:'', status:'ativo' };
+    openFormModal(
+      modalHeaderHTML(f.id ? 'Editar fornecedor' : 'Novo fornecedor') +
+      '<form id="fornForm" style="padding:20px 24px;display:flex;flex-direction:column;gap:14px;">' +
+        '<div class="field"><label>Nome / Razão social</label><input id="fornNome" value="' + esc(f.nome) + '" required></div>' +
+        '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">' +
+          '<div class="field"><label>CNPJ / CPF</label><input id="fornDocumento" value="' + esc(f.documento || '') + '"></div>' +
+          '<div class="field"><label>Categoria</label><select id="fornCategoria">' + FORNECEDOR_CATEGORIAS.map(function(c){ return '<option' + (f.categoria===c?' selected':'') + '>' + c + '</option>'; }).join('') + '</select></div>' +
+        '</div>' +
+        '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">' +
+          '<div class="field"><label>Telefone</label><input id="fornTelefone" value="' + esc(f.telefone || '') + '"></div>' +
+          '<div class="field"><label>E-mail</label><input id="fornEmail" type="email" value="' + esc(f.email || '') + '"></div>' +
+        '</div>' +
+        '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">' +
+          '<div class="field"><label>Cidade</label><input id="fornCidade" value="' + esc(f.cidade || '') + '"></div>' +
+          '<div class="field"><label>Status</label><select id="fornStatus"><option value="ativo"' + (f.status==='ativo'?' selected':'') + '>Ativo</option><option value="negociacao"' + (f.status==='negociacao'?' selected':'') + '>Em Negociação</option><option value="inativo"' + (f.status==='inativo'?' selected':'') + '>Inativo</option></select></div>' +
+        '</div>' +
+        modalFooterHTML('Salvar fornecedor') +
+      '</form>'
+    );
+    document.getElementById('fornForm').addEventListener('submit', async function(e){
+      e.preventDefault();
+      var nome = document.getElementById('fornNome').value.trim();
+      if (!nome) { toast('Informe o nome do fornecedor.', 'error'); return; }
+      var obj = {
+        id: f.id || uid(), nome: nome, documento: document.getElementById('fornDocumento').value.trim(),
+        categoria: document.getElementById('fornCategoria').value, telefone: document.getElementById('fornTelefone').value.trim(),
+        email: document.getElementById('fornEmail').value.trim(), cidade: document.getElementById('fornCidade').value.trim(),
+        status: document.getElementById('fornStatus').value, criado_em: f.criado_em || nowISO()
+      };
+      await idbPut('fornecedores', obj);
+      await logAction(f.id ? 'fornecedor_editado' : 'fornecedor_criado', obj.nome);
+      closeFormModal(); toast('Fornecedor salvo.');
+      await renderFornecedores();
+    });
+  }
+  document.addEventListener('click', async function(e){
+    var editBtn = e.target.closest('[data-forn-edit]');
+    if (editBtn) { var f = await idbGet('fornecedores', editBtn.getAttribute('data-forn-edit')); if (f) fornecedorFormModal(f); return; }
+    var delBtn = e.target.closest('[data-forn-del]');
+    if (delBtn) {
+      var id = delBtn.getAttribute('data-forn-del');
+      if (confirm('Excluir este fornecedor?')) { await idbDelete('fornecedores', id); await logAction('fornecedor_excluido', id); toast('Fornecedor excluído.'); await renderFornecedores(); }
+    }
+  });
+
+  /* ============================================================
+     COMPRAS + RECEBIMENTO
+     ============================================================ */
+  var COMPRA_STATUS = ['Confirmada','Em Separação','Em Transporte','Recebida','Atrasada','Cancelada'];
+  function compraRowHTML(c, fornecedorNome){
+    var badgeMap = { 'Confirmada':'badge--blue','Em Separação':'badge--orange','Em Transporte':'badge--blue','Recebida':'badge--green','Atrasada':'badge--red','Cancelada':'badge--gray' };
+    return '<tr data-id="' + c.id + '">' +
+      '<td><input type="checkbox" class="checkbox"></td>' +
+      '<td><span class="order-id">#' + esc(c.numero) + '</span></td>' +
+      '<td>' + fmtDateOnly(c.criado_em) + '</td>' +
+      '<td><div class="customer-cell"><span class="customer-avatar" style="background:' + avatarColor(fornecedorNome) + ';">' + initials(fornecedorNome) + '</span><span class="customer-name">' + esc(fornecedorNome || '—') + '</span></div></td>' +
+      '<td>' + (c.itens||[]).length + ' itens</td>' +
+      '<td><span class="price-cell">' + fmtBRL(c.total) + '</span></td>' +
+      '<td>' + esc(c.previsao_entrega || '—') + '</td>' +
+      '<td><span class="badge ' + (badgeMap[c.status]||'badge--gray') + '">' + esc(c.status) + '</span></td>' +
+      '<td><span class="supplier-cell">' + esc(c.observacao || '—') + '</span></td>' +
+      '<td><div class="row-actions">' +
+        (c.status !== 'Recebida' && c.status !== 'Cancelada' ? '<button class="iconbtn" type="button" title="Registrar recebimento" data-compra-receber="' + c.id + '"><span class="icon"><svg><use href="#i-arrow-down-tray"/></svg></span></button>' : '') +
+        '<button class="iconbtn is-danger" type="button" title="Excluir" data-compra-del="' + c.id + '"><span class="icon"><svg><use href="#i-trash"/></svg></span></button>' +
+      '</div></td></tr>';
+  }
+  async function renderCompras(){
+    var tbody = document.getElementById('comprasTbody');
+    if (!tbody) return;
+    var compras = (await idbAll('compras')).sort(function(a,b){ return new Date(b.criado_em)-new Date(a.criado_em); });
+    var fornecedores = await idbAll('fornecedores');
+    var fMap = {}; fornecedores.forEach(function(f){ fMap[f.id] = f.nome; });
+    tbody.innerHTML = compras.length ? compras.map(function(c){ return compraRowHTML(c, fMap[c.fornecedor_id]); }).join('') :
+      '<tr><td colspan="10" style="text-align:center;padding:24px;color:var(--text-tertiary);">Nenhuma compra registrada ainda.</td></tr>';
+  }
+  async function renderRecebimento(){
+    var tbody = document.getElementById('recebimentoTbody');
+    if (!tbody) return;
+    var recs = (await idbAll('recebimentos')).sort(function(a,b){ return new Date(b.criado_em)-new Date(a.criado_em); });
+    var fornecedores = await idbAll('fornecedores');
+    var fMap = {}; fornecedores.forEach(function(f){ fMap[f.id] = f.nome; });
+    tbody.innerHTML = recs.length ? recs.map(function(r){
+      return '<tr data-id="' + r.id + '">' +
+        '<td><input type="checkbox" class="checkbox"></td>' +
+        '<td><span class="order-id">#' + esc(r.numero) + '</span></td>' +
+        '<td><span class="order-id">#' + esc(r.compra_numero) + '</span></td>' +
+        '<td>' + fmtDateOnly(r.criado_em) + '</td>' +
+        '<td><div class="customer-cell"><span class="customer-avatar" style="background:' + avatarColor(fMap[r.fornecedor_id]) + ';">' + initials(fMap[r.fornecedor_id]) + '</span><span class="customer-name">' + esc(fMap[r.fornecedor_id] || '—') + '</span></div></td>' +
+        '<td>' + esc(r.itens_recebidos || '—') + '</td>' +
+        '<td><span class="badge badge--green">Concluído</span></td>' +
+        '<td>' + esc(r.conferido_por || '—') + '</td>' +
+        '<td></td></tr>';
+    }).join('') : '<tr><td colspan="9" style="text-align:center;padding:24px;color:var(--text-tertiary);">Nenhum recebimento registrado ainda.</td></tr>';
+  }
+  var _compraItens = [];
+  async function compraFormModal(){
+    _compraItens = [];
+    var fornecedores = await idbAll('fornecedores');
+    var produtos = await idbAll('produtos');
+    if (!fornecedores.length) { toast('Cadastre um fornecedor antes de registrar uma compra.', 'error'); return; }
+    var fornOptions = fornecedores.map(function(f){ return '<option value="' + f.id + '">' + esc(f.nome) + '</option>'; }).join('');
+    var prodOptions = '<option value="">Selecione um produto...</option>' + produtos.map(function(p){ return '<option value="' + p.id + '" data-custo="' + p.preco + '">' + esc(p.nome) + '</option>'; }).join('');
+    openFormModal(
+      modalHeaderHTML('Nova compra') +
+      '<form id="compraForm" style="padding:20px 24px;display:flex;flex-direction:column;gap:14px;">' +
+        '<div class="field"><label>Fornecedor</label><select id="cpFornecedor">' + fornOptions + '</select></div>' +
+        '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">' +
+          '<div class="field"><label>Previsão de entrega</label><input id="cpPrevisao" type="date"></div>' +
+          '<div class="field"><label>Status</label><select id="cpStatus">' + COMPRA_STATUS.filter(function(s){return s!=='Recebida';}).map(function(s){ return '<option' + (s==='Confirmada'?' selected':'') + '>' + s + '</option>'; }).join('') + '</select></div>' +
+        '</div>' +
+        '<div class="field"><label>Observação</label><input id="cpObs"></div>' +
+        '<div style="border-top:1px solid var(--border-subtle);padding-top:12px;">' +
+          '<div style="display:flex;gap:8px;align-items:flex-end;">' +
+            '<div class="field" style="flex:1;"><label>Produto</label><select id="cpProduto">' + prodOptions + '</select></div>' +
+            '<div class="field" style="width:70px;"><label>Qtd</label><input id="cpQtd" type="number" min="1" value="1"></div>' +
+            '<div class="field" style="width:100px;"><label>Custo un.</label><input id="cpCusto" type="number" step="0.01" min="0"></div>' +
+            '<button type="button" class="btn btn--secondary" id="cpAddItem">Add</button>' +
+          '</div>' +
+        '</div>' +
+        '<div id="cpItensWrap" style="display:flex;flex-direction:column;gap:6px;"></div>' +
+        '<div style="text-align:right;font-weight:700;font-size:15px;" id="cpTotal">Total: R$ 0,00</div>' +
+        modalFooterHTML('Registrar compra') +
+      '</form>'
+    );
+    document.getElementById('cpProduto').addEventListener('change', function(e){
+      var opt = e.target.options[e.target.selectedIndex];
+      document.getElementById('cpCusto').value = opt.getAttribute('data-custo') || '';
+    });
+    function renderItens(){
+      var wrap = document.getElementById('cpItensWrap');
+      wrap.innerHTML = _compraItens.length ? _compraItens.map(function(it, i){
+        return '<div style="display:flex;justify-content:space-between;align-items:center;font-size:13.5px;padding:6px 0;border-bottom:1px solid var(--border-subtle);">' +
+          '<span>' + it.qtd + 'x ' + esc(it.nome) + '</span><span style="display:flex;gap:10px;align-items:center;">' + fmtBRL(it.qtd * it.custo) + '<button type="button" class="iconbtn is-danger" data-rm-cpitem="' + i + '" style="width:26px;height:26px;"><span class="icon" style="width:14px;height:14px;"><svg><use href="#i-x"/></svg></span></button></span></div>';
+      }).join('') : '<p style="font-size:12.5px;color:var(--text-tertiary);">Nenhum item adicionado ainda.</p>';
+      document.getElementById('cpTotal').textContent = 'Total: ' + fmtBRL(_compraItens.reduce(function(s,it){ return s + it.qtd*it.custo; }, 0));
+    }
+    renderItens();
+    document.getElementById('cpAddItem').addEventListener('click', function(){
+      var sel = document.getElementById('cpProduto');
+      var opt = sel.options[sel.selectedIndex];
+      var qtd = Number(document.getElementById('cpQtd').value || 1);
+      var custo = Number(document.getElementById('cpCusto').value || 0);
+      if (!sel.value) { toast('Selecione um produto.', 'error'); return; }
+      if (qtd < 1) { toast('Quantidade inválida.', 'error'); return; }
+      _compraItens.push({ produto_id: sel.value, nome: opt.textContent, qtd: qtd, custo: custo });
+      renderItens();
+    });
+    document.getElementById('cpItensWrap').addEventListener('click', function(e){
+      var rm = e.target.closest('[data-rm-cpitem]');
+      if (rm) { _compraItens.splice(Number(rm.getAttribute('data-rm-cpitem')), 1); renderItens(); }
+    });
+    document.getElementById('compraForm').addEventListener('submit', async function(e){
+      e.preventDefault();
+      if (!_compraItens.length) { toast('Adicione ao menos um item.', 'error'); return; }
+      var todasCompras = await idbAll('compras');
+      var compra = {
+        id: uid(), numero: nextNumber('', todasCompras).replace(/^0+/, '') || '1', fornecedor_id: document.getElementById('cpFornecedor').value,
+        itens: _compraItens.slice(), total: _compraItens.reduce(function(s,it){ return s + it.qtd*it.custo; }, 0),
+        previsao_entrega: document.getElementById('cpPrevisao').value ? new Date(document.getElementById('cpPrevisao').value).toLocaleDateString('pt-BR') : '',
+        status: document.getElementById('cpStatus').value, observacao: document.getElementById('cpObs').value.trim(), criado_em: nowISO()
+      };
+      await idbPut('compras', compra);
+      await logAction('compra_registrada', 'Compra #' + compra.numero + ' — ' + fmtBRL(compra.total));
+      closeFormModal(); toast('Compra registrada.');
+      await renderCompras(); await renderFornecedores(); await renderDashboard();
+    });
+  }
+  document.addEventListener('click', async function(e){
+    var delBtn = e.target.closest('[data-compra-del]');
+    if (delBtn) {
+      var id = delBtn.getAttribute('data-compra-del');
+      if (confirm('Excluir esta compra?')) { await idbDelete('compras', id); await logAction('compra_excluida', id); toast('Compra excluída.'); await renderCompras(); }
+      return;
+    }
+    var recBtn = e.target.closest('[data-compra-receber]');
+    if (recBtn) {
+      var compraId = recBtn.getAttribute('data-compra-receber');
+      var compra = await idbGet('compras', compraId);
+      if (!compra) return;
+      if (!confirm('Confirmar recebimento da compra #' + compra.numero + '? O estoque dos produtos será atualizado.')) return;
+      for (var i = 0; i < (compra.itens||[]).length; i++) {
+        var it = compra.itens[i];
+        var produto = await idbGet('produtos', it.produto_id);
+        if (produto) { produto.estoque_atual = Number(produto.estoque_atual || 0) + it.qtd; await idbPut('produtos', produto); await idbPut('estoque_mov', { id: uid(), produto_id: it.produto_id, tipo:'entrada', quantidade: it.qtd, motivo:'Recebimento da compra #' + compra.numero, criado_em: nowISO() }); }
+      }
+      compra.status = 'Recebida';
+      await idbPut('compras', compra);
+      var recsExistentes = await idbAll('recebimentos');
+      var rec = { id: uid(), numero: nextNumber('RC', recsExistentes).replace(/^0+/,'') || '1', compra_id: compra.id, compra_numero: compra.numero, fornecedor_id: compra.fornecedor_id, itens_recebidos: (compra.itens||[]).length + ' de ' + (compra.itens||[]).length, conferido_por: STATE.user ? STATE.user.nome : '', criado_em: nowISO() };
+      await idbPut('recebimentos', rec);
+      await logAction('recebimento_registrado', 'Recebimento da compra #' + compra.numero);
+      toast('Recebimento registrado. Estoque atualizado.');
+      await renderCompras(); await renderRecebimento(); await renderProdutos(); await renderEstoqueDerivados(); await renderDashboard();
+    }
+  });
+
+  /* ============================================================
+     ORÇAMENTOS
+     ============================================================ */
+  var ORCAMENTO_STATUS = ['Pendente','Aprovado','Recusado'];
+  function orcamentoRowHTML(o, clienteNome){
+    var badgeMap = { 'Pendente':'badge--orange','Aprovado':'badge--green','Recusado':'badge--red' };
+    var d = new Date(o.criado_em);
+    return '<tr data-id="' + o.id + '">' +
+      '<td><input type="checkbox" class="checkbox"></td>' +
+      '<td><span class="order-id">#' + esc(o.numero) + '</span></td>' +
+      '<td><span class="date-cell"><span class="date-cell__d">' + d.toLocaleDateString('pt-BR') + '</span><span class="date-cell__t">' + d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}) + '</span></span></td>' +
+      '<td><div class="customer-cell"><span class="customer-avatar" style="background:' + avatarColor(clienteNome) + ';">' + initials(clienteNome) + '</span><span class="customer-name">' + esc(clienteNome || 'Cliente avulso') + '</span></div></td>' +
+      '<td>' + (o.itens||[]).length + ' itens</td>' +
+      '<td><span class="price-cell">' + fmtBRL(o.total) + '</span></td>' +
+      '<td><span class="badge ' + (badgeMap[o.status]||'badge--gray') + '">' + esc(o.status) + '</span></td>' +
+      '<td>' + esc(o.validade || '—') + '</td>' +
+      '<td><div class="row-actions">' +
+        '<button class="iconbtn" type="button" title="Ver itens" data-orc-ver="' + o.id + '"><span class="icon"><svg><use href="#i-eye"/></svg></span></button>' +
+        (o.status==='Pendente' ? '<button class="iconbtn" type="button" title="Aprovar" data-orc-aprovar="' + o.id + '"><span class="icon"><svg><use href="#i-check"/></svg></span></button>' : '') +
+        '<button class="iconbtn is-danger" type="button" title="Excluir" data-orc-del="' + o.id + '"><span class="icon"><svg><use href="#i-trash"/></svg></span></button>' +
+      '</div></td></tr>';
+  }
+  async function renderOrcamentos(){
+    var tbody = document.getElementById('orcamentosTbody');
+    if (!tbody) return;
+    var orcamentos = (await idbAll('orcamentos')).sort(function(a,b){ return new Date(b.criado_em)-new Date(a.criado_em); });
+    var clientes = await idbAll('clientes');
+    var cMap = {}; clientes.forEach(function(c){ cMap[c.id] = c.nome; });
+    tbody.innerHTML = orcamentos.length ? orcamentos.map(function(o){ return orcamentoRowHTML(o, cMap[o.cliente_id]); }).join('') :
+      '<tr><td colspan="9" style="text-align:center;padding:24px;color:var(--text-tertiary);">Nenhum orçamento registrado ainda.</td></tr>';
+  }
+  var _orcamentoItens = [];
+  async function orcamentoFormModal(){
+    _orcamentoItens = [];
+    var clientes = await idbAll('clientes');
+    var produtos = await idbAll('produtos');
+    var cliOptions = '<option value="">Cliente avulso</option>' + clientes.map(function(c){ return '<option value="' + c.id + '">' + esc(c.nome) + '</option>'; }).join('');
+    var prodOptions = '<option value="">Selecione um produto...</option>' + produtos.map(function(p){ return '<option value="' + p.id + '" data-preco="' + p.preco + '">' + esc(p.nome) + '</option>'; }).join('');
+    openFormModal(
+      modalHeaderHTML('Novo orçamento') +
+      '<form id="orcForm" style="padding:20px 24px;display:flex;flex-direction:column;gap:14px;">' +
+        '<div class="field"><label>Cliente</label><select id="orcCliente">' + cliOptions + '</select></div>' +
+        '<div class="field"><label>Válido até</label><input id="orcValidade" type="date"></div>' +
+        '<div style="border-top:1px solid var(--border-subtle);padding-top:12px;">' +
+          '<div style="display:flex;gap:8px;align-items:flex-end;">' +
+            '<div class="field" style="flex:1;"><label>Produto</label><select id="orcProduto">' + prodOptions + '</select></div>' +
+            '<div class="field" style="width:70px;"><label>Qtd</label><input id="orcQtd" type="number" min="1" value="1"></div>' +
+            '<button type="button" class="btn btn--secondary" id="orcAddItem">Add</button>' +
+          '</div>' +
+        '</div>' +
+        '<div id="orcItensWrap" style="display:flex;flex-direction:column;gap:6px;"></div>' +
+        '<div style="text-align:right;font-weight:700;font-size:15px;" id="orcTotal">Total: R$ 0,00</div>' +
+        modalFooterHTML('Salvar orçamento') +
+      '</form>'
+    );
+    function renderItens(){
+      var wrap = document.getElementById('orcItensWrap');
+      wrap.innerHTML = _orcamentoItens.length ? _orcamentoItens.map(function(it, i){
+        return '<div style="display:flex;justify-content:space-between;align-items:center;font-size:13.5px;padding:6px 0;border-bottom:1px solid var(--border-subtle);">' +
+          '<span>' + it.qtd + 'x ' + esc(it.nome) + '</span><span style="display:flex;gap:10px;align-items:center;">' + fmtBRL(it.qtd*it.preco) + '<button type="button" class="iconbtn is-danger" data-rm-orcitem="' + i + '" style="width:26px;height:26px;"><span class="icon" style="width:14px;height:14px;"><svg><use href="#i-x"/></svg></span></button></span></div>';
+      }).join('') : '<p style="font-size:12.5px;color:var(--text-tertiary);">Nenhum item adicionado ainda.</p>';
+      document.getElementById('orcTotal').textContent = 'Total: ' + fmtBRL(_orcamentoItens.reduce(function(s,it){ return s+it.qtd*it.preco; },0));
+    }
+    renderItens();
+    document.getElementById('orcAddItem').addEventListener('click', function(){
+      var sel = document.getElementById('orcProduto');
+      var opt = sel.options[sel.selectedIndex];
+      var qtd = Number(document.getElementById('orcQtd').value || 1);
+      if (!sel.value) { toast('Selecione um produto.', 'error'); return; }
+      _orcamentoItens.push({ produto_id: sel.value, nome: opt.textContent, qtd: qtd, preco: Number(opt.getAttribute('data-preco')||0) });
+      renderItens();
+    });
+    document.getElementById('orcItensWrap').addEventListener('click', function(e){
+      var rm = e.target.closest('[data-rm-orcitem]');
+      if (rm) { _orcamentoItens.splice(Number(rm.getAttribute('data-rm-orcitem')), 1); renderItens(); }
+    });
+    document.getElementById('orcForm').addEventListener('submit', async function(e){
+      e.preventDefault();
+      if (!_orcamentoItens.length) { toast('Adicione ao menos um item.', 'error'); return; }
+      var todosOrc = await idbAll('orcamentos');
+      var orc = {
+        id: uid(), numero: nextNumber('', todosOrc).replace(/^0+/,'') || '1', cliente_id: document.getElementById('orcCliente').value || null,
+        itens: _orcamentoItens.slice(), total: _orcamentoItens.reduce(function(s,it){ return s+it.qtd*it.preco; },0),
+        validade: document.getElementById('orcValidade').value ? new Date(document.getElementById('orcValidade').value).toLocaleDateString('pt-BR') : '',
+        status: 'Pendente', criado_em: nowISO()
+      };
+      await idbPut('orcamentos', orc);
+      await logAction('orcamento_criado', 'Orçamento #' + orc.numero);
+      closeFormModal(); toast('Orçamento salvo.');
+      await renderOrcamentos();
+    });
+  }
+  document.addEventListener('click', async function(e){
+    var verBtn = e.target.closest('[data-orc-ver]');
+    if (verBtn) {
+      var o = await idbGet('orcamentos', verBtn.getAttribute('data-orc-ver'));
+      if (o) openFormModal(modalHeaderHTML('Orçamento #' + o.numero) + '<div style="padding:20px 24px;">' +
+        (o.itens||[]).map(function(it){ return '<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border-subtle);font-size:13.5px;"><span>' + it.qtd + 'x ' + esc(it.nome) + '</span><span>' + fmtBRL(it.qtd*it.preco) + '</span></div>'; }).join('') +
+        '<div style="text-align:right;font-weight:700;margin-top:10px;">Total: ' + fmtBRL(o.total) + '</div></div>');
+      return;
+    }
+    var aprovarBtn = e.target.closest('[data-orc-aprovar]');
+    if (aprovarBtn) {
+      var id2 = aprovarBtn.getAttribute('data-orc-aprovar');
+      var orc2 = await idbGet('orcamentos', id2);
+      if (orc2) { orc2.status = 'Aprovado'; await idbPut('orcamentos', orc2); await logAction('orcamento_aprovado', 'Orçamento #' + orc2.numero); toast('Orçamento aprovado.'); await renderOrcamentos(); }
+      return;
+    }
+    var delBtn = e.target.closest('[data-orc-del]');
+    if (delBtn) {
+      var id3 = delBtn.getAttribute('data-orc-del');
+      if (confirm('Excluir este orçamento?')) { await idbDelete('orcamentos', id3); await logAction('orcamento_excluido', id3); toast('Orçamento excluído.'); await renderOrcamentos(); }
+    }
+  });
+
+  /* ============================================================
+     DEMANDAS (unifica "Cliente Pediu e Não Tem" + "Central de
+     Demandas" -- são o mesmo fluxo em dois lugares diferentes do
+     menu, então usam a MESMA gaveta de dados).
+     ============================================================ */
+  var DEMANDA_STATUS = ['Pendente','Em Cotação','Em Andamento','Resolvida','Cancelada'];
+  var DEMANDA_PRIORIDADE = ['Baixa','Média','Alta'];
+  function demandaRowHTML(d, clienteNome, simples){
+    var badgeMap = { 'Pendente':'badge--red','Em Cotação':'badge--orange','Em Andamento':'badge--blue','Resolvida':'badge--green','Cancelada':'badge--gray' };
+    var base = '<tr data-id="' + d.id + '">' +
+      '<td><input type="checkbox" class="checkbox"></td>' +
+      '<td>' + fmtDateOnly(d.criado_em) + '</td>' +
+      '<td><div class="customer-cell"><span class="customer-avatar" style="background:' + avatarColor(clienteNome) + ';">' + initials(clienteNome) + '</span><span class="customer-name">' + esc(clienteNome || 'Cliente avulso') + '</span></div></td>' +
+      '<td><span class="prod-name">' + esc(d.produto_solicitado) + '</span></td>' +
+      '<td>' + esc(d.categoria || '—') + '</td>' +
+      '<td>' + esc(d.quantidade || '—') + '</td>';
+    if (!simples) base += '<td><span class="badge badge--blue">' + esc(d.prioridade || 'Baixa') + '</span></td>';
+    base += '<td><span class="badge ' + (badgeMap[d.status]||'badge--gray') + '">' + esc(d.status) + '</span></td>' +
+      '<td>' + (simples ? esc(d.observacao || '—') : fmtDateOnly(d.atualizado_em || d.criado_em)) + '</td>' +
+      '<td><div class="row-actions">' +
+        '<button class="iconbtn" type="button" title="Avançar status" data-dem-avancar="' + d.id + '"><span class="icon"><svg><use href="#i-chevron-right"/></svg></span></button>' +
+        '<button class="iconbtn is-danger" type="button" title="Excluir" data-dem-del="' + d.id + '"><span class="icon"><svg><use href="#i-trash"/></svg></span></button>' +
+      '</div></td></tr>';
+    return base;
+  }
+  async function renderDemandas(){
+    var demandas = (await idbAll('demandas')).sort(function(a,b){ return new Date(b.criado_em)-new Date(a.criado_em); });
+    var clientes = await idbAll('clientes');
+    var cMap = {}; clientes.forEach(function(c){ cMap[c.id] = c.nome; });
+    var t1 = document.getElementById('demandaTbody');
+    if (t1) t1.innerHTML = demandas.length ? demandas.map(function(d){ return demandaRowHTML(d, cMap[d.cliente_id], true); }).join('') :
+      '<tr><td colspan="9" style="text-align:center;padding:24px;color:var(--text-tertiary);">Nenhuma solicitação registrada ainda.</td></tr>';
+    var t2 = document.getElementById('centralTbody');
+    if (t2) t2.innerHTML = demandas.length ? demandas.map(function(d){ return demandaRowHTML(d, cMap[d.cliente_id], false); }).join('') :
+      '<tr><td colspan="10" style="text-align:center;padding:24px;color:var(--text-tertiary);">Nenhuma demanda registrada ainda.</td></tr>';
+  }
+  async function demandaFormModal(){
+    var clientes = await idbAll('clientes');
+    var cliOptions = '<option value="">Cliente avulso</option>' + clientes.map(function(c){ return '<option value="' + c.id + '">' + esc(c.nome) + '</option>'; }).join('');
+    openFormModal(
+      modalHeaderHTML('Nova solicitação de cliente') +
+      '<form id="demForm" style="padding:20px 24px;display:flex;flex-direction:column;gap:14px;">' +
+        '<div class="field"><label>Cliente</label><select id="demCliente">' + cliOptions + '</select></div>' +
+        '<div class="field"><label>Produto solicitado</label><input id="demProduto" required></div>' +
+        '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">' +
+          '<div class="field"><label>Categoria</label><input id="demCategoria"></div>' +
+          '<div class="field"><label>Quantidade</label><input id="demQuantidade" placeholder="Ex: 50 m², 10 un"></div>' +
+        '</div>' +
+        '<div class="field"><label>Prioridade</label><select id="demPrioridade">' + DEMANDA_PRIORIDADE.map(function(p){ return '<option' + (p==='Baixa'?' selected':'') + '>' + p + '</option>'; }).join('') + '</select></div>' +
+        '<div class="field"><label>Observação</label><input id="demObs"></div>' +
+        modalFooterHTML('Salvar solicitação') +
+      '</form>'
+    );
+    document.getElementById('demForm').addEventListener('submit', async function(e){
+      e.preventDefault();
+      var produto = document.getElementById('demProduto').value.trim();
+      if (!produto) { toast('Informe o produto solicitado.', 'error'); return; }
+      var obj = {
+        id: uid(), cliente_id: document.getElementById('demCliente').value || null, produto_solicitado: produto,
+        categoria: document.getElementById('demCategoria').value.trim(), quantidade: document.getElementById('demQuantidade').value.trim(),
+        prioridade: document.getElementById('demPrioridade').value, observacao: document.getElementById('demObs').value.trim(),
+        status: 'Pendente', criado_em: nowISO(), atualizado_em: nowISO()
+      };
+      await idbPut('demandas', obj);
+      await logAction('demanda_criada', obj.produto_solicitado);
+      closeFormModal(); toast('Solicitação registrada.');
+      await renderDemandas();
+    });
+  }
+  document.addEventListener('click', async function(e){
+    var avancarBtn = e.target.closest('[data-dem-avancar]');
+    if (avancarBtn) {
+      var d = await idbGet('demandas', avancarBtn.getAttribute('data-dem-avancar'));
+      if (d) {
+        var idx = DEMANDA_STATUS.indexOf(d.status);
+        d.status = DEMANDA_STATUS[Math.min(idx+1, DEMANDA_STATUS.length-2)];
+        d.atualizado_em = nowISO();
+        await idbPut('demandas', d);
+        await logAction('demanda_atualizada', d.produto_solicitado + ' -> ' + d.status);
+        toast('Status atualizado: ' + d.status);
+        await renderDemandas();
+      }
+      return;
+    }
+    var delBtn = e.target.closest('[data-dem-del]');
+    if (delBtn) {
+      var id = delBtn.getAttribute('data-dem-del');
+      if (confirm('Excluir esta solicitação?')) { await idbDelete('demandas', id); await logAction('demanda_excluida', id); toast('Solicitação excluída.'); await renderDemandas(); }
+    }
+  });
+
+  /* ============================================================
+     ENTREGAS
+     ============================================================ */
+  var ENTREGA_STATUS = ['Pendente','Em Rota','Entregue','Atrasada','Cancelada'];
+  var ENTREGA_TIPOS = ['Nossa Frota','Transportadora','Motoboy'];
+  function entregaRowHTML(en, clienteNome){
+    var badgeMap = { 'Pendente':'badge--orange','Em Rota':'badge--blue','Entregue':'badge--green','Atrasada':'badge--red','Cancelada':'badge--gray' };
+    var iconMap = { 'Nossa Frota':'i-truck','Transportadora':'i-box','Motoboy':'i-smartphone' };
+    return '<tr data-id="' + en.id + '">' +
+      '<td><input type="checkbox" class="checkbox"></td>' +
+      '<td><span class="order-id">#' + esc(en.numero) + '</span></td>' +
+      '<td>' + fmtDateOnly(en.criado_em) + '</td>' +
+      '<td><div class="customer-cell"><span class="customer-avatar" style="background:' + avatarColor(clienteNome) + ';">' + initials(clienteNome) + '</span><span class="customer-name">' + esc(clienteNome || '—') + '</span></div></td>' +
+      '<td>' + esc(en.pedido_ref || '—') + '</td>' +
+      '<td><span class="address-cell">' + esc(en.endereco || '—') + '</span></td>' +
+      '<td><span class="type-cell"><span class="icon frota"><svg><use href="#' + (iconMap[en.tipo]||'i-truck') + '"/></svg></span>' + esc(en.tipo) + '</span></td>' +
+      '<td><span class="badge ' + (badgeMap[en.status]||'badge--gray') + '">' + esc(en.status) + '</span></td>' +
+      '<td>' + esc(en.responsavel || '—') + '</td>' +
+      '<td><div class="row-actions">' +
+        '<button class="iconbtn" type="button" title="Editar" data-ent-edit="' + en.id + '"><span class="icon"><svg><use href="#i-pencil"/></svg></span></button>' +
+        '<button class="iconbtn is-danger" type="button" title="Excluir" data-ent-del="' + en.id + '"><span class="icon"><svg><use href="#i-trash"/></svg></span></button>' +
+      '</div></td></tr>';
+  }
+  async function renderEntregas(){
+    var tbody = document.getElementById('entregasTbody');
+    if (!tbody) return;
+    var entregas = (await idbAll('entregas')).sort(function(a,b){ return new Date(b.criado_em)-new Date(a.criado_em); });
+    var clientes = await idbAll('clientes');
+    var cMap = {}; clientes.forEach(function(c){ cMap[c.id] = c.nome; });
+    tbody.innerHTML = entregas.length ? entregas.map(function(en){ return entregaRowHTML(en, cMap[en.cliente_id]); }).join('') :
+      '<tr><td colspan="10" style="text-align:center;padding:24px;color:var(--text-tertiary);">Nenhuma entrega registrada ainda.</td></tr>';
+  }
+  async function entregaFormModal(en){
+    en = en || { id:null, cliente_id:'', pedido_ref:'', endereco:'', tipo:ENTREGA_TIPOS[0], status:ENTREGA_STATUS[0], responsavel:'' };
+    var clientes = await idbAll('clientes');
+    var cliOptions = clientes.map(function(c){ return '<option value="' + c.id + '"' + (en.cliente_id===c.id?' selected':'') + '>' + esc(c.nome) + '</option>'; }).join('');
+    openFormModal(
+      modalHeaderHTML(en.id ? 'Editar entrega' : 'Nova entrega') +
+      '<form id="entForm" style="padding:20px 24px;display:flex;flex-direction:column;gap:14px;">' +
+        '<div class="field"><label>Cliente</label><select id="entCliente"><option value="">Selecione...</option>' + cliOptions + '</select></div>' +
+        '<div class="field"><label>Referência do pedido (opcional)</label><input id="entPedidoRef" value="' + esc(en.pedido_ref||'') + '"></div>' +
+        '<div class="field"><label>Endereço</label><input id="entEndereco" value="' + esc(en.endereco||'') + '" required></div>' +
+        '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">' +
+          '<div class="field"><label>Tipo</label><select id="entTipo">' + ENTREGA_TIPOS.map(function(t){ return '<option' + (en.tipo===t?' selected':'') + '>' + t + '</option>'; }).join('') + '</select></div>' +
+          '<div class="field"><label>Status</label><select id="entStatus">' + ENTREGA_STATUS.map(function(s){ return '<option' + (en.status===s?' selected':'') + '>' + s + '</option>'; }).join('') + '</select></div>' +
+        '</div>' +
+        '<div class="field"><label>Responsável</label><input id="entResponsavel" value="' + esc(en.responsavel||'') + '"></div>' +
+        modalFooterHTML('Salvar entrega') +
+      '</form>'
+    );
+    document.getElementById('entForm').addEventListener('submit', async function(e){
+      e.preventDefault();
+      var endereco = document.getElementById('entEndereco').value.trim();
+      if (!endereco) { toast('Informe o endereço.', 'error'); return; }
+      var todasEntregas = await idbAll('entregas');
+      var obj = {
+        id: en.id || uid(), numero: en.numero || ('ENT' + nextNumber('', todasEntregas).replace(/^0+/,'')),
+        cliente_id: document.getElementById('entCliente').value || null, pedido_ref: document.getElementById('entPedidoRef').value.trim(),
+        endereco: endereco, tipo: document.getElementById('entTipo').value, status: document.getElementById('entStatus').value,
+        responsavel: document.getElementById('entResponsavel').value.trim(), criado_em: en.criado_em || nowISO()
+      };
+      await idbPut('entregas', obj);
+      await logAction(en.id ? 'entrega_editada' : 'entrega_criada', obj.numero);
+      closeFormModal(); toast('Entrega salva.');
+      await renderEntregas();
+    });
+  }
+  document.addEventListener('click', async function(e){
+    var editBtn = e.target.closest('[data-ent-edit]');
+    if (editBtn) { var en = await idbGet('entregas', editBtn.getAttribute('data-ent-edit')); if (en) entregaFormModal(en); return; }
+    var delBtn = e.target.closest('[data-ent-del]');
+    if (delBtn) {
+      var id = delBtn.getAttribute('data-ent-del');
+      if (confirm('Excluir esta entrega?')) { await idbDelete('entregas', id); await logAction('entrega_excluida', id); toast('Entrega excluída.'); await renderEntregas(); }
+    }
+  });
+
+  /* ============================================================
+     NOTIFICAÇÕES -- geradas automaticamente a partir dos alertas de
+     estoque baixo/zerado (produtos reais) e do histórico de ações
+     (logs), sem precisar de uma gaveta própria de notificações.
+     ============================================================ */
+  async function renderNotificacoes(){
+    var tbody = document.getElementById('notifTbody');
+    if (!tbody) return;
+    var produtos = await idbAll('produtos');
+    var logs = (await idbAll('logs')).sort(function(a,b){ return new Date(b.data)-new Date(a.data); }).slice(0, 30);
+    var lidas = {};
+    try { lidas = JSON.parse(lsGet('construgestao_notif_lidas') || '{}'); } catch(e){}
+    var itens = [];
+    produtos.forEach(function(p){
+      var status = calcularStatusEstoque(Number(p.estoque_atual||0), Number(p.estoque_minimo||0));
+      if (status !== 'ok') {
+        var nid = 'estoque:' + p.id;
+        itens.push({ id: nid, tipo: 'Estoque', msg: (status==='out' ? 'Produto sem estoque: ' : 'Estoque baixo: ') + p.nome, data: p.criado_em, lida: !!lidas[nid] });
+      }
+    });
+    logs.forEach(function(l){
+      var nid = 'log:' + l.id;
+      itens.push({ id: nid, tipo: 'Sistema', msg: l.acao.replace(/_/g,' ') + (l.detalhes ? ' — ' + l.detalhes : ''), data: l.data, lida: !!lidas[nid] });
+    });
+    itens.sort(function(a,b){ return new Date(b.data)-new Date(a.data); });
+    tbody.innerHTML = itens.length ? itens.slice(0,40).map(function(n){
+      return '<tr data-id="' + n.id + '"' + (n.lida ? ' style="opacity:.55;"' : '') + '>' +
+        '<td><input type="checkbox" class="checkbox"></td>' +
+        '<td><span class="badge ' + (n.tipo==='Estoque'?'badge--orange':'badge--blue') + '">' + n.tipo + '</span></td>' +
+        '<td>' + esc(n.msg) + '</td>' +
+        '<td>' + fmtDateTime(n.data) + '</td>' +
+        '<td><span class="badge ' + (n.lida?'badge--gray':'badge--green') + '">' + (n.lida?'Lida':'Não lida') + '</span></td>' +
+        '<td><div class="row-actions"><button class="iconbtn" type="button" title="Marcar como lida" data-notif-ler="' + n.id + '"><span class="icon"><svg><use href="#i-check"/></svg></span></button></div></td></tr>';
+    }).join('') : '<tr><td colspan="6" style="text-align:center;padding:24px;color:var(--text-tertiary);">Nenhuma notificação por enquanto.</td></tr>';
+  }
+  document.addEventListener('click', async function(e){
+    var lerBtn = e.target.closest('[data-notif-ler]');
+    if (lerBtn) {
+      var lidas = {};
+      try { lidas = JSON.parse(lsGet('construgestao_notif_lidas') || '{}'); } catch(err){}
+      lidas[lerBtn.getAttribute('data-notif-ler')] = true;
+      lsSet('construgestao_notif_lidas', JSON.stringify(lidas));
+      await renderNotificacoes();
+    }
+  });
+  function wireMarcarTodasLidas(){
+    rewire('marcarTodasLidasBtn', async function(){
+      var produtos = await idbAll('produtos');
+      var logs = await idbAll('logs');
+      var lidas = {};
+      produtos.forEach(function(p){ lidas['estoque:' + p.id] = true; });
+      logs.forEach(function(l){ lidas['log:' + l.id] = true; });
+      lsSet('construgestao_notif_lidas', JSON.stringify(lidas));
+      toast('Todas as notificações foram marcadas como lidas.');
+      await renderNotificacoes();
+    });
+  }
+
+  /* ============================================================
+     CONFIGURAÇÕES -- salva os dados da loja de verdade (o resto dos
+     painéis de "Configurações" continua sendo ajuste fino, próxima
+     etapa).
+     ============================================================ */
+  async function renderConfiguracoes(){
+    var loja = await getLoja();
+    if (!loja) return;
+    var setVal = function(id, v){ var el = document.getElementById(id); if (el) el.value = v || ''; };
+    setVal('setNomeLoja', loja.nome);
+    setVal('setCnpj', loja.cnpj);
+    setVal('setTelefone', loja.telefone);
+    setVal('setEmail', loja.email);
+    setVal('setEndereco', loja.endereco);
+    setVal('setCidade', loja.cidade);
+    setVal('setEstado', loja.estado);
+  }
+  function wireSalvarConfiguracoes(){
+    rewire('salvarConfiguracoesBtn', async function(){
+      var loja = await getLoja();
+      if (!loja) return;
+      var getVal = function(id){ var el = document.getElementById(id); return el ? el.value.trim() : ''; };
+      loja.nome = getVal('setNomeLoja') || loja.nome;
+      loja.cnpj = getVal('setCnpj');
+      loja.telefone = getVal('setTelefone');
+      loja.email = getVal('setEmail');
+      loja.endereco = getVal('setEndereco');
+      loja.cidade = getVal('setCidade');
+      loja.estado = getVal('setEstado');
+      await idbPut('loja', loja);
+      STATE.loja = loja;
+      await logAction('configuracoes_salvas', 'Dados da loja atualizados');
+      toast('Configurações salvas.');
+    });
+  }
+
+  /* ============================================================
+     Substitui renderAll/wireButtons por versões que também cobrem
+     fornecedores, compras, recebimento, orçamentos, demandas,
+     entregas, notificações e configurações (declaração de função
+     mais recente no mesmo escopo substitui a anterior).
+     ============================================================ */
+  async function renderAll(){
+    await Promise.all([
+      renderDashboard(), renderCategorias(), renderProdutos(), renderClientes(), renderVendas(), renderUsuarios(),
+      renderFornecedores(), renderCompras(), renderRecebimento(), renderOrcamentos(), renderDemandas(),
+      renderEntregas(), renderNotificacoes(), renderConfiguracoes()
+    ]);
+  }
+  function wireButtons(){
+    rewire('novoProdutoBtn', function(){ produtoFormModal(null); });
+    rewire('novaCategoriaBtn', function(){ categoriaFormModal(null); });
+    rewire('novoClienteBtn', function(){ clienteFormModal(null); });
+    rewire('novaVendaBtn', function(){ vendaFormModal(); });
+    rewire('novoUsuarioBtn', function(){ usuarioFormModal(null); });
+    rewire('novoFornecedorBtn', function(){ fornecedorFormModal(null); });
+    rewire('novaCompraBtn', function(){ compraFormModal(); });
+    rewire('novoOrcamentoBtn', function(){ orcamentoFormModal(); });
+    rewire('novaSolicitacaoBtn', function(){ demandaFormModal(); });
+    rewire('novaDemandaBtn', function(){ demandaFormModal(); });
+    rewire('novaEntregaBtn', function(){ entregaFormModal(null); });
+    wireMarcarTodasLidas();
+    wireSalvarConfiguracoes();
+    var signoutConfirm = document.getElementById('signoutConfirm');
+    if (signoutConfirm) {
+      var clean = signoutConfirm.cloneNode(true);
+      signoutConfirm.parentNode.replaceChild(clean, signoutConfirm);
+      clean.addEventListener('click', function(){
+        var backdrop = document.getElementById('signoutModal');
+        if (backdrop) backdrop.classList.remove('is-open');
+        doLogout();
+      });
+    }
+  }
+
+
+  /* ============================================================
+     Telas derivadas de produtos/vendas que ainda mostravam dados de
+     exemplo fixos: Estoque Crítico, Precisa Comprar (derivam de
+     produtos) e Histórico de Vendas (deriva de vendas). Reaproveitam
+     os mesmos dados já carregados, sem gaveta própria.
+     ============================================================ */
+  async function renderEstoqueDerivados(){
+    var produtos = await idbAll('produtos');
+    var categorias = await idbAll('categorias');
+    var catMap = {}; categorias.forEach(function(c){ catMap[c.id] = c.nome; });
+    var criticos = produtos.filter(function(p){ return calcularStatusEstoque(Number(p.estoque_atual||0), Number(p.estoque_minimo||0)) !== 'ok'; });
+
+    var criticoTbody = document.getElementById('criticoTbody');
+    if (criticoTbody) {
+      criticoTbody.innerHTML = criticos.length ? criticos.map(function(p){
+        var status = calcularStatusEstoque(Number(p.estoque_atual||0), Number(p.estoque_minimo||0));
+        var info = STATUS_ESTOQUE_INFO[status];
+        return '<tr data-id="' + p.id + '">' +
+          '<td><input type="checkbox" class="checkbox"></td>' +
+          '<td><div class="prod-cell"><span class="prod-thumb" style="background:linear-gradient(135deg,#8a8f99,#5f6472);"><span class="icon" style="width:19px;height:19px;"><svg><use href="#i-bag"/></svg></span></span><span class="prod-name">' + esc(p.nome) + '</span></div></td>' +
+          '<td><span class="sku-cell">' + esc(p.sku||'—') + '</span></td>' +
+          '<td><span class="cat-cell"><span class="icon"><svg><use href="#i-archive"/></svg></span>' + esc(catMap[p.categoria_id]||'—') + '</span></td>' +
+          '<td><span class="stock-num ' + info.numClass + '">' + Number(p.estoque_atual||0) + ' un</span></td>' +
+          '<td>' + Number(p.estoque_minimo||0) + ' un</td>' +
+          '<td><span class="badge ' + info.badgeClass + '">' + (status==='out'?'Crítico':'Atenção') + '</span></td>' +
+          '<td><span class="supplier-cell">—</span></td>' +
+          '<td><div class="row-actions"><button class="iconbtn" type="button" title="Editar" data-prod-edit="' + p.id + '"><span class="icon"><svg><use href="#i-pencil"/></svg></span></button></div></td></tr>';
+      }).join('') : '<tr><td colspan="8" style="text-align:center;padding:24px;color:var(--text-tertiary);">Nenhum produto em estado crítico. 🎉</td></tr>';
+    }
+
+    var comprarTbody = document.getElementById('comprarTbody');
+    if (comprarTbody) {
+      comprarTbody.innerHTML = criticos.length ? criticos.map(function(p){
+        var status = calcularStatusEstoque(Number(p.estoque_atual||0), Number(p.estoque_minimo||0));
+        var info = STATUS_ESTOQUE_INFO[status];
+        var sugestao = calcularSugestaoReposicao(Number(p.estoque_atual||0), Number(p.estoque_ideal||0));
+        return '<tr data-id="' + p.id + '">' +
+          '<td><input type="checkbox" class="checkbox"></td>' +
+          '<td><div class="prod-cell"><span class="prod-thumb" style="background:linear-gradient(135deg,#e2673a,#c8481f);"><span class="icon" style="width:19px;height:19px;"><svg><use href="#i-box"/></svg></span></span><span><p class="prod-name">' + esc(p.nome) + '</p><p class="prod-sub">' + esc(p.sku||'') + '</p></span></div></td>' +
+          '<td><span class="cat-cell"><span class="icon"><svg><use href="#i-box"/></svg></span>' + esc(catMap[p.categoria_id]||'—') + '</span></td>' +
+          '<td><span class="stock-num ' + info.numClass + '">' + Number(p.estoque_atual||0) + '</span></td>' +
+          '<td>' + Number(p.estoque_minimo||0) + '</td>' +
+          '<td><span class="price-cell">' + sugestao + '</span></td>' +
+          '<td>' + fmtBRL(p.preco) + '</td>' +
+          '<td><span class="price-cell">' + fmtBRL(sugestao * Number(p.preco||0)) + '</span></td>' +
+          '<td><span class="badge ' + info.badgeClass + '">' + (status==='out'?'Sem estoque':'Estoque crítico') + '</span></td>' +
+          '<td><span class="supplier-cell">—</span></td>' +
+          '<td><div class="row-actions"><button class="iconbtn" type="button" title="Editar" data-prod-edit="' + p.id + '"><span class="icon"><svg><use href="#i-pencil"/></svg></span></button></div></td></tr>';
+      }).join('') : '<tr><td colspan="11" style="text-align:center;padding:24px;color:var(--text-tertiary);">Nada precisa ser comprado agora. 🎉</td></tr>';
+    }
+  }
+  async function renderHistoricoVendas(){
+    var tbody = document.getElementById('historicoTbody');
+    if (!tbody) return;
+    var vendas = (await idbAll('vendas')).sort(function(a,b){ return new Date(b.criado_em)-new Date(a.criado_em); });
+    var clientes = await idbAll('clientes');
+    var cMap = {}; clientes.forEach(function(c){ cMap[c.id] = c.nome; });
+    tbody.innerHTML = vendas.length ? vendas.map(function(v){
+      var nome = cMap[v.cliente_id];
+      return '<tr data-id="' + v.id + '">' +
+        '<td><input type="checkbox" class="checkbox"></td>' +
+        '<td><span class="order-id">#' + esc(v.numero) + '</span></td>' +
+        '<td>' + fmtDateTime(v.criado_em) + '</td>' +
+        '<td><div class="customer-cell"><span class="customer-avatar" style="background:' + avatarColor(nome) + ';">' + initials(nome) + '</span><span class="customer-name">' + esc(nome||'Cliente avulso') + '</span></div></td>' +
+        '<td>' + (v.itens||[]).length + ' itens</td>' +
+        '<td><span class="price-cell">' + fmtBRL(v.total) + '</span></td>' +
+        '<td><span class="payment-cell">' + esc(v.forma_pagamento||'—') + '</span></td>' +
+        '<td><span class="badge badge--green">Concluída</span></td>' +
+        '<td><div class="row-actions"><button class="iconbtn" type="button" title="Ver itens" data-venda-ver="' + v.id + '"><span class="icon"><svg><use href="#i-eye"/></svg></span></button></div></td></tr>';
+    }).join('') : '<tr><td colspan="9" style="text-align:center;padding:24px;color:var(--text-tertiary);">Nenhuma venda registrada ainda.</td></tr>';
+  }
+
+  /* Notificações derivam de dados que mudam a cada ação (logs, estoque);
+     como não têm um botão de "criar" próprio, atualizam ao entrar na
+     tela (clique no menu, na aba de baixo ou no sininho do topo). */
+  document.addEventListener('click', function(e){
+    if (e.target.closest('[data-view="Notificações"], [data-nav-target="Notificações"]')) {
+      setTimeout(function(){ renderNotificacoes(); }, 50);
+    }
+  });
+
+  /* Substitui de novo renderAll pra também cobrir estoque crítico,
+     precisa comprar e histórico de vendas (função declarada por
+     último no mesmo escopo vale pra todo mundo, inclusive pro
+     startApp() que já chama renderAll()). */
+  async function renderAll(){
+    await Promise.all([
+      renderDashboard(), renderCategorias(), renderProdutos(), renderClientes(), renderVendas(), renderUsuarios(),
+      renderFornecedores(), renderCompras(), renderRecebimento(), renderOrcamentos(), renderDemandas(),
+      renderEntregas(), renderNotificacoes(), renderConfiguracoes(), renderEstoqueDerivados(), renderHistoricoVendas()
+    ]);
+  }
+
+
+  /* ============================================================
+     RELATÓRIOS -- cartões do topo com números reais (os gráficos
+     mais elaborados dessa tela continuam como exemplo visual por
+     enquanto, é a próxima etapa).
+     ============================================================ */
+  async function renderRelatorios(){
+    var el = document.getElementById('relVendasTotais');
+    if (!el) return;
+    var vendas = await idbAll('vendas');
+    var clientes = await idbAll('clientes');
+    var totalVendas = vendas.reduce(function(s,v){ return s + Number(v.total||0); }, 0);
+    var produtosVendidos = vendas.reduce(function(s,v){ return s + (v.itens||[]).reduce(function(s2,it){ return s2 + Number(it.qtd||0); }, 0); }, 0);
+    var setText = function(id, txt){ var e = document.getElementById(id); if (e) e.textContent = txt; };
+    setText('relVendasTotais', fmtBRL(totalVendas));
+    setText('relPedidos', String(vendas.length));
+    setText('relProdutosVendidos', String(produtosVendidos));
+    setText('relTotalClientes', String(clientes.length));
+    setText('relTicketMedio', fmtBRL(vendas.length ? totalVendas / vendas.length : 0));
+  }
+  document.addEventListener('click', function(e){
+    if (e.target.closest('[data-view="Relatórios"]')) setTimeout(function(){ renderRelatorios(); }, 50);
+  });
+  async function renderAll(){
+    await Promise.all([
+      renderDashboard(), renderCategorias(), renderProdutos(), renderClientes(), renderVendas(), renderUsuarios(),
+      renderFornecedores(), renderCompras(), renderRecebimento(), renderOrcamentos(), renderDemandas(),
+      renderEntregas(), renderNotificacoes(), renderConfiguracoes(), renderEstoqueDerivados(), renderHistoricoVendas(),
+      renderRelatorios()
+    ]);
   }
 
   if (document.readyState === 'complete' || document.readyState === 'interactive') { boot(); }
