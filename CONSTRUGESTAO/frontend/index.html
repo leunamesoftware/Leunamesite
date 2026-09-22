@@ -4158,7 +4158,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
               <span class="kpi-card__label">Clientes VIP</span>
             </div>
             <p class="kpi-card__value" id="kpiCliVIP">34</p>
-            <div class="kpi-card__foot"><span class="kpi-card__unit">acima de R$ 5.000,00</span></div>
+            <div class="kpi-card__foot"><span class="kpi-card__unit">marcados como VIP</span></div>
           </div>
           <div class="kpi-card">
             <div class="kpi-card__top">
@@ -4166,7 +4166,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
               <span class="kpi-card__label">Inadimplentes</span>
             </div>
             <p class="kpi-card__value" id="kpiCliInadimplentes">12</p>
-            <div class="kpi-card__foot"><span class="kpi-card__unit">com contas em atraso</span></div>
+            <div class="kpi-card__foot"><span class="kpi-card__unit">marcados como mau pagador</span></div>
           </div>
         </section>
 
@@ -4223,6 +4223,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
                   <th>E-mail</th>
                   <th>Cidade</th>
                   <th>Total em Compras</th>
+                  <th>Classificação</th>
                   <th>Status</th>
                   <th>Ações</th>
                 </tr>
@@ -7838,7 +7839,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
               <span class="kpi-card__icon purple"><span class="icon"><svg><use href="#i-users"/></svg></span></span>
               <span class="kpi-card__label">Total de perfis</span>
             </div>
-            <p class="kpi-card__value">5</p>
+            <p class="kpi-card__value" id="kpiPermTotal">5</p>
             <div class="kpi-card__foot"><span class="kpi-card__unit">no sistema</span></div>
           </div>
           <div class="kpi-card">
@@ -7846,7 +7847,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
               <span class="kpi-card__icon green"><span class="icon"><svg><use href="#i-user"/></svg></span></span>
               <span class="kpi-card__label">Permissões ativas</span>
             </div>
-            <p class="kpi-card__value">48</p>
+            <p class="kpi-card__value" id="kpiPermAtivas">48</p>
             <div class="kpi-card__foot"><span class="kpi-card__unit">configuradas</span></div>
           </div>
           <div class="kpi-card">
@@ -7854,16 +7855,16 @@ html, body{ overflow-x:hidden; max-width:100%; }
               <span class="kpi-card__icon orange"><span class="icon"><svg><use href="#i-shield"/></svg></span></span>
               <span class="kpi-card__label">Acessos restritos</span>
             </div>
-            <p class="kpi-card__value">12</p>
+            <p class="kpi-card__value" id="kpiPermRestritos">12</p>
             <div class="kpi-card__foot"><span class="kpi-card__unit">ações protegidas</span></div>
           </div>
           <div class="kpi-card">
             <div class="kpi-card__top">
               <span class="kpi-card__icon blue"><span class="icon"><svg><use href="#i-key"/></svg></span></span>
-              <span class="kpi-card__label">Última alteração</span>
+              <span class="kpi-card__label">Perfis de acesso</span>
             </div>
-            <p class="kpi-card__value" style="font-size:18px;">21/09/2026</p>
-            <div class="kpi-card__foot"><span class="kpi-card__unit">por Emanuel Antunes</span></div>
+            <p class="kpi-card__value" style="font-size:18px;">Padrão</p>
+            <div class="kpi-card__foot"><span class="kpi-card__unit">do sistema (ainda não personalizável)</span></div>
           </div>
         </section>
 
@@ -7915,102 +7916,11 @@ html, body{ overflow-x:hidden; max-width:100%; }
                       <th>Ações</th>
                     </tr>
                   </thead>
-                  <tbody id="permTbody">
-                    <tr>
-                      <td><input type="checkbox" class="checkbox"></td>
-                      <td><span class="perm-profile-cell"><span class="perm-profile-icon" style="background:linear-gradient(135deg,#e5484d,#ef7478);"><span class="icon" style="width:16px;height:16px;"><svg><use href="#i-crown"/></svg></span></span><span class="prod-name">Administrador</span></span></td>
-                      <td><span class="supplier-cell" style="max-width:180px;">Acesso total ao sistema</span></td>
-                      <td>2</td>
-                      <td><span class="perm-check yes"><span class="icon"><svg><use href="#i-check"/></svg></span></span></td>
-                      <td><span class="perm-check yes"><span class="icon"><svg><use href="#i-check"/></svg></span></span></td>
-                      <td><span class="perm-check yes"><span class="icon"><svg><use href="#i-check"/></svg></span></span></td>
-                      <td><span class="perm-check yes"><span class="icon"><svg><use href="#i-check"/></svg></span></span></td>
-                      <td><span class="perm-check yes"><span class="icon"><svg><use href="#i-check"/></svg></span></span></td>
-                      <td><span class="badge badge--green">Ativo</span></td>
-                      <td>
-                        <div class="row-actions">
-                          <button class="iconbtn" type="button" title="Editar"><span class="icon"><svg><use href="#i-pencil"/></svg></span></button>
-                          <button class="iconbtn" type="button" title="Mais opções"><span class="icon"><svg><use href="#i-more-vert"/></svg></span></button>
-                        </div>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td><input type="checkbox" class="checkbox"></td>
-                      <td><span class="perm-profile-cell"><span class="perm-profile-icon" style="background:linear-gradient(135deg,#3b6fe0,#5c8cf2);"><span class="icon" style="width:16px;height:16px;"><svg><use href="#i-bars"/></svg></span></span><span class="prod-name">Gerente</span></span></td>
-                      <td><span class="supplier-cell" style="max-width:180px;">Acesso gerencial com algumas restrições</span></td>
-                      <td>1</td>
-                      <td><span class="perm-check yes"><span class="icon"><svg><use href="#i-check"/></svg></span></span></td>
-                      <td><span class="perm-check yes"><span class="icon"><svg><use href="#i-check"/></svg></span></span></td>
-                      <td><span class="perm-check yes"><span class="icon"><svg><use href="#i-check"/></svg></span></span></td>
-                      <td><span class="perm-check yes"><span class="icon"><svg><use href="#i-check"/></svg></span></span></td>
-                      <td><span class="perm-check no"><span class="icon"><svg><use href="#i-x"/></svg></span></span></td>
-                      <td><span class="badge badge--green">Ativo</span></td>
-                      <td>
-                        <div class="row-actions">
-                          <button class="iconbtn" type="button" title="Editar"><span class="icon"><svg><use href="#i-pencil"/></svg></span></button>
-                          <button class="iconbtn" type="button" title="Mais opções"><span class="icon"><svg><use href="#i-more-vert"/></svg></span></button>
-                        </div>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td><input type="checkbox" class="checkbox"></td>
-                      <td><span class="perm-profile-cell"><span class="perm-profile-icon" style="background:linear-gradient(135deg,#0ea968,#17c98a);"><span class="icon" style="width:16px;height:16px;"><svg><use href="#i-user"/></svg></span></span><span class="prod-name">Vendedor</span></span></td>
-                      <td><span class="supplier-cell" style="max-width:180px;">Acesso para vendas e atendimento</span></td>
-                      <td>2</td>
-                      <td><span class="perm-check yes"><span class="icon"><svg><use href="#i-check"/></svg></span></span></td>
-                      <td><span class="perm-check yes"><span class="icon"><svg><use href="#i-check"/></svg></span></span></td>
-                      <td><span class="perm-check no"><span class="icon"><svg><use href="#i-x"/></svg></span></span></td>
-                      <td><span class="perm-check no"><span class="icon"><svg><use href="#i-x"/></svg></span></span></td>
-                      <td><span class="perm-check no"><span class="icon"><svg><use href="#i-x"/></svg></span></span></td>
-                      <td><span class="badge badge--green">Ativo</span></td>
-                      <td>
-                        <div class="row-actions">
-                          <button class="iconbtn" type="button" title="Editar"><span class="icon"><svg><use href="#i-pencil"/></svg></span></button>
-                          <button class="iconbtn" type="button" title="Mais opções"><span class="icon"><svg><use href="#i-more-vert"/></svg></span></button>
-                        </div>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td><input type="checkbox" class="checkbox"></td>
-                      <td><span class="perm-profile-cell"><span class="perm-profile-icon" style="background:linear-gradient(135deg,var(--orange-600),var(--amber-400));"><span class="icon" style="width:16px;height:16px;"><svg><use href="#i-box"/></svg></span></span><span class="prod-name">Estoque</span></span></td>
-                      <td><span class="supplier-cell" style="max-width:180px;">Acesso ao estoque, compras e recebimento</span></td>
-                      <td>1</td>
-                      <td><span class="perm-check no"><span class="icon"><svg><use href="#i-x"/></svg></span></span></td>
-                      <td><span class="perm-check no"><span class="icon"><svg><use href="#i-x"/></svg></span></span></td>
-                      <td><span class="perm-check yes"><span class="icon"><svg><use href="#i-check"/></svg></span></span></td>
-                      <td><span class="perm-check no"><span class="icon"><svg><use href="#i-x"/></svg></span></span></td>
-                      <td><span class="perm-check no"><span class="icon"><svg><use href="#i-x"/></svg></span></span></td>
-                      <td><span class="badge badge--green">Ativo</span></td>
-                      <td>
-                        <div class="row-actions">
-                          <button class="iconbtn" type="button" title="Editar"><span class="icon"><svg><use href="#i-pencil"/></svg></span></button>
-                          <button class="iconbtn" type="button" title="Mais opções"><span class="icon"><svg><use href="#i-more-vert"/></svg></span></button>
-                        </div>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td><input type="checkbox" class="checkbox"></td>
-                      <td><span class="perm-profile-cell"><span class="perm-profile-icon" style="background:linear-gradient(135deg,#7c4fd9,#9f7cf0);"><span class="icon" style="width:16px;height:16px;"><svg><use href="#i-chat"/></svg></span></span><span class="prod-name">Atendente</span></span></td>
-                      <td><span class="supplier-cell" style="max-width:180px;">Acesso ao atendimento, clientes e demandas</span></td>
-                      <td>2</td>
-                      <td><span class="perm-check yes"><span class="icon"><svg><use href="#i-check"/></svg></span></span></td>
-                      <td><span class="perm-check yes"><span class="icon"><svg><use href="#i-check"/></svg></span></span></td>
-                      <td><span class="perm-check no"><span class="icon"><svg><use href="#i-x"/></svg></span></span></td>
-                      <td><span class="perm-check no"><span class="icon"><svg><use href="#i-x"/></svg></span></span></td>
-                      <td><span class="perm-check no"><span class="icon"><svg><use href="#i-x"/></svg></span></span></td>
-                      <td><span class="badge badge--green">Ativo</span></td>
-                      <td>
-                        <div class="row-actions">
-                          <button class="iconbtn" type="button" title="Editar"><span class="icon"><svg><use href="#i-pencil"/></svg></span></button>
-                          <button class="iconbtn" type="button" title="Mais opções"><span class="icon"><svg><use href="#i-more-vert"/></svg></span></button>
-                        </div>
-                      </td>
-                    </tr>
-                  </tbody>
+                  <tbody id="permTbody"></tbody>
                 </table>
               </div>
               <div class="table-footer">
-                <p class="table-footer__info">Mostrando 1 a 5 de 5 perfis</p>
+                <p class="table-footer__info" id="rodapePerm">Mostrando 1 a 5 de 5 perfis</p>
                 <div class="pagination">
                   <button class="page-btn" type="button" disabled><span class="icon"><svg><use href="#i-chevron-right" style="transform:scaleX(-1);"/></svg></span></button>
                   <button class="page-btn is-active" type="button">1</button>
@@ -8051,23 +7961,23 @@ html, body{ overflow-x:hidden; max-width:100%; }
 
             <div class="perm-selected-card">
               <div class="perm-selected-card__head">
-                <span class="perm-selected-card__icon"><span class="icon" style="width:16px;height:16px;"><svg><use href="#i-crown"/></svg></span></span>
+                <span class="perm-selected-card__icon" id="permSelIcone"><span class="icon" style="width:16px;height:16px;"><svg><use href="#i-crown"/></svg></span></span>
                 <h3>Perfil Selecionado</h3>
               </div>
               <div class="perm-selected-card__body">
-                <div class="perm-selected-card__name"><strong>Administrador</strong><span class="badge badge--green">Ativo</span></div>
-                <p class="perm-selected-card__desc">Acesso total ao sistema, sem restrições.</p>
+                <div class="perm-selected-card__name"><strong id="permSelNome">Administrador</strong><span class="badge badge--green" id="permSelStatus">Ativo</span></div>
+                <p class="perm-selected-card__desc" id="permSelDesc">Acesso total ao sistema, sem restrições.</p>
                 <div class="user-detail-field">
                   <span class="user-detail-field__icon"><svg><use href="#i-users"/></svg></span>
-                  <span><span class="user-detail-field__label" style="display:block;">Usuários neste perfil</span><span class="user-detail-field__value">2</span></span>
+                  <span><span class="user-detail-field__label" style="display:block;">Usuários neste perfil</span><span class="user-detail-field__value" id="permSelUsuarios">0</span></span>
                 </div>
                 <div class="user-detail-field">
-                  <span class="user-detail-field__icon"><svg><use href="#i-calendar"/></svg></span>
-                  <span><span class="user-detail-field__label" style="display:block;">Criado em</span><span class="user-detail-field__value">15/01/2024</span></span>
+                  <span class="user-detail-field__icon"><svg><use href="#i-shield"/></svg></span>
+                  <span><span class="user-detail-field__label" style="display:block;">Seções liberadas</span><span class="user-detail-field__value" id="permSelSecoes">0 de 15</span></span>
                 </div>
                 <div class="user-detail-field">
-                  <span class="user-detail-field__icon"><svg><use href="#i-clock"/></svg></span>
-                  <span><span class="user-detail-field__label" style="display:block;">Última alteração</span><span class="user-detail-field__value">21/09/2026 14:32</span></span>
+                  <span class="user-detail-field__icon"><svg><use href="#i-info"/></svg></span>
+                  <span><span class="user-detail-field__label" style="display:block;">Origem</span><span class="user-detail-field__value" style="font-size:12.5px;">Perfil padrão do sistema</span></span>
                 </div>
               </div>
               <div class="user-detail-foot">
@@ -8418,7 +8328,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
           </button>
           <button class="wa-promo-card" type="button" id="zerarDadosBtn" style="background:var(--red-50);">
             <span class="wa-promo-card__icon" style="background:var(--red-500);"><span class="icon" style="width:20px;height:20px;"><svg><use href="#i-trash"/></svg></span></span>
-            <span><h4>Zerar Dados de Teste</h4><p>Apaga produtos, vendas, clientes e todo o resto que foi cadastrado, deixando o sistema em branco pra começar do zero (a loja e o login continuam).</p></span>
+            <span><h4>Apagar Registros de Teste</h4><p>Apaga só produtos, categorias, clientes, fornecedores e solicitações com a palavra "teste" no nome (ex: "teste pão", "cliente teste"). O resto dos seus dados fica intacto.</p></span>
             <span class="icon wa-promo-card__arrow"><svg><use href="#i-chevron-right"/></svg></span>
           </button>
         </div>
@@ -8805,6 +8715,25 @@ html, body{ overflow-x:hidden; max-width:100%; }
     financeiro: { dashboard: true, produtos: false, categorias: false, estoque: false, vendas: true, orcamentos: true, clientes: true, demandas: false, fornecedores: false, compras: true, entregas: false, notificacoes: true, usuarios: false, relatorios: true, configuracoes: false },
     entregas: { dashboard: true, produtos: false, categorias: false, estoque: false, vendas: false, orcamentos: false, clientes: true, demandas: false, fornecedores: false, compras: false, entregas: true, notificacoes: true, usuarios: false, relatorios: false, configuracoes: false }
   };
+  var PERM_ROLE_ICON = {
+    administrador: { icone: 'i-crown', grad: 'linear-gradient(135deg,#e5484d,#ef7478)' },
+    vendas: { icone: 'i-trending-up', grad: 'linear-gradient(135deg,#3b6fe0,#5c8cf2)' },
+    atendimento: { icone: 'i-chat', grad: 'linear-gradient(135deg,#7c4fd9,#9f7cf0)' },
+    estoque: { icone: 'i-box', grad: 'linear-gradient(135deg,var(--orange-600),var(--amber-400))' },
+    compras: { icone: 'i-cart', grad: 'linear-gradient(135deg,#2bb3a3,#1c8a7d)' },
+    financeiro: { icone: 'i-dollar', grad: 'linear-gradient(135deg,#0ea968,#17c98a)' },
+    entregas: { icone: 'i-truck', grad: 'linear-gradient(135deg,#5a7ca8,#3d5a80)' }
+  };
+  var PERM_ROLE_DESC = {
+    administrador: 'Acesso total ao sistema, sem restrições.',
+    vendas: 'Vendas, produtos, orçamentos e clientes.',
+    atendimento: 'Atendimento, clientes e demandas.',
+    estoque: 'Estoque, produtos, categorias e fornecedores.',
+    compras: 'Compras, estoque, produtos e fornecedores.',
+    financeiro: 'Vendas, orçamentos, compras e relatórios.',
+    entregas: 'Entregas e clientes.'
+  };
+  var permSelecionadoAtual = 'administrador';
 
   var STATE = { loja: null, user: null };
   var NOTIF_CHIP = 'Todas';
@@ -9684,10 +9613,18 @@ html, body{ overflow-x:hidden; max-width:100%; }
   /* ============================================================
      CLIENTES
      ============================================================ */
+  var CLASSIFICACAO_CLIENTE_INFO = {
+    vip: { label: 'VIP', badge: 'badge--purple' },
+    bom: { label: 'Bom cliente', badge: 'badge--green' },
+    mau_pagador: { label: 'Mau pagador', badge: 'badge--red' },
+    problematico: { label: 'Problemático', badge: 'badge--orange' },
+    trocas: { label: 'Muitas trocas', badge: 'badge--teal' }
+  };
   function clienteRowHTML(c) {
     var tipoBadge = c.tipo === 'juridica' ? 'Pessoa Jurídica' : 'Pessoa Física';
     var statusBadge = c.status === 'ativo' ? 'badge--green' : 'badge--gray';
     var statusLabel = c.status === 'ativo' ? 'Ativo' : 'Inativo';
+    var classInfo = CLASSIFICACAO_CLIENTE_INFO[c.classificacao];
     return '<tr data-id="' + c.id + '">' +
       '<td><input type="checkbox" class="checkbox"></td>' +
       '<td><div class="customer-cell"><span class="customer-avatar" style="background:' + avatarColor(c.nome) + ';">' + initials(c.nome) + '</span><span class="customer-name">' + esc(c.nome) + '</span></div></td>' +
@@ -9697,6 +9634,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
       '<td>' + esc(c.email || '—') + '</td>' +
       '<td>' + esc(c.cidade || '—') + '</td>' +
       '<td><span class="price-cell">' + fmtBRL(c._totalCompras || 0) + '</span></td>' +
+      '<td>' + (classInfo ? '<span class="badge ' + classInfo.badge + '">' + classInfo.label + '</span>' : '—') + '</td>' +
       '<td><span class="badge ' + statusBadge + '">' + statusLabel + '</span></td>' +
       '<td><div class="row-actions">' +
         '<button class="iconbtn" type="button" title="Editar" data-cli-edit="' + c.id + '"><span class="icon"><svg><use href="#i-pencil"/></svg></span></button>' +
@@ -9718,9 +9656,9 @@ html, body{ overflow-x:hidden; max-width:100%; }
     setKpi('kpiCliTotal', clientes.length);
     setKpi('kpiCliNovosMes', novosMes);
     setKpi('kpiCliAtivos', clientes.filter(function (c) { return c.status === 'ativo'; }).length);
-    setKpi('kpiCliVIP', 0);
-    setKpi('kpiCliInadimplentes', 0);
-    if (!clientes.length) { tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;padding:24px;color:var(--text-tertiary);">Nenhum cliente cadastrado ainda.</td></tr>'; setRodape('rodapeClientes', 0, 'clientes'); return; }
+    setKpi('kpiCliVIP', clientes.filter(function (c) { return c.classificacao === 'vip'; }).length);
+    setKpi('kpiCliInadimplentes', clientes.filter(function (c) { return c.classificacao === 'mau_pagador'; }).length);
+    if (!clientes.length) { tbody.innerHTML = '<tr><td colspan="11" style="text-align:center;padding:24px;color:var(--text-tertiary);">Nenhum cliente cadastrado ainda.</td></tr>'; setRodape('rodapeClientes', 0, 'clientes'); return; }
     var busca = valOf('clientesSearchInput'), tipoF = valOf('filtroTipoCliente'), statusF = valOf('filtroStatusCliente'), cidadeF = valOf('filtroCidadeCliente');
     var lista = clientes.filter(function (c) {
       if (!bateBusca([c.nome, c.documento || '', c.telefone || '', c.email || ''], busca)) return false;
@@ -9730,7 +9668,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
       return true;
     });
     tbody.innerHTML = lista.length ? lista.map(clienteRowHTML).join('') :
-      '<tr><td colspan="10" style="text-align:center;padding:24px;color:var(--text-tertiary);">Nenhum cliente encontrado com esses filtros.</td></tr>';
+      '<tr><td colspan="11" style="text-align:center;padding:24px;color:var(--text-tertiary);">Nenhum cliente encontrado com esses filtros.</td></tr>';
     setRodape('rodapeClientes', lista.length, 'clientes');
   }
   function clienteFormModal(cli) {
@@ -9751,6 +9689,10 @@ html, body{ overflow-x:hidden; max-width:100%; }
           '<div class="field"><label>Cidade</label><input id="cliCidade" value="' + esc(cli.cidade || '') + '"></div>' +
           '<div class="field"><label>Status</label><select id="cliStatus"><option value="ativo"' + (cli.status === 'ativo' ? ' selected' : '') + '>Ativo</option><option value="inativo"' + (cli.status === 'inativo' ? ' selected' : '') + '>Inativo</option></select></div>' +
         '</div>' +
+        '<div class="field"><label>Classificação (opcional)</label><select id="cliClassificacao">' +
+          '<option value=""' + (!cli.classificacao ? ' selected' : '') + '>Nenhuma</option>' +
+          Object.keys(CLASSIFICACAO_CLIENTE_INFO).map(function (k) { return '<option value="' + k + '"' + (cli.classificacao === k ? ' selected' : '') + '>' + CLASSIFICACAO_CLIENTE_INFO[k].label + '</option>'; }).join('') +
+        '</select></div>' +
         modalFooterHTML('Salvar cliente') +
       '</form>'
     );
@@ -9761,7 +9703,8 @@ html, body{ overflow-x:hidden; max-width:100%; }
       var obj = {
         id: cli.id || uid(), nome: nome, tipo: document.getElementById('cliTipo').value, documento: document.getElementById('cliDocumento').value.trim(),
         telefone: document.getElementById('cliTelefone').value.trim(), email: document.getElementById('cliEmail').value.trim(),
-        cidade: document.getElementById('cliCidade').value.trim(), status: document.getElementById('cliStatus').value, criado_em: cli.criado_em || nowISO()
+        cidade: document.getElementById('cliCidade').value.trim(), status: document.getElementById('cliStatus').value,
+        classificacao: document.getElementById('cliClassificacao').value || null, criado_em: cli.criado_em || nowISO()
       };
       await idbPut('clientes', obj);
       await logAction(cli.id ? 'cliente_editado' : 'cliente_criado', obj.nome);
@@ -9975,6 +9918,72 @@ html, body{ overflow-x:hidden; max-width:100%; }
       '<tr><td colspan="8" style="text-align:center;padding:24px;color:var(--text-tertiary);">Nenhum usuário encontrado com esses filtros.</td></tr>';
     setRodape('rodapeUsuarios', lista.length, 'usuários');
   }
+  /* Permissões -- antes mostrava 5 perfis de mentira (um deles,
+     "Gerente", nem existe no sistema) com número de usuário fixo.
+     Agora mostra os 7 perfis reais (os mesmos do cadastro de Usuário),
+     com a contagem real de gente em cada um e as permissões que já
+     existem de verdade em ROLE_DEFAULT_PERMS. */
+  var COLUNAS_PERM = [
+    { label: 'Dashboard', chave: 'dashboard' },
+    { label: 'Vendas', chave: 'vendas' },
+    { label: 'Estoque', chave: 'estoque' },
+    { label: 'Financeiro', chave: null },
+    { label: 'Configurações', chave: 'configuracoes' }
+  ];
+  async function renderPermissoes() {
+    var tbody = document.getElementById('permTbody');
+    if (!tbody) return;
+    var usuarios = await idbAll('usuarios');
+    var contagem = {};
+    usuarios.forEach(function (u) { contagem[u.papel] = (contagem[u.papel] || 0) + 1; });
+    var roles = Object.keys(ROLE_LABELS);
+    var totalTrue = 0, totalFalse = 0;
+    roles.forEach(function (r) {
+      ALL_SECTIONS.forEach(function (s) { if (ROLE_DEFAULT_PERMS[r][s]) totalTrue++; else totalFalse++; });
+    });
+    setKpi('kpiPermTotal', roles.length);
+    setKpi('kpiPermAtivas', totalTrue);
+    setKpi('kpiPermRestritos', totalFalse);
+    tbody.innerHTML = roles.map(function (r) {
+      var ic = PERM_ROLE_ICON[r];
+      var perms = ROLE_DEFAULT_PERMS[r];
+      var checks = COLUNAS_PERM.map(function (c) {
+        var tem = c.chave ? !!perms[c.chave] : false;
+        return '<td><span class="perm-check ' + (tem ? 'yes' : 'no') + '"><span class="icon"><svg><use href="#' + (tem ? 'i-check' : 'i-x') + '"/></svg></span></span></td>';
+      }).join('');
+      return '<tr data-role="' + r + '" style="cursor:pointer;">' +
+        '<td><input type="checkbox" class="checkbox"></td>' +
+        '<td><span class="perm-profile-cell"><span class="perm-profile-icon" style="background:' + ic.grad + ';"><span class="icon" style="width:16px;height:16px;"><svg><use href="#' + ic.icone + '"/></svg></span></span><span class="prod-name">' + esc(ROLE_LABELS[r]) + '</span></span></td>' +
+        '<td><span class="supplier-cell" style="max-width:180px;">' + esc(PERM_ROLE_DESC[r]) + '</span></td>' +
+        '<td>' + (contagem[r] || 0) + '</td>' +
+        checks +
+        '<td><span class="badge badge--green">Ativo</span></td>' +
+        '<td><div class="row-actions"><button class="iconbtn" type="button" title="Editar"><span class="icon"><svg><use href="#i-pencil"/></svg></span></button><button class="iconbtn" type="button" title="Mais opções"><span class="icon"><svg><use href="#i-more-vert"/></svg></span></button></div></td></tr>';
+    }).join('');
+    setRodape('rodapePerm', roles.length, 'perfis');
+    atualizarPerfilSelecionado(permSelecionadoAtual, contagem);
+  }
+  function atualizarPerfilSelecionado(role, contagem) {
+    var nomeEl = document.getElementById('permSelNome');
+    if (!nomeEl) return;
+    permSelecionadoAtual = role;
+    var ic = PERM_ROLE_ICON[role];
+    nomeEl.textContent = ROLE_LABELS[role];
+    document.getElementById('permSelDesc').textContent = PERM_ROLE_DESC[role];
+    document.getElementById('permSelUsuarios').textContent = (contagem && contagem[role]) || 0;
+    var secoesLiberadas = ALL_SECTIONS.filter(function (s) { return ROLE_DEFAULT_PERMS[role][s]; }).length;
+    document.getElementById('permSelSecoes').textContent = secoesLiberadas + ' de ' + ALL_SECTIONS.length;
+    var iconeEl = document.getElementById('permSelIcone');
+    if (iconeEl) { iconeEl.style.background = ic.grad; iconeEl.innerHTML = '<span class="icon" style="width:16px;height:16px;"><svg><use href="#' + ic.icone + '"/></svg></span>'; }
+  }
+  document.addEventListener('click', async function (e) {
+    var tr = e.target.closest('#permTbody tr[data-role]');
+    if (!tr) return;
+    var usuarios = await idbAll('usuarios');
+    var contagem = {};
+    usuarios.forEach(function (u) { contagem[u.papel] = (contagem[u.papel] || 0) + 1; });
+    atualizarPerfilSelecionado(tr.getAttribute('data-role'), contagem);
+  });
   function usuarioFormModal(u) {
     u = u || { id: null, nome: '', email: '', papel: 'vendas', status: 'ativo' };
     var roleOptions = Object.keys(ROLE_LABELS).map(function (k) { return '<option value="' + k + '"' + (u.papel === k ? ' selected' : '') + '>' + ROLE_LABELS[k] + '</option>'; }).join('');
@@ -11161,20 +11170,43 @@ html, body{ overflow-x:hidden; max-width:100%; }
     await logAction('backup_exportado', 'Backup manual gerado');
     toast('Backup baixado com sucesso.');
   }
-  /* Apaga todo o dado de teste (produtos, vendas, movimentações de
-     estoque etc.) sem apagar a loja/login -- pra quando o lojista
-     quiser começar a usar de verdade sem precisar reinstalar o app
-     nem excluir cada cadastro na mão. */
-  var STORES_ZERAVEIS = ['categorias', 'produtos', 'estoque_mov', 'clientes', 'vendas', 'fornecedores', 'compras', 'recebimentos', 'orcamentos', 'demandas', 'entregas', 'notificacoes', 'logs'];
-  async function zerarDadosDeTeste(){
-    var ok = confirm('Isso vai apagar TODOS os produtos, categorias, vendas, clientes, compras, fornecedores, orçamentos, demandas, entregas, movimentações de estoque e notificações cadastrados até agora. Os dados da loja e o seu login continuam. Essa ação não pode ser desfeita.\n\nTem certeza que quer zerar tudo?');
+  /* Apaga só os registros que têm a palavra "teste" no nome (produto,
+     categoria, cliente, fornecedor, solicitação) -- NÃO zera a loja
+     inteira. É assim que o lojista consegue testar em cima dos dados
+     reais do cliente sem medo: nomeia o que é teste com "teste" em
+     algum lugar do nome ("teste pão", "cliente teste") e depois limpa
+     só isso, sem mexer no resto. */
+  function nomeTemPalavraTeste(nome) {
+    var n = String(nome || '').normalize('NFD').replace(/[̀-ͯ]/g, '');
+    return /\bteste\b/i.test(n);
+  }
+  async function apagarRegistrosDeTeste(){
+    var produtos = (await idbAll('produtos')).filter(function (p) { return nomeTemPalavraTeste(p.nome); });
+    var categorias = (await idbAll('categorias')).filter(function (c) { return nomeTemPalavraTeste(c.nome); });
+    var clientes = (await idbAll('clientes')).filter(function (c) { return nomeTemPalavraTeste(c.nome); });
+    var fornecedores = (await idbAll('fornecedores')).filter(function (f) { return nomeTemPalavraTeste(f.nome); });
+    var demandas = (await idbAll('demandas')).filter(function (d) { return nomeTemPalavraTeste(d.produto_solicitado); });
+    var total = produtos.length + categorias.length + clientes.length + fornecedores.length + demandas.length;
+    if (!total) { toast('Nenhum produto, categoria, cliente, fornecedor ou solicitação com "teste" no nome foi encontrado.'); return; }
+    var ok = confirm('Isso vai apagar ' + total + ' registro(s) com a palavra "teste" no nome:\n' +
+      (produtos.length ? '\n' + produtos.length + ' produto(s)' : '') +
+      (categorias.length ? '\n' + categorias.length + ' categoria(s)' : '') +
+      (clientes.length ? '\n' + clientes.length + ' cliente(s)' : '') +
+      (fornecedores.length ? '\n' + fornecedores.length + ' fornecedor(es)' : '') +
+      (demandas.length ? '\n' + demandas.length + ' solicitação(ões)' : '') +
+      '\n\nO resto dos seus dados continua intacto. Essa ação não pode ser desfeita.\n\nConfirmar?');
     if (!ok) return;
-    for (var i = 0; i < STORES_ZERAVEIS.length; i++) {
-      var registros = await idbAll(STORES_ZERAVEIS[i]);
-      for (var j = 0; j < registros.length; j++) { await idbDelete(STORES_ZERAVEIS[i], registros[j].id); }
+    for (var i = 0; i < produtos.length; i++) {
+      await idbDelete('produtos', produtos[i].id);
+      var movsDoProduto = (await idbAll('estoque_mov')).filter(function (m) { return m.produto_id === produtos[i].id; });
+      for (var j = 0; j < movsDoProduto.length; j++) { await idbDelete('estoque_mov', movsDoProduto[j].id); }
     }
-    await logAction('dados_de_teste_zerados', 'Todos os cadastros de teste foram apagados');
-    toast('Pronto! O sistema está em branco, sem nenhum produto/venda/cliente cadastrado.');
+    for (i = 0; i < categorias.length; i++) { await idbDelete('categorias', categorias[i].id); }
+    for (i = 0; i < clientes.length; i++) { await idbDelete('clientes', clientes[i].id); }
+    for (i = 0; i < fornecedores.length; i++) { await idbDelete('fornecedores', fornecedores[i].id); }
+    for (i = 0; i < demandas.length; i++) { await idbDelete('demandas', demandas[i].id); }
+    await logAction('registros_teste_apagados', total + ' registro(s) com "teste" no nome apagados');
+    toast(total + ' registro(s) de teste apagados. O resto continua igual.');
     await renderAll();
   }
   async function gerenciarLicencaModal(){
@@ -11253,7 +11285,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
     rewire('exportarDadosBtn', function(){ exportarBackupJSON(); });
     rewire('gerenciarLicencaBtn', function(){ gerenciarLicencaModal(); });
     rewire('restaurarPadroesBtn', async function(){ await renderConfiguracoes(); toast('Alterações não salvas foram descartadas.'); });
-    rewire('zerarDadosBtn', async function(){ await zerarDadosDeTeste(); });
+    rewire('zerarDadosBtn', async function(){ await apagarRegistrosDeTeste(); });
     ['verRelatorioVendasBtn','verRelatorioOrcamentosBtn','verRelatorioClientesBtn','relatorioDemandaBtn','relatorioProdutosSolicitadosBtn','exportarRelatorioBtn','relatorioCompletoBtn','relatorioFornecedoresBtn','relatorioComprasBtn','relatorioRecebimentosBtn','relatorioEntregasBtn'].forEach(function(id){
       rewire(id, function(){ irParaTela('Relatórios'); });
     });
@@ -11651,6 +11683,9 @@ html, body{ overflow-x:hidden; max-width:100%; }
     if (e.target.closest('[data-view="Relatórios"]')) setTimeout(function(){ renderRelatorios(); }, 50);
   });
   document.addEventListener('click', function(e){
+    if (e.target.closest('[data-view="Permissões"]')) setTimeout(function(){ renderPermissoes(); }, 50);
+  });
+  document.addEventListener('click', function(e){
     var pt = e.target.closest('#relLineChart circle[data-dia]');
     if (!pt) return;
     var dia = pt.getAttribute('data-dia');
@@ -11664,7 +11699,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
       renderDashboard(), renderCategorias(), renderProdutos(), renderClientes(), renderVendas(), renderUsuarios(),
       renderFornecedores(), renderCompras(), renderRecebimento(), renderOrcamentos(), renderDemandas(),
       renderEntregas(), renderNotificacoes(), renderConfiguracoes(), renderEstoqueDerivados(), renderHistoricoVendas(),
-      renderRelatorios()
+      renderRelatorios(), renderPermissoes()
     ]);
   }
 
@@ -11736,10 +11771,25 @@ html, body{ overflow-x:hidden; max-width:100%; }
   window.addEventListener('online', function () { syncNow().catch(function () {}); });
   setInterval(function () { syncNow().catch(function () {}); }, 90000);
 
-  // Registra o service worker só pra habilitar "Instalar app" no
-  // celular e no computador -- ele não guarda nada em cache (ver sw.js).
+  // Registra o service worker (habilita "Instalar app") e detecta
+  // sozinho quando sai uma versão nova publicada: recarrega a página
+  // na hora, sem precisar que a pessoa dê refresh, limpe cache ou
+  // desinstale o app pra ver a atualização.
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/sw.js').catch(function () {});
+    var recarregandoPorAtualizacao = false;
+    navigator.serviceWorker.addEventListener('controllerchange', function () {
+      if (recarregandoPorAtualizacao) return;
+      recarregandoPorAtualizacao = true;
+      window.location.reload();
+    });
+    navigator.serviceWorker.register('/sw.js').then(function (registro) {
+      registro.update().catch(function () {});
+      document.addEventListener('visibilitychange', function () {
+        if (document.visibilityState === 'visible') registro.update().catch(function () {});
+      });
+      window.addEventListener('focus', function () { registro.update().catch(function () {}); });
+      setInterval(function () { registro.update().catch(function () {}); }, 120000);
+    }).catch(function () {});
   }
 })();
 
