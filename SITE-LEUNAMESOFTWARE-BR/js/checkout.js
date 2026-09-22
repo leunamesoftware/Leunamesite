@@ -1,6 +1,7 @@
-// TODO: este site venderá via Mercado Pago para o Brasil -- a integração
-// com o backend de pagamento ainda não foi feita; o checkout ainda aponta
-// para a mesma API do site em espanhol como placeholder.
+// Por enquanto o pagamento continua via Stripe (mesma conta/token do site
+// em espanhol), só que cobrando em Real (BRL) com o preço próprio do
+// Brasil (precio_br) -- ver crearPedidoDesdeCarrito() no backend. Trocar
+// para Mercado Pago fica como evolução futura, não é bloqueio para vender.
 /* ==========================================================================
    LeuName Softwares — Checkout
    --------------------------------------------------------------------------
@@ -128,6 +129,7 @@
         if (payBtn) payBtn.disabled = true;
 
         var orderData = {
+          site: 'br',
           cliente: Object.fromEntries(new FormData(form).entries()),
           items: items.map(function (i) { return { id: i.product.id, qty: i.qty }; })
         };

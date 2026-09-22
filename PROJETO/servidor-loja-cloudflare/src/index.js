@@ -64,14 +64,25 @@ async function crearPedidoDesdeCarrito(env, body) {
     return { erro: 'datos_invalidos' };
   }
 
+  // site: 'br' (leunamesoftware.com.br, cobra em BRL usando precio_br) ou
+  // 'es' (leunamesoftware.com, cobra em EUR usando precio) -- default 'es'
+  // pra nao quebrar nenhuma chamada antiga que ainda nao manda "site".
+  const site = body.site === 'br' ? 'br' : 'es';
+  const moneda = site === 'br' ? 'brl' : 'eur';
+
   const itemsConPrecio = [];
   for (const item of body.items.slice(0, 50)) {
     if (!item || !item.id) continue;
-    const producto = await env.DB.prepare('SELECT id, nombre, precio FROM productos WHERE id = ? AND activo = 1')
+    const producto = await env.DB.prepare('SELECT id, nombre, nombre_br, precio, precio_br FROM productos WHERE id = ? AND activo = 1')
       .bind(item.id).first();
     if (!producto) continue;
+    // O site BR nunca usa "precio" (EUR) como reserva -- se o produto
+    // ainda nao tem precio_br cadastrado, ele simplesmente nao pode ser
+    // comprado por ali (mesma regra ja documentada no schema.sql).
+    const precioEfetivo = site === 'br' ? producto.precio_br : producto.precio;
+    if (precioEfetivo == null) continue;
     const cantidad = Math.max(1, Math.min(99, parseInt(item.qty, 10) || 1));
-    itemsConPrecio.push({ producto, cantidad });
+    itemsConPrecio.push({ producto: { ...producto, precio: precioEfetivo }, cantidad });
   }
   if (!itemsConPrecio.length) return { erro: 'sin_items_validos' };
 
@@ -99,12 +110,12 @@ async function crearPedidoDesdeCarrito(env, body) {
   const batch = itemsConPrecio.map((i) =>
     env.DB.prepare(
       'INSERT INTO pedido_items (id, pedido_id, producto_id, nombre_producto, precio_unitario, cantidad) VALUES (?, ?, ?, ?, ?, ?)'
-    ).bind(crypto.randomUUID(), pedidoId, i.producto.id, i.producto.nombre, i.producto.precio, i.cantidad)
+    ).bind(crypto.randomUUID(), pedidoId, i.producto.id, (site === 'br' && i.producto.nombre_br) ? i.producto.nombre_br : i.producto.nombre, i.producto.precio, i.cantidad)
   );
   await env.DB.batch(batch);
 
   return {
-    pedidoId, itemsConPrecio, subtotal, total,
+    pedidoId, itemsConPrecio, subtotal, total, site, moneda,
     clienteEmail: body.cliente.email, clienteNombre: body.cliente.nombre || null,
     cupon: cupon ? { id: cupon.id, codigo: cupon.codigo, porcentaje: cupon.porcentaje, descuento } : null,
   };
@@ -256,7 +267,7 @@ export default {
       const body = await request.json().catch(() => null);
       const resultado = await crearPedidoDesdeCarrito(env, body);
       if (resultado.erro) return json({ ok: false, erro: resultado.erro }, 400);
-      const { pedidoId, itemsConPrecio, clienteEmail, cupon } = resultado;
+      const { pedidoId, itemsConPrecio, clienteEmail, cupon, moneda } = resultado;
 
       const siteUrl = (env.SITE_URL || 'https://leuname-site.emanuelantunes2024.workers.dev').replace(/\/$/, '');
 
@@ -292,7 +303,7 @@ export default {
           line_items: itemsConPrecio.map((i) => ({
             quantity: i.cantidad,
             price_data: {
-              currency: 'eur',
+              currency: moneda,
               unit_amount: Math.round(i.producto.precio * 100),
               product_data: { name: i.producto.nombre },
             },

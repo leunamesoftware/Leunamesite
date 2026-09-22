@@ -124,6 +124,7 @@
         if (payBtn) payBtn.disabled = true;
 
         var orderData = {
+          site: 'es',
           cliente: Object.fromEntries(new FormData(form).entries()),
           items: items.map(function (i) { return { id: i.product.id, qty: i.qty }; })
         };
