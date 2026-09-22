@@ -1931,71 +1931,17 @@ html, body{ overflow-x:hidden; max-width:100%; }
         <div class="panel">
           <div class="panel__head">
             <h3><span class="icon" style="color:var(--red-500);"><svg><use href="#i-alert-triangle"/></svg></span>Precisa de atenção</h3>
-            <button class="panel__link" type="button">Ver todos<span class="icon"><svg><use href="#i-chevron-right"/></svg></span></button>
+            <button class="panel__link" type="button" id="painelAtencaoVerTodos">Ver todos<span class="icon"><svg><use href="#i-chevron-right"/></svg></span></button>
           </div>
-          <div>
-            <div class="alert-row">
-              <span class="alert-row__dot"><span class="icon" style="width:13px;height:13px;"><svg><use href="#i-box"/></svg></span></span>
-              <span class="alert-row__text">3 produtos sem estoque</span>
-              <span class="icon icon--chev"><svg><use href="#i-chevron-right"/></svg></span>
-            </div>
-            <div class="alert-row">
-              <span class="alert-row__dot"><span class="icon" style="width:13px;height:13px;"><svg><use href="#i-archive"/></svg></span></span>
-              <span class="alert-row__text">5 produtos abaixo do estoque mínimo</span>
-              <span class="icon icon--chev"><svg><use href="#i-chevron-right"/></svg></span>
-            </div>
-            <div class="alert-row">
-              <span class="alert-row__dot"><span class="icon" style="width:13px;height:13px;"><svg><use href="#i-users"/></svg></span></span>
-              <span class="alert-row__text">2 clientes aguardando produto</span>
-              <span class="icon icon--chev"><svg><use href="#i-chevron-right"/></svg></span>
-            </div>
-            <div class="alert-row">
-              <span class="alert-row__dot"><span class="icon" style="width:13px;height:13px;"><svg><use href="#i-bag"/></svg></span></span>
-              <span class="alert-row__text">1 pedido de compra pendente</span>
-              <span class="icon icon--chev"><svg><use href="#i-chevron-right"/></svg></span>
-            </div>
-          </div>
+          <div id="painelAtencaoRows"></div>
         </div>
 
         <div class="panel">
           <div class="panel__head">
             <h3><span class="icon" style="color:var(--blue-500);"><svg><use href="#i-box"/></svg></span>Estoque crítico</h3>
-            <button class="panel__link" type="button">Ver todos<span class="icon"><svg><use href="#i-chevron-right"/></svg></span></button>
+            <button class="panel__link" type="button" id="painelEstoqueCriticoVerTodos">Ver todos<span class="icon"><svg><use href="#i-chevron-right"/></svg></span></button>
           </div>
-          <div>
-            <div class="stock-row">
-              <span class="stock-row__thumb"><span class="icon" style="width:16px;height:16px;"><svg><use href="#i-archive"/></svg></span></span>
-              <span class="stock-row__body">
-                <p class="stock-row__name">Cimento CP-II 50kg</p>
-                <p class="stock-row__meta">Estoque: 8 | Min: 15</p>
-              </span>
-              <span class="badge badge--red stock-row__badge">Crítico</span>
-            </div>
-            <div class="stock-row">
-              <span class="stock-row__thumb"><span class="icon" style="width:16px;height:16px;"><svg><use href="#i-archive"/></svg></span></span>
-              <span class="stock-row__body">
-                <p class="stock-row__name">Argamassa ACIII 20kg</p>
-                <p class="stock-row__meta">Estoque: 5 | Min: 10</p>
-              </span>
-              <span class="badge badge--red stock-row__badge">Crítico</span>
-            </div>
-            <div class="stock-row">
-              <span class="stock-row__thumb"><span class="icon" style="width:16px;height:16px;"><svg><use href="#i-archive"/></svg></span></span>
-              <span class="stock-row__body">
-                <p class="stock-row__name">Tijolo 9 furos</p>
-                <p class="stock-row__meta">Estoque: 120 | Min: 200</p>
-              </span>
-              <span class="badge badge--orange stock-row__badge">Atenção</span>
-            </div>
-            <div class="stock-row">
-              <span class="stock-row__thumb"><span class="icon" style="width:16px;height:16px;"><svg><use href="#i-archive"/></svg></span></span>
-              <span class="stock-row__body">
-                <p class="stock-row__name">Telha Colonial</p>
-                <p class="stock-row__meta">Estoque: 45 | Min: 100</p>
-              </span>
-              <span class="badge badge--orange stock-row__badge">Atenção</span>
-            </div>
-          </div>
+          <div id="painelEstoqueCriticoRows"></div>
         </div>
 
         <div class="panel">
@@ -2003,52 +1949,18 @@ html, body{ overflow-x:hidden; max-width:100%; }
             <h3><span class="icon" style="color:var(--indigo-500);"><svg><use href="#i-cart"/></svg></span>Precisa comprar</h3>
             <button class="panel__link" type="button" data-nav-target="Precisa Comprar">Ver lista<span class="icon"><svg><use href="#i-chevron-right"/></svg></span></button>
           </div>
-          <div>
-            <div class="stock-row">
-              <span class="stock-row__thumb"><span class="icon" style="width:16px;height:16px;"><svg><use href="#i-archive"/></svg></span></span>
-              <span class="stock-row__body">
-                <p class="stock-row__name">Cimento CP-II 50kg</p>
-                <p class="stock-row__meta">Atual: 8 | Sugerido: 50</p>
-              </span>
-            </div>
-            <div class="stock-row">
-              <span class="stock-row__thumb"><span class="icon" style="width:16px;height:16px;"><svg><use href="#i-archive"/></svg></span></span>
-              <span class="stock-row__body">
-                <p class="stock-row__name">Argamassa ACIII 20kg</p>
-                <p class="stock-row__meta">Atual: 5 | Sugerido: 40</p>
-              </span>
-            </div>
-            <div class="stock-row">
-              <span class="stock-row__thumb"><span class="icon" style="width:16px;height:16px;"><svg><use href="#i-archive"/></svg></span></span>
-              <span class="stock-row__body">
-                <p class="stock-row__name">Tubo PVC 100mm</p>
-                <p class="stock-row__meta">Atual: 12 | Sugerido: 60</p>
-              </span>
-            </div>
-            <div class="stock-row">
-              <span class="stock-row__thumb"><span class="icon" style="width:16px;height:16px;"><svg><use href="#i-archive"/></svg></span></span>
-              <span class="stock-row__body">
-                <p class="stock-row__name">Telha Colonial</p>
-                <p class="stock-row__meta">Atual: 45 | Sugerido: 100</p>
-              </span>
-            </div>
-          </div>
+          <div id="painelPrecisaComprarRows"></div>
         </div>
 
         <div class="panel">
           <div class="panel__head">
             <h3><span class="icon" style="color:var(--green-500);"><svg><use href="#i-users"/></svg></span>Clientes pediram e não temos</h3>
-            <button class="panel__link" type="button">Ver todos<span class="icon"><svg><use href="#i-chevron-right"/></svg></span></button>
+            <button class="panel__link" type="button" id="painelClientesPediramVerTodos">Ver todos<span class="icon"><svg><use href="#i-chevron-right"/></svg></span></button>
           </div>
           <div class="table-wrap" style="border:none; border-radius:0;">
             <table class="mini-table">
               <thead><tr><th>Produto</th><th>Clientes</th><th>Quantidade</th></tr></thead>
-              <tbody>
-                <tr><td>Telha Colonial</td><td>4</td><td>20</td></tr>
-                <tr><td>Tubo PVC 100mm</td><td>3</td><td>12</td></tr>
-                <tr><td>Tijolo 9 furos</td><td>2</td><td>30</td></tr>
-                <tr><td>Cola para Piso</td><td>2</td><td>15</td></tr>
-              </tbody>
+              <tbody id="painelClientesPediramTbody"></tbody>
             </table>
           </div>
         </div>
@@ -10079,7 +9991,81 @@ html, body{ overflow-x:hidden; max-width:100%; }
     setText('kpiAlertas', String(alertas));
     setText('kpiClientesTotal', String(clientes.length));
     await renderNotificacoes();
+    await renderPaineisAtencao();
   }
+
+  /* Painéis "Precisa de atenção / Estoque crítico / Precisa comprar /
+     Clientes pediram e não temos" do Dashboard -- vinham com linhas de
+     exemplo fixas do mockup, nunca tinham sido ligados aos dados reais. */
+  async function renderPaineisAtencao(){
+    var elA = document.getElementById('painelAtencaoRows');
+    if (!elA) return;
+    var produtos = await idbAll('produtos');
+    var demandas = await idbAll('demandas');
+    var compras = await idbAll('compras');
+
+    var semEstoque = produtos.filter(function(p){ return calcularStatusEstoque(Number(p.estoque_atual||0), Number(p.estoque_minimo||0)) === 'out'; });
+    var abaixoMinimo = produtos.filter(function(p){ return calcularStatusEstoque(Number(p.estoque_atual||0), Number(p.estoque_minimo||0)) === 'low'; });
+    var demandasAbertas = demandas.filter(function(d){ return d.status !== 'Resolvida' && d.status !== 'Cancelada'; });
+    var comprasPendentes = compras.filter(function(c){ return c.status !== 'Recebida' && c.status !== 'Cancelada'; });
+
+    var linhasAtencao = [
+      { icon: 'i-box', texto: semEstoque.length + (semEstoque.length === 1 ? ' produto sem estoque' : ' produtos sem estoque'), ir: 'Precisa Comprar' },
+      { icon: 'i-archive', texto: abaixoMinimo.length + (abaixoMinimo.length === 1 ? ' produto abaixo do estoque mínimo' : ' produtos abaixo do estoque mínimo'), ir: 'Estoque Crítico' },
+      { icon: 'i-users', texto: demandasAbertas.length + (demandasAbertas.length === 1 ? ' cliente aguardando produto' : ' clientes aguardando produto'), ir: 'Cliente Pediu e Não Tem' },
+      { icon: 'i-bag', texto: comprasPendentes.length + (comprasPendentes.length === 1 ? ' pedido de compra pendente' : ' pedidos de compra pendentes'), ir: 'Compras' }
+    ];
+    elA.innerHTML = linhasAtencao.map(function(l){
+      return '<div class="alert-row" data-ir="' + l.ir + '" style="cursor:pointer;">' +
+        '<span class="alert-row__dot"><span class="icon" style="width:13px;height:13px;"><svg><use href="#' + l.icon + '"/></svg></span></span>' +
+        '<span class="alert-row__text">' + esc(l.texto) + '</span>' +
+        '<span class="icon icon--chev"><svg><use href="#i-chevron-right"/></svg></span>' +
+      '</div>';
+    }).join('');
+
+    var criticos = produtos.filter(function(p){ return calcularStatusEstoque(Number(p.estoque_atual||0), Number(p.estoque_minimo||0)) !== 'ok'; });
+    var elB = document.getElementById('painelEstoqueCriticoRows');
+    if (elB) {
+      elB.innerHTML = criticos.length ? criticos.slice(0, 4).map(function(p){
+        var status = calcularStatusEstoque(Number(p.estoque_atual||0), Number(p.estoque_minimo||0));
+        return '<div class="stock-row">' +
+          '<span class="stock-row__thumb"><span class="icon" style="width:16px;height:16px;"><svg><use href="#i-archive"/></svg></span></span>' +
+          '<span class="stock-row__body"><p class="stock-row__name">' + esc(p.nome) + '</p><p class="stock-row__meta">Estoque: ' + Number(p.estoque_atual||0) + ' | Min: ' + Number(p.estoque_minimo||0) + '</p></span>' +
+          '<span class="badge ' + (status === 'out' ? 'badge--red' : 'badge--orange') + ' stock-row__badge">' + (status === 'out' ? 'Crítico' : 'Atenção') + '</span>' +
+        '</div>';
+      }).join('') : '<p style="padding:16px 20px;font-size:13px;color:var(--text-tertiary);">Nenhum produto em estado crítico. 🎉</p>';
+    }
+
+    var elC = document.getElementById('painelPrecisaComprarRows');
+    if (elC) {
+      elC.innerHTML = criticos.length ? criticos.slice(0, 4).map(function(p){
+        var sugestao = calcularSugestaoReposicao(Number(p.estoque_atual||0), Number(p.estoque_ideal||0));
+        return '<div class="stock-row">' +
+          '<span class="stock-row__thumb"><span class="icon" style="width:16px;height:16px;"><svg><use href="#i-archive"/></svg></span></span>' +
+          '<span class="stock-row__body"><p class="stock-row__name">' + esc(p.nome) + '</p><p class="stock-row__meta">Atual: ' + Number(p.estoque_atual||0) + ' | Sugerido: ' + sugestao + '</p></span>' +
+        '</div>';
+      }).join('') : '<p style="padding:16px 20px;font-size:13px;color:var(--text-tertiary);">Nada precisa ser comprado agora. 🎉</p>';
+    }
+
+    var tbodyD = document.getElementById('painelClientesPediramTbody');
+    if (tbodyD) {
+      var agrupado = {};
+      demandasAbertas.forEach(function(d){
+        var chave = d.produto_solicitado || '—';
+        if (!agrupado[chave]) agrupado[chave] = { produto: chave, clientes: 0, quantidades: [] };
+        agrupado[chave].clientes++;
+        if (d.quantidade) agrupado[chave].quantidades.push(d.quantidade);
+      });
+      var linhas = Object.keys(agrupado).map(function(k){ return agrupado[k]; }).slice(0, 4);
+      tbodyD.innerHTML = linhas.length ? linhas.map(function(g){
+        return '<tr><td>' + esc(g.produto) + '</td><td>' + g.clientes + '</td><td>' + esc(g.quantidades.join(', ') || '—') + '</td></tr>';
+      }).join('') : '<tr><td colspan="3" style="text-align:center;padding:16px;color:var(--text-tertiary);">Nenhuma solicitação em aberto.</td></tr>';
+    }
+  }
+  document.addEventListener('click', function(e){
+    var alvo = e.target.closest('[data-ir]');
+    if (alvo) irParaTela(alvo.getAttribute('data-ir'));
+  });
 
   async function renderAll() {
     await Promise.all([renderDashboard(), renderCategorias(), renderProdutos(), renderClientes(), renderVendas(), renderUsuarios()]);
@@ -11020,6 +11006,9 @@ html, body{ overflow-x:hidden; max-width:100%; }
     });
     rewire('registrarRecebimentoBtn', function(){ registrarRecebimentoModal(); });
     rewire('novaMovimentacaoBtn', function(){ movimentacaoFormModal(); });
+    rewire('painelAtencaoVerTodos', function(){ irParaTela('Notificações'); });
+    rewire('painelEstoqueCriticoVerTodos', function(){ irParaTela('Estoque Crítico'); });
+    rewire('painelClientesPediramVerTodos', function(){ irParaTela('Cliente Pediu e Não Tem'); });
     rewire('excluirLidasBtn', async function(){
       var lidas = {};
       try { lidas = JSON.parse(lsGet('construgestao_notif_lidas') || '{}'); } catch (e) {}
