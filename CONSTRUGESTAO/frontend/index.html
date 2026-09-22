@@ -2319,7 +2319,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
             <select id="filtroOrdenarCategoria">
               <option>Mais recentes</option>
               <option>Nome (A-Z)</option>
-              <option>Ordem de exibição</option>
+              <option selected>Ordem de exibição</option>
               <option>Produtos (mais-menos)</option>
             </select>
           </div>
@@ -8950,6 +8950,24 @@ html, body{ overflow-x:hidden; max-width:100%; }
   /* Preenche um número de KPI real no lugar do número de exemplo fixo do
      mockup (cada tela tem seus próprios cartões no topo). */
   function setKpi(id, valor) { var el = document.getElementById(id); if (el) el.textContent = valor; }
+  /* Ícone + cor do card de produto/categoria, escolhido por palavra-chave
+     no nome da categoria (em vez do ícone cinza fixo de "saco" pra tudo).
+     Vai crescendo aos poucos conforme surgem categorias novas. */
+  var ICONES_CATEGORIA = [
+    { re: /cimento|argamassa|concreto|alvenaria|areia|pedra|brita|tijolo|bloco/, icone: 'i-home', grad: 'linear-gradient(135deg,#c9a876,#a4824f)' },
+    { re: /eletric|\bfio\b|\bcabo\b|disjuntor|lampada|iluminac|tomada|interruptor/, icone: 'i-lightbulb', grad: 'linear-gradient(135deg,#f2c94c,#d9a520)' },
+    { re: /hidraulic|torneira|\bcano\b|\btubo\b|registro|conexao|encanamento|sifao|chuveiro/, icone: 'i-droplet', grad: 'linear-gradient(135deg,#4f8fe0,#2f6fc4)' },
+    { re: /tinta|pintura|verniz|esmalte|impermeabiliz/, icone: 'i-palette', grad: 'linear-gradient(135deg,#8f6cd6,#6a49b8)' },
+    { re: /ferramenta|parafuso|furadeira|martelo|\bchave\b|prego|\bserra\b/, icone: 'i-wrench', grad: 'linear-gradient(135deg,#0ea968,#0c8354)' },
+    { re: /piso|azulejo|revestimento|porcelanato|ceramica|\blaje\b/, icone: 'i-layers', grad: 'linear-gradient(135deg,#7c8698,#535c6c)' },
+    { re: /acabamento|gesso|rejunte|reboco/, icone: 'i-ruler', grad: 'linear-gradient(135deg,#e0523f,#b53521)' },
+    { re: /madeira|telha|telhado|estrutura/, icone: 'i-box', grad: 'linear-gradient(135deg,#e2673a,#c8481f)' }
+  ];
+  function iconeCategoria(nome) {
+    var n = String(nome || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+    for (var i = 0; i < ICONES_CATEGORIA.length; i++) { if (ICONES_CATEGORIA[i].re.test(n)) return ICONES_CATEGORIA[i]; }
+    return { icone: 'i-archive', grad: 'linear-gradient(135deg,#8a8f99,#5f6472)' };
+  }
   /* Filtro de período usado em telas como Notificações / Central de
      Demandas / Cliente Pediu e Não Tem (selects de "Últimos 7 dias" etc). */
   function dataNoPeriodo(iso, periodoLabel) {
@@ -8983,7 +9001,10 @@ html, body{ overflow-x:hidden; max-width:100%; }
       campos.forEach(function (id) {
         var el = document.getElementById(id);
         if (!el) return;
-        if (el.tagName === 'SELECT') el.selectedIndex = 0; else el.value = '';
+        if (el.tagName === 'SELECT') {
+          var defIdx = Array.prototype.findIndex.call(el.options, function (o) { return o.defaultSelected; });
+          el.selectedIndex = defIdx !== -1 ? defIdx : 0;
+        } else el.value = '';
       });
       cfg.render();
       toast('Filtros limpos.');
@@ -9259,10 +9280,11 @@ html, body{ overflow-x:hidden; max-width:100%; }
   function categoriaRowHTML(cat, qtdProdutos) {
     var statusBadge = cat.status === 'ativa' ? 'badge--green' : 'badge--gray';
     var statusLabel = cat.status === 'ativa' ? 'Ativa' : 'Inativa';
+    var ic = iconeCategoria(cat.nome);
     return '<tr data-id="' + cat.id + '">' +
       '<td><input type="checkbox" class="checkbox"></td>' +
       '<td><span class="order-cell"><span class="icon"><svg><use href="#i-grip"/></svg></span><span class="order-cell__num">' + (cat.ordem || 1) + '</span></span></td>' +
-      '<td><span class="prod-thumb" style="width:36px;height:36px;background:linear-gradient(135deg,#e2673a,#c8481f);"><span class="icon" style="width:17px;height:17px;"><svg><use href="#i-archive"/></svg></span></span></td>' +
+      '<td><span class="prod-thumb" style="width:36px;height:36px;background:' + ic.grad + ';"><span class="icon" style="width:17px;height:17px;"><svg><use href="#' + ic.icone + '"/></svg></span></span></td>' +
       '<td><p class="prod-name">' + esc(cat.nome) + '</p></td>' +
       '<td><span class="prod-sub">' + esc(cat.descricao || '') + '</span></td>' +
       '<td><span class="count-cell">' + qtdProdutos + '</span></td>' +
@@ -9345,11 +9367,12 @@ html, body{ overflow-x:hidden; max-width:100%; }
   function produtoRowHTML(p, categoriaNome) {
     var status = calcularStatusEstoque(Number(p.estoque_atual || 0), Number(p.estoque_minimo || 0));
     var info = STATUS_ESTOQUE_INFO[status];
+    var ic = iconeCategoria(categoriaNome);
     return '<tr data-id="' + p.id + '">' +
       '<td><input type="checkbox" class="checkbox"></td>' +
-      '<td><span class="prod-thumb" style="background:linear-gradient(135deg,#8a8f99,#5f6472);"><span class="icon" style="width:19px;height:19px;"><svg><use href="#i-bag"/></svg></span></span></td>' +
+      '<td><span class="prod-thumb" style="background:' + ic.grad + ';"><span class="icon" style="width:19px;height:19px;"><svg><use href="#' + ic.icone + '"/></svg></span></span></td>' +
       '<td><p class="prod-name">' + esc(p.nome) + '</p><p class="prod-sub">' + esc(p.descricao || '') + '</p></td>' +
-      '<td><span class="cat-cell"><span class="icon"><svg><use href="#i-archive"/></svg></span>' + esc(categoriaNome || '—') + '</span></td>' +
+      '<td><span class="cat-cell"><span class="icon"><svg><use href="#' + ic.icone + '"/></svg></span>' + esc(categoriaNome || '—') + '</span></td>' +
       '<td><span class="sku-cell">' + esc(p.sku || '—') + '</span></td>' +
       '<td><span class="stock-num ' + info.numClass + '">' + Number(p.estoque_atual || 0) + '</span></td>' +
       '<td><span class="price-cell">' + fmtBRL(p.preco) + '</span></td>' +
@@ -9423,12 +9446,13 @@ html, body{ overflow-x:hidden; max-width:100%; }
       estoqueTbody.innerHTML = listaE.length ? listaE.map(function (p) {
         var status = calcularStatusEstoque(Number(p.estoque_atual || 0), Number(p.estoque_minimo || 0));
         var info = STATUS_ESTOQUE_INFO[status];
+        var ic = iconeCategoria(catMap[p.categoria_id]);
         return '<tr data-id="' + p.id + '">' +
           '<td><input type="checkbox" class="checkbox"></td>' +
-          '<td><span class="prod-thumb" style="background:linear-gradient(135deg,#8a8f99,#5f6472);"><span class="icon" style="width:19px;height:19px;"><svg><use href="#i-bag"/></svg></span></span></td>' +
+          '<td><span class="prod-thumb" style="background:' + ic.grad + ';"><span class="icon" style="width:19px;height:19px;"><svg><use href="#' + ic.icone + '"/></svg></span></span></td>' +
           '<td><p class="prod-name">' + esc(p.nome) + '</p><p class="prod-sub">' + esc(p.descricao || '') + '</p></td>' +
           '<td><span class="sku-cell">' + esc(p.sku || '—') + '</span></td>' +
-          '<td><span class="cat-cell"><span class="icon"><svg><use href="#i-archive"/></svg></span>' + esc(catMap[p.categoria_id] || '—') + '</span></td>' +
+          '<td><span class="cat-cell"><span class="icon"><svg><use href="#' + ic.icone + '"/></svg></span>' + esc(catMap[p.categoria_id] || '—') + '</span></td>' +
           '<td><span class="stock-num ' + info.numClass + '">' + Number(p.estoque_atual || 0) + '</span></td>' +
           '<td>' + Number(p.estoque_minimo || 0) + '</td>' +
           '<td><span class="badge ' + info.badgeClass + '">' + info.badgeText + '</span></td>' +
@@ -11149,11 +11173,12 @@ html, body{ overflow-x:hidden; max-width:100%; }
       criticoTbody.innerHTML = listaC.length ? listaC.map(function(p){
         var status = calcularStatusEstoque(Number(p.estoque_atual||0), Number(p.estoque_minimo||0));
         var info = STATUS_ESTOQUE_INFO[status];
+        var ic = iconeCategoria(catMap[p.categoria_id]);
         return '<tr data-id="' + p.id + '">' +
           '<td><input type="checkbox" class="checkbox"></td>' +
-          '<td><div class="prod-cell"><span class="prod-thumb" style="background:linear-gradient(135deg,#8a8f99,#5f6472);"><span class="icon" style="width:19px;height:19px;"><svg><use href="#i-bag"/></svg></span></span><span class="prod-name">' + esc(p.nome) + '</span></div></td>' +
+          '<td><div class="prod-cell"><span class="prod-thumb" style="background:' + ic.grad + ';"><span class="icon" style="width:19px;height:19px;"><svg><use href="#' + ic.icone + '"/></svg></span></span><span class="prod-name">' + esc(p.nome) + '</span></div></td>' +
           '<td><span class="sku-cell">' + esc(p.sku||'—') + '</span></td>' +
-          '<td><span class="cat-cell"><span class="icon"><svg><use href="#i-archive"/></svg></span>' + esc(catMap[p.categoria_id]||'—') + '</span></td>' +
+          '<td><span class="cat-cell"><span class="icon"><svg><use href="#' + ic.icone + '"/></svg></span>' + esc(catMap[p.categoria_id]||'—') + '</span></td>' +
           '<td><span class="stock-num ' + info.numClass + '">' + Number(p.estoque_atual||0) + ' un</span></td>' +
           '<td>' + Number(p.estoque_minimo||0) + ' un</td>' +
           '<td><span class="badge ' + info.badgeClass + '">' + (status==='out'?'Crítico':'Atenção') + '</span></td>' +
@@ -11180,10 +11205,11 @@ html, body{ overflow-x:hidden; max-width:100%; }
         var status = calcularStatusEstoque(Number(p.estoque_atual||0), Number(p.estoque_minimo||0));
         var info = STATUS_ESTOQUE_INFO[status];
         var sugestao = calcularSugestaoReposicao(Number(p.estoque_atual||0), Number(p.estoque_ideal||0));
+        var ic = iconeCategoria(catMap[p.categoria_id]);
         return '<tr data-id="' + p.id + '">' +
           '<td><input type="checkbox" class="checkbox"></td>' +
-          '<td><div class="prod-cell"><span class="prod-thumb" style="background:linear-gradient(135deg,#e2673a,#c8481f);"><span class="icon" style="width:19px;height:19px;"><svg><use href="#i-box"/></svg></span></span><span><p class="prod-name">' + esc(p.nome) + '</p><p class="prod-sub">' + esc(p.sku||'') + '</p></span></div></td>' +
-          '<td><span class="cat-cell"><span class="icon"><svg><use href="#i-box"/></svg></span>' + esc(catMap[p.categoria_id]||'—') + '</span></td>' +
+          '<td><div class="prod-cell"><span class="prod-thumb" style="background:' + ic.grad + ';"><span class="icon" style="width:19px;height:19px;"><svg><use href="#' + ic.icone + '"/></svg></span></span><span><p class="prod-name">' + esc(p.nome) + '</p><p class="prod-sub">' + esc(p.sku||'') + '</p></span></div></td>' +
+          '<td><span class="cat-cell"><span class="icon"><svg><use href="#' + ic.icone + '"/></svg></span>' + esc(catMap[p.categoria_id]||'—') + '</span></td>' +
           '<td><span class="stock-num ' + info.numClass + '">' + Number(p.estoque_atual||0) + '</span></td>' +
           '<td>' + Number(p.estoque_minimo||0) + '</td>' +
           '<td><span class="price-cell">' + sugestao + '</span></td>' +
@@ -11331,7 +11357,12 @@ html, body{ overflow-x:hidden; max-width:100%; }
         });
         var pathPts = pontos.map(function(p){ return p.x.toFixed(1) + ',' + p.y.toFixed(1); }).join(' ');
         var areaD = 'M' + pathPts.split(' ').join(' L') + ' L' + pontos[pontos.length-1].x.toFixed(1) + ',' + (padT+plotH) + ' L' + pontos[0].x.toFixed(1) + ',' + (padT+plotH) + ' Z';
-        var circles = pontos.map(function(p){ return '<circle cx="' + p.x.toFixed(1) + '" cy="' + p.y.toFixed(1) + '" r="3" fill="#fff" stroke="#0ea968" stroke-width="2"/>'; }).join('');
+        var circles = pontos.map(function(p, i){
+          var temVenda = porDia[i] > 0;
+          return '<circle cx="' + p.x.toFixed(1) + '" cy="' + p.y.toFixed(1) + '" r="' + (temVenda ? 4 : 3) + '"' +
+            (temVenda ? ' data-dia="' + (i + 1) + '" data-valor="' + porDia[i] + '" style="cursor:pointer;"' : '') +
+            ' fill="#fff" stroke="#0ea968" stroke-width="2"/>';
+        }).join('');
         var passoLabel = Math.max(1, Math.ceil(diasNoMes / 7));
         var labels = [];
         for (var di = 0; di < diasNoMes; di += passoLabel) labels.push('<span>' + (di+1) + '/' + String(mesAtual+1).padStart(2,'0') + '</span>');
@@ -11378,7 +11409,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
     vendas.forEach(function(v){
       (v.itens||[]).forEach(function(it){
         var key = it.produto_id || it.nome;
-        if (!porProduto[key]) porProduto[key] = { nome: it.nome, qtd: 0, receita: 0 };
+        if (!porProduto[key]) { var prodRef = prodMap[it.produto_id]; porProduto[key] = { nome: it.nome, qtd: 0, receita: 0, categoriaNome: prodRef ? catMap[prodRef.categoria_id] : '' }; }
         porProduto[key].qtd += Number(it.qtd||0);
         porProduto[key].receita += Number(it.qtd||0) * Number(it.preco||0);
       });
@@ -11387,7 +11418,8 @@ html, body{ overflow-x:hidden; max-width:100%; }
     var tbodyTop = document.getElementById('relTopProdutosTbody');
     if (tbodyTop) {
       tbodyTop.innerHTML = topProdutos.length ? topProdutos.map(function(p, i){
-        return '<tr><td><span class="rank-num">' + (i+1) + '</span></td><td><div class="prod-cell"><span class="prod-thumb" style="width:30px;height:30px;background:linear-gradient(135deg,#8a8f99,#5f6472);"><span class="icon" style="width:15px;height:15px;"><svg><use href="#i-bag"/></svg></span></span><span class="prod-name" style="font-size:12.5px;">' + esc(p.nome) + '</span></div></td><td>' + p.qtd + '</td><td><span class="price-cell">' + fmtBRL(p.receita) + '</span></td></tr>';
+        var ic = iconeCategoria(p.categoriaNome);
+        return '<tr><td><span class="rank-num">' + (i+1) + '</span></td><td><div class="prod-cell"><span class="prod-thumb" style="width:30px;height:30px;background:' + ic.grad + ';"><span class="icon" style="width:15px;height:15px;"><svg><use href="#' + ic.icone + '"/></svg></span></span><span class="prod-name" style="font-size:12.5px;">' + esc(p.nome) + '</span></div></td><td>' + p.qtd + '</td><td><span class="price-cell">' + fmtBRL(p.receita) + '</span></td></tr>';
       }).join('') : '<tr><td colspan="4" style="text-align:center;padding:20px;color:var(--text-tertiary);">Nenhuma venda registrada ainda.</td></tr>';
     }
 
@@ -11415,6 +11447,15 @@ html, body{ overflow-x:hidden; max-width:100%; }
   }
   document.addEventListener('click', function(e){
     if (e.target.closest('[data-view="Relatórios"]')) setTimeout(function(){ renderRelatorios(); }, 50);
+  });
+  document.addEventListener('click', function(e){
+    var pt = e.target.closest('#relLineChart circle[data-dia]');
+    if (!pt) return;
+    var dia = pt.getAttribute('data-dia');
+    var valor = Number(pt.getAttribute('data-valor') || 0);
+    var agora = new Date();
+    var dataStr = String(dia).padStart(2, '0') + '/' + String(agora.getMonth() + 1).padStart(2, '0');
+    toast(dataStr + ': ' + fmtBRL(valor) + ' em vendas nesse dia.');
   });
   async function renderAll(){
     await Promise.all([
