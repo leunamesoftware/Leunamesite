@@ -1822,7 +1822,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
         <span class="icon"><svg><use href="#i-chevron-down"/></svg></span>
       </button>
       <div class="dropdown__panel" id="userDropdownPanel" style="right:auto; left:0; bottom:calc(100% + 8px); top:auto; width:100%;">
-        <button class="dropdown__item" type="button"><span class="icon"><svg><use href="#i-gear"/></svg></span>Configurações da conta</button>
+        <button class="dropdown__item" type="button" id="configContaBtn"><span class="icon"><svg><use href="#i-gear"/></svg></span>Configurações da conta</button>
         <div class="dropdown__divider"></div>
         <button class="dropdown__item" type="button" id="signoutTrigger" style="color:#e5484d;"><span class="icon" style="color:#e5484d;"><svg><use href="#i-logout"/></svg></span>Sair</button>
       </div>
@@ -1842,10 +1842,11 @@ html, body{ overflow-x:hidden; max-width:100%; }
       </button>
       <span class="topbar__title" id="topbarTitle">Dashboard</span>
 
-      <div class="search" id="searchTrigger">
+      <div class="search" id="searchTrigger" style="position:relative;">
         <span class="icon"><svg><use href="#i-search"/></svg></span>
-        <input type="text" placeholder="Buscar produtos, clientes, vendas...">
+        <input type="text" id="topbarSearchInput" placeholder="Buscar produtos, clientes, vendas..." autocomplete="off">
         <span class="search__kbd">Ctrl + K</span>
+        <div id="topbarSearchResults" style="display:none;position:absolute;top:calc(100% + 6px);left:0;right:0;background:var(--bg-surface);border:1px solid var(--border-subtle);border-radius:var(--radius-md);box-shadow:var(--shadow-md, 0 8px 24px rgba(0,0,0,.12));max-height:360px;overflow-y:auto;z-index:50;color:var(--text-primary);"></div>
       </div>
 
       <div class="topbar__spacer"></div>
@@ -1855,7 +1856,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
           <span class="icon"><svg><use href="#i-bell"/></svg></span>
           <span class="iconbtn__badge" id="notifBadgeCount" style="display:none;">0</span>
         </button>
-        <button class="iconbtn" aria-label="Ajuda" title="Ajuda">
+        <button class="iconbtn" id="topbarHelpBtn" aria-label="Ajuda" title="Ajuda">
           <span class="icon"><svg><use href="#i-help"/></svg></span>
         </button>
         <div class="storepick" id="storepickBtn">
@@ -7749,12 +7750,12 @@ html, body{ overflow-x:hidden; max-width:100%; }
           <!-- Detalhe do usuário -->
           <div class="user-detail-card">
             <div class="user-detail-head">
-              <span class="customer-avatar" style="background:#7c4fd9; width:44px; height:44px; font-size:14px;">EA</span>
+              <span class="customer-avatar" id="usrDetAvatar" style="background:#7c4fd9; width:44px; height:44px; font-size:14px;">EA</span>
               <span class="user-detail-head__meta">
-                <span class="user-detail-head__name">Emanuel Antunes</span>
-                <span class="user-detail-head__role">Administrador</span>
+                <span class="user-detail-head__name" id="usrDetNome">Emanuel Antunes</span>
+                <span class="user-detail-head__role" id="usrDetPapel">Administrador</span>
               </span>
-              <span class="badge badge--green">Ativo</span>
+              <span class="badge badge--green" id="usrDetStatus">Ativo</span>
             </div>
             <div class="user-detail-tabs">
               <button class="user-detail-tab is-active" type="button" id="userTabInfo">Informações</button>
@@ -7763,28 +7764,24 @@ html, body{ overflow-x:hidden; max-width:100%; }
             </div>
             <div class="user-detail-body">
               <div class="user-detail-field">
-                <span class="user-detail-field__icon"><svg><use href="#i-user"/></svg></span>
-                <span><span class="user-detail-field__label" style="display:block;">Nome completo</span><span class="user-detail-field__value">Emanuel Antunes</span></span>
+                <span class="user-detail-field__icon"><span class="icon"><svg><use href="#i-user"/></svg></span></span>
+                <span><span class="user-detail-field__label" style="display:block;">Nome completo</span><span class="user-detail-field__value" id="usrDetNomeCompleto">—</span></span>
               </div>
               <div class="user-detail-field">
-                <span class="user-detail-field__icon"><svg><use href="#i-mail"/></svg></span>
-                <span><span class="user-detail-field__label" style="display:block;">E-mail</span><span class="user-detail-field__value">emanuel@construgestao.com</span></span>
+                <span class="user-detail-field__icon"><span class="icon"><svg><use href="#i-mail"/></svg></span></span>
+                <span><span class="user-detail-field__label" style="display:block;">E-mail</span><span class="user-detail-field__value" id="usrDetEmail">—</span></span>
               </div>
               <div class="user-detail-field">
-                <span class="user-detail-field__icon"><svg><use href="#i-truck"/></svg></span>
-                <span><span class="user-detail-field__label" style="display:block;">Telefone</span><span class="user-detail-field__value">+55 11 91234-5678</span></span>
+                <span class="user-detail-field__icon"><span class="icon"><svg><use href="#i-bag"/></svg></span></span>
+                <span><span class="user-detail-field__label" style="display:block;">Cargo</span><span class="user-detail-field__value" id="usrDetCargo">—</span></span>
               </div>
               <div class="user-detail-field">
-                <span class="user-detail-field__icon"><svg><use href="#i-bag"/></svg></span>
-                <span><span class="user-detail-field__label" style="display:block;">Cargo</span><span class="user-detail-field__value">Administrador</span></span>
+                <span class="user-detail-field__icon"><span class="icon"><svg><use href="#i-calendar"/></svg></span></span>
+                <span><span class="user-detail-field__label" style="display:block;">Data de cadastro</span><span class="user-detail-field__value" id="usrDetCadastro">—</span></span>
               </div>
               <div class="user-detail-field">
-                <span class="user-detail-field__icon"><svg><use href="#i-calendar"/></svg></span>
-                <span><span class="user-detail-field__label" style="display:block;">Data de cadastro</span><span class="user-detail-field__value">10/01/2024</span></span>
-              </div>
-              <div class="user-detail-field">
-                <span class="user-detail-field__icon"><svg><use href="#i-clock"/></svg></span>
-                <span><span class="user-detail-field__label" style="display:block;">Último acesso</span><span class="user-detail-field__value">21/09/2026 14:32</span></span>
+                <span class="user-detail-field__icon"><span class="icon"><svg><use href="#i-clock"/></svg></span></span>
+                <span><span class="user-detail-field__label" style="display:block;">Último acesso</span><span class="user-detail-field__value" id="usrDetUltimoAcesso">—</span></span>
               </div>
             </div>
             <div class="user-detail-foot">
@@ -7968,15 +7965,15 @@ html, body{ overflow-x:hidden; max-width:100%; }
                 <div class="perm-selected-card__name"><strong id="permSelNome">Administrador</strong><span class="badge badge--green" id="permSelStatus">Ativo</span></div>
                 <p class="perm-selected-card__desc" id="permSelDesc">Acesso total ao sistema, sem restrições.</p>
                 <div class="user-detail-field">
-                  <span class="user-detail-field__icon"><svg><use href="#i-users"/></svg></span>
+                  <span class="user-detail-field__icon"><span class="icon"><svg><use href="#i-users"/></svg></span></span>
                   <span><span class="user-detail-field__label" style="display:block;">Usuários neste perfil</span><span class="user-detail-field__value" id="permSelUsuarios">0</span></span>
                 </div>
                 <div class="user-detail-field">
-                  <span class="user-detail-field__icon"><svg><use href="#i-shield"/></svg></span>
+                  <span class="user-detail-field__icon"><span class="icon"><svg><use href="#i-shield"/></svg></span></span>
                   <span><span class="user-detail-field__label" style="display:block;">Seções liberadas</span><span class="user-detail-field__value" id="permSelSecoes">0 de 15</span></span>
                 </div>
                 <div class="user-detail-field">
-                  <span class="user-detail-field__icon"><svg><use href="#i-info"/></svg></span>
+                  <span class="user-detail-field__icon"><span class="icon"><svg><use href="#i-info"/></svg></span></span>
                   <span><span class="user-detail-field__label" style="display:block;">Origem</span><span class="user-detail-field__value" style="font-size:12.5px;">Perfil padrão do sistema</span></span>
                 </div>
               </div>
@@ -8331,6 +8328,11 @@ html, body{ overflow-x:hidden; max-width:100%; }
             <span><h4>Apagar Registros de Teste</h4><p>Apaga só produtos, categorias, clientes, fornecedores e solicitações com a palavra "teste" no nome (ex: "teste pão", "cliente teste"). O resto dos seus dados fica intacto.</p></span>
             <span class="icon wa-promo-card__arrow"><svg><use href="#i-chevron-right"/></svg></span>
           </button>
+          <button class="wa-promo-card wa-promo-card--blue" type="button" id="importarCategoriasBtn">
+            <span class="wa-promo-card__icon"><span class="icon" style="width:20px;height:20px;"><svg><use href="#i-layers"/></svg></span></span>
+            <span><h4>Importar Categorias Sugeridas</h4><p>Cria de uma vez as categorias mais comuns de material de construção (elétrica, hidráulica, tintas, ferramentas etc.). Você edita ou apaga qualquer uma depois.</p></span>
+            <span class="icon wa-promo-card__arrow"><svg><use href="#i-chevron-right"/></svg></span>
+          </button>
         </div>
 
         <div class="settings-save-row">
@@ -8481,7 +8483,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
   }
 
   // Placeholders funcionais — módulos completos chegam nas próximas etapas
-  ['searchTrigger','storepickBtn'].forEach(function(id){
+  ['storepickBtn'].forEach(function(id){
     document.getElementById(id).addEventListener('click', function(){ showToast(); });
   });
   document.querySelectorAll('.quick-btn, .panel__link:not([data-nav-target]), .qa-btn, .alert-row, .stock-row, .period-pill, tbody tr').forEach(function(el){
@@ -8734,6 +8736,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
     entregas: 'Entregas e clientes.'
   };
   var permSelecionadoAtual = 'administrador';
+  var usuarioSelecionadoAtual = null;
 
   var STATE = { loja: null, user: null };
   var NOTIF_CHIP = 'Todas';
@@ -8960,7 +8963,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
     { re: /piso|azulejo|revestimento|porcelanato|ceramica|\blaje\b|pastilha|soleira|rodape/, icone: 'i-layers', grad: 'linear-gradient(135deg,#7c8698,#535c6c)' },
     { re: /metal|\bchapa\b/, icone: 'i-gear', grad: 'linear-gradient(135deg,#7c8698,#535c6c)' },
     { re: /materiais para obra|\blona\b|entulho/, icone: 'i-box', grad: 'linear-gradient(135deg,#8a8f99,#5f6472)' },
-    { re: /cimento|argamassa|concreto|alvenaria|\bareia\b|pedrisco|\bpedra\b|massa pronta|\bcal\b/, icone: 'i-home', grad: 'linear-gradient(135deg,#c9a876,#a4824f)' }
+    { re: /cimento|argamassa|concreto|alvenaria|\bareia\b|pedrisco|\bpedra\b|massa pronta|\bcal\b|materiais basicos/, icone: 'i-home', grad: 'linear-gradient(135deg,#c9a876,#a4824f)' }
   ];
   function iconeCategoria(nome) {
     var n = String(nome || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
@@ -9917,7 +9920,32 @@ html, body{ overflow-x:hidden; max-width:100%; }
     tbody.innerHTML = lista.length ? lista.map(usuarioRowHTML).join('') :
       '<tr><td colspan="8" style="text-align:center;padding:24px;color:var(--text-tertiary);">Nenhum usuário encontrado com esses filtros.</td></tr>';
     setRodape('rodapeUsuarios', lista.length, 'usuários');
+    var selecionado = usuarios.find(function (u) { return u.id === usuarioSelecionadoAtual; }) || usuarios.find(function (u) { return STATE.user && u.id === STATE.user.id; }) || usuarios[0];
+    atualizarUsuarioSelecionado(selecionado);
   }
+  function atualizarUsuarioSelecionado(u) {
+    var nomeEl = document.getElementById('usrDetNome');
+    if (!nomeEl || !u) return;
+    usuarioSelecionadoAtual = u.id;
+    document.getElementById('usrDetAvatar').textContent = initials(u.nome);
+    document.getElementById('usrDetAvatar').style.background = avatarColor(u.nome);
+    nomeEl.textContent = u.nome;
+    document.getElementById('usrDetPapel').textContent = ROLE_LABELS[u.papel] || u.papel;
+    var statusEl = document.getElementById('usrDetStatus');
+    statusEl.textContent = u.status === 'ativo' ? 'Ativo' : 'Bloqueado';
+    statusEl.className = 'badge ' + (u.status === 'ativo' ? 'badge--green' : 'badge--gray');
+    document.getElementById('usrDetNomeCompleto').textContent = u.nome;
+    document.getElementById('usrDetEmail').textContent = u.email;
+    document.getElementById('usrDetCargo').textContent = ROLE_LABELS[u.papel] || u.papel;
+    document.getElementById('usrDetCadastro').textContent = fmtDateTime(u.criado_em);
+    document.getElementById('usrDetUltimoAcesso').textContent = u.ultimo_login ? fmtDateTime(u.ultimo_login) : 'Nunca acessou';
+  }
+  document.addEventListener('click', async function (e) {
+    var tr = e.target.closest('#usuariosTbody tr[data-id]');
+    if (!tr) return;
+    var u = await idbGet('usuarios', tr.getAttribute('data-id'));
+    if (u) atualizarUsuarioSelecionado(u);
+  });
   /* Permissões -- antes mostrava 5 perfis de mentira (um deles,
      "Gerente", nem existe no sistema) com número de usuário fixo.
      Agora mostra os 7 perfis reais (os mesmos do cadastro de Usuário),
@@ -11209,6 +11237,104 @@ html, body{ overflow-x:hidden; max-width:100%; }
     toast(total + ' registro(s) de teste apagados. O resto continua igual.');
     await renderAll();
   }
+  /* Lista de categorias que o lojista pediu pra já vir sugerida (não
+     cria produto nenhum -- só a categoria, sem preço/estoque
+     inventado; o lojista cadastra os produtos reais depois). */
+  var CATEGORIAS_SUGERIDAS = [
+    'Materiais Básicos', 'Blocos e Alvenaria', 'Ferragens e Estruturas', 'Hidráulica', 'Elétrica',
+    'Tintas e Pintura', 'Impermeabilização', 'Telhados e Coberturas', 'Madeira', 'Ferramentas',
+    'Parafusos e Fixadores', 'Pisos e Revestimentos', 'Portas e Janelas', 'Louças e Metais', 'Banheiro',
+    'Cozinha', 'Químicos e Aditivos', 'EPI e Segurança', 'Limpeza e Conservação', 'Materiais para Obra',
+    'Jardim e Área Externa', 'Piscina', 'Ferragens Gerais', 'Acabamentos', 'Drywall e Gesso',
+    'Escadas e Acessórios', 'Materiais para Transporte e Obra', 'Materiais Metálicos'
+  ];
+  async function importarCategoriasSugeridas() {
+    var existentes = await idbAll('categorias');
+    var nomesExistentes = existentes.map(function (c) { return String(c.nome || '').trim().toLowerCase(); });
+    var novas = CATEGORIAS_SUGERIDAS.filter(function (n) { return nomesExistentes.indexOf(n.toLowerCase()) === -1; });
+    if (!novas.length) { toast('Todas as categorias sugeridas já estão cadastradas.'); return; }
+    var ok = confirm('Isso vai criar ' + novas.length + ' categoria(s) sugerida(s) de material de construção. Nenhum produto é criado junto -- só as categorias, pra você cadastrar os produtos reais dentro delas. Dá pra editar ou apagar qualquer uma depois.\n\nConfirmar?');
+    if (!ok) return;
+    var maxOrdem = existentes.reduce(function (m, c) { return Math.max(m, Number(c.ordem || 0)); }, 0);
+    for (var i = 0; i < novas.length; i++) {
+      maxOrdem++;
+      await idbPut('categorias', { id: uid(), ordem: maxOrdem, nome: novas[i], descricao: '', status: 'ativa', criado_em: nowISO() });
+    }
+    await logAction('categorias_sugeridas_importadas', novas.length + ' categoria(s) importada(s)');
+    toast(novas.length + ' categoria(s) criada(s). Edite ou apague o que não precisar.');
+    await renderAll();
+  }
+  /* Busca global do topbar -- antes era só um botão de mentira que
+     mostrava aviso de "não implementado"; agora busca de verdade em
+     produtos, clientes, vendas e fornecedores enquanto digita. */
+  var buscaGlobalWired = false;
+  function wireBuscaGlobal() {
+    if (buscaGlobalWired) return;
+    buscaGlobalWired = true;
+    var input = document.getElementById('topbarSearchInput');
+    var resultsEl = document.getElementById('topbarSearchResults');
+    if (!input || !resultsEl) return;
+    var buscaTimer = null;
+    input.addEventListener('click', function (e) { e.stopPropagation(); });
+    input.addEventListener('input', function () {
+      clearTimeout(buscaTimer);
+      var termo = input.value.trim();
+      if (termo.length < 2) { resultsEl.style.display = 'none'; resultsEl.innerHTML = ''; return; }
+      buscaTimer = setTimeout(function () { executarBuscaGlobal(termo); }, 200);
+    });
+    input.addEventListener('focus', function () { if (input.value.trim().length >= 2) executarBuscaGlobal(input.value.trim()); });
+    document.addEventListener('click', function (e) { if (!e.target.closest('#searchTrigger')) resultsEl.style.display = 'none'; });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') resultsEl.style.display = 'none';
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); input.focus(); }
+    });
+  }
+  async function executarBuscaGlobal(termo) {
+    var resultsEl = document.getElementById('topbarSearchResults');
+    if (!resultsEl) return;
+    var t = termo.toLowerCase();
+    var contem = function (s) { return String(s || '').toLowerCase().indexOf(t) !== -1; };
+    var produtos = (await idbAll('produtos')).filter(function (p) { return contem(p.nome) || contem(p.sku); }).slice(0, 5);
+    var clientes = (await idbAll('clientes')).filter(function (c) { return contem(c.nome); }).slice(0, 5);
+    var vendas = (await idbAll('vendas')).filter(function (v) { return contem('#' + v.numero); }).slice(0, 5);
+    var fornecedores = (await idbAll('fornecedores')).filter(function (f) { return contem(f.nome); }).slice(0, 5);
+    var total = produtos.length + clientes.length + vendas.length + fornecedores.length;
+    if (!total) {
+      resultsEl.innerHTML = '<div style="padding:16px;text-align:center;font-size:13px;color:var(--text-tertiary);">Nada encontrado para "' + esc(termo) + '".</div>';
+      resultsEl.style.display = '';
+      return;
+    }
+    var linha = function (icone, titulo, sub, view, id) {
+      return '<button type="button" class="dropdown__item" data-busca-ir="' + view + '" data-busca-id="' + id + '" style="width:100%;text-align:left;display:flex;align-items:center;gap:10px;padding:8px 14px;border:none;background:none;cursor:pointer;">' +
+        '<span class="icon" style="width:16px;height:16px;flex-shrink:0;color:var(--text-tertiary);"><svg><use href="#' + icone + '"/></svg></span>' +
+        '<span style="min-width:0;"><span style="display:block;font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + esc(titulo) + '</span>' +
+        (sub ? '<span style="display:block;font-size:11.5px;color:var(--text-tertiary);">' + esc(sub) + '</span>' : '') + '</span></button>';
+    };
+    var secao = function (titulo, itens, montaLinha) {
+      if (!itens.length) return '';
+      return '<div style="padding:8px 14px 4px;font-size:11px;font-weight:700;color:var(--text-tertiary);text-transform:uppercase;">' + titulo + '</div>' + itens.map(montaLinha).join('');
+    };
+    resultsEl.innerHTML =
+      secao('Produtos', produtos, function (p) { return linha('i-box', p.nome, p.sku ? 'SKU ' + p.sku : fmtBRL(p.preco), 'Produtos', p.id); }) +
+      secao('Clientes', clientes, function (c) { return linha('i-user', c.nome, c.telefone || c.email || '', 'Clientes', c.id); }) +
+      secao('Vendas', vendas, function (v) { return linha('i-cart', '#' + v.numero, fmtBRL(v.total), 'Vendas', v.id); }) +
+      secao('Fornecedores', fornecedores, function (f) { return linha('i-truck', f.nome, f.telefone || '', 'Fornecedores', f.id); });
+    resultsEl.style.display = '';
+  }
+  document.addEventListener('click', function (e) {
+    var item = e.target.closest('[data-busca-ir]');
+    if (!item) return;
+    var view = item.getAttribute('data-busca-ir');
+    var id = item.getAttribute('data-busca-id');
+    irParaTela(view);
+    var input = document.getElementById('topbarSearchInput'), resultsEl = document.getElementById('topbarSearchResults');
+    if (input) input.value = '';
+    if (resultsEl) resultsEl.style.display = 'none';
+    setTimeout(function () {
+      var row = document.querySelector('.view:not([hidden]) tr[data-id="' + id + '"]');
+      if (row) { row.scrollIntoView({ behavior: 'smooth', block: 'center' }); row.style.outline = '2px solid var(--orange-500)'; setTimeout(function () { row.style.outline = ''; }, 2000); }
+    }, 300);
+  });
   async function gerenciarLicencaModal(){
     var chave = lsGet(LICENSE_LS_KEY) || '—';
     var loja = await getLoja();
@@ -11286,6 +11412,10 @@ html, body{ overflow-x:hidden; max-width:100%; }
     rewire('gerenciarLicencaBtn', function(){ gerenciarLicencaModal(); });
     rewire('restaurarPadroesBtn', async function(){ await renderConfiguracoes(); toast('Alterações não salvas foram descartadas.'); });
     rewire('zerarDadosBtn', async function(){ await apagarRegistrosDeTeste(); });
+    rewire('importarCategoriasBtn', async function(){ await importarCategoriasSugeridas(); });
+    rewire('topbarHelpBtn', function(){ toast('Central de Ajuda chega em uma próxima etapa.'); });
+    rewire('configContaBtn', function(){ irParaTela('Configurações'); });
+    wireBuscaGlobal();
     ['verRelatorioVendasBtn','verRelatorioOrcamentosBtn','verRelatorioClientesBtn','relatorioDemandaBtn','relatorioProdutosSolicitadosBtn','exportarRelatorioBtn','relatorioCompletoBtn','relatorioFornecedoresBtn','relatorioComprasBtn','relatorioRecebimentosBtn','relatorioEntregasBtn'].forEach(function(id){
       rewire(id, function(){ irParaTela('Relatórios'); });
     });
