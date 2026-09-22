@@ -12,13 +12,11 @@ compatibility_date = "2026-09-19"
 [assets]
 directory = "./"
 
-# Domínio customizado: ainda NÃO configurado (o cliente ainda não tem
-# um domínio próprio pra este produto). Por enquanto fica disponível
-# em construgestao-app.<subdominio-da-conta>.workers.dev. Quando
-# houver um domínio (ex: app.construgestao.com.br), repita o mesmo
-# passo manual já feito para os outros domínios (Cloudflare Dashboard
-# -> Workers & Pages -> construgestao-app -> Settings -> Domains &
-# Routes -> Add Custom Domain) e descomente o bloco abaixo.
-# [[routes]]
-# pattern = "app.construgestao.com.br"
-# custom_domain = true
+# Domínio customizado: subdomínio do leunamesoftware.com.br (domínio
+# que já é do lojista e já está ativo na Cloudflare) -- assim o link
+# entregue ao cliente final não expõe o nome da conta pessoal
+# (*.workers.dev). O "wrangler deploy" cria o registro de DNS e liga a
+# rota automaticamente, sem precisar comprar nada novo.
+[[routes]]
+pattern = "construgestao.leunamesoftware.com.br"
+custom_domain = true
