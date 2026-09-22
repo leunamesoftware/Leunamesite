@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
-<title>LeuName Gestão</title>
+<title>Gestacell</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -855,7 +855,7 @@ function renderLicenseGate(errMsg){
   <div class="auth-screen"><div class="auth-card">
     ${authBrandHTML()}
     <h2 style="font-size:17px;text-align:center;margin-top:6px;">Ativação da licença</h2>
-    <p class="muted small center" style="margin:6px 0 18px;">Para usar o LeuName Gestão, digite a chave de licença enviada pela LeuName Softwares.</p>
+    <p class="muted small center" style="margin:6px 0 18px;">Para usar o Gestacell, digite a chave de licença enviada pela LeuName Softwares.</p>
     <div class="field"><label>Chave de licença <span class="req">*</span></label><input id="lic-key" placeholder="LEU-XXXX-XXXX-XXXX" style="text-transform:uppercase;" autofocus></div>
     ${errMsg?`<div class="callout warn" style="margin-top:10px;"><span>${ic('warn',15)}</span><span>${esc(errMsg)}</span></div>`:''}
     <button class="btn primary" id="lic-activate" style="width:100%;justify-content:center;margin-top:16px;padding:11px;">Ativar licença</button>
@@ -940,7 +940,7 @@ function renderOnboarding(){
   let body='';
   if(OB.step===1){
     body=`
-      <h2 style="font-size:18px;text-align:center;">Bem-vindo(a) ao LeuName Gestão</h2>
+      <h2 style="font-size:18px;text-align:center;">Bem-vindo(a) ao Gestacell</h2>
       <p class="muted small center" style="margin:6px 0 20px;">Sistema completo para lojas de celulares, acessórios e assistência técnica.<br>Vamos configurar sua loja em poucos passos.</p>
       <div class="callout info"><span>${ic('lightning',16)}</span><span>Pagamento único, sem mensalidade obrigatória. Seus dados ficam no seu dispositivo e sincronizam com a nuvem que você escolher.</span></div>
       <button class="btn primary" id="ob-start" style="width:100%;justify-content:center;margin-top:18px;padding:11px;">Começar configuração</button>`;
@@ -1047,13 +1047,13 @@ async function finishOnboarding(){
   const hash=await hashPassword(d.resp_senha,salt);
   const admin={id:uid(),nome:d.resp_nome,email:d.resp_email,salt,senha_hash:hash,papel:'administrador',status:'ativo',permissoes:ROLE_DEFAULT_PERMS.administrador,criado_em:nowISO(),ultimo_login:null};
   await idbPut('usuarios',admin);
-  await idbPut('config',{id:'geral',impressao:{cabecalho:true,rodape:'LeuName Gestão — sistema desenvolvido pela LeuName Softwares'},backup:{frequencia:'diaria',auto:true,ultimo_backup:null},nuvem:{provedor:null,conectado:false,conta:null},licenca:{chave:d.licenca||null,status:d.licenca?'ativada_local':'avaliacao',dispositivosMax:LICENSE_MAX_DEVICES_DEFAULT,ativada_em:d.licenca?nowISO():null}});
+  await idbPut('config',{id:'geral',impressao:{cabecalho:true,rodape:'Gestacell — sistema desenvolvido pela LeuName Softwares'},backup:{frequencia:'diaria',auto:true,ultimo_backup:null},nuvem:{provedor:null,conectado:false,conta:null},licenca:{chave:d.licenca||null,status:d.licenca?'ativada_local':'avaliacao',dispositivosMax:LICENSE_MAX_DEVICES_DEFAULT,ativada_em:d.licenca?nowISO():null}});
   STATE.loja=loja; STATE.user=admin;
   lsSet('leuname_session',admin.id);
   await logAction('loja_criada','Loja "'+loja.nome+'" criada no primeiro acesso');
   await logAction('usuario_criado','Administrador "'+admin.nome+'" criado');
   await registerCurrentDevice();
-  toast('Loja criada com sucesso! Bem-vindo ao LeuName Gestão.','success');
+  toast('Loja criada com sucesso! Bem-vindo ao Gestacell.','success');
   startApp();
 }
 
@@ -1436,7 +1436,7 @@ async function openStockMoveModal(store,itemId){
 async function getConfig(){
   let cfg=await idbGet('config','geral');
   if(!cfg){
-    cfg={id:'geral',impressao:{cabecalho:true,rodape:'LeuName Gestão — sistema desenvolvido pela LeuName Softwares'},backup:{frequencia:'diaria',auto:true,ultimo_backup:null},nuvem:{provedor:null,conectado:false,conta:null},licenca:{chave:null,status:'avaliacao',dispositivosMax:LICENSE_MAX_DEVICES_DEFAULT,ativada_em:null}};
+    cfg={id:'geral',impressao:{cabecalho:true,rodape:'Gestacell — sistema desenvolvido pela LeuName Softwares'},backup:{frequencia:'diaria',auto:true,ultimo_backup:null},nuvem:{provedor:null,conectado:false,conta:null},licenca:{chave:null,status:'avaliacao',dispositivosMax:LICENSE_MAX_DEVICES_DEFAULT,ativada_em:null}};
     await idbPut('config',cfg);
   }
   cfg.impressao=cfg.impressao||{cabecalho:true,rodape:''};
@@ -1936,7 +1936,7 @@ async function printVenda(id){
         <div style="display:flex;justify-content:space-between;font-weight:bold;font-size:13.5px;margin-top:4px;">TOTAL <span>${fmtBRL(v.total)}</span></div>
         <div style="margin-top:4px;">Pagamento: ${esc(v.forma_pagamento)}</div>
       </div>
-      <p style="text-align:center;margin-top:14px;font-size:10.5px;color:#777;">Obrigado pela preferência!<br>Sistema LeuName Gestão — LeuName Softwares</p>
+      <p style="text-align:center;margin-top:14px;font-size:10.5px;color:#777;">Obrigado pela preferência!<br>Sistema Gestacell — LeuName Softwares</p>
     </div>`);
 }
 async function excluirVenda(id){
@@ -2280,7 +2280,7 @@ function printCopyBlock(titulo,via,bodyHTML){
       <div style="flex:1;border-top:1px solid #333;padding-top:4px;text-align:center;font-size:10.5px;">Assinatura do cliente</div>
       <div style="flex:1;border-top:1px solid #333;padding-top:4px;text-align:center;font-size:10.5px;">Assinatura do lojista</div>
     </div>
-    <p style="text-align:center;margin-top:14px;font-size:9.5px;color:#888;">${esc(loja.nome)}${loja.telefone?(' · '+esc(loja.telefone)):''} — Sistema LeuName Gestão (LeuName Softwares)</p>
+    <p style="text-align:center;margin-top:14px;font-size:9.5px;color:#888;">${esc(loja.nome)}${loja.telefone?(' · '+esc(loja.telefone)):''} — Sistema Gestacell (LeuName Softwares)</p>
   </div>`;
 }
 async function printOSEntrada(id){
@@ -2525,7 +2525,7 @@ VIEWS.relatorios = {
         <p style="color:#666;">${esc(STATE.loja.nome)} · Gerado em ${fmtDateTime(nowISO())}</p>
         <table style="width:100%;border-collapse:collapse;margin-top:10px;"><thead><tr>${data.headers.map(h=>'<th style="text-align:left;border-bottom:1px solid #ccc;padding:5px;">'+h+'</th>').join('')}</tr></thead>
         <tbody>${data.rows.map(r=>'<tr>'+r.map(c=>'<td style="padding:5px;border-bottom:1px solid #eee;">'+esc(c)+'</td>').join('')+'</tr>').join('')}</tbody></table>
-        <p style="margin-top:16px;font-size:9.5px;color:#999;">Sistema LeuName Gestão — LeuName Softwares</p>
+        <p style="margin-top:16px;font-size:9.5px;color:#999;">Sistema Gestacell — LeuName Softwares</p>
       </div>`);
     };
   }
@@ -2771,7 +2771,7 @@ VIEWS.configuracoes = {
         <td><span class="dot ${d.autorizado===false?'red':'green'}"></span> ${d.autorizado===false?'Revogado':'Online'}</td>
         <td class="right">${d.device_key!==getDeviceId()?`<button class="btn ghost sm" data-revoke="${d.id}" style="color:var(--red)">Revogar</button>`:''}</td>
       </tr>`).join('')}</tbody></table></div></div>
-      <div class="callout info" style="margin-top:12px;"><span>${ic('device',15)}</span><span>Cada instalação do LeuName Gestão (computador, celular ou tablet) é um dispositivo. Revogar um dispositivo impede que ele continue autenticado; para reautorizar um dispositivo novo, basta instalar e fazer login normalmente, respeitando o limite da licença.</span></div>`;
+      <div class="callout info" style="margin-top:12px;"><span>${ic('device',15)}</span><span>Cada instalação do Gestacell (computador, celular ou tablet) é um dispositivo. Revogar um dispositivo impede que ele continue autenticado; para reautorizar um dispositivo novo, basta instalar e fazer login normalmente, respeitando o limite da licença.</span></div>`;
     } else if(tab==='seguranca'){
       body=`<div class="panel"><div class="panel-body">
         <b style="font-size:12.5px;">Alterar minha senha</b>
@@ -2806,7 +2806,7 @@ VIEWS.configuracoes = {
     } else if(tab==='sobre'){
       body=`<div class="panel"><div class="panel-body center" style="padding:34px 20px;">
         <div class="brand-mark" style="width:52px;height:52px;margin:0 auto 12px;"><img src="${LOGO_DATA_URI}" alt="LeuName"></div>
-        <h3 style="font-size:18px;">LeuName Gestão</h3>
+        <h3 style="font-size:18px;">Gestacell</h3>
         <p class="muted small">Versão ${APP_VERSION}</p>
         <p class="muted small" style="margin-top:10px;max-width:420px;margin-left:auto;margin-right:auto;">Sistema completo para lojas de celulares, acessórios e assistência técnica.<br>Desenvolvido e distribuído por <b>LeuName Softwares</b>.</p>
         <p class="muted small" style="margin-top:14px;">Banco local: IndexedDB (offline-first) · Loja: ${esc(loja.nome)}</p>
@@ -2841,7 +2841,7 @@ VIEWS.configuracoes = {
     } else if(tab==='backup'){
       document.querySelectorAll('[data-cloud]').forEach(b=>b.onclick=()=>{
         openModal(`<div class="modal-head"><h3>Conectar ${esc(b.dataset.cloud)}</h3><button class="x-btn" onclick="closeModal()">${ic('x',15)}</button></div>
-        <div class="modal-body"><div class="callout warn"><span>${ic('warn',15)}</span><span>Para conectar de verdade ao ${esc(b.dataset.cloud)}, a LeuName Softwares precisa registrar um aplicativo OAuth oficial com este provedor e publicar o LeuName Gestão com esse domínio autorizado. Isso não pode ser simulado aqui — veja o README técnico incluído no projeto para o passo a passo de implementação.</span></div></div>
+        <div class="modal-body"><div class="callout warn"><span>${ic('warn',15)}</span><span>Para conectar de verdade ao ${esc(b.dataset.cloud)}, a LeuName Softwares precisa registrar um aplicativo OAuth oficial com este provedor e publicar o Gestacell com esse domínio autorizado. Isso não pode ser simulado aqui — veja o README técnico incluído no projeto para o passo a passo de implementação.</span></div></div>
         <div class="modal-foot"><button class="btn primary" onclick="closeModal()">Entendi</button></div>`);
       });
       document.getElementById('bk-freq').addEventListener('change',async(e)=>{ const cfg=await getConfig(); cfg.backup.frequencia=e.target.value; await saveConfig(cfg); });
@@ -2987,7 +2987,7 @@ function setupPWA(){
   }catch(e){ console.warn('Favicon indisponível neste ambiente.',e); }
   try{
     const manifest={
-      name:'LeuName Gestão',short_name:'LeuName',start_url:'.',display:'standalone',
+      name:'Gestacell',short_name:'Gestacell',start_url:'.',display:'standalone',
       background_color:'#F3F6FA',theme_color:'#0B2545',
       icons:[{src:LOGO_DATA_URI,sizes:'512x512',type:'image/png'}]
     };

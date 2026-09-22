@@ -6,7 +6,7 @@ caracteres da Google já foram respeitados.
 ## Nome do app
 (máx. 30 caracteres)
 ```
-LeuName Gestão
+Gestacell
 ```
 
 ## Descrição curta
@@ -18,7 +18,7 @@ Gestão para lojas de celulares e assistência técnica. 100% offline.
 ## Descrição completa
 (máx. 4000 caracteres)
 ```
-LeuName Gestão é o sistema completo para lojas de celulares, acessórios
+Gestacell é o sistema completo para lojas de celulares, acessórios
 e assistência técnica administrarem o negócio inteiro pelo celular ou
 tablet — sem depender de internet.
 
@@ -43,14 +43,14 @@ PRINCIPAIS RECURSOS
 FUNCIONA OFFLINE, E SINCRONIZA ENTRE SEUS APARELHOS
 
 Todos os dados ficam salvos diretamente no seu dispositivo, e o
-LeuName Gestão funciona sem precisar de internet o tempo todo. Se você
+Gestacell funciona sem precisar de internet o tempo todo. Se você
 usar a mesma licença em mais de um aparelho (celular e computador da
 loja, por exemplo), os dados sincronizam automaticamente entre eles
 assim que houver conexão.
 
 TAMBÉM DISPONÍVEL PARA COMPUTADOR
 
-Além do celular, o LeuName Gestão também tem uma versão para
+Além do celular, o Gestacell também tem uma versão para
 computador (Windows), com os mesmos dados sincronizados. Baixe em:
 https://api.leunamesoftware.com/download/leuname-gestao.exe
 

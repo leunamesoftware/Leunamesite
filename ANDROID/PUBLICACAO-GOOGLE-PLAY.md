@@ -1,12 +1,12 @@
-# LeuName Gestão — Publicação na Google Play
+# Gestacell — Publicação na Google Play
 
 Este documento explica o que já está pronto no projeto e o que ainda
 precisa ser feito manualmente no Google Play Console para publicar.
 
 ## O que já está pronto no projeto
 
-- **Nome do app:** LeuName Gestão
-- **Package name (applicationId):** `com.leunamesoftwares.gestao`
+- **Nome do app:** Gestacell
+- **Package name (applicationId):** `com.leunamesoftwares.gestacell`
   — este identificador é **definitivo**: depois de publicado uma vez,
   nunca pode ser trocado. Já está definido desde a primeira entrega.
 - **Ícone oficial:** aplicado (ícone adaptativo Android 8+, com margem
@@ -58,7 +58,7 @@ processo especial e limitado de recuperação de conta).
 1. **Criar a conta de desenvolvedor** (taxa única de US$ 25) em
    https://play.google.com/console, se ainda não tiver.
 2. **Criar o app** no Play Console, usando o mesmo package name
-   `com.leunamesoftwares.gestao`.
+   `com.leunamesoftwares.gestacell`.
 3. **Enviar o `.aab`** gerado pelo workflow na seção de "Produção"
    (ou primeiro em "Teste interno/fechado", recomendado antes de ir
    para produção).
@@ -74,7 +74,7 @@ processo especial e limitado de recuperação de conta).
 6. **Questionário de classificação de conteúdo** (content rating) —
    formulário dentro do próprio Play Console.
 7. **Formulário de segurança de dados (Data safety)** — declarar quais
-   dados o app coleta. Como o LeuName Gestão funciona local/offline e
+   dados o app coleta. Como o Gestacell funciona local/offline e
    não envia dados a servidor algum, a resposta tende a ser "não
    coleta/compartilha dados", mas o formulário precisa ser preenchido.
 8. **Categoria do app** e público-alvo (classificação indicativa).

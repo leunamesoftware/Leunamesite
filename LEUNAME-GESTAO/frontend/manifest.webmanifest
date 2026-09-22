@@ -1,6 +1,6 @@
 {
-  "name": "LeuName Gestão",
-  "short_name": "LeuName Gestão",
+  "name": "Gestacell",
+  "short_name": "Gestacell",
   "description": "Gestão para lojas de celulares, acessórios e assistência técnica. 100% offline.",
   "start_url": "/",
   "scope": "/",
