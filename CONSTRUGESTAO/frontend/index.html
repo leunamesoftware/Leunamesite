@@ -1971,70 +1971,21 @@ html, body{ overflow-x:hidden; max-width:100%; }
         <div class="panel">
           <div class="panel__head">
             <h3>Vendas dos últimos 7 dias</h3>
-            <button class="period-pill" type="button">Últimos 7 dias<span class="icon"><svg><use href="#i-chevron-down"/></svg></span></button>
+            <button class="period-pill" type="button" id="dashPeriodoBtn">Últimos 7 dias<span class="icon"><svg><use href="#i-chevron-down"/></svg></span></button>
           </div>
           <div class="chart-wrap">
-            <div class="chart-yaxis"><span>2.000</span><span>1.500</span><span>1.000</span><span>500</span><span>0</span></div>
-            <div class="chart-bars">
-              <div class="chart-col"><div class="chart-bar" style="height:55%;" title="R$ 1.100,00"></div><span class="chart-col__label">Seg</span></div>
-              <div class="chart-col"><div class="chart-bar" style="height:65%;" title="R$ 1.300,00"></div><span class="chart-col__label">Ter</span></div>
-              <div class="chart-col"><div class="chart-bar" style="height:80%;" title="R$ 1.600,00"></div><span class="chart-col__label">Qua</span></div>
-              <div class="chart-col"><div class="chart-bar" style="height:67%;" title="R$ 1.350,00"></div><span class="chart-col__label">Qui</span></div>
-              <div class="chart-col"><div class="chart-bar" style="height:87%;" title="R$ 1.750,00"></div><span class="chart-col__label">Sex</span></div>
-              <div class="chart-col"><div class="chart-bar" style="height:47%;" title="R$ 950,00"></div><span class="chart-col__label">Sáb</span></div>
-              <div class="chart-col"><div class="chart-bar" style="height:60%;" title="R$ 1.200,00"></div><span class="chart-col__label">Dom</span></div>
-            </div>
+            <div class="chart-yaxis" id="dashChartYaxis"><span>0</span></div>
+            <div class="chart-bars" id="dashChartBars"></div>
           </div>
-          <p class="chart-legend"><strong>R$ 9.250,00</strong> vendidos nos últimos 7 dias</p>
+          <p class="chart-legend" id="dashChartLegend"><strong>R$ 0,00</strong> vendidos nos últimos 7 dias</p>
         </div>
 
         <div class="panel">
           <div class="panel__head">
             <h3>Atividades recentes</h3>
-            <button class="panel__link" type="button">Ver todas<span class="icon"><svg><use href="#i-chevron-right"/></svg></span></button>
+            <button class="panel__link" type="button" id="painelAtividadesVerTodas">Ver todas<span class="icon"><svg><use href="#i-chevron-right"/></svg></span></button>
           </div>
-          <div>
-            <div class="activity-row">
-              <span class="activity-row__icon green"><span class="icon"><svg><use href="#i-cart"/></svg></span></span>
-              <span class="activity-row__body">
-                <p class="activity-row__title">Venda registrada</p>
-                <p class="activity-row__meta">R$ 320,50</p>
-              </span>
-              <span class="activity-row__time">Hoje, 14:32</span>
-            </div>
-            <div class="activity-row">
-              <span class="activity-row__icon blue"><span class="icon"><svg><use href="#i-archive"/></svg></span></span>
-              <span class="activity-row__body">
-                <p class="activity-row__title">Produto recebido</p>
-                <p class="activity-row__meta">Cimento CP-II 50kg</p>
-              </span>
-              <span class="activity-row__time">Hoje, 11:20</span>
-            </div>
-            <div class="activity-row">
-              <span class="activity-row__icon orange"><span class="icon"><svg><use href="#i-user-plus"/></svg></span></span>
-              <span class="activity-row__body">
-                <p class="activity-row__title">Novo cliente cadastrado</p>
-                <p class="activity-row__meta">João Silva</p>
-              </span>
-              <span class="activity-row__time">Hoje, 10:15</span>
-            </div>
-            <div class="activity-row">
-              <span class="activity-row__icon indigo"><span class="icon"><svg><use href="#i-file"/></svg></span></span>
-              <span class="activity-row__body">
-                <p class="activity-row__title">Orçamento criado</p>
-                <p class="activity-row__meta">#00125</p>
-              </span>
-              <span class="activity-row__time">Hoje, 09:40</span>
-            </div>
-            <div class="activity-row">
-              <span class="activity-row__icon gray"><span class="icon"><svg><use href="#i-archive"/></svg></span></span>
-              <span class="activity-row__body">
-                <p class="activity-row__title">Estoque ajustado</p>
-                <p class="activity-row__meta">Tubo PVC 100mm</p>
-              </span>
-              <span class="activity-row__time">Hoje, 08:55</span>
-            </div>
-          </div>
+          <div id="painelAtividadesRows"></div>
         </div>
 
         <div class="panel">
@@ -2042,12 +1993,12 @@ html, body{ overflow-x:hidden; max-width:100%; }
             <h3>Ações rápidas</h3>
           </div>
           <div class="quick-actions">
-            <button class="qa-btn qa-btn--green" type="button"><span class="icon"><svg><use href="#i-box"/></svg></span>Novo produto</button>
-            <button class="qa-btn qa-btn--indigo" type="button"><span class="icon"><svg><use href="#i-cart"/></svg></span>Nova venda</button>
-            <button class="qa-btn qa-btn--orange" type="button"><span class="icon"><svg><use href="#i-user-plus"/></svg></span>Novo cliente</button>
-            <button class="qa-btn qa-btn--blue" type="button"><span class="icon"><svg><use href="#i-file"/></svg></span>Novo orçamento</button>
-            <button class="qa-btn qa-btn--light" type="button"><span class="icon"><svg><use href="#i-arrow-down-tray"/></svg></span>Entrada de estoque</button>
-            <button class="qa-btn qa-btn--navy" type="button"><span class="icon"><svg><use href="#i-clipboard"/></svg></span>Registrar demanda</button>
+            <button class="qa-btn qa-btn--green" type="button" id="qaNovoProdutoBtn"><span class="icon"><svg><use href="#i-box"/></svg></span>Novo produto</button>
+            <button class="qa-btn qa-btn--indigo" type="button" id="qaNovaVendaBtn"><span class="icon"><svg><use href="#i-cart"/></svg></span>Nova venda</button>
+            <button class="qa-btn qa-btn--orange" type="button" id="qaNovoClienteBtn"><span class="icon"><svg><use href="#i-user-plus"/></svg></span>Novo cliente</button>
+            <button class="qa-btn qa-btn--blue" type="button" id="qaNovoOrcamentoBtn"><span class="icon"><svg><use href="#i-file"/></svg></span>Novo orçamento</button>
+            <button class="qa-btn qa-btn--light" type="button" id="qaEntradaEstoqueBtn"><span class="icon"><svg><use href="#i-arrow-down-tray"/></svg></span>Entrada de estoque</button>
+            <button class="qa-btn qa-btn--navy" type="button" id="qaRegistrarDemandaBtn"><span class="icon"><svg><use href="#i-clipboard"/></svg></span>Registrar demanda</button>
           </div>
         </div>
       </section>
@@ -2078,7 +2029,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
               <span class="kpi-card__icon blue"><span class="icon"><svg><use href="#i-box"/></svg></span></span>
               <span class="kpi-card__label">Total de produtos</span>
             </div>
-            <p class="kpi-card__value">248</p>
+            <p class="kpi-card__value" id="kpiProdTotal">248</p>
             <p class="kpi-card__delta up"><span class="icon"><svg><use href="#i-trending-up"/></svg></span>+12% <span>este mês</span></p>
           </div>
           <div class="kpi-card">
@@ -2086,7 +2037,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
               <span class="kpi-card__icon green"><span class="icon"><svg><use href="#i-layers"/></svg></span></span>
               <span class="kpi-card__label">Em estoque</span>
             </div>
-            <p class="kpi-card__value">198</p>
+            <p class="kpi-card__value" id="kpiProdEmEstoque">198</p>
             <p class="kpi-card__delta up"><span class="icon"><svg><use href="#i-trending-up"/></svg></span>+8% <span>este mês</span></p>
           </div>
           <div class="kpi-card">
@@ -2094,7 +2045,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
               <span class="kpi-card__icon orange"><span class="icon"><svg><use href="#i-alert-triangle"/></svg></span></span>
               <span class="kpi-card__label">Estoque baixo</span>
             </div>
-            <p class="kpi-card__value">32</p>
+            <p class="kpi-card__value" id="kpiProdBaixo">32</p>
             <p class="kpi-card__delta warn"><span class="icon"><svg><use href="#i-trending-up"/></svg></span>+6% <span>este mês</span></p>
           </div>
           <div class="kpi-card">
@@ -2102,7 +2053,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
               <span class="kpi-card__icon" style="background:linear-gradient(135deg,#e5484d,#ef7478);"><span class="icon"><svg><use href="#i-x-circle"/></svg></span></span>
               <span class="kpi-card__label">Sem estoque</span>
             </div>
-            <p class="kpi-card__value">18</p>
+            <p class="kpi-card__value" id="kpiProdSemEstoque">18</p>
             <p class="kpi-card__delta danger"><span class="icon"><svg><use href="#i-trending-up"/></svg></span>+2% <span>este mês</span></p>
           </div>
         </section>
@@ -2572,7 +2523,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
               <span class="kpi-card__icon blue"><span class="icon"><svg><use href="#i-box"/></svg></span></span>
               <span class="kpi-card__label">Total em estoque</span>
             </div>
-            <p class="kpi-card__value">1.482</p>
+            <p class="kpi-card__value" id="kpiEstTotalEstoque">1.482</p>
             <div class="kpi-card__foot"><span class="kpi-card__unit">produtos</span></div>
           </div>
           <div class="kpi-card">
@@ -2580,7 +2531,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
               <span class="kpi-card__icon green"><span class="icon"><svg><use href="#i-arrow-up"/></svg></span></span>
               <span class="kpi-card__label">Entradas (30 dias)</span>
             </div>
-            <p class="kpi-card__value">320</p>
+            <p class="kpi-card__value" id="kpiEstEntradas30">320</p>
             <div class="kpi-card__foot"><span class="kpi-card__unit">produtos</span><span class="kpi-card__foot-delta up"><span class="icon"><svg><use href="#i-arrow-up"/></svg></span>+12%</span></div>
           </div>
           <div class="kpi-card">
@@ -2588,7 +2539,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
               <span class="kpi-card__icon" style="background:linear-gradient(135deg,#e5484d,#ef7478);"><span class="icon"><svg><use href="#i-arrow-down"/></svg></span></span>
               <span class="kpi-card__label">Saídas (30 dias)</span>
             </div>
-            <p class="kpi-card__value">276</p>
+            <p class="kpi-card__value" id="kpiEstSaidas30">276</p>
             <div class="kpi-card__foot"><span class="kpi-card__unit">produtos</span><span class="kpi-card__foot-delta down"><span class="icon"><svg><use href="#i-arrow-up"/></svg></span>+8%</span></div>
           </div>
           <div class="kpi-card">
@@ -2596,7 +2547,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
               <span class="kpi-card__icon orange"><span class="icon"><svg><use href="#i-alert-triangle"/></svg></span></span>
               <span class="kpi-card__label">Estoque baixo</span>
             </div>
-            <p class="kpi-card__value">32</p>
+            <p class="kpi-card__value" id="kpiEstBaixo">32</p>
             <div class="kpi-card__foot"><span class="kpi-card__unit">produtos</span><a class="kpi-card__foot-link" data-nav-target="Precisa Comprar">Ver lista<span class="icon"><svg><use href="#i-chevron-right"/></svg></span></a></div>
           </div>
           <div class="kpi-card">
@@ -2604,7 +2555,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
               <span class="kpi-card__icon" style="background:linear-gradient(135deg,#e5484d,#ef7478);"><span class="icon"><svg><use href="#i-x-circle"/></svg></span></span>
               <span class="kpi-card__label">Sem estoque</span>
             </div>
-            <p class="kpi-card__value">18</p>
+            <p class="kpi-card__value" id="kpiEstSemEstoque">18</p>
             <div class="kpi-card__foot"><span class="kpi-card__unit">produtos</span><a class="kpi-card__foot-link" data-nav-target="Precisa Comprar">Ver lista<span class="icon"><svg><use href="#i-chevron-right"/></svg></span></a></div>
           </div>
         </section>
@@ -2869,7 +2820,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
               <span class="kpi-card__icon" style="background:linear-gradient(135deg,#e5484d,#ef7478);"><span class="icon"><svg><use href="#i-cart"/></svg></span></span>
               <span class="kpi-card__label">Total para compra</span>
             </div>
-            <p class="kpi-card__value">48</p>
+            <p class="kpi-card__value" id="kpiPCTotal">48</p>
             <div class="kpi-card__foot"><span class="kpi-card__unit">produtos</span></div>
           </div>
           <div class="kpi-card">
@@ -2877,7 +2828,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
               <span class="kpi-card__icon orange"><span class="icon"><svg><use href="#i-alert-triangle"/></svg></span></span>
               <span class="kpi-card__label">Estoque crítico</span>
             </div>
-            <p class="kpi-card__value">32</p>
+            <p class="kpi-card__value" id="kpiPCCritico">32</p>
             <div class="kpi-card__foot"><span class="kpi-card__unit">produtos</span></div>
           </div>
           <div class="kpi-card">
@@ -2885,7 +2836,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
               <span class="kpi-card__icon" style="background:linear-gradient(135deg,#e5484d,#ef7478);"><span class="icon"><svg><use href="#i-x-circle"/></svg></span></span>
               <span class="kpi-card__label">Sem estoque</span>
             </div>
-            <p class="kpi-card__value">16</p>
+            <p class="kpi-card__value" id="kpiPCSemEstoque">16</p>
             <div class="kpi-card__foot"><span class="kpi-card__unit">produtos</span></div>
           </div>
           <div class="kpi-card">
@@ -2893,7 +2844,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
               <span class="kpi-card__icon blue"><span class="icon"><svg><use href="#i-coins"/></svg></span></span>
               <span class="kpi-card__label">Valor estimado</span>
             </div>
-            <p class="kpi-card__value">R$ 12.480,50</p>
+            <p class="kpi-card__value" id="kpiPCValorEstimado">R$ 12.480,50</p>
             <div class="kpi-card__foot"><span class="kpi-card__unit">com base no último custo</span></div>
           </div>
           <div class="kpi-card">
@@ -2901,7 +2852,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
               <span class="kpi-card__icon green"><span class="icon"><svg><use href="#i-truck"/></svg></span></span>
               <span class="kpi-card__label">Fornecedores</span>
             </div>
-            <p class="kpi-card__value">12</p>
+            <p class="kpi-card__value" id="kpiPCFornecedores">12</p>
             <div class="kpi-card__foot"><span class="kpi-card__unit">fornecedores</span></div>
           </div>
         </section>
@@ -3214,7 +3165,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
               <span class="kpi-card__icon green"><span class="icon"><svg><use href="#i-cart"/></svg></span></span>
               <span class="kpi-card__label">Total de vendas</span>
             </div>
-            <p class="kpi-card__value">152</p>
+            <p class="kpi-card__value" id="kpiVendTotal">152</p>
             <div class="kpi-card__foot"><span class="kpi-card__unit">neste mês</span></div>
           </div>
           <div class="kpi-card">
@@ -3222,7 +3173,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
               <span class="kpi-card__icon blue"><span class="icon"><svg><use href="#i-coins"/></svg></span></span>
               <span class="kpi-card__label">Faturamento</span>
             </div>
-            <p class="kpi-card__value">R$ 48.750,00</p>
+            <p class="kpi-card__value" id="kpiVendFaturamento">R$ 48.750,00</p>
             <div class="kpi-card__foot"><span class="kpi-card__unit">neste mês</span></div>
           </div>
           <div class="kpi-card">
@@ -3230,7 +3181,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
               <span class="kpi-card__icon orange"><span class="icon"><svg><use href="#i-tag"/></svg></span></span>
               <span class="kpi-card__label">Ticket médio</span>
             </div>
-            <p class="kpi-card__value">R$ 320,72</p>
+            <p class="kpi-card__value" id="kpiVendTicketMedio">R$ 320,72</p>
             <div class="kpi-card__foot"><span class="kpi-card__unit">por venda</span></div>
           </div>
           <div class="kpi-card">
@@ -3238,7 +3189,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
               <span class="kpi-card__icon purple"><span class="icon"><svg><use href="#i-box"/></svg></span></span>
               <span class="kpi-card__label">Produtos vendidos</span>
             </div>
-            <p class="kpi-card__value">486</p>
+            <p class="kpi-card__value" id="kpiVendProdutosVendidos">486</p>
             <div class="kpi-card__foot"><span class="kpi-card__unit">unidades</span></div>
           </div>
           <div class="kpi-card">
@@ -3246,7 +3197,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
               <span class="kpi-card__icon" style="background:linear-gradient(135deg,var(--navy-700),var(--navy-600));"><span class="icon"><svg><use href="#i-users"/></svg></span></span>
               <span class="kpi-card__label">Clientes atendidos</span>
             </div>
-            <p class="kpi-card__value">98</p>
+            <p class="kpi-card__value" id="kpiVendClientesAtendidos">98</p>
             <div class="kpi-card__foot"><span class="kpi-card__unit">neste mês</span></div>
           </div>
         </section>
@@ -3526,7 +3477,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
               <span class="kpi-card__icon" style="background:linear-gradient(135deg,#e5484d,#ef7478);"><span class="icon"><svg><use href="#i-alert-triangle"/></svg></span></span>
               <span class="kpi-card__label">Produtos críticos</span>
             </div>
-            <p class="kpi-card__value">12</p>
+            <p class="kpi-card__value" id="kpiECCriticos">12</p>
             <div class="kpi-card__foot"><span class="kpi-card__unit">abaixo do mínimo</span></div>
           </div>
           <div class="kpi-card">
@@ -3534,7 +3485,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
               <span class="kpi-card__icon orange"><span class="icon"><svg><use href="#i-box"/></svg></span></span>
               <span class="kpi-card__label">Em risco</span>
             </div>
-            <p class="kpi-card__value">8</p>
+            <p class="kpi-card__value" id="kpiECEmRisco">8</p>
             <div class="kpi-card__foot"><span class="kpi-card__unit">próximos do limite</span></div>
           </div>
           <div class="kpi-card">
@@ -3542,7 +3493,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
               <span class="kpi-card__icon green"><span class="icon"><svg><use href="#i-check-circle"/></svg></span></span>
               <span class="kpi-card__label">Estoque normal</span>
             </div>
-            <p class="kpi-card__value">128</p>
+            <p class="kpi-card__value" id="kpiECNormal">128</p>
             <div class="kpi-card__foot"><span class="kpi-card__unit">dentro do esperado</span></div>
           </div>
           <div class="kpi-card">
@@ -3550,7 +3501,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
               <span class="kpi-card__icon" style="background:linear-gradient(135deg,var(--navy-700),var(--navy-600));"><span class="icon"><svg><use href="#i-box"/></svg></span></span>
               <span class="kpi-card__label">Total de produtos</span>
             </div>
-            <p class="kpi-card__value">148</p>
+            <p class="kpi-card__value" id="kpiECTotal">148</p>
             <div class="kpi-card__foot"><span class="kpi-card__unit">cadastrados</span></div>
           </div>
         </section>
@@ -3851,7 +3802,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
               <span class="kpi-card__icon blue"><span class="icon"><svg><use href="#i-file"/></svg></span></span>
               <span class="kpi-card__label">Total de orçamentos</span>
             </div>
-            <p class="kpi-card__value">48</p>
+            <p class="kpi-card__value" id="kpiOrcTotal">48</p>
             <div class="kpi-card__foot"><span class="kpi-card__unit">neste mês</span></div>
           </div>
           <div class="kpi-card">
@@ -3859,7 +3810,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
               <span class="kpi-card__icon orange"><span class="icon"><svg><use href="#i-dollar"/></svg></span></span>
               <span class="kpi-card__label">Valor total</span>
             </div>
-            <p class="kpi-card__value">R$ 18.750,00</p>
+            <p class="kpi-card__value" id="kpiOrcValorTotal">R$ 18.750,00</p>
             <div class="kpi-card__foot"><span class="kpi-card__unit">neste mês</span></div>
           </div>
           <div class="kpi-card">
@@ -3867,7 +3818,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
               <span class="kpi-card__icon green"><span class="icon"><svg><use href="#i-check-circle"/></svg></span></span>
               <span class="kpi-card__label">Aprovados</span>
             </div>
-            <p class="kpi-card__value">28</p>
+            <p class="kpi-card__value" id="kpiOrcAprovados">28</p>
             <div class="kpi-card__foot"><span class="kpi-card__unit">58% do total</span></div>
           </div>
           <div class="kpi-card">
@@ -3875,7 +3826,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
               <span class="kpi-card__icon" style="background:linear-gradient(135deg,#e5484d,#ef7478);"><span class="icon"><svg><use href="#i-x-circle"/></svg></span></span>
               <span class="kpi-card__label">Recusados</span>
             </div>
-            <p class="kpi-card__value">8</p>
+            <p class="kpi-card__value" id="kpiOrcRecusados">8</p>
             <div class="kpi-card__foot"><span class="kpi-card__unit">17% do total</span></div>
           </div>
           <div class="kpi-card">
@@ -3883,7 +3834,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
               <span class="kpi-card__icon purple"><span class="icon"><svg><use href="#i-clock"/></svg></span></span>
               <span class="kpi-card__label">Pendentes</span>
             </div>
-            <p class="kpi-card__value">12</p>
+            <p class="kpi-card__value" id="kpiOrcPendentes">12</p>
             <div class="kpi-card__foot"><span class="kpi-card__unit">25% do total</span></div>
           </div>
         </section>
@@ -4191,7 +4142,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
               <span class="kpi-card__icon blue"><span class="icon"><svg><use href="#i-users"/></svg></span></span>
               <span class="kpi-card__label">Total de clientes</span>
             </div>
-            <p class="kpi-card__value">248</p>
+            <p class="kpi-card__value" id="kpiCliTotal">248</p>
             <div class="kpi-card__foot"><span class="kpi-card__unit">cadastrados</span></div>
           </div>
           <div class="kpi-card">
@@ -4199,7 +4150,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
               <span class="kpi-card__icon green"><span class="icon"><svg><use href="#i-user-plus"/></svg></span></span>
               <span class="kpi-card__label">Novos este mês</span>
             </div>
-            <p class="kpi-card__value">28</p>
+            <p class="kpi-card__value" id="kpiCliNovosMes">28</p>
             <div class="kpi-card__foot"><span class="kpi-card__unit">+12% em relação ao mês anterior</span></div>
           </div>
           <div class="kpi-card">
@@ -4207,7 +4158,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
               <span class="kpi-card__icon orange"><span class="icon"><svg><use href="#i-cart"/></svg></span></span>
               <span class="kpi-card__label">Clientes ativos</span>
             </div>
-            <p class="kpi-card__value">196</p>
+            <p class="kpi-card__value" id="kpiCliAtivos">196</p>
             <div class="kpi-card__foot"><span class="kpi-card__unit">compraram nos últimos 3 meses</span></div>
           </div>
           <div class="kpi-card">
@@ -4215,7 +4166,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
               <span class="kpi-card__icon purple"><span class="icon"><svg><use href="#i-star"/></svg></span></span>
               <span class="kpi-card__label">Clientes VIP</span>
             </div>
-            <p class="kpi-card__value">34</p>
+            <p class="kpi-card__value" id="kpiCliVIP">34</p>
             <div class="kpi-card__foot"><span class="kpi-card__unit">acima de R$ 5.000,00</span></div>
           </div>
           <div class="kpi-card">
@@ -4223,7 +4174,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
               <span class="kpi-card__icon" style="background:linear-gradient(135deg,#e5484d,#ef7478);"><span class="icon"><svg><use href="#i-bell"/></svg></span></span>
               <span class="kpi-card__label">Inadimplentes</span>
             </div>
-            <p class="kpi-card__value">12</p>
+            <p class="kpi-card__value" id="kpiCliInadimplentes">12</p>
             <div class="kpi-card__foot"><span class="kpi-card__unit">com contas em atraso</span></div>
           </div>
         </section>
@@ -4536,7 +4487,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
               <span class="kpi-card__icon blue"><span class="icon"><svg><use href="#i-clipboard"/></svg></span></span>
               <span class="kpi-card__label">Total de solicitações</span>
             </div>
-            <p class="kpi-card__value">56</p>
+            <p class="kpi-card__value" id="kpiDCTotal">56</p>
             <div class="kpi-card__foot"><span class="kpi-card__unit">neste mês</span></div>
           </div>
           <div class="kpi-card">
@@ -4544,7 +4495,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
               <span class="kpi-card__icon orange"><span class="icon"><svg><use href="#i-cart"/></svg></span></span>
               <span class="kpi-card__label">Pendentes</span>
             </div>
-            <p class="kpi-card__value">28</p>
+            <p class="kpi-card__value" id="kpiDCPendentes">28</p>
             <div class="kpi-card__foot"><span class="kpi-card__unit">produtos para buscar</span></div>
           </div>
           <div class="kpi-card">
@@ -4552,7 +4503,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
               <span class="kpi-card__icon green"><span class="icon"><svg><use href="#i-check-circle"/></svg></span></span>
               <span class="kpi-card__label">Produtos encontrados</span>
             </div>
-            <p class="kpi-card__value">14</p>
+            <p class="kpi-card__value" id="kpiDCEncontrados">14</p>
             <div class="kpi-card__foot"><span class="kpi-card__unit">aguardando compra</span></div>
           </div>
           <div class="kpi-card">
@@ -4560,7 +4511,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
               <span class="kpi-card__icon purple"><span class="icon"><svg><use href="#i-bell"/></svg></span></span>
               <span class="kpi-card__label">Clientes para avisar</span>
             </div>
-            <p class="kpi-card__value">10</p>
+            <p class="kpi-card__value" id="kpiDCAvisar">10</p>
             <div class="kpi-card__foot"><span class="kpi-card__unit">quando chegar</span></div>
           </div>
           <div class="kpi-card">
@@ -4568,7 +4519,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
               <span class="kpi-card__icon" style="background:linear-gradient(135deg,var(--navy-700),var(--navy-600));"><span class="icon"><svg><use href="#i-box"/></svg></span></span>
               <span class="kpi-card__label">Solicitações finalizadas</span>
             </div>
-            <p class="kpi-card__value">4</p>
+            <p class="kpi-card__value" id="kpiDCFinalizadas">4</p>
             <div class="kpi-card__foot"><span class="kpi-card__unit">neste mês</span></div>
           </div>
         </section>
@@ -4873,7 +4824,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
               <span class="kpi-card__icon blue"><span class="icon"><svg><use href="#i-clipboard"/></svg></span></span>
               <span class="kpi-card__label">Total de demandas</span>
             </div>
-            <p class="kpi-card__value">48</p>
+            <p class="kpi-card__value" id="kpiCDTotal">48</p>
             <div class="kpi-card__foot"><span class="kpi-card__unit">neste mês</span></div>
           </div>
           <div class="kpi-card">
@@ -4881,7 +4832,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
               <span class="kpi-card__icon orange"><span class="icon"><svg><use href="#i-clock"/></svg></span></span>
               <span class="kpi-card__label">Pendentes</span>
             </div>
-            <p class="kpi-card__value">18</p>
+            <p class="kpi-card__value" id="kpiCDPendentes">18</p>
             <div class="kpi-card__foot"><span class="kpi-card__unit">aguardando ação</span></div>
           </div>
           <div class="kpi-card">
@@ -4889,7 +4840,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
               <span class="kpi-card__icon green"><span class="icon"><svg><use href="#i-check-circle"/></svg></span></span>
               <span class="kpi-card__label">Em andamento</span>
             </div>
-            <p class="kpi-card__value">12</p>
+            <p class="kpi-card__value" id="kpiCDAndamento">12</p>
             <div class="kpi-card__foot"><span class="kpi-card__unit">em negociação</span></div>
           </div>
           <div class="kpi-card">
@@ -4897,7 +4848,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
               <span class="kpi-card__icon purple"><span class="icon"><svg><use href="#i-box"/></svg></span></span>
               <span class="kpi-card__label">Resolvidas</span>
             </div>
-            <p class="kpi-card__value">14</p>
+            <p class="kpi-card__value" id="kpiCDResolvidas">14</p>
             <div class="kpi-card__foot"><span class="kpi-card__unit">atendidas com sucesso</span></div>
           </div>
           <div class="kpi-card">
@@ -4905,7 +4856,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
               <span class="kpi-card__icon" style="background:linear-gradient(135deg,#7c8698,#535c6c);"><span class="icon"><svg><use href="#i-x-circle"/></svg></span></span>
               <span class="kpi-card__label">Canceladas</span>
             </div>
-            <p class="kpi-card__value">4</p>
+            <p class="kpi-card__value" id="kpiCDCanceladas">4</p>
             <div class="kpi-card__foot"><span class="kpi-card__unit">sem continuidade</span></div>
           </div>
         </section>
@@ -5221,7 +5172,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
               <span class="kpi-card__icon blue"><span class="icon"><svg><use href="#i-cart"/></svg></span></span>
               <span class="kpi-card__label">Total de vendas</span>
             </div>
-            <p class="kpi-card__value">1.284</p>
+            <p class="kpi-card__value" id="kpiHistTotal">1.284</p>
             <div class="kpi-card__foot"><span class="kpi-card__unit">neste período</span></div>
           </div>
           <div class="kpi-card">
@@ -5229,7 +5180,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
               <span class="kpi-card__icon green"><span class="icon"><svg><use href="#i-coins"/></svg></span></span>
               <span class="kpi-card__label">Faturamento total</span>
             </div>
-            <p class="kpi-card__value">R$ 284.560,90</p>
+            <p class="kpi-card__value" id="kpiHistFaturamento">R$ 284.560,90</p>
             <div class="kpi-card__foot"><span class="kpi-card__foot-delta up"><span class="icon"><svg><use href="#i-trending-up"/></svg></span>+12% <span>em relação ao período anterior</span></span></div>
           </div>
           <div class="kpi-card">
@@ -5237,7 +5188,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
               <span class="kpi-card__icon orange"><span class="icon"><svg><use href="#i-tag"/></svg></span></span>
               <span class="kpi-card__label">Ticket médio</span>
             </div>
-            <p class="kpi-card__value">R$ 221,62</p>
+            <p class="kpi-card__value" id="kpiHistTicketMedio">R$ 221,62</p>
             <div class="kpi-card__foot"><span class="kpi-card__unit">por venda</span></div>
           </div>
           <div class="kpi-card">
@@ -5245,7 +5196,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
               <span class="kpi-card__icon purple"><span class="icon"><svg><use href="#i-box"/></svg></span></span>
               <span class="kpi-card__label">Itens vendidos</span>
             </div>
-            <p class="kpi-card__value">3.842</p>
+            <p class="kpi-card__value" id="kpiHistItens">3.842</p>
             <div class="kpi-card__foot"><span class="kpi-card__unit">unidades</span></div>
           </div>
           <div class="kpi-card">
@@ -5253,7 +5204,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
               <span class="kpi-card__icon" style="background:linear-gradient(135deg,#7c8698,#535c6c);"><span class="icon"><svg><use href="#i-users"/></svg></span></span>
               <span class="kpi-card__label">Clientes atendidos</span>
             </div>
-            <p class="kpi-card__value">687</p>
+            <p class="kpi-card__value" id="kpiHistClientes">687</p>
             <div class="kpi-card__foot"><span class="kpi-card__unit">clientes diferentes</span></div>
           </div>
         </section>
@@ -5573,7 +5524,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
               <span class="kpi-card__icon blue"><span class="icon"><svg><use href="#i-users"/></svg></span></span>
               <span class="kpi-card__label">Total de fornecedores</span>
             </div>
-            <p class="kpi-card__value">48</p>
+            <p class="kpi-card__value" id="kpiFornTotal">48</p>
             <div class="kpi-card__foot"><span class="kpi-card__unit">cadastrados</span></div>
           </div>
           <div class="kpi-card">
@@ -5581,7 +5532,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
               <span class="kpi-card__icon green"><span class="icon"><svg><use href="#i-truck"/></svg></span></span>
               <span class="kpi-card__label">Fornecedores ativos</span>
             </div>
-            <p class="kpi-card__value">42</p>
+            <p class="kpi-card__value" id="kpiFornAtivos">42</p>
             <div class="kpi-card__foot"><span class="kpi-card__unit">87,5% do total</span></div>
           </div>
           <div class="kpi-card">
@@ -5589,7 +5540,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
               <span class="kpi-card__icon orange"><span class="icon"><svg><use href="#i-clock"/></svg></span></span>
               <span class="kpi-card__label">Em negociação</span>
             </div>
-            <p class="kpi-card__value">4</p>
+            <p class="kpi-card__value" id="kpiFornNegociacao">4</p>
             <div class="kpi-card__foot"><span class="kpi-card__unit">novos contatos</span></div>
           </div>
           <div class="kpi-card">
@@ -5597,7 +5548,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
               <span class="kpi-card__icon purple"><span class="icon"><svg><use href="#i-star"/></svg></span></span>
               <span class="kpi-card__label">Fornecedores principais</span>
             </div>
-            <p class="kpi-card__value">12</p>
+            <p class="kpi-card__value" id="kpiFornPrincipais">12</p>
             <div class="kpi-card__foot"><span class="kpi-card__unit">maior volume de compras</span></div>
           </div>
           <div class="kpi-card">
@@ -5605,7 +5556,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
               <span class="kpi-card__icon" style="background:linear-gradient(135deg,#e5484d,#ef7478);"><span class="icon"><svg><use href="#i-alert-triangle"/></svg></span></span>
               <span class="kpi-card__label">Inativos</span>
             </div>
-            <p class="kpi-card__value">6</p>
+            <p class="kpi-card__value" id="kpiFornInativos">6</p>
             <div class="kpi-card__foot"><span class="kpi-card__unit">sem compras há mais de 6 meses</span></div>
           </div>
         </section>
@@ -5922,7 +5873,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
               <span class="kpi-card__icon purple"><span class="icon"><svg><use href="#i-cart"/></svg></span></span>
               <span class="kpi-card__label">Total de compras</span>
             </div>
-            <p class="kpi-card__value">156</p>
+            <p class="kpi-card__value" id="kpiCompTotal">156</p>
             <div class="kpi-card__foot"><span class="kpi-card__unit">neste período</span></div>
           </div>
           <div class="kpi-card">
@@ -5930,7 +5881,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
               <span class="kpi-card__icon green"><span class="icon"><svg><use href="#i-dollar"/></svg></span></span>
               <span class="kpi-card__label">Valor total</span>
             </div>
-            <p class="kpi-card__value">R$ 284.560,90</p>
+            <p class="kpi-card__value" id="kpiCompValorTotal">R$ 284.560,90</p>
             <div class="kpi-card__foot"><span class="kpi-card__foot-delta up"><span class="icon"><svg><use href="#i-trending-up"/></svg></span>+12% <span>em relação ao período anterior</span></span></div>
           </div>
           <div class="kpi-card">
@@ -5938,7 +5889,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
               <span class="kpi-card__icon orange"><span class="icon"><svg><use href="#i-truck"/></svg></span></span>
               <span class="kpi-card__label">Em andamento</span>
             </div>
-            <p class="kpi-card__value">23</p>
+            <p class="kpi-card__value" id="kpiCompAndamento">23</p>
             <div class="kpi-card__foot"><span class="kpi-card__unit">aguardando entrega</span></div>
           </div>
           <div class="kpi-card">
@@ -5946,7 +5897,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
               <span class="kpi-card__icon blue"><span class="icon"><svg><use href="#i-check"/></svg></span></span>
               <span class="kpi-card__label">Recebidas</span>
             </div>
-            <p class="kpi-card__value">118</p>
+            <p class="kpi-card__value" id="kpiCompRecebidas">118</p>
             <div class="kpi-card__foot"><span class="kpi-card__unit">65,4% do total</span></div>
           </div>
           <div class="kpi-card">
@@ -5954,7 +5905,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
               <span class="kpi-card__icon" style="background:linear-gradient(135deg,#e5484d,#ef7478);"><span class="icon"><svg><use href="#i-x-circle"/></svg></span></span>
               <span class="kpi-card__label">Canceladas</span>
             </div>
-            <p class="kpi-card__value">15</p>
+            <p class="kpi-card__value" id="kpiCompCanceladas">15</p>
             <div class="kpi-card__foot"><span class="kpi-card__unit">9,6% do total</span></div>
           </div>
         </section>
@@ -6277,7 +6228,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
               <span class="kpi-card__icon green"><span class="icon"><svg><use href="#i-box"/></svg></span></span>
               <span class="kpi-card__label">Total de recebimentos</span>
             </div>
-            <p class="kpi-card__value">118</p>
+            <p class="kpi-card__value" id="kpiRecTotal">118</p>
             <div class="kpi-card__foot"><span class="kpi-card__unit">neste mês</span></div>
           </div>
           <div class="kpi-card">
@@ -6285,7 +6236,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
               <span class="kpi-card__icon blue"><span class="icon"><svg><use href="#i-truck"/></svg></span></span>
               <span class="kpi-card__label">Recebidos</span>
             </div>
-            <p class="kpi-card__value">101</p>
+            <p class="kpi-card__value" id="kpiRecRecebidos">101</p>
             <div class="kpi-card__foot"><span class="kpi-card__unit">85,6% do total</span></div>
           </div>
           <div class="kpi-card">
@@ -6293,7 +6244,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
               <span class="kpi-card__icon orange"><span class="icon"><svg><use href="#i-clock"/></svg></span></span>
               <span class="kpi-card__label">Pendentes</span>
             </div>
-            <p class="kpi-card__value">12</p>
+            <p class="kpi-card__value" id="kpiRecPendentes">12</p>
             <div class="kpi-card__foot"><span class="kpi-card__unit">10,2% do total</span></div>
           </div>
           <div class="kpi-card">
@@ -6301,7 +6252,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
               <span class="kpi-card__icon purple"><span class="icon"><svg><use href="#i-box"/></svg></span></span>
               <span class="kpi-card__label">Com divergência</span>
             </div>
-            <p class="kpi-card__value">5</p>
+            <p class="kpi-card__value" id="kpiRecDivergencia">5</p>
             <div class="kpi-card__foot"><span class="kpi-card__unit">4,2% do total</span></div>
           </div>
           <div class="kpi-card">
@@ -6309,7 +6260,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
               <span class="kpi-card__icon" style="background:linear-gradient(135deg,#e5484d,#ef7478);"><span class="icon"><svg><use href="#i-x-circle"/></svg></span></span>
               <span class="kpi-card__label">Atrasados</span>
             </div>
-            <p class="kpi-card__value">3</p>
+            <p class="kpi-card__value" id="kpiRecAtrasados">3</p>
             <div class="kpi-card__foot"><span class="kpi-card__unit">aguardando fornecedor</span></div>
           </div>
         </section>
@@ -6628,7 +6579,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
               <span class="kpi-card__icon blue"><span class="icon"><svg><use href="#i-truck"/></svg></span></span>
               <span class="kpi-card__label">Total de entregas</span>
             </div>
-            <p class="kpi-card__value">98</p>
+            <p class="kpi-card__value" id="kpiEntTotal">98</p>
             <div class="kpi-card__foot"><span class="kpi-card__unit">neste mês</span></div>
           </div>
           <div class="kpi-card">
@@ -6636,7 +6587,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
               <span class="kpi-card__icon green"><span class="icon"><svg><use href="#i-check"/></svg></span></span>
               <span class="kpi-card__label">Entregues</span>
             </div>
-            <p class="kpi-card__value">72</p>
+            <p class="kpi-card__value" id="kpiEntEntregues">72</p>
             <div class="kpi-card__foot"><span class="kpi-card__unit">73,5% do total</span></div>
           </div>
           <div class="kpi-card">
@@ -6644,7 +6595,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
               <span class="kpi-card__icon orange"><span class="icon"><svg><use href="#i-clock"/></svg></span></span>
               <span class="kpi-card__label">Em rota</span>
             </div>
-            <p class="kpi-card__value">14</p>
+            <p class="kpi-card__value" id="kpiEntEmRota">14</p>
             <div class="kpi-card__foot"><span class="kpi-card__unit">14,3% do total</span></div>
           </div>
           <div class="kpi-card">
@@ -6652,7 +6603,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
               <span class="kpi-card__icon purple"><span class="icon"><svg><use href="#i-box"/></svg></span></span>
               <span class="kpi-card__label">Pendentes</span>
             </div>
-            <p class="kpi-card__value">8</p>
+            <p class="kpi-card__value" id="kpiEntPendentes">8</p>
             <div class="kpi-card__foot"><span class="kpi-card__unit">8,2% do total</span></div>
           </div>
           <div class="kpi-card">
@@ -6660,7 +6611,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
               <span class="kpi-card__icon" style="background:linear-gradient(135deg,#e5484d,#ef7478);"><span class="icon"><svg><use href="#i-x-circle"/></svg></span></span>
               <span class="kpi-card__label">Canceladas</span>
             </div>
-            <p class="kpi-card__value">4</p>
+            <p class="kpi-card__value" id="kpiEntCanceladas">4</p>
             <div class="kpi-card__foot"><span class="kpi-card__unit">4,0% do total</span></div>
           </div>
         </section>
@@ -7253,7 +7204,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
               <span class="kpi-card__icon blue"><span class="icon"><svg><use href="#i-bell"/></svg></span></span>
               <span class="kpi-card__label">Total de notificações</span>
             </div>
-            <p class="kpi-card__value">48</p>
+            <p class="kpi-card__value" id="kpiNotifTotal">48</p>
             <div class="kpi-card__foot"><span class="kpi-card__unit">neste mês</span></div>
           </div>
           <div class="kpi-card">
@@ -7261,7 +7212,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
               <span class="kpi-card__icon green"><span class="icon"><svg><use href="#i-check-circle"/></svg></span></span>
               <span class="kpi-card__label">Não lidas</span>
             </div>
-            <p class="kpi-card__value">12</p>
+            <p class="kpi-card__value" id="kpiNotifNaoLidas">12</p>
             <div class="kpi-card__foot"><span class="kpi-card__unit">novas notificações</span></div>
           </div>
           <div class="kpi-card">
@@ -7269,7 +7220,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
               <span class="kpi-card__icon orange"><span class="icon"><svg><use href="#i-clock"/></svg></span></span>
               <span class="kpi-card__label">Urgentes</span>
             </div>
-            <p class="kpi-card__value">5</p>
+            <p class="kpi-card__value" id="kpiNotifUrgentes">5</p>
             <div class="kpi-card__foot"><span class="kpi-card__unit">requerem atenção</span></div>
           </div>
           <div class="kpi-card">
@@ -7277,22 +7228,18 @@ html, body{ overflow-x:hidden; max-width:100%; }
               <span class="kpi-card__icon purple"><span class="icon"><svg><use href="#i-megaphone"/></svg></span></span>
               <span class="kpi-card__label">Informativas</span>
             </div>
-            <p class="kpi-card__value">31</p>
+            <p class="kpi-card__value" id="kpiNotifInformativas">31</p>
             <div class="kpi-card__foot"><span class="kpi-card__unit">atualizações do sistema</span></div>
           </div>
         </section>
 
         <!-- Filtro por categoria -->
         <div class="wa-conv-filters" style="padding:0 0 14px; border-bottom:none;">
-          <button class="wa-filter-chip is-active" type="button">Todas (48)</button>
-          <button class="wa-filter-chip" type="button">Não lidas (12)</button>
-          <button class="wa-filter-chip" type="button">Urgentes (5)</button>
-          <button class="wa-filter-chip" type="button">Vendas (8)</button>
-          <button class="wa-filter-chip" type="button">Estoque (10)</button>
-          <button class="wa-filter-chip" type="button">Compras (6)</button>
-          <button class="wa-filter-chip" type="button">Entregas (7)</button>
-          <button class="wa-filter-chip" type="button">Financeiro (4)</button>
-          <button class="wa-filter-chip" type="button">Sistema (13)</button>
+          <button class="wa-filter-chip is-active" type="button" id="chipNotifTodas">Todas (0)</button>
+          <button class="wa-filter-chip" type="button" id="chipNotifNaoLidas">Não lidas (0)</button>
+          <button class="wa-filter-chip" type="button" id="chipNotifUrgentes">Urgentes (0)</button>
+          <button class="wa-filter-chip" type="button" id="chipNotifEstoque">Estoque (0)</button>
+          <button class="wa-filter-chip" type="button" id="chipNotifSistema">Sistema (0)</button>
         </div>
 
         <!-- Filtros -->
@@ -7584,7 +7531,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
               <span class="kpi-card__icon purple"><span class="icon"><svg><use href="#i-users"/></svg></span></span>
               <span class="kpi-card__label">Total de usuários</span>
             </div>
-            <p class="kpi-card__value">8</p>
+            <p class="kpi-card__value" id="kpiUsrTotal">8</p>
             <div class="kpi-card__foot"><span class="kpi-card__unit">no sistema</span></div>
           </div>
           <div class="kpi-card">
@@ -7592,7 +7539,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
               <span class="kpi-card__icon green"><span class="icon"><svg><use href="#i-user"/></svg></span></span>
               <span class="kpi-card__label">Usuários ativos</span>
             </div>
-            <p class="kpi-card__value">6</p>
+            <p class="kpi-card__value" id="kpiUsrAtivos">6</p>
             <div class="kpi-card__foot"><span class="kpi-card__unit">75% do total</span></div>
           </div>
           <div class="kpi-card">
@@ -7600,7 +7547,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
               <span class="kpi-card__icon orange"><span class="icon"><svg><use href="#i-clock"/></svg></span></span>
               <span class="kpi-card__label">Usuários inativos</span>
             </div>
-            <p class="kpi-card__value">2</p>
+            <p class="kpi-card__value" id="kpiUsrInativos">2</p>
             <div class="kpi-card__foot"><span class="kpi-card__unit">25% do total</span></div>
           </div>
           <div class="kpi-card">
@@ -7608,7 +7555,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
               <span class="kpi-card__icon blue"><span class="icon"><svg><use href="#i-shield"/></svg></span></span>
               <span class="kpi-card__label">Administradores</span>
             </div>
-            <p class="kpi-card__value">2</p>
+            <p class="kpi-card__value" id="kpiUsrAdmins">2</p>
             <div class="kpi-card__foot"><span class="kpi-card__unit">25% do total</span></div>
           </div>
         </section>
@@ -8954,6 +8901,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
   };
 
   var STATE = { loja: null, user: null };
+  var NOTIF_CHIP = 'Todas';
 
   /* ---- IndexedDB ---- */
   var _dbPromise = null;
@@ -9111,6 +9059,9 @@ html, body{ overflow-x:hidden; max-width:100%; }
     sel.innerHTML = '<option>' + esc(placeholder) + '</option>' + uniq.map(function (v) { return '<option' + (v === atual ? ' selected' : '') + '>' + esc(v) + '</option>'; }).join('');
     if (uniq.indexOf(atual) === -1) sel.value = placeholder;
   }
+  /* Preenche um número de KPI real no lugar do número de exemplo fixo do
+     mockup (cada tela tem seus próprios cartões no topo). */
+  function setKpi(id, valor) { var el = document.getElementById(id); if (el) el.textContent = valor; }
   /* Filtro de período usado em telas como Notificações / Central de
      Demandas / Cliente Pediu e Não Tem (selects de "Últimos 7 dias" etc). */
   function dataNoPeriodo(iso, periodoLabel) {
@@ -9540,6 +9491,23 @@ html, body{ overflow-x:hidden; max-width:100%; }
     syncFilterOptions('filtroCategoriaEstoque', 'Todas', nomesCategorias);
     syncFilterOptions('filtroFornecedorEstoque', 'Todos', nomesFornecedores);
 
+    var baixoCount = produtos.filter(function (p) { return calcularStatusEstoque(Number(p.estoque_atual || 0), Number(p.estoque_minimo || 0)) === 'low'; }).length;
+    var semEstoqueCount = produtos.filter(function (p) { return calcularStatusEstoque(Number(p.estoque_atual || 0), Number(p.estoque_minimo || 0)) === 'out'; }).length;
+    var emEstoqueCount = produtos.filter(function (p) { return Number(p.estoque_atual || 0) > 0; }).length;
+    setKpi('kpiProdTotal', produtos.length);
+    setKpi('kpiProdEmEstoque', emEstoqueCount);
+    setKpi('kpiProdBaixo', baixoCount);
+    setKpi('kpiProdSemEstoque', semEstoqueCount);
+    var ha30 = new Date(Date.now() - 30 * 86400000);
+    var entradas30 = movs.filter(function (m) { return m.tipo === 'entrada' && new Date(m.criado_em) >= ha30; }).reduce(function (s, m) { return s + Number(m.quantidade || 0); }, 0);
+    var saidas30 = movs.filter(function (m) { return m.tipo === 'saida' && new Date(m.criado_em) >= ha30; }).reduce(function (s, m) { return s + Number(m.quantidade || 0); }, 0);
+    var totalEstoque = produtos.reduce(function (s, p) { return s + Number(p.estoque_atual || 0); }, 0);
+    setKpi('kpiEstTotalEstoque', totalEstoque.toLocaleString('pt-BR'));
+    setKpi('kpiEstEntradas30', entradas30.toLocaleString('pt-BR'));
+    setKpi('kpiEstSaidas30', saidas30.toLocaleString('pt-BR'));
+    setKpi('kpiEstBaixo', baixoCount);
+    setKpi('kpiEstSemEstoque', semEstoqueCount);
+
     if (tbody) {
       var busca = valOf('produtosSearchInput'), catF = valOf('filtroCategoria'), statusF = valOf('filtroStatus'), ordF = valOf('filtroOrdenar');
       var lista = produtos.filter(function (p) {
@@ -9676,6 +9644,13 @@ html, body{ overflow-x:hidden; max-width:100%; }
     });
     syncFilterOptions('filtroCidadeCliente', 'Todas', clientes.map(function (c) { return c.cidade; }));
     syncFilterOptions('filtroClienteHistorico', 'Todos', clientes.map(function (c) { return c.nome; }));
+    var agora = new Date();
+    var novosMes = clientes.filter(function (c) { var d = new Date(c.criado_em); return d.getFullYear() === agora.getFullYear() && d.getMonth() === agora.getMonth(); }).length;
+    setKpi('kpiCliTotal', clientes.length);
+    setKpi('kpiCliNovosMes', novosMes);
+    setKpi('kpiCliAtivos', clientes.filter(function (c) { return c.status === 'ativo'; }).length);
+    setKpi('kpiCliVIP', 0);
+    setKpi('kpiCliInadimplentes', 0);
     if (!clientes.length) { tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;padding:24px;color:var(--text-tertiary);">Nenhum cliente cadastrado ainda.</td></tr>'; return; }
     var busca = valOf('clientesSearchInput'), tipoF = valOf('filtroTipoCliente'), statusF = valOf('filtroStatusCliente'), cidadeF = valOf('filtroCidadeCliente');
     var lista = clientes.filter(function (c) {
@@ -9766,6 +9741,14 @@ html, body{ overflow-x:hidden; max-width:100%; }
     var vendas = (await idbAll('vendas')).sort(function (a, b) { return new Date(b.criado_em) - new Date(a.criado_em); });
     var clientes = await idbAll('clientes');
     var cliMap = {}; clientes.forEach(function (c) { cliMap[c.id] = c.nome; });
+    var faturamento = vendas.reduce(function (s, v) { return s + Number(v.total || 0); }, 0);
+    var itensVendidos = vendas.reduce(function (s, v) { return s + (v.itens || []).reduce(function (s2, it) { return s2 + Number(it.qtd || 0); }, 0); }, 0);
+    var clientesAtendidos = {}; vendas.forEach(function (v) { if (v.cliente_id) clientesAtendidos[v.cliente_id] = true; });
+    setKpi('kpiVendTotal', vendas.length);
+    setKpi('kpiVendFaturamento', fmtBRL(faturamento));
+    setKpi('kpiVendTicketMedio', fmtBRL(vendas.length ? faturamento / vendas.length : 0));
+    setKpi('kpiVendProdutosVendidos', itensVendidos);
+    setKpi('kpiVendClientesAtendidos', Object.keys(clientesAtendidos).length);
     if (!vendas.length) { tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:24px;color:var(--text-tertiary);">Nenhuma venda registrada ainda.</td></tr>'; return; }
     var busca = valOf('vendasSearchInput'), statusF = valOf('filtroStatusVenda');
     var lista = vendas.filter(function (v) {
@@ -9904,6 +9887,10 @@ html, body{ overflow-x:hidden; max-width:100%; }
     var tbody = document.getElementById('usuariosTbody');
     if (!tbody) return;
     var usuarios = await idbAll('usuarios');
+    setKpi('kpiUsrTotal', usuarios.length);
+    setKpi('kpiUsrAtivos', usuarios.filter(function(u){ return u.status === 'ativo'; }).length);
+    setKpi('kpiUsrInativos', usuarios.filter(function(u){ return u.status !== 'ativo'; }).length);
+    setKpi('kpiUsrAdmins', usuarios.filter(function(u){ return u.papel === 'administrador'; }).length);
     if (!usuarios.length) { tbody.innerHTML = '<tr><td colspan="8"></td></tr>'; return; }
     var busca = valOf('usuariosSearchInput'), perfilF = valOf('filtroPerfilUsuario'), statusF = valOf('filtroStatusUsuario');
     var lista = usuarios.filter(function(u){
@@ -9992,6 +9979,62 @@ html, body{ overflow-x:hidden; max-width:100%; }
     setText('kpiClientesTotal', String(clientes.length));
     await renderNotificacoes();
     await renderPaineisAtencao();
+    await renderGraficoEAtividades();
+  }
+
+  /* Gráfico "Vendas dos últimos 7 dias" e painel "Atividades recentes" do
+     Dashboard -- também vinham com dados de exemplo fixos do mockup. */
+  var ICONE_ACAO_LOG = {
+    venda_registrada: { icon: 'i-cart', cor: 'green' }, produto_criado: { icon: 'i-box', cor: 'blue' }, produto_editado: { icon: 'i-box', cor: 'blue' }, produto_excluido: { icon: 'i-box', cor: 'gray' },
+    cliente_criado: { icon: 'i-user-plus', cor: 'orange' }, cliente_editado: { icon: 'i-user-plus', cor: 'orange' }, orcamento_criado: { icon: 'i-file', cor: 'indigo' }, orcamento_aprovado: { icon: 'i-file', cor: 'green' },
+    movimentacao_estoque: { icon: 'i-archive', cor: 'gray' }, recebimento_registrado: { icon: 'i-archive', cor: 'blue' }, lista_compra_gerada: { icon: 'i-archive', cor: 'blue' },
+    compra_registrada: { icon: 'i-cart', cor: 'indigo' }, categoria_criada: { icon: 'i-archive', cor: 'gray' }, categoria_editada: { icon: 'i-archive', cor: 'gray' },
+    fornecedor_criado: { icon: 'i-users', cor: 'orange' }, fornecedor_editado: { icon: 'i-users', cor: 'orange' }, entrega_criada: { icon: 'i-truck', cor: 'blue' }, entrega_editada: { icon: 'i-truck', cor: 'blue' },
+    demanda_criada: { icon: 'i-clipboard', cor: 'orange' }, demanda_atualizada: { icon: 'i-clipboard', cor: 'blue' }, login: { icon: 'i-users', cor: 'gray' }, usuario_criado: { icon: 'i-user-plus', cor: 'orange' },
+    configuracoes_salvas: { icon: 'i-gear', cor: 'gray' }, backup_exportado: { icon: 'i-cloud', cor: 'blue' }
+  };
+  async function renderGraficoEAtividades(){
+    var barsEl = document.getElementById('dashChartBars');
+    if (!barsEl) return;
+    var vendas = await idbAll('vendas');
+    var DIAS = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+    var hoje = new Date(); hoje.setHours(0, 0, 0, 0);
+    var dias = [];
+    for (var i = 6; i >= 0; i--) {
+      var d = new Date(hoje.getTime() - i * 86400000);
+      dias.push({ data: d, label: DIAS[d.getDay()], total: 0 });
+    }
+    vendas.forEach(function(v){
+      var vd = new Date(v.criado_em); vd.setHours(0, 0, 0, 0);
+      dias.forEach(function(dia){ if (vd.getTime() === dia.data.getTime()) dia.total += Number(v.total || 0); });
+    });
+    var max = Math.max.apply(null, dias.map(function(dd){ return dd.total; }).concat([1]));
+    barsEl.innerHTML = dias.map(function(dd){
+      var altura = Math.round((dd.total / max) * 100);
+      if (dd.total > 0 && altura < 4) altura = 4;
+      return '<div class="chart-col"><div class="chart-bar" style="height:' + altura + '%;" title="' + fmtBRL(dd.total) + '"></div><span class="chart-col__label">' + dd.label + '</span></div>';
+    }).join('');
+    var yaxisEl = document.getElementById('dashChartYaxis');
+    if (yaxisEl) {
+      var passos = [max, max * 0.75, max * 0.5, max * 0.25, 0];
+      yaxisEl.innerHTML = passos.map(function(v){ return '<span>' + Math.round(v).toLocaleString('pt-BR') + '</span>'; }).join('');
+    }
+    var totalSemana = dias.reduce(function(s, dd){ return s + dd.total; }, 0);
+    var legendEl = document.getElementById('dashChartLegend');
+    if (legendEl) legendEl.innerHTML = '<strong>' + fmtBRL(totalSemana) + '</strong> vendidos nos últimos 7 dias';
+
+    var logs = (await idbAll('logs')).sort(function(a, b){ return new Date(b.data) - new Date(a.data); }).slice(0, 5);
+    var atvEl = document.getElementById('painelAtividadesRows');
+    if (atvEl) {
+      atvEl.innerHTML = logs.length ? logs.map(function(l){
+        var info = ICONE_ACAO_LOG[l.acao] || { icon: 'i-bell', cor: 'gray' };
+        return '<div class="activity-row">' +
+          '<span class="activity-row__icon ' + info.cor + '"><span class="icon"><svg><use href="#' + info.icon + '"/></svg></span></span>' +
+          '<span class="activity-row__body"><p class="activity-row__title">' + esc(l.acao.replace(/_/g, ' ')) + '</p><p class="activity-row__meta">' + esc(l.detalhes || '') + '</p></span>' +
+          '<span class="activity-row__time">' + fmtDateTime(l.data) + '</span>' +
+        '</div>';
+      }).join('') : '<p style="padding:16px 20px;font-size:13px;color:var(--text-tertiary);">Nenhuma atividade registrada ainda.</p>';
+    }
   }
 
   /* Painéis "Precisa de atenção / Estoque crítico / Precisa comprar /
@@ -10172,6 +10215,12 @@ html, body{ overflow-x:hidden; max-width:100%; }
     syncFilterOptions('filtroFornecedorCompra', 'Todos', nomes);
     syncFilterOptions('filtroFornecedorRecebimento', 'Todos', nomes);
     syncFilterOptions('filtroCidadeFornecedor', 'Todas', fornecedores.map(function(f){ return f.cidade; }));
+    var comCompra = {}; compras.forEach(function(c){ if (c.fornecedor_id) comCompra[c.fornecedor_id] = true; });
+    setKpi('kpiFornTotal', fornecedores.length);
+    setKpi('kpiFornAtivos', fornecedores.filter(function(f){ return f.status === 'ativo'; }).length);
+    setKpi('kpiFornNegociacao', fornecedores.filter(function(f){ return f.status === 'negociacao'; }).length);
+    setKpi('kpiFornPrincipais', Object.keys(comCompra).length);
+    setKpi('kpiFornInativos', fornecedores.filter(function(f){ return f.status === 'inativo'; }).length);
     if (!fornecedores.length) { tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;padding:24px;color:var(--text-tertiary);">Nenhum fornecedor cadastrado ainda.</td></tr>'; return; }
     var busca = valOf('fornecedoresSearchInput'), catF = valOf('filtroCategoriaFornecedor'), statusF = valOf('filtroStatusFornecedor'), cidadeF = valOf('filtroCidadeFornecedor');
     var statusLabel = { ativo: 'Ativo', inativo: 'Inativo', negociacao: 'Em Negociação' };
@@ -10219,7 +10268,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
       await idbPut('fornecedores', obj);
       await logAction(f.id ? 'fornecedor_editado' : 'fornecedor_criado', obj.nome);
       closeFormModal(); toast('Fornecedor salvo.');
-      await renderFornecedores();
+      await renderFornecedores(); await renderDashboard();
     });
   }
   document.addEventListener('click', async function(e){
@@ -10259,6 +10308,11 @@ html, body{ overflow-x:hidden; max-width:100%; }
     var compras = (await idbAll('compras')).sort(function(a,b){ return new Date(b.criado_em)-new Date(a.criado_em); });
     var fornecedores = await idbAll('fornecedores');
     var fMap = {}; fornecedores.forEach(function(f){ fMap[f.id] = f.nome; });
+    setKpi('kpiCompTotal', compras.length);
+    setKpi('kpiCompValorTotal', fmtBRL(compras.reduce(function(s,c){ return s + Number(c.total||0); }, 0)));
+    setKpi('kpiCompAndamento', compras.filter(function(c){ return c.status !== 'Recebida' && c.status !== 'Cancelada'; }).length);
+    setKpi('kpiCompRecebidas', compras.filter(function(c){ return c.status === 'Recebida'; }).length);
+    setKpi('kpiCompCanceladas', compras.filter(function(c){ return c.status === 'Cancelada'; }).length);
     if (!compras.length) { tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;padding:24px;color:var(--text-tertiary);">Nenhuma compra registrada ainda.</td></tr>'; return; }
     var busca = valOf('comprasSearchInput'), fornF = valOf('filtroFornecedorCompra'), statusF = valOf('filtroStatusCompra');
     var lista = compras.filter(function(c){
@@ -10277,6 +10331,11 @@ html, body{ overflow-x:hidden; max-width:100%; }
     var recs = (await idbAll('recebimentos')).sort(function(a,b){ return new Date(b.criado_em)-new Date(a.criado_em); });
     var fornecedores = await idbAll('fornecedores');
     var fMap = {}; fornecedores.forEach(function(f){ fMap[f.id] = f.nome; });
+    setKpi('kpiRecTotal', recs.length);
+    setKpi('kpiRecRecebidos', recs.length);
+    setKpi('kpiRecPendentes', 0);
+    setKpi('kpiRecDivergencia', 0);
+    setKpi('kpiRecAtrasados', 0);
     var busca = valOf('recebimentoSearchInput'), fornF = valOf('filtroFornecedorRecebimento'), statusF = valOf('filtroStatusRecebimento');
     recs = recs.filter(function(r){
       if (!bateBusca(['#' + r.numero, '#' + r.compra_numero, fMap[r.fornecedor_id] || '', r.conferido_por || ''], busca)) return false;
@@ -10525,6 +10584,11 @@ html, body{ overflow-x:hidden; max-width:100%; }
     var orcamentos = (await idbAll('orcamentos')).sort(function(a,b){ return new Date(b.criado_em)-new Date(a.criado_em); });
     var clientes = await idbAll('clientes');
     var cMap = {}; clientes.forEach(function(c){ cMap[c.id] = c.nome; });
+    setKpi('kpiOrcTotal', orcamentos.length);
+    setKpi('kpiOrcValorTotal', fmtBRL(orcamentos.reduce(function(s,o){ return s + Number(o.total||0); }, 0)));
+    setKpi('kpiOrcAprovados', orcamentos.filter(function(o){ return o.status === 'Aprovado'; }).length);
+    setKpi('kpiOrcRecusados', orcamentos.filter(function(o){ return o.status === 'Recusado'; }).length);
+    setKpi('kpiOrcPendentes', orcamentos.filter(function(o){ return o.status === 'Pendente'; }).length);
     if (!orcamentos.length) { tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:24px;color:var(--text-tertiary);">Nenhum orçamento registrado ainda.</td></tr>'; return; }
     var busca = valOf('orcamentosSearchInput'), statusF = valOf('filtroStatusOrcamento');
     var lista = orcamentos.filter(function(o){
@@ -10594,7 +10658,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
       await idbPut('orcamentos', orc);
       await logAction('orcamento_criado', 'Orçamento #' + orc.numero);
       closeFormModal(); toast('Orçamento salvo.');
-      await renderOrcamentos();
+      await renderOrcamentos(); await renderDashboard();
     });
   }
   document.addEventListener('click', async function(e){
@@ -10652,6 +10716,21 @@ html, body{ overflow-x:hidden; max-width:100%; }
     var categoriasUsadas = demandas.map(function(d){ return d.categoria; });
     syncFilterOptions('filtroCategoriaDemanda', 'Todas', categoriasUsadas);
     syncFilterOptions('filtroCategoriaCentral', 'Todas', categoriasUsadas);
+    var demPendentes = demandas.filter(function(d){ return d.status === 'Pendente'; }).length;
+    var demAndamento = demandas.filter(function(d){ return d.status === 'Em Andamento'; }).length;
+    var demCotacao = demandas.filter(function(d){ return d.status === 'Em Cotação'; }).length;
+    var demResolvidas = demandas.filter(function(d){ return d.status === 'Resolvida'; }).length;
+    var demCanceladas = demandas.filter(function(d){ return d.status === 'Cancelada'; }).length;
+    setKpi('kpiDCTotal', demandas.length);
+    setKpi('kpiDCPendentes', demPendentes);
+    setKpi('kpiDCEncontrados', demCotacao);
+    setKpi('kpiDCAvisar', demAndamento);
+    setKpi('kpiDCFinalizadas', demResolvidas);
+    setKpi('kpiCDTotal', demandas.length);
+    setKpi('kpiCDPendentes', demPendentes);
+    setKpi('kpiCDAndamento', demAndamento);
+    setKpi('kpiCDResolvidas', demResolvidas);
+    setKpi('kpiCDCanceladas', demCanceladas);
     var t1 = document.getElementById('demandaTbody');
     if (t1) {
       var busca1 = valOf('demandaSearchInput'), status1 = valOf('filtroStatusDemanda'), cat1 = valOf('filtroCategoriaDemanda'), periodo1 = valOf('filtroDataDemanda');
@@ -10709,7 +10788,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
       await idbPut('demandas', obj);
       await logAction('demanda_criada', obj.produto_solicitado);
       closeFormModal(); toast('Solicitação registrada.');
-      await renderDemandas();
+      await renderDemandas(); await renderDashboard();
     });
   }
   document.addEventListener('click', async function(e){
@@ -10723,7 +10802,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
         await idbPut('demandas', d);
         await logAction('demanda_atualizada', d.produto_solicitado + ' -> ' + d.status);
         toast('Status atualizado: ' + d.status);
-        await renderDemandas();
+        await renderDemandas(); await renderDashboard();
       }
       return;
     }
@@ -10764,6 +10843,11 @@ html, body{ overflow-x:hidden; max-width:100%; }
     var clientes = await idbAll('clientes');
     var cMap = {}; clientes.forEach(function(c){ cMap[c.id] = c.nome; });
     syncFilterOptions('filtroCidadeEntrega', 'Todas', entregas.map(function(en){ return en.cidade; }));
+    setKpi('kpiEntTotal', entregas.length);
+    setKpi('kpiEntEntregues', entregas.filter(function(en){ return en.status === 'Entregue'; }).length);
+    setKpi('kpiEntEmRota', entregas.filter(function(en){ return en.status === 'Em Rota'; }).length);
+    setKpi('kpiEntPendentes', entregas.filter(function(en){ return en.status === 'Pendente'; }).length);
+    setKpi('kpiEntCanceladas', entregas.filter(function(en){ return en.status === 'Cancelada'; }).length);
     if (!entregas.length) { tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;padding:24px;color:var(--text-tertiary);">Nenhuma entrega registrada ainda.</td></tr>'; return; }
     var busca = valOf('entregasSearchInput'), statusF = valOf('filtroStatusEntrega'), cidadeF = valOf('filtroCidadeEntrega'), tipoF = valOf('filtroTipoEntrega');
     var lista = entregas.filter(function(en){
@@ -10810,7 +10894,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
       await idbPut('entregas', obj);
       await logAction(en.id ? 'entrega_editada' : 'entrega_criada', obj.numero);
       closeFormModal(); toast('Entrega salva.');
-      await renderEntregas();
+      await renderEntregas(); await renderDashboard();
     });
   }
   document.addEventListener('click', async function(e){
@@ -10858,11 +10942,26 @@ html, body{ overflow-x:hidden; max-width:100%; }
       badge.textContent = naoLidas > 99 ? '99+' : String(naoLidas);
       badge.style.display = naoLidas > 0 ? '' : 'none';
     }
+    var urgentesCount = itens.filter(function(n){ return n.tipo === 'Estoque'; }).length;
+    var sistemaCount = itens.filter(function(n){ return n.tipo === 'Sistema'; }).length;
+    setKpi('kpiNotifTotal', itens.length);
+    setKpi('kpiNotifNaoLidas', naoLidas);
+    setKpi('kpiNotifUrgentes', urgentesCount);
+    setKpi('kpiNotifInformativas', sistemaCount);
+    setKpi('chipNotifTodas', 'Todas (' + itens.length + ')');
+    setKpi('chipNotifNaoLidas', 'Não lidas (' + naoLidas + ')');
+    setKpi('chipNotifUrgentes', 'Urgentes (' + urgentesCount + ')');
+    setKpi('chipNotifEstoque', 'Estoque (' + urgentesCount + ')');
+    setKpi('chipNotifSistema', 'Sistema (' + sistemaCount + ')');
     var busca = valOf('notifSearchInput'), tipoF = valOf('filtroTipoNotif'), periodoF = valOf('filtroPeriodoNotif');
     itens = itens.filter(function(n){
       if (!bateBusca([n.msg], busca)) return false;
       if (!isTodos(tipoF) && n.tipo !== tipoF) return false;
       if (!dataNoPeriodo(n.data, periodoF)) return false;
+      if (NOTIF_CHIP === 'Não lidas' && n.lida) return false;
+      if (NOTIF_CHIP === 'Urgentes' && n.tipo !== 'Estoque') return false;
+      if (NOTIF_CHIP === 'Estoque' && n.tipo !== 'Estoque') return false;
+      if (NOTIF_CHIP === 'Sistema' && n.tipo !== 'Sistema') return false;
       return true;
     });
     tbody.innerHTML = itens.length ? itens.slice(0,40).map(function(n){
@@ -11009,6 +11108,22 @@ html, body{ overflow-x:hidden; max-width:100%; }
     rewire('painelAtencaoVerTodos', function(){ irParaTela('Notificações'); });
     rewire('painelEstoqueCriticoVerTodos', function(){ irParaTela('Estoque Crítico'); });
     rewire('painelClientesPediramVerTodos', function(){ irParaTela('Cliente Pediu e Não Tem'); });
+    rewire('painelAtividadesVerTodas', function(){ irParaTela('Notificações'); });
+    [['chipNotifTodas','Todas'],['chipNotifNaoLidas','Não lidas'],['chipNotifUrgentes','Urgentes'],['chipNotifEstoque','Estoque'],['chipNotifSistema','Sistema']].forEach(function(par){
+      rewire(par[0], function(){
+        NOTIF_CHIP = par[1];
+        document.querySelectorAll('.wa-conv-filters .wa-filter-chip').forEach(function(c){ c.classList.remove('is-active'); });
+        var el = document.getElementById(par[0]); if (el) el.classList.add('is-active');
+        renderNotificacoes();
+      });
+    });
+    rewire('dashPeriodoBtn', function(){ toast('Mostrando as vendas dos últimos 7 dias.'); });
+    rewire('qaNovoProdutoBtn', function(){ produtoFormModal(null); });
+    rewire('qaNovaVendaBtn', function(){ vendaFormModal(); });
+    rewire('qaNovoClienteBtn', function(){ clienteFormModal(null); });
+    rewire('qaNovoOrcamentoBtn', function(){ orcamentoFormModal(); });
+    rewire('qaEntradaEstoqueBtn', function(){ movimentacaoFormModal(); });
+    rewire('qaRegistrarDemandaBtn', function(){ demandaFormModal(); });
     rewire('excluirLidasBtn', async function(){
       var lidas = {};
       try { lidas = JSON.parse(lsGet('construgestao_notif_lidas') || '{}'); } catch (e) {}
@@ -11077,6 +11192,20 @@ html, body{ overflow-x:hidden; max-width:100%; }
     syncFilterOptions('filtroCategoriaComprar', 'Todas', categorias.map(function(c){ return c.nome; }));
     syncFilterOptions('filtroCategoriaCritico', 'Todas', categorias.map(function(c){ return c.nome; }));
     var criticos = produtos.filter(function(p){ return calcularStatusEstoque(Number(p.estoque_atual||0), Number(p.estoque_minimo||0)) !== 'ok'; });
+    var outCount = produtos.filter(function(p){ return calcularStatusEstoque(Number(p.estoque_atual||0), Number(p.estoque_minimo||0)) === 'out'; }).length;
+    var lowCount = produtos.filter(function(p){ return calcularStatusEstoque(Number(p.estoque_atual||0), Number(p.estoque_minimo||0)) === 'low'; }).length;
+    var okCount = produtos.length - outCount - lowCount;
+    setKpi('kpiPCTotal', criticos.length);
+    setKpi('kpiPCCritico', lowCount);
+    setKpi('kpiPCSemEstoque', outCount);
+    var valorEstimado = criticos.reduce(function(s,p){ return s + calcularSugestaoReposicao(Number(p.estoque_atual||0), Number(p.estoque_ideal||0)) * Number(p.preco||0); }, 0);
+    setKpi('kpiPCValorEstimado', fmtBRL(valorEstimado));
+    var fornecedoresUnicos = {}; criticos.forEach(function(p){ if (p.fornecedor_id) fornecedoresUnicos[p.fornecedor_id] = true; });
+    setKpi('kpiPCFornecedores', Object.keys(fornecedoresUnicos).length);
+    setKpi('kpiECCriticos', outCount);
+    setKpi('kpiECEmRisco', lowCount);
+    setKpi('kpiECNormal', okCount);
+    setKpi('kpiECTotal', produtos.length);
 
     var criticoTbody = document.getElementById('criticoTbody');
     if (criticoTbody) {
@@ -11148,6 +11277,14 @@ html, body{ overflow-x:hidden; max-width:100%; }
     var clientes = await idbAll('clientes');
     var cMap = {}; clientes.forEach(function(c){ cMap[c.id] = c.nome; });
     syncFilterOptions('filtroPagamentoHistorico', 'Todas', vendas.map(function(v){ return v.forma_pagamento; }));
+    var histFaturamento = vendas.reduce(function(s,v){ return s + Number(v.total||0); }, 0);
+    var histItens = vendas.reduce(function(s,v){ return s + (v.itens||[]).reduce(function(s2,it){ return s2 + Number(it.qtd||0); }, 0); }, 0);
+    var histClientes = {}; vendas.forEach(function(v){ if (v.cliente_id) histClientes[v.cliente_id] = true; });
+    setKpi('kpiHistTotal', vendas.length);
+    setKpi('kpiHistFaturamento', fmtBRL(histFaturamento));
+    setKpi('kpiHistTicketMedio', fmtBRL(vendas.length ? histFaturamento / vendas.length : 0));
+    setKpi('kpiHistItens', histItens);
+    setKpi('kpiHistClientes', Object.keys(histClientes).length);
     var busca = valOf('historicoSearchInput'), cliF = valOf('filtroClienteHistorico'), pagF = valOf('filtroPagamentoHistorico'), statusF = valOf('filtroStatusHistorico');
     vendas = vendas.filter(function(v){
       var nome = cMap[v.cliente_id];
@@ -11179,6 +11316,15 @@ html, body{ overflow-x:hidden; max-width:100%; }
   document.addEventListener('click', function(e){
     if (e.target.closest('[data-view="Notificações"], [data-nav-target="Notificações"]')) {
       setTimeout(function(){ renderNotificacoes(); }, 50);
+    }
+  });
+  /* Dashboard também deriva de dados que mudam com qualquer ação no
+     sistema (vendas, estoque, demandas, compras...) -- sem isso, ele só
+     mostrava a foto de quando o app abriu, ficando desatualizado até
+     fechar e abrir de novo. */
+  document.addEventListener('click', function(e){
+    if (e.target.closest('[data-view="Dashboard"], [data-nav-target="Dashboard"]')) {
+      setTimeout(function(){ renderDashboard(); }, 50);
     }
   });
 
