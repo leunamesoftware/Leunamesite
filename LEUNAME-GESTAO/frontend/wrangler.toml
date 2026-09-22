@@ -1,0 +1,20 @@
+name = "leuname-gestao-app"
+compatibility_date = "2026-09-19"
+
+# Publica o app LeuName Gestão (SITE estático, mesmo padrão do
+# ConstruGestão e dos sites leunamesoftware.com/.com.br) como um Worker
+# de "static assets" na Cloudflare. É um app local-first (banco de dados
+# no próprio dispositivo, IndexedDB) — este Worker só serve os arquivos,
+# não tem backend próprio: login, licença e sincronização entre
+# dispositivos usam o MESMO servidor de licenças já existente
+# (PROJETO/servidor-licencas-cloudflare), com app_id="leuname-gestao".
+[assets]
+directory = "./"
+
+# Domínio customizado: subdomínio do leunamesoftware.com.br (mesmo
+# domínio já ativo na Cloudflare usado pelo ConstruGestão) -- assim o
+# link entregue ao cliente final não expõe o nome da conta pessoal
+# (*.workers.dev).
+[[routes]]
+pattern = "gestao.leunamesoftware.com.br"
+custom_domain = true
