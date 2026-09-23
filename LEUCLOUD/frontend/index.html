@@ -621,6 +621,11 @@ async function processarCompartilhamentoPendente() {
   renderBannerCompartilhado();
   if (arquivosCompartilhadosPendentes.length) {
     mostrarToast(arquivosCompartilhadosPendentes.length + ' arquivo(s) recebido(s). Escolha a pasta e toque em "Enviar aqui".');
+  } else {
+    // Chegou aqui pelo redirecionamento do compartilhamento, mas o
+    // cache do Service Worker estava vazio -- avisa em vez de ficar
+    // em silencio, pra dar pra saber que algo tentou e nao achou nada.
+    mostrarToast('Recebemos o pedido de compartilhamento, mas não achamos o arquivo. Tente compartilhar de novo.', true);
   }
 }
 
@@ -783,6 +788,12 @@ function renderListaArquivos(pastas, arquivos) {
 function abrirPasta(id, nome) {
   pilhaPastas.push({ id: id, name: nome });
   mostrarTela('arquivos');
+  if (arquivosCompartilhadosPendentes.length) {
+    var qtd = arquivosCompartilhadosPendentes.length;
+    if (confirm('Enviar ' + qtd + ' arquivo(s) recebido(s) pra dentro de "' + nome + '"?')) {
+      confirmarUploadCompartilhado();
+    }
+  }
 }
 
 async function criarPasta() {
@@ -1069,7 +1080,7 @@ async function trocarSenha() {
    cache) de vez em quando e compara o APP_BUILD_ID; se for diferente
    do que já está rodando na tela, recarrega sozinho -- assim ninguém
    precisa desinstalar/reinstalar o atalho pra ver uma correção nova. */
-var APP_BUILD_ID = 'BUILD-2026-09-23-02';
+var APP_BUILD_ID = 'BUILD-2026-09-23-03';
 var jaRecarregouLeuCloud = false;
 function verificarVersaoNovaLeuCloud() {
   if (jaRecarregouLeuCloud) return;
