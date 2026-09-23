@@ -332,22 +332,31 @@ export default {
       return json({ ok: true, folder: { id, name: nome, parent_id: parentId } });
     }
 
-    // GET /folders/:id  (":id" = "root" para a raiz) -- lista subpastas e arquivos
+    // GET /folders/:id  (":id" = "root" para a raiz) -- lista subpastas e arquivos.
+    // Tambem atende quem recebeu essa pasta por compartilhamento direto
+    // (share_recipients), mesmo que a pasta pertenca a outra conta --
+    // resolverAcessoPasta sobe a arvore de pais procurando um convite.
     m = pathname.match(/^\/folders\/([^/]+)$/);
     if (m && method === 'GET') {
       if (!auth) return json({ ok: false, erro: 'nao_autenticado' }, 401);
       const folderId = m[1] === 'root' ? null : m[1];
+      let ownerId = auth.user.id;
+      if (folderId !== null) {
+        const acesso = await resolverAcessoPasta(env, folderId, auth.user.id);
+        if (!acesso) return json({ ok: false, erro: 'nao_encontrada' }, 404);
+        ownerId = acesso.ownerId;
+      }
       const subpastas = await env.DB.prepare(
         `SELECT id, name, is_favorite, sort_order, created_at, updated_at FROM folders
          WHERE user_id = ? AND is_deleted = 0 AND (parent_id = ? OR (parent_id IS NULL AND ? IS NULL))
          ORDER BY sort_order, name COLLATE NOCASE`
-      ).bind(auth.user.id, folderId, folderId).all();
+      ).bind(ownerId, folderId, folderId).all();
       const arquivos = await env.DB.prepare(
         `SELECT id, name, mime_type, size_bytes, category, is_favorite, sort_order, created_at, updated_at FROM files
          WHERE user_id = ? AND is_deleted = 0 AND (folder_id = ? OR (folder_id IS NULL AND ? IS NULL))
          ORDER BY sort_order, name COLLATE NOCASE`
-      ).bind(auth.user.id, folderId, folderId).all();
-      return json({ ok: true, folders: subpastas.results, files: arquivos.results });
+      ).bind(ownerId, folderId, folderId).all();
+      return json({ ok: true, folders: subpastas.results, files: arquivos.results, compartilhada_por_outro: ownerId !== auth.user.id });
     }
 
     if (m && method === 'PATCH') {
@@ -439,7 +448,8 @@ export default {
     m = pathname.match(/^\/files\/([^/]+)\/download$/);
     if (m && method === 'GET') {
       if (!auth) return json({ ok: false, erro: 'nao_autenticado' }, 401);
-      const arq = await env.DB.prepare('SELECT * FROM files WHERE id = ? AND user_id = ? AND is_deleted = 0').bind(m[1], auth.user.id).first();
+      let arq = await env.DB.prepare('SELECT * FROM files WHERE id = ? AND user_id = ? AND is_deleted = 0').bind(m[1], auth.user.id).first();
+      if (!arq) arq = await arquivoViaCompartilhamento(env, m[1], auth.user.id);
       if (!arq) return json({ ok: false, erro: 'nao_encontrado' }, 404);
       const objeto = await env.ARQUIVOS.get(arq.r2_key);
       if (!objeto) return json({ ok: false, erro: 'arquivo_perdido_no_armazenamento' }, 500);
@@ -564,6 +574,288 @@ export default {
       await env.DB.prepare('UPDATE sessions SET revoked_at = ? WHERE device_id = ? AND user_id = ? AND revoked_at IS NULL')
         .bind(nowIso(), m[1], auth.user.id).run();
       return json({ ok: true });
+    }
+
+    // ==================== FAVORITOS / BUSCA / FOTOS ====================
+
+    if (pathname === '/favoritos' && method === 'GET') {
+      if (!auth) return json({ ok: false, erro: 'nao_autenticado' }, 401);
+      const pastas = await env.DB.prepare(
+        'SELECT id, name, created_at, updated_at FROM folders WHERE user_id = ? AND is_deleted = 0 AND is_favorite = 1 ORDER BY name COLLATE NOCASE'
+      ).bind(auth.user.id).all();
+      const arquivos = await env.DB.prepare(
+        'SELECT id, name, mime_type, size_bytes, category, created_at, updated_at FROM files WHERE user_id = ? AND is_deleted = 0 AND is_favorite = 1 ORDER BY name COLLATE NOCASE'
+      ).bind(auth.user.id).all();
+      return json({ ok: true, folders: pastas.results, files: arquivos.results });
+    }
+
+    if (pathname === '/busca' && method === 'GET') {
+      if (!auth) return json({ ok: false, erro: 'nao_autenticado' }, 401);
+      const termo = new URL(request.url).searchParams.get('q') || '';
+      const q = `%${termo}%`;
+      const pastas = await env.DB.prepare(
+        'SELECT id, name, created_at FROM folders WHERE user_id = ? AND is_deleted = 0 AND name LIKE ? ORDER BY name COLLATE NOCASE LIMIT 50'
+      ).bind(auth.user.id, q).all();
+      const arquivos = await env.DB.prepare(
+        'SELECT id, name, mime_type, size_bytes, category, folder_id, created_at FROM files WHERE user_id = ? AND is_deleted = 0 AND name LIKE ? ORDER BY name COLLATE NOCASE LIMIT 50'
+      ).bind(auth.user.id, q).all();
+      return json({ ok: true, folders: pastas.results, files: arquivos.results });
+    }
+
+    if (pathname === '/fotos' && method === 'GET') {
+      if (!auth) return json({ ok: false, erro: 'nao_autenticado' }, 401);
+      const { results } = await env.DB.prepare(
+        `SELECT id, name, mime_type, size_bytes, category, created_at FROM files
+         WHERE user_id = ? AND is_deleted = 0 AND category IN ('foto', 'video')
+         ORDER BY created_at DESC LIMIT 500`
+      ).bind(auth.user.id).all();
+      return json({ ok: true, files: results });
+    }
+
+    // ==================== ALBUNS ====================
+
+    if (pathname === '/albuns' && method === 'GET') {
+      if (!auth) return json({ ok: false, erro: 'nao_autenticado' }, 401);
+      const { results } = await env.DB.prepare(
+        `SELECT a.id, a.name, a.created_at, a.cover_file_id,
+                (SELECT COUNT(*) FROM album_items ai WHERE ai.album_id = a.id) AS quantidade
+         FROM albums a WHERE a.user_id = ? ORDER BY a.created_at DESC`
+      ).bind(auth.user.id).all();
+      return json({ ok: true, albuns: results });
+    }
+
+    if (pathname === '/albuns' && method === 'POST') {
+      if (!auth) return json({ ok: false, erro: 'nao_autenticado' }, 401);
+      const body = await request.json().catch(() => ({}));
+      const nome = (body.name || '').trim();
+      if (!nome) return json({ ok: false, erro: 'nome_obrigatorio' }, 400);
+      const id = uid();
+      await env.DB.prepare('INSERT INTO albums (id, user_id, name, created_at) VALUES (?, ?, ?, ?)').bind(id, auth.user.id, nome, nowIso()).run();
+      return json({ ok: true, album: { id, name: nome } });
+    }
+
+    m = pathname.match(/^\/albuns\/([^/]+)$/);
+    if (m && method === 'GET') {
+      if (!auth) return json({ ok: false, erro: 'nao_autenticado' }, 401);
+      const album = await env.DB.prepare('SELECT * FROM albums WHERE id = ? AND user_id = ?').bind(m[1], auth.user.id).first();
+      if (!album) return json({ ok: false, erro: 'nao_encontrado' }, 404);
+      const { results } = await env.DB.prepare(
+        `SELECT f.id, f.name, f.mime_type, f.size_bytes, f.category, ai.added_at
+         FROM album_items ai JOIN files f ON f.id = ai.file_id
+         WHERE ai.album_id = ? AND f.is_deleted = 0 ORDER BY ai.added_at DESC`
+      ).bind(m[1]).all();
+      return json({ ok: true, album, files: results });
+    }
+
+    if (m && method === 'DELETE') {
+      if (!auth) return json({ ok: false, erro: 'nao_autenticado' }, 401);
+      await env.DB.prepare('DELETE FROM album_items WHERE album_id = ?').bind(m[1]).run();
+      const r = await env.DB.prepare('DELETE FROM albums WHERE id = ? AND user_id = ?').bind(m[1], auth.user.id).run();
+      if (!r.meta.rows_written) return json({ ok: false, erro: 'nao_encontrado' }, 404);
+      return json({ ok: true });
+    }
+
+    m = pathname.match(/^\/albuns\/([^/]+)\/itens$/);
+    if (m && method === 'POST') {
+      if (!auth) return json({ ok: false, erro: 'nao_autenticado' }, 401);
+      const album = await env.DB.prepare('SELECT id, cover_file_id FROM albums WHERE id = ? AND user_id = ?').bind(m[1], auth.user.id).first();
+      if (!album) return json({ ok: false, erro: 'nao_encontrado' }, 404);
+      const body = await request.json().catch(() => ({}));
+      const arq = await env.DB.prepare('SELECT id FROM files WHERE id = ? AND user_id = ? AND is_deleted = 0').bind(body.file_id, auth.user.id).first();
+      if (!arq) return json({ ok: false, erro: 'arquivo_nao_encontrado' }, 404);
+      await env.DB.prepare('INSERT OR IGNORE INTO album_items (album_id, file_id, added_at) VALUES (?, ?, ?)').bind(m[1], body.file_id, nowIso()).run();
+      if (!album.cover_file_id) await env.DB.prepare('UPDATE albums SET cover_file_id = ? WHERE id = ?').bind(body.file_id, m[1]).run();
+      return json({ ok: true });
+    }
+
+    m = pathname.match(/^\/albuns\/([^/]+)\/itens\/([^/]+)$/);
+    if (m && method === 'DELETE') {
+      if (!auth) return json({ ok: false, erro: 'nao_autenticado' }, 401);
+      await env.DB.prepare('DELETE FROM album_items WHERE album_id = ? AND file_id = ?').bind(m[1], m[2]).run();
+      return json({ ok: true });
+    }
+
+    // ==================== COMPARTILHAMENTO ====================
+
+    // Compartilhamento direto com outra conta LeuCloud (identificada pelo
+    // e-mail). Acesso de leitura/download real, resolvido em /folders/:id
+    // e /files/:id/download (nunca so cosmetico).
+    if (pathname === '/compartilhar-com' && method === 'POST') {
+      if (!auth) return json({ ok: false, erro: 'nao_autenticado' }, 401);
+      const body = await request.json().catch(() => ({}));
+      const fileId = body.file_id || null;
+      const folderId = body.folder_id || null;
+      const emailDestino = (body.email || '').trim().toLowerCase();
+      if ((!fileId && !folderId) || (fileId && folderId) || !emailDestino) return json({ ok: false, erro: 'dados_invalidos' }, 400);
+      if (emailDestino === auth.user.email) return json({ ok: false, erro: 'nao_pode_compartilhar_com_voce_mesmo' }, 400);
+      const destino = await env.DB.prepare('SELECT id FROM users WHERE email = ?').bind(emailDestino).first();
+      if (!destino) return json({ ok: false, erro: 'usuario_nao_encontrado' }, 404);
+      if (fileId) {
+        const dono = await env.DB.prepare('SELECT id FROM files WHERE id = ? AND user_id = ? AND is_deleted = 0').bind(fileId, auth.user.id).first();
+        if (!dono) return json({ ok: false, erro: 'nao_encontrado' }, 404);
+      } else {
+        const dono = await env.DB.prepare('SELECT id FROM folders WHERE id = ? AND user_id = ? AND is_deleted = 0').bind(folderId, auth.user.id).first();
+        if (!dono) return json({ ok: false, erro: 'nao_encontrada' }, 404);
+      }
+      await env.DB.prepare(
+        `INSERT OR IGNORE INTO share_recipients (id, owner_id, file_id, folder_id, shared_with_user_id, created_at)
+         VALUES (?, ?, ?, ?, ?, ?)`
+      ).bind(uid(), auth.user.id, fileId, folderId, destino.id, nowIso()).run();
+      await env.DB.prepare(
+        `INSERT INTO notifications (id, user_id, type, title, body, created_at) VALUES (?, ?, 'novo_compartilhamento', ?, ?, ?)`
+      ).bind(uid(), destino.id, 'Novo item compartilhado', `${auth.user.name} compartilhou algo com você no LeuCloud.`, nowIso()).run();
+      await logAtividade(env, auth.user.id, 'share_recipient_add', fileId ? 'file' : 'folder', fileId || folderId, request, { destino: destino.id });
+      return json({ ok: true });
+    }
+
+    if (pathname === '/compartilhado-comigo' && method === 'GET') {
+      if (!auth) return json({ ok: false, erro: 'nao_autenticado' }, 401);
+      const { results } = await env.DB.prepare(
+        `SELECT sr.id, sr.file_id, sr.folder_id, sr.created_at, u.name AS dono_nome, u.email AS dono_email,
+                f.name AS arquivo_nome, f.size_bytes, f.mime_type, f.category,
+                p.name AS pasta_nome
+         FROM share_recipients sr
+         JOIN users u ON u.id = sr.owner_id
+         LEFT JOIN files f ON f.id = sr.file_id
+         LEFT JOIN folders p ON p.id = sr.folder_id
+         WHERE sr.shared_with_user_id = ?
+         ORDER BY sr.created_at DESC`
+      ).bind(auth.user.id).all();
+      return json({ ok: true, itens: results });
+    }
+
+    if (pathname === '/compartilhado-por-mim' && method === 'GET') {
+      if (!auth) return json({ ok: false, erro: 'nao_autenticado' }, 401);
+      const { results } = await env.DB.prepare(
+        `SELECT sr.id, sr.file_id, sr.folder_id, sr.created_at, u.name AS destino_nome, u.email AS destino_email,
+                f.name AS arquivo_nome, p.name AS pasta_nome
+         FROM share_recipients sr
+         JOIN users u ON u.id = sr.shared_with_user_id
+         LEFT JOIN files f ON f.id = sr.file_id
+         LEFT JOIN folders p ON p.id = sr.folder_id
+         WHERE sr.owner_id = ?
+         ORDER BY sr.created_at DESC`
+      ).bind(auth.user.id).all();
+      return json({ ok: true, itens: results });
+    }
+
+    m = pathname.match(/^\/compartilhado\/([^/]+)$/);
+    if (m && method === 'DELETE') {
+      if (!auth) return json({ ok: false, erro: 'nao_autenticado' }, 401);
+      await env.DB.prepare('DELETE FROM share_recipients WHERE id = ? AND owner_id = ?').bind(m[1], auth.user.id).run();
+      return json({ ok: true });
+    }
+
+    // ---- links publicos (/s/:token) — quem recebe o link nao precisa de conta ----
+
+    if (pathname === '/shares' && method === 'POST') {
+      if (!auth) return json({ ok: false, erro: 'nao_autenticado' }, 401);
+      const body = await request.json().catch(() => ({}));
+      const fileId = body.file_id || null;
+      const folderId = body.folder_id || null;
+      if ((!fileId && !folderId) || (fileId && folderId)) return json({ ok: false, erro: 'informe_arquivo_ou_pasta' }, 400);
+      if (fileId) {
+        const dono = await env.DB.prepare('SELECT id FROM files WHERE id = ? AND user_id = ? AND is_deleted = 0').bind(fileId, auth.user.id).first();
+        if (!dono) return json({ ok: false, erro: 'nao_encontrado' }, 404);
+      } else {
+        const dono = await env.DB.prepare('SELECT id FROM folders WHERE id = ? AND user_id = ? AND is_deleted = 0').bind(folderId, auth.user.id).first();
+        if (!dono) return json({ ok: false, erro: 'nao_encontrada' }, 404);
+      }
+      const token = tokenAleatorio();
+      let passwordHash = null;
+      if (body.password) {
+        const { hash, salt, iterations } = await hashSenha(body.password, env);
+        passwordHash = JSON.stringify({ hash, salt, iterations });
+      }
+      const expiresAt = body.expires_in_days ? new Date(Date.now() + Number(body.expires_in_days) * 86400000).toISOString() : null;
+      const id = uid();
+      await env.DB.prepare(
+        `INSERT INTO shares (id, owner_id, file_id, folder_id, token, password_hash, expires_at, max_downloads, created_at)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`
+      ).bind(id, auth.user.id, fileId, folderId, token, passwordHash, expiresAt, body.max_downloads || null, nowIso()).run();
+      await logAtividade(env, auth.user.id, 'share_create', fileId ? 'file' : 'folder', fileId || folderId, request);
+      return json({ ok: true, share: { id, token, url: urlCompartilhado(token) } });
+    }
+
+    if (pathname === '/shares' && method === 'GET') {
+      if (!auth) return json({ ok: false, erro: 'nao_autenticado' }, 401);
+      const { results } = await env.DB.prepare(
+        `SELECT s.id, s.token, s.file_id, s.folder_id, s.password_hash, s.expires_at, s.max_downloads, s.download_count, s.created_at,
+                f.name AS arquivo_nome, p.name AS pasta_nome
+         FROM shares s
+         LEFT JOIN files f ON f.id = s.file_id
+         LEFT JOIN folders p ON p.id = s.folder_id
+         WHERE s.owner_id = ? AND s.revoked_at IS NULL
+         ORDER BY s.created_at DESC`
+      ).bind(auth.user.id).all();
+      return json({
+        ok: true,
+        shares: results.map((r) => ({ ...r, tem_senha: !!r.password_hash, password_hash: undefined, url: urlCompartilhado(r.token) })),
+      });
+    }
+
+    m = pathname.match(/^\/shares\/([^/]+)$/);
+    if (m && method === 'DELETE') {
+      if (!auth) return json({ ok: false, erro: 'nao_autenticado' }, 401);
+      await env.DB.prepare('UPDATE shares SET revoked_at = ? WHERE id = ? AND owner_id = ?').bind(nowIso(), m[1], auth.user.id).run();
+      return json({ ok: true });
+    }
+
+    // Publicas -- sem exigir sessao. So expoe o minimo (nome/tamanho/tipo)
+    // antes da senha, quando o link tem senha.
+    m = pathname.match(/^\/s\/([^/]+)$/);
+    if (m && method === 'GET') {
+      const share = await buscarShareValido(env, m[1]);
+      if (!share) return json({ ok: false, erro: 'link_invalido_ou_expirado' }, 404);
+      if (share.file_id) {
+        const arq = await env.DB.prepare('SELECT name, size_bytes, mime_type, category FROM files WHERE id = ?').bind(share.file_id).first();
+        if (!arq) return json({ ok: false, erro: 'link_invalido_ou_expirado' }, 404);
+        return json({ ok: true, tipo: 'file', nome: arq.name, tamanho: arq.size_bytes, mime_type: arq.mime_type, categoria: arq.category, requer_senha: !!share.password_hash });
+      }
+      const pasta = await env.DB.prepare('SELECT name FROM folders WHERE id = ?').bind(share.folder_id).first();
+      if (!pasta) return json({ ok: false, erro: 'link_invalido_ou_expirado' }, 404);
+      return json({ ok: true, tipo: 'folder', nome: pasta.name, requer_senha: !!share.password_hash });
+    }
+
+    m = pathname.match(/^\/s\/([^/]+)\/pasta$/);
+    if (m && method === 'POST') {
+      const share = await buscarShareValido(env, m[1]);
+      if (!share || !share.folder_id) return json({ ok: false, erro: 'link_invalido_ou_expirado' }, 404);
+      const body = await request.json().catch(() => ({}));
+      if (!(await confirmaSenhaShare(share, body.password, env))) return json({ ok: false, erro: 'senha_incorreta' }, 401);
+      const arquivos = await env.DB.prepare(
+        `SELECT id, name, size_bytes, mime_type, category FROM files WHERE folder_id = ? AND is_deleted = 0 ORDER BY sort_order, name COLLATE NOCASE`
+      ).bind(share.folder_id).all();
+      return json({ ok: true, files: arquivos.results });
+    }
+
+    m = pathname.match(/^\/s\/([^/]+)\/download$/);
+    if (m && (method === 'GET' || method === 'POST')) {
+      const share = await buscarShareValido(env, m[1]);
+      if (!share || !share.file_id) return json({ ok: false, erro: 'link_invalido_ou_expirado' }, 404);
+      const senha = method === 'GET'
+        ? new URL(request.url).searchParams.get('password') || ''
+        : (await request.json().catch(() => ({}))).password || '';
+      if (!(await confirmaSenhaShare(share, senha, env))) return json({ ok: false, erro: 'senha_incorreta' }, 401);
+      if (share.max_downloads && share.download_count >= share.max_downloads) return json({ ok: false, erro: 'limite_de_downloads_atingido' }, 403);
+      const resposta = await respostaDownloadShare(env, share.file_id);
+      if (!resposta) return json({ ok: false, erro: 'nao_encontrado' }, 404);
+      await env.DB.prepare('UPDATE shares SET download_count = download_count + 1 WHERE id = ?').bind(share.id).run();
+      return resposta;
+    }
+
+    m = pathname.match(/^\/s\/([^/]+)\/pasta\/arquivo\/([^/]+)\/download$/);
+    if (m && method === 'POST') {
+      const share = await buscarShareValido(env, m[1]);
+      if (!share || !share.folder_id) return json({ ok: false, erro: 'link_invalido_ou_expirado' }, 404);
+      const body = await request.json().catch(() => ({}));
+      if (!(await confirmaSenhaShare(share, body.password, env))) return json({ ok: false, erro: 'senha_incorreta' }, 401);
+      const arq = await env.DB.prepare('SELECT id FROM files WHERE id = ? AND folder_id = ? AND is_deleted = 0').bind(m[2], share.folder_id).first();
+      if (!arq) return json({ ok: false, erro: 'nao_encontrado' }, 404);
+      const resposta = await respostaDownloadShare(env, m[2]);
+      if (!resposta) return json({ ok: false, erro: 'nao_encontrado' }, 404);
+      await env.DB.prepare('UPDATE shares SET download_count = download_count + 1 WHERE id = ?').bind(share.id).run();
+      return resposta;
     }
 
     // ==================== ADMIN ====================
@@ -760,4 +1052,68 @@ async function esvaziarLixeira(env, userId) {
   const arquivos = await env.DB.prepare('SELECT id FROM files WHERE user_id = ? AND is_deleted = 1').bind(userId).all();
   for (const f of arquivos.results) await excluirArquivoDeVez(env, f.id, userId);
   await env.DB.prepare('DELETE FROM folders WHERE user_id = ? AND is_deleted = 1').bind(userId).run();
+}
+
+// Resolve quem realmente "possui" (para fins de listagem) uma pasta: o
+// dono direto, ou -- se folderId (ou algum ancestral dele) foi
+// compartilhado com userId via share_recipients -- o dono original,
+// permitindo que o convidado navegue inclusive em subpastas de dentro
+// da pasta compartilhada.
+async function resolverAcessoPasta(env, folderId, userId) {
+  const propria = await env.DB.prepare('SELECT user_id FROM folders WHERE id = ? AND is_deleted = 0').bind(folderId).first();
+  if (!propria) return null;
+  if (propria.user_id === userId) return { ownerId: userId };
+  const convite = await env.DB.prepare(
+    `WITH RECURSIVE subida(id, parent_id) AS (
+       SELECT id, parent_id FROM folders WHERE id = ?
+       UNION ALL
+       SELECT f.id, f.parent_id FROM folders f JOIN subida s ON f.id = s.parent_id
+     )
+     SELECT 1 FROM share_recipients WHERE shared_with_user_id = ? AND folder_id IN (SELECT id FROM subida) LIMIT 1`
+  ).bind(folderId, userId).first();
+  if (!convite) return null;
+  return { ownerId: propria.user_id };
+}
+
+// Um arquivo compartilhado diretamente OU dentro de uma pasta
+// compartilhada (mesma logica recursiva de resolverAcessoPasta).
+async function arquivoViaCompartilhamento(env, fileId, userId) {
+  const arq = await env.DB.prepare('SELECT * FROM files WHERE id = ? AND is_deleted = 0').bind(fileId).first();
+  if (!arq) return null;
+  const direto = await env.DB.prepare('SELECT 1 FROM share_recipients WHERE file_id = ? AND shared_with_user_id = ?').bind(fileId, userId).first();
+  if (direto) return arq;
+  if (arq.folder_id) {
+    const acesso = await resolverAcessoPasta(env, arq.folder_id, userId);
+    if (acesso) return arq;
+  }
+  return null;
+}
+
+function urlCompartilhado(token) {
+  return `https://leucloud.leunamesoftware.com.br/compartilhado.html?t=${token}`;
+}
+
+async function buscarShareValido(env, token) {
+  const share = await env.DB.prepare('SELECT * FROM shares WHERE token = ? AND revoked_at IS NULL').bind(token).first();
+  if (!share) return null;
+  if (share.expires_at && share.expires_at < nowIso()) return null;
+  return share;
+}
+
+async function confirmaSenhaShare(share, senhaDigitada, env) {
+  if (!share.password_hash) return true;
+  const dados = JSON.parse(share.password_hash);
+  return verificarSenha(senhaDigitada || '', dados.salt, dados.hash, dados.iterations, env);
+}
+
+async function respostaDownloadShare(env, fileId) {
+  const arq = await env.DB.prepare('SELECT * FROM files WHERE id = ? AND is_deleted = 0').bind(fileId).first();
+  if (!arq) return null;
+  const objeto = await env.ARQUIVOS.get(arq.r2_key);
+  if (!objeto) return null;
+  const headers = new Headers();
+  objeto.writeHttpMetadata(headers);
+  headers.set('Content-Disposition', `attachment; filename="${arq.name.replace(/"/g, '')}"`);
+  headers.set('Access-Control-Allow-Origin', '*');
+  return new Response(objeto.body, { headers });
 }
