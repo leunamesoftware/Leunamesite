@@ -175,6 +175,11 @@ async function fazerLogin() {
   var btn = document.getElementById('btnLogin'); btn.disabled = true;
   try {
     var data = await api('/auth/login', { method: 'POST', body: { email: email, password: senha, platform: 'web', device_name: 'Painel Admin' } });
+    if (data.requer_2fa) {
+      var codigo = prompt('Essa conta tem verificação em duas etapas ativada. Digite o código de 6 dígitos do seu app autenticador:');
+      if (!codigo) { erroEl.textContent = 'Login cancelado.'; return; }
+      data = await api('/auth/login/2fa', { method: 'POST', body: { temp_token: data.temp_token, code: codigo.trim(), platform: 'web', device_name: 'Painel Admin' } });
+    }
     if (!data.user.is_admin_unlimited) {
       erroEl.textContent = 'Essa conta não é administradora.';
       return;
@@ -182,7 +187,7 @@ async function fazerLogin() {
     localStorage.setItem('leucloud_admin_token', data.session_token);
     mostrarApp();
   } catch (err) {
-    erroEl.textContent = err.message === 'credenciais_invalidas' ? 'E-mail ou senha incorretos.' : 'Não foi possível entrar.';
+    erroEl.textContent = err.message === 'credenciais_invalidas' ? 'E-mail ou senha incorretos.' : err.message === 'codigo_invalido' ? 'Código de verificação incorreto.' : 'Não foi possível entrar.';
   } finally { btn.disabled = false; }
 }
 
