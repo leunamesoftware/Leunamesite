@@ -27,13 +27,12 @@
   var APP_LABEL = { 'leuname-gestao': 'Gestacell', 'construgestao': 'ConstruGestão' };
 
   // Monta o link de WhatsApp (numero) ou e-mail (mailto), dependendo do
-  // que a pessoa cadastrou em "contato" -- manda um link pro "envelope"
-  // (licenca.html) em vez da chave crua, pra ficar bonito de abrir.
+  // que a pessoa cadastrou em "contato" -- manda a chave direto no texto,
+  // sem precisar copiar/colar em lugar nenhum.
   function linkEnviarChave(contato, chave, appId, nome) {
     if (!contato) return null;
     var appNome = APP_LABEL[appId] || appId || 'LeuName Softwares';
-    var linkEnvelope = location.origin + '/licenca.html?chave=' + encodeURIComponent(chave) + '&app=' + encodeURIComponent(appId || '') + (nome ? '&nome=' + encodeURIComponent(nome) : '');
-    var msg = 'Olá' + (nome ? ', ' + nome : '') + '! Você recebeu uma licença do ' + appNome + ' 🎁 Toque aqui pra abrir: ' + linkEnvelope;
+    var msg = 'Olá' + (nome ? ', ' + nome : '') + '! Sua licença do ' + appNome + ' é: ' + chave + '. Abra o app e digite essa chave pra ativar.';
     if (contato.indexOf('@') !== -1) {
       return 'mailto:' + contato.trim() + '?subject=' + encodeURIComponent('Sua licença do ' + appNome) + '&body=' + encodeURIComponent(msg);
     }
