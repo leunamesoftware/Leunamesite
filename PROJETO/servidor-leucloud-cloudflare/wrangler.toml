@@ -19,10 +19,10 @@ bucket_name = "leucloud-arquivos"
 [triggers]
 crons = ["0 5 * * *"]
 
-# Dominio customizado: ainda nao existe (leucloud.com ainda nao foi
-# registrado). Por enquanto o Worker fica so no subdominio padrao
-# *.workers.dev. Quando o dominio proprio existir, descomentar e ajustar
-# o padrao abaixo, igual e feito em servidor-licencas-cloudflare.
-# [[routes]]
-# pattern = "api.leucloud.com"
-# custom_domain = true
+# Dominio customizado: leucloud.com ainda nao foi registrado, mas
+# leunamesoftware.com.br ja esta ativo nesta mesma conta Cloudflare --
+# usamos um subdominio dele por enquanto, em vez de expor o link feio
+# *.workers.dev. O "wrangler deploy" liga isso automaticamente.
+[[routes]]
+pattern = "api.leucloud.leunamesoftware.com.br"
+custom_domain = true

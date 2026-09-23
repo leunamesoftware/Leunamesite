@@ -1,0 +1,38 @@
+name: Deploy LeuCloud App (Cloudflare)
+
+# Publica o app LeuCloud (LEUCLOUD/frontend/) como um Worker de "static
+# assets" na Cloudflare -- mesmo padrão do ConstruGestão e do LeuName
+# Gestão. Usa o MESMO CF_API_TOKEN já usado pelos outros Workers.
+#
+# Roda sozinho quando algo dentro de LEUCLOUD/frontend/ muda num push,
+# ou pode ser disparado manual (workflow_dispatch).
+on:
+  workflow_dispatch:
+  push:
+    branches: [claude/leuname-github-setup-qwkedw]
+    paths:
+      - 'LEUCLOUD/frontend/**'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Baixar codigo do repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Publicar o app (static assets)
+        working-directory: LEUCLOUD/frontend
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+        run: npx wrangler@latest deploy
+
+      - name: Esperar propagar
+        run: sleep 15
+
+      - name: Testar o site no ar
+        run: curl -sS --fail -o /dev/null -w "%{http_code}\n" https://leucloud.leunamesoftware.com.br/

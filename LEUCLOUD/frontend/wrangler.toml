@@ -1,0 +1,17 @@
+name = "leucloud-app"
+compatibility_date = "2026-09-19"
+
+# Publica o app LeuCloud (SITE estático) como um Worker de "static
+# assets" na Cloudflare -- mesmo padrão do ConstruGestão e do LeuName
+# Gestão. Todo login/upload/download de verdade acontece no backend
+# separado (PROJETO/servidor-leucloud-cloudflare) -- este Worker só serve
+# os arquivos do app (HTML/CSS/JS/ícones).
+[assets]
+directory = "./"
+
+# Domínio customizado: subdomínio do leunamesoftware.com.br (mesmo
+# domínio já ativo na Cloudflare usado pelo ConstruGestão/LeuName
+# Gestão), até o domínio próprio leucloud.com existir.
+[[routes]]
+pattern = "leucloud.leunamesoftware.com.br"
+custom_domain = true

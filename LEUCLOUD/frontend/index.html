@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>LeuCloud</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0a0f0d">
+<meta name="description" content="LeuCloud — armazenamento em nuvem da LeuName Softwares.">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="favicon-32.png">
+<link rel="apple-touch-icon" href="icon-180.png">
+<style>
+:root{
+  --bg:#0a0f0d; --bg2:#0d1613; --card:#121e19; --card2:#17261f; --borda:#22342c;
+  --texto:#eaf5ef; --fraco:#8fa89c; --verde:#22c55e; --verde-forte:#16a34a; --verde-neon:#39e08a;
+  --perigo:#ef4444; --aviso:#f59e0b; --radius:16px; --radius-sm:10px;
+}
+*{box-sizing:border-box;}
+html,body{height:100%;}
+body{
+  margin:0; background:var(--bg); color:var(--texto);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3{margin:0 0 4px;}
+p{margin:0;}
+button{font-family:inherit;}
+.hidden{display:none !important;}
+.screen{display:none; min-height:100dvh; padding:24px 20px calc(24px + env(safe-area-inset-bottom,0px)); padding-top:calc(24px + env(safe-area-inset-top,0px)); flex-direction:column;}
+.screen.active{display:flex;}
+
+/* ---------- apresentação ---------- */
+#tela-apresentacao{align-items:center; justify-content:center; text-align:center; gap:22px;
+  background:radial-gradient(circle at 50% 0%, #12261d 0%, #0a0f0d 60%);}
+#tela-apresentacao img{width:112px; height:112px; border-radius:26px; box-shadow:0 0 60px rgba(34,197,94,.35);}
+#tela-apresentacao .marca{font-size:34px; font-weight:800; letter-spacing:-.02em;}
+#tela-apresentacao .marca span{color:var(--verde-neon);}
+#tela-apresentacao .tagline{color:var(--fraco); font-size:15px; max-width:280px;}
+.botoes-auth{display:flex; flex-direction:column; gap:12px; width:100%; max-width:320px; margin-top:12px;}
+
+/* ---------- formulários (login/cadastro/recuperar) ---------- */
+.tela-form{align-items:stretch; justify-content:center; gap:18px; max-width:420px; margin:0 auto; width:100%;}
+.tela-form .voltar{align-self:flex-start; background:none; border:none; color:var(--fraco); font-size:15px; cursor:pointer; padding:8px 0;}
+.tela-form h1{font-size:24px;}
+.tela-form .sub{color:var(--fraco); font-size:14px; margin-bottom:8px;}
+.campo{display:flex; flex-direction:column; gap:6px;}
+.campo label{font-size:13px; color:var(--fraco);}
+.campo input{
+  background:var(--card); border:1px solid var(--borda); color:var(--texto);
+  border-radius:var(--radius-sm); padding:13px 14px; font-size:15px; outline:none;
+}
+.campo input:focus{border-color:var(--verde);}
+.btn{
+  border:none; border-radius:var(--radius-sm); padding:14px 18px; font-size:15px; font-weight:700;
+  cursor:pointer; text-align:center; transition:opacity .15s;
+}
+.btn:active{opacity:.8;}
+.btn-primario{background:linear-gradient(135deg,var(--verde),var(--verde-forte)); color:#04120a;}
+.btn-secundario{background:var(--card); color:var(--texto); border:1px solid var(--borda);}
+.btn-perigo{background:rgba(239,68,68,.12); color:#fca5a5; border:1px solid rgba(239,68,68,.35);}
+.btn-texto{background:none; border:none; color:var(--verde-neon); font-size:14px; cursor:pointer; padding:6px 0;}
+.btn-sm{padding:8px 12px; font-size:13px; border-radius:8px;}
+.btn[disabled]{opacity:.55; pointer-events:none;}
+.erro-form{color:#fca5a5; font-size:13.5px; min-height:16px;}
+.msg-ok{color:var(--verde-neon); font-size:13.5px; background:rgba(34,197,94,.08); border:1px solid rgba(34,197,94,.25); border-radius:var(--radius-sm); padding:12px;}
+.nota-fraca{color:var(--fraco); font-size:12.5px; line-height:1.5;}
+hr.divisor{border:none; border-top:1px solid var(--borda); margin:6px 0;}
+
+/* ---------- shell do app logado ---------- */
+.app-shell{display:flex; flex-direction:column; height:100dvh;}
+.topbar{
+  display:flex; align-items:center; gap:12px; padding:calc(14px + env(safe-area-inset-top,0px)) 18px 14px;
+  border-bottom:1px solid var(--borda); background:var(--bg2); flex-shrink:0;
+}
+.topbar .voltar-icon{background:none; border:none; color:var(--texto); font-size:20px; cursor:pointer; padding:0 4px 0 0; display:none;}
+.topbar .voltar-icon.mostrar{display:block;}
+.topbar h2{font-size:17px; flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+.topbar .marca-mini{display:flex; align-items:center; gap:8px; font-weight:800;}
+.topbar .marca-mini img{width:26px; height:26px; border-radius:7px;}
+.conteudo{flex:1; overflow-y:auto; padding:18px 18px 24px;}
+.bottom-nav{
+  display:flex; border-top:1px solid var(--borda); background:var(--bg2);
+  padding-bottom:env(safe-area-inset-bottom,0px); flex-shrink:0;
+}
+.bottom-nav button{
+  flex:1; background:none; border:none; color:var(--fraco); font-size:11px; cursor:pointer;
+  display:flex; flex-direction:column; align-items:center; gap:3px; padding:10px 4px 8px;
+}
+.bottom-nav button .ic{font-size:20px;}
+.bottom-nav button.ativo{color:var(--verde-neon);}
+
+/* ---------- dashboard ---------- */
+.saudacao{font-size:21px; font-weight:700; margin-bottom:2px;}
+.saudacao-sub{color:var(--fraco); font-size:13.5px; margin-bottom:18px;}
+.card-armazenamento{background:var(--card); border:1px solid var(--borda); border-radius:var(--radius); padding:18px; margin-bottom:18px;}
+.card-armazenamento .linha-topo{display:flex; justify-content:space-between; align-items:baseline; margin-bottom:10px;}
+.card-armazenamento .usado{font-size:19px; font-weight:700;}
+.card-armazenamento .plano{font-size:12px; color:var(--fraco); background:var(--card2); padding:4px 10px; border-radius:999px;}
+.barra-fundo{background:var(--card2); border-radius:999px; height:9px; overflow:hidden;}
+.barra-frente{background:linear-gradient(90deg,var(--verde-forte),var(--verde-neon)); height:100%; border-radius:999px; transition:width .3s;}
+.grid-atalhos{display:grid; grid-template-columns:1fr 1fr; gap:12px;}
+.atalho{
+  background:var(--card); border:1px solid var(--borda); border-radius:var(--radius); padding:16px;
+  display:flex; flex-direction:column; gap:8px; cursor:pointer; text-align:left;
+}
+.atalho .ic{font-size:22px;}
+.atalho .titulo{font-weight:700; font-size:14px;}
+.atalho .sub{font-size:12px; color:var(--fraco);}
+
+/* ---------- arquivos / lixeira: breadcrumb + listas ---------- */
+.breadcrumb{display:flex; flex-wrap:wrap; gap:4px; font-size:13px; color:var(--fraco); margin-bottom:14px;}
+.breadcrumb button{background:none; border:none; color:var(--fraco); font-size:13px; cursor:pointer; padding:2px 0;}
+.breadcrumb button:last-child{color:var(--texto); font-weight:600;}
+.acoes-topo{display:flex; gap:10px; margin-bottom:16px;}
+.acoes-topo .btn{flex:1;}
+.lista-vazia{color:var(--fraco); font-size:14px; text-align:center; padding:40px 10px;}
+.item-card{
+  background:var(--card); border:1px solid var(--borda); border-radius:var(--radius); padding:14px;
+  margin-bottom:10px; display:flex; flex-direction:column; gap:10px;
+}
+.item-topo{display:flex; align-items:center; gap:12px;}
+.item-icone{
+  width:40px; height:40px; border-radius:10px; display:flex; align-items:center; justify-content:center;
+  font-size:19px; flex-shrink:0; color:#04120a;
+}
+.item-info{flex:1; min-width:0;}
+.item-nome{font-size:14.5px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+.item-meta{font-size:12px; color:var(--fraco);}
+.item-favorito{font-size:16px; flex-shrink:0;}
+.item-acoes{display:flex; gap:8px; flex-wrap:wrap;}
+.item-acoes button{
+  background:var(--card2); border:1px solid var(--borda); color:var(--texto); font-size:12.5px;
+  border-radius:8px; padding:7px 11px; cursor:pointer; display:flex; align-items:center; gap:5px;
+}
+.item-acoes button.acao-perigo{color:#fca5a5;}
+.barra-progresso-wrap{background:var(--card); border:1px solid var(--borda); border-radius:var(--radius); padding:14px; margin-bottom:14px;}
+.barra-progresso-wrap .nome-arq{font-size:13px; margin-bottom:8px; display:flex; justify-content:space-between; color:var(--fraco);}
+
+/* ---------- perfil ---------- */
+.avatar-perfil{
+  width:72px; height:72px; border-radius:50%; background:var(--card2); display:flex; align-items:center;
+  justify-content:center; font-size:26px; font-weight:800; color:var(--verde-neon); margin:0 auto 14px;
+}
+.secao-perfil{background:var(--card); border:1px solid var(--borda); border-radius:var(--radius); padding:16px; margin-bottom:14px;}
+.secao-perfil h3{font-size:13px; color:var(--fraco); text-transform:uppercase; letter-spacing:.04em; margin-bottom:12px;}
+.linha-perfil{display:flex; justify-content:space-between; font-size:14.5px; padding:8px 0; border-bottom:1px solid var(--borda);}
+.linha-perfil:last-child{border-bottom:none;}
+.linha-perfil span:first-child{color:var(--fraco);}
+
+.toast{
+  position:fixed; left:16px; right:16px; bottom:calc(20px + env(safe-area-inset-bottom,0px)); z-index:50;
+  background:var(--card2); border:1px solid var(--borda); color:var(--texto); padding:14px 16px;
+  border-radius:var(--radius-sm); font-size:14px; text-align:center; box-shadow:0 8px 30px rgba(0,0,0,.4);
+  transition:opacity .25s, transform .25s;
+}
+.toast.hidden{opacity:0; transform:translateY(10px); pointer-events:none;}
+.toast.erro{border-color:rgba(239,68,68,.4); color:#fca5a5;}
+
+@media (min-width:640px){
+  .app-shell{max-width:640px; margin:0 auto; border-left:1px solid var(--borda); border-right:1px solid var(--borda);}
+}
+</style>
+</head>
+<body>
+
+<div id="app">
+
+  <section id="tela-apresentacao" class="screen active">
+    <img src="icon-512.png" alt="LeuCloud">
+    <div>
+      <div class="marca">Leu<span>Cloud</span></div>
+      <p class="tagline">Seus arquivos com você, em qualquer lugar. Nuvem própria da LeuName Softwares.</p>
+    </div>
+    <div class="botoes-auth">
+      <button class="btn btn-primario" onclick="irPara('tela-login')">Entrar</button>
+      <button class="btn btn-secundario" onclick="irPara('tela-cadastro')">Criar conta</button>
+    </div>
+  </section>
+
+  <section id="tela-login" class="screen tela-form">
+    <button class="voltar" onclick="irPara('tela-apresentacao')">‹ Voltar</button>
+    <div>
+      <h1>Entrar</h1>
+      <p class="sub">Acesse sua conta do LeuCloud.</p>
+    </div>
+    <div class="campo">
+      <label>E-mail</label>
+      <input type="email" id="loginEmail" autocomplete="email" placeholder="voce@exemplo.com">
+    </div>
+    <div class="campo">
+      <label>Senha</label>
+      <input type="password" id="loginSenha" autocomplete="current-password" placeholder="Sua senha">
+    </div>
+    <p class="erro-form" id="loginErro"></p>
+    <button class="btn btn-primario" id="btnLogin" onclick="fazerLogin()">Entrar</button>
+    <button class="btn-texto" onclick="irPara('tela-recuperar')">Esqueci minha senha</button>
+    <hr class="divisor">
+    <p class="sub" style="text-align:center;">Ainda não tem conta? <button class="btn-texto" style="display:inline;padding:0;" onclick="irPara('tela-cadastro')">Criar agora</button></p>
+  </section>
+
+  <section id="tela-cadastro" class="screen tela-form">
+    <button class="voltar" onclick="irPara('tela-apresentacao')">‹ Voltar</button>
+    <div>
+      <h1>Criar conta</h1>
+      <p class="sub">Comece grátis com 5 GB de espaço.</p>
+    </div>
+    <div class="campo">
+      <label>Nome</label>
+      <input type="text" id="cadNome" autocomplete="name" placeholder="Seu nome">
+    </div>
+    <div class="campo">
+      <label>E-mail</label>
+      <input type="email" id="cadEmail" autocomplete="email" placeholder="voce@exemplo.com">
+    </div>
+    <div class="campo">
+      <label>Senha (mínimo 8 caracteres)</label>
+      <input type="password" id="cadSenha" autocomplete="new-password" placeholder="Crie uma senha">
+    </div>
+    <div class="campo">
+      <label>Confirmar senha</label>
+      <input type="password" id="cadSenha2" autocomplete="new-password" placeholder="Repita a senha">
+    </div>
+    <p class="erro-form" id="cadErro"></p>
+    <button class="btn btn-primario" id="btnCadastro" onclick="fazerCadastro()">Criar conta</button>
+    <p class="sub" style="text-align:center;">Já tem conta? <button class="btn-texto" style="display:inline;padding:0;" onclick="irPara('tela-login')">Entrar</button></p>
+  </section>
+
+  <section id="tela-recuperar" class="screen tela-form">
+    <button class="voltar" onclick="irPara('tela-login')">‹ Voltar</button>
+    <div>
+      <h1>Recuperar senha</h1>
+      <p class="sub">Informe seu e-mail cadastrado.</p>
+    </div>
+    <div class="campo">
+      <label>E-mail</label>
+      <input type="email" id="recEmail" autocomplete="email" placeholder="voce@exemplo.com">
+    </div>
+    <p class="erro-form" id="recErro"></p>
+    <div id="recOk" class="msg-ok hidden"></div>
+    <button class="btn btn-primario" id="btnRecuperar" onclick="pedirRecuperacao()">Enviar pedido</button>
+    <p class="nota-fraca">O envio automático por e-mail ainda está sendo configurado. Por enquanto, depois de pedir aqui, entre em contato pelo suporte (WhatsApp/e-mail da LeuName Softwares) pra receber o código de redefinição manualmente.</p>
+    <hr class="divisor">
+    <p class="sub">Já tem um código do suporte?</p>
+    <div class="campo">
+      <label>Código recebido</label>
+      <input type="text" id="redToken" placeholder="Cole o código aqui">
+    </div>
+    <div class="campo">
+      <label>Nova senha (mínimo 8 caracteres)</label>
+      <input type="password" id="redSenha" autocomplete="new-password" placeholder="Nova senha">
+    </div>
+    <p class="erro-form" id="redErro"></p>
+    <button class="btn btn-secundario" id="btnRedefinir" onclick="redefinirComToken()">Redefinir senha</button>
+  </section>
+
+  <div id="app-shell" class="app-shell hidden">
+    <header class="topbar">
+      <button class="voltar-icon" id="btnVoltarPasta" onclick="voltarPastaAnterior()">‹</button>
+      <div id="topbarTitulo" class="marca-mini"><img src="icon-192.png" alt=""><span>LeuCloud</span></div>
+    </header>
+
+    <main class="conteudo">
+      <div id="tela-dashboard" class="tela-shell">
+        <p class="saudacao" id="saudacaoNome">Olá!</p>
+        <p class="saudacao-sub">Bem-vindo de volta ao seu LeuCloud.</p>
+        <div class="card-armazenamento">
+          <div class="linha-topo">
+            <span class="usado" id="dashUsado">0 MB usados</span>
+            <span class="plano" id="dashPlano">Grátis</span>
+          </div>
+          <div class="barra-fundo"><div class="barra-frente" id="dashBarra" style="width:0%"></div></div>
+        </div>
+        <div class="grid-atalhos">
+          <button class="atalho" onclick="mostrarTela('arquivos')">
+            <span class="ic">📁</span>
+            <span class="titulo">Meus arquivos</span>
+            <span class="sub">Ver pastas e arquivos</span>
+          </button>
+          <button class="atalho" onclick="abrirSeletorUpload()">
+            <span class="ic">⬆️</span>
+            <span class="titulo">Enviar arquivo</span>
+            <span class="sub">Upload direto</span>
+          </button>
+          <button class="atalho" onclick="mostrarTela('lixeira')">
+            <span class="ic">🗑️</span>
+            <span class="titulo">Lixeira</span>
+            <span class="sub">Itens excluídos</span>
+          </button>
+          <button class="atalho" onclick="mostrarTela('perfil')">
+            <span class="ic">👤</span>
+            <span class="titulo">Perfil</span>
+            <span class="sub">Conta e senha</span>
+          </button>
+        </div>
+      </div>
+
+      <div id="tela-arquivos" class="tela-shell hidden">
+        <div class="breadcrumb" id="breadcrumbArquivos"></div>
+        <div class="acoes-topo">
+          <button class="btn btn-secundario btn-sm" onclick="criarPasta()">＋ Nova pasta</button>
+          <button class="btn btn-primario btn-sm" onclick="abrirSeletorUpload()">⬆ Enviar</button>
+        </div>
+        <div id="uploadsEmAndamento"></div>
+        <div id="listaArquivos"></div>
+      </div>
+
+      <div id="tela-lixeira" class="tela-shell hidden">
+        <div class="acoes-topo">
+          <button class="btn btn-secundario btn-sm" onclick="carregarLixeira()">↻ Atualizar</button>
+          <button class="btn btn-perigo btn-sm" onclick="esvaziarLixeira()">Esvaziar lixeira</button>
+        </div>
+        <p class="nota-fraca" style="margin-bottom:14px;">Itens aqui são apagados de vez automaticamente depois de 30 dias.</p>
+        <div id="listaLixeira"></div>
+      </div>
+
+      <div id="tela-perfil" class="tela-shell hidden">
+        <div class="avatar-perfil" id="avatarPerfil">?</div>
+        <div class="secao-perfil">
+          <h3>Conta</h3>
+          <div class="linha-perfil"><span>Nome</span><span id="perfilNome">—</span></div>
+          <div class="linha-perfil"><span>E-mail</span><span id="perfilEmail">—</span></div>
+          <div class="linha-perfil"><span>Plano</span><span id="perfilPlano">—</span></div>
+          <div class="linha-perfil"><span>Armazenamento</span><span id="perfilArmazenamento">—</span></div>
+        </div>
+        <div class="secao-perfil">
+          <h3>Trocar nome</h3>
+          <div class="campo" style="margin-bottom:10px;">
+            <input type="text" id="perfilNovoNome" placeholder="Novo nome">
+          </div>
+          <button class="btn btn-secundario btn-sm" onclick="salvarNome()">Salvar nome</button>
+        </div>
+        <div class="secao-perfil">
+          <h3>Trocar senha</h3>
+          <div class="campo" style="margin-bottom:10px;">
+            <input type="password" id="senhaAtual" placeholder="Senha atual" autocomplete="current-password">
+          </div>
+          <div class="campo" style="margin-bottom:10px;">
+            <input type="password" id="senhaNova" placeholder="Nova senha (mínimo 8)" autocomplete="new-password">
+          </div>
+          <p class="erro-form" id="senhaErro"></p>
+          <button class="btn btn-secundario btn-sm" onclick="trocarSenha()">Salvar senha</button>
+        </div>
+        <button class="btn btn-perigo" onclick="fazerLogout()">Sair da conta</button>
+      </div>
+    </main>
+
+    <nav class="bottom-nav">
+      <button data-nav="dashboard" onclick="mostrarTela('dashboard')"><span class="ic">🏠</span>Início</button>
+      <button data-nav="arquivos" onclick="mostrarTela('arquivos')"><span class="ic">📁</span>Arquivos</button>
+      <button data-nav="lixeira" onclick="mostrarTela('lixeira')"><span class="ic">🗑️</span>Lixeira</button>
+      <button data-nav="perfil" onclick="mostrarTela('perfil')"><span class="ic">👤</span>Perfil</button>
+    </nav>
+  </div>
+
+</div>
+
+<input type="file" id="inputArquivo" multiple hidden onchange="arquivosSelecionados(this.files)">
+<div id="toast" class="toast hidden"></div>
+
+<script>
+var API_BASE = 'https://api.leucloud.leunamesoftware.com.br';
+var currentUser = null;
+var pilhaPastas = [{ id: null, name: 'Meus arquivos' }];
+
+function irPara(idTela) {
+  document.querySelectorAll('#tela-apresentacao,#tela-login,#tela-cadastro,#tela-recuperar').forEach(function (el) { el.classList.remove('active'); });
+  document.getElementById(idTela).classList.add('active');
+}
+
+function mostrarToast(msg, isErro) {
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.toggle('erro', !!isErro);
+  t.classList.remove('hidden');
+  clearTimeout(t._timer);
+  t._timer = setTimeout(function () { t.classList.add('hidden'); }, 3200);
+}
+
+function formatarBytes(bytes) {
+  if (bytes == null) return '0 B';
+  if (bytes === 0) return '0 B';
+  var unidades = ['B', 'KB', 'MB', 'GB', 'TB'];
+  var i = Math.floor(Math.log(bytes) / Math.log(1024));
+  i = Math.min(i, unidades.length - 1);
+  return (bytes / Math.pow(1024, i)).toFixed(i === 0 ? 0 : 1) + ' ' + unidades[i];
+}
+function formatarData(iso) {
+  if (!iso) return '';
+  try { return new Date(iso.replace(' ', 'T') + 'Z').toLocaleDateString('pt-BR'); } catch (e) { return iso; }
+}
+function nomeDispositivo() {
+  var ua = navigator.userAgent || '';
+  if (/Android/.test(ua)) return 'Android';
+  if (/iPhone|iPad/.test(ua)) return 'iPhone/iPad';
+  if (/Windows/.test(ua)) return 'Computador Windows';
+  if (/Mac/.test(ua)) return 'Computador Mac';
+  return 'Navegador Web';
+}
+
+async function api(path, opts) {
+  opts = opts || {};
+  var headers = Object.assign({}, opts.headers || {});
+  var token = localStorage.getItem('leucloud_token');
+  if (token) headers['Authorization'] = 'Bearer ' + token;
+  if (opts.body !== undefined) {
+    headers['Content-Type'] = 'application/json';
+    opts = Object.assign({}, opts, { body: JSON.stringify(opts.body) });
+  }
+  var res = await fetch(API_BASE + path, Object.assign({}, opts, { headers: headers }));
+  var data = null;
+  try { data = await res.json(); } catch (e) {}
+  if (!res.ok) {
+    var err = new Error((data && data.erro) || 'erro_desconhecido');
+    err.status = res.status;
+    throw err;
+  }
+  return data;
+}
+
+var MENSAGENS_ERRO = {
+  dados_invalidos: 'Preencha os dados corretamente (senha com pelo menos 8 caracteres).',
+  email_ja_cadastrado: 'Esse e-mail já tem uma conta.',
+  credenciais_invalidas: 'E-mail ou senha incorretos.',
+  muitas_tentativas: 'Muitas tentativas seguidas. Espere alguns minutos e tente de novo.',
+  senha_atual_incorreta: 'Senha atual incorreta.',
+  senha_nova_curta: 'A nova senha precisa ter pelo menos 8 caracteres.',
+  token_invalido_ou_expirado: 'Código inválido ou expirado. Peça um novo.',
+  espaco_insuficiente: 'Espaço de armazenamento insuficiente pro seu plano.',
+  ja_existe_pasta_com_esse_nome: 'Já existe uma pasta com esse nome aqui.',
+  nao_autenticado: 'Sua sessão expirou. Entre novamente.',
+};
+function mensagemErro(err) {
+  return MENSAGENS_ERRO[err && err.message] || 'Não foi possível completar a ação. Tente de novo.';
+}
+
+/* ---------------- autenticação ---------------- */
+
+async function fazerLogin() {
+  var email = document.getElementById('loginEmail').value.trim();
+  var senha = document.getElementById('loginSenha').value;
+  var erroEl = document.getElementById('loginErro');
+  erroEl.textContent = '';
+  if (!email || !senha) { erroEl.textContent = 'Preencha e-mail e senha.'; return; }
+  var btn = document.getElementById('btnLogin'); btn.disabled = true;
+  try {
+    var data = await api('/auth/login', { method: 'POST', body: { email: email, password: senha, platform: 'web', device_name: nomeDispositivo() } });
+    aposLogin(data);
+  } catch (err) {
+    erroEl.textContent = mensagemErro(err);
+  } finally { btn.disabled = false; }
+}
+
+async function fazerCadastro() {
+  var nome = document.getElementById('cadNome').value.trim();
+  var email = document.getElementById('cadEmail').value.trim();
+  var senha = document.getElementById('cadSenha').value;
+  var senha2 = document.getElementById('cadSenha2').value;
+  var erroEl = document.getElementById('cadErro');
+  erroEl.textContent = '';
+  if (!nome || !email || senha.length < 8) { erroEl.textContent = 'Preencha nome, e-mail e uma senha com pelo menos 8 caracteres.'; return; }
+  if (senha !== senha2) { erroEl.textContent = 'As senhas não são iguais.'; return; }
+  var btn = document.getElementById('btnCadastro'); btn.disabled = true;
+  try {
+    var data = await api('/auth/signup', { method: 'POST', body: { name: nome, email: email, password: senha, platform: 'web', device_name: nomeDispositivo() } });
+    aposLogin(data);
+  } catch (err) {
+    erroEl.textContent = mensagemErro(err);
+  } finally { btn.disabled = false; }
+}
+
+function aposLogin(data) {
+  localStorage.setItem('leucloud_token', data.session_token);
+  localStorage.setItem('leucloud_device_id', data.device_id);
+  currentUser = data.user;
+  mostrarApp();
+}
+
+async function pedirRecuperacao() {
+  var email = document.getElementById('recEmail').value.trim();
+  var erroEl = document.getElementById('recErro');
+  var okEl = document.getElementById('recOk');
+  erroEl.textContent = ''; okEl.classList.add('hidden');
+  if (!email) { erroEl.textContent = 'Digite seu e-mail.'; return; }
+  var btn = document.getElementById('btnRecuperar'); btn.disabled = true;
+  try {
+    var data = await api('/auth/recuperar-senha', { method: 'POST', body: { email: email } });
+    okEl.textContent = data.mensagem || 'Pedido registrado.';
+    okEl.classList.remove('hidden');
+  } catch (err) {
+    erroEl.textContent = mensagemErro(err);
+  } finally { btn.disabled = false; }
+}
+
+async function redefinirComToken() {
+  var token = document.getElementById('redToken').value.trim();
+  var senha = document.getElementById('redSenha').value;
+  var erroEl = document.getElementById('redErro');
+  erroEl.textContent = '';
+  if (!token || senha.length < 8) { erroEl.textContent = 'Cole o código e digite uma senha com pelo menos 8 caracteres.'; return; }
+  var btn = document.getElementById('btnRedefinir'); btn.disabled = true;
+  try {
+    await api('/auth/redefinir-senha', { method: 'POST', body: { token: token, new_password: senha } });
+    mostrarToast('Senha redefinida! Entre com a nova senha.');
+    irPara('tela-login');
+  } catch (err) {
+    erroEl.textContent = mensagemErro(err);
+  } finally { btn.disabled = false; }
+}
+
+async function fazerLogout() {
+  if (!confirm('Sair da sua conta neste aparelho?')) return;
+  try { await api('/auth/logout', { method: 'POST' }); } catch (e) {}
+  localStorage.removeItem('leucloud_token');
+  localStorage.removeItem('leucloud_device_id');
+  currentUser = null;
+  document.getElementById('app-shell').classList.add('hidden');
+  irPara('tela-login');
+}
+
+/* ---------------- shell / navegação do app ---------------- */
+
+function mostrarApp() {
+  document.querySelectorAll('#tela-apresentacao,#tela-login,#tela-cadastro,#tela-recuperar').forEach(function (el) { el.classList.remove('active'); });
+  document.getElementById('app-shell').classList.remove('hidden');
+  atualizarResumoConta();
+  pilhaPastas = [{ id: null, name: 'Meus arquivos' }];
+  mostrarTela('dashboard');
+}
+
+function mostrarTela(nome) {
+  document.querySelectorAll('.tela-shell').forEach(function (el) { el.classList.add('hidden'); });
+  document.getElementById('tela-' + nome).classList.remove('hidden');
+  document.querySelectorAll('.bottom-nav button').forEach(function (b) { b.classList.toggle('ativo', b.dataset.nav === nome); });
+  var titulo = { dashboard: 'LeuCloud', arquivos: pilhaPastas[pilhaPastas.length - 1].name, lixeira: 'Lixeira', perfil: 'Perfil' }[nome];
+  var topEl = document.getElementById('topbarTitulo');
+  var voltarBtn = document.getElementById('btnVoltarPasta');
+  if (nome === 'arquivos') {
+    topEl.textContent = titulo;
+    voltarBtn.classList.toggle('mostrar', pilhaPastas.length > 1);
+    carregarPasta(pilhaPastas[pilhaPastas.length - 1].id);
+  } else if (nome === 'dashboard') {
+    topEl.innerHTML = '<img src="icon-192.png" alt=""><span>LeuCloud</span>';
+    voltarBtn.classList.remove('mostrar');
+    atualizarResumoConta();
+  } else {
+    topEl.textContent = titulo;
+    voltarBtn.classList.remove('mostrar');
+    if (nome === 'lixeira') carregarLixeira();
+    if (nome === 'perfil') preencherPerfil();
+  }
+}
+
+function voltarPastaAnterior() {
+  if (pilhaPastas.length <= 1) return;
+  pilhaPastas.pop();
+  mostrarTela('arquivos');
+}
+
+async function atualizarResumoConta() {
+  try {
+    var data = await api('/me');
+    currentUser = data.user;
+  } catch (err) {
+    if (err.status === 401) return sessaoExpirada();
+  }
+  if (!currentUser) return;
+  document.getElementById('saudacaoNome').textContent = 'Olá, ' + currentUser.name.split(' ')[0] + '!';
+  document.getElementById('dashUsado').textContent = formatarBytes(currentUser.storage_used_bytes) + ' usados';
+  document.getElementById('dashPlano').textContent = currentUser.is_admin_unlimited ? 'Ilimitado' : (currentUser.plan_id === 'gratis' ? 'Grátis' : currentUser.plan_id.toUpperCase());
+  document.getElementById('dashBarra').style.width = currentUser.is_admin_unlimited ? '4px' : currentUser.storage_percent + '%';
+}
+
+function sessaoExpirada() {
+  localStorage.removeItem('leucloud_token');
+  localStorage.removeItem('leucloud_device_id');
+  currentUser = null;
+  document.getElementById('app-shell').classList.add('hidden');
+  mostrarToast('Sua sessão expirou. Entre novamente.', true);
+  irPara('tela-login');
+}
+
+/* ---------------- meus arquivos ---------------- */
+
+function iconeCategoria(cat) {
+  if (cat === 'foto') return { ic: '🖼️', cor: '#22c55e' };
+  if (cat === 'video') return { ic: '🎬', cor: '#f59e0b' };
+  if (cat === 'documento') return { ic: '📄', cor: '#14b8a6' };
+  return { ic: '📦', cor: '#6b7280' };
+}
+
+function renderBreadcrumb() {
+  var el = document.getElementById('breadcrumbArquivos');
+  el.innerHTML = pilhaPastas.map(function (p, i) {
+    return '<button onclick="irParaNivel(' + i + ')">' + (i > 0 ? '› ' : '') + esc(p.name) + '</button>';
+  }).join('');
+}
+function irParaNivel(i) {
+  pilhaPastas = pilhaPastas.slice(0, i + 1);
+  mostrarTela('arquivos');
+}
+function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+
+async function carregarPasta(folderId) {
+  renderBreadcrumb();
+  var el = document.getElementById('listaArquivos');
+  el.innerHTML = '<p class="lista-vazia">Carregando…</p>';
+  try {
+    var data = await api('/folders/' + (folderId || 'root'));
+    renderListaArquivos(data.folders, data.files);
+  } catch (err) {
+    if (err.status === 401) return sessaoExpirada();
+    el.innerHTML = '<p class="lista-vazia">Não foi possível carregar. Puxe pra atualizar ou tente de novo.</p>';
+  }
+}
+
+function renderListaArquivos(pastas, arquivos) {
+  var el = document.getElementById('listaArquivos');
+  if (!pastas.length && !arquivos.length) { el.innerHTML = '<p class="lista-vazia">Essa pasta está vazia. Toque em "Nova pasta" ou "Enviar" pra começar.</p>'; return; }
+  var html = '';
+  pastas.forEach(function (p) {
+    html += '<div class="item-card">' +
+      '<div class="item-topo" style="cursor:pointer" onclick="abrirPasta(\'' + p.id + '\',\'' + esc(p.name).replace(/'/g, "\\'") + '\')">' +
+        '<div class="item-icone" style="background:#334155;">📁</div>' +
+        '<div class="item-info"><div class="item-nome">' + esc(p.name) + '</div><div class="item-meta">Pasta</div></div>' +
+        (p.is_favorite ? '<span class="item-favorito">⭐</span>' : '') +
+      '</div>' +
+      '<div class="item-acoes">' +
+        '<button onclick="renomearPasta(\'' + p.id + '\',\'' + esc(p.name).replace(/'/g, "\\'") + '\')">✏️ Renomear</button>' +
+        '<button onclick="favoritarPasta(\'' + p.id + '\',' + (p.is_favorite ? 'false' : 'true') + ')">⭐ ' + (p.is_favorite ? 'Desfavoritar' : 'Favoritar') + '</button>' +
+        '<button class="acao-perigo" onclick="excluirPasta(\'' + p.id + '\')">🗑️ Mover pra lixeira</button>' +
+      '</div></div>';
+  });
+  arquivos.forEach(function (a) {
+    var ic = iconeCategoria(a.category);
+    html += '<div class="item-card">' +
+      '<div class="item-topo">' +
+        '<div class="item-icone" style="background:' + ic.cor + ';">' + ic.ic + '</div>' +
+        '<div class="item-info"><div class="item-nome">' + esc(a.name) + '</div><div class="item-meta">' + formatarBytes(a.size_bytes) + ' · ' + formatarData(a.created_at) + '</div></div>' +
+        (a.is_favorite ? '<span class="item-favorito">⭐</span>' : '') +
+      '</div>' +
+      '<div class="item-acoes">' +
+        '<button onclick="baixarArquivo(\'' + a.id + '\',\'' + esc(a.name).replace(/'/g, "\\'") + '\')">⬇️ Baixar</button>' +
+        '<button onclick="renomearArquivo(\'' + a.id + '\',\'' + esc(a.name).replace(/'/g, "\\'") + '\')">✏️ Renomear</button>' +
+        '<button onclick="favoritarArquivo(\'' + a.id + '\',' + (a.is_favorite ? 'false' : 'true') + ')">⭐ ' + (a.is_favorite ? 'Desfavoritar' : 'Favoritar') + '</button>' +
+        '<button class="acao-perigo" onclick="excluirArquivo(\'' + a.id + '\')">🗑️ Mover pra lixeira</button>' +
+      '</div></div>';
+  });
+  el.innerHTML = html;
+}
+
+function abrirPasta(id, nome) {
+  pilhaPastas.push({ id: id, name: nome });
+  mostrarTela('arquivos');
+}
+
+async function criarPasta() {
+  var nome = prompt('Nome da nova pasta:');
+  if (!nome || !nome.trim()) return;
+  var pastaAtual = pilhaPastas[pilhaPastas.length - 1];
+  try {
+    await api('/folders', { method: 'POST', body: { name: nome.trim(), parent_id: pastaAtual.id } });
+    mostrarToast('Pasta criada.');
+    carregarPasta(pastaAtual.id);
+  } catch (err) { mostrarToast(mensagemErro(err), true); }
+}
+async function renomearPasta(id, nomeAtual) {
+  var novo = prompt('Novo nome da pasta:', nomeAtual);
+  if (!novo || !novo.trim() || novo === nomeAtual) return;
+  try { await api('/folders/' + id, { method: 'PATCH', body: { name: novo.trim() } }); carregarPasta(pilhaPastas[pilhaPastas.length - 1].id); }
+  catch (err) { mostrarToast(mensagemErro(err), true); }
+}
+async function favoritarPasta(id, favorito) {
+  try { await api('/folders/' + id + '/favorito', { method: 'POST', body: { favorite: favorito } }); carregarPasta(pilhaPastas[pilhaPastas.length - 1].id); }
+  catch (err) { mostrarToast(mensagemErro(err), true); }
+}
+async function excluirPasta(id) {
+  if (!confirm('Mover essa pasta e tudo dentro dela pra lixeira?')) return;
+  try { await api('/folders/' + id, { method: 'DELETE' }); mostrarToast('Pasta movida pra lixeira.'); carregarPasta(pilhaPastas[pilhaPastas.length - 1].id); }
+  catch (err) { mostrarToast(mensagemErro(err), true); }
+}
+async function renomearArquivo(id, nomeAtual) {
+  var novo = prompt('Novo nome do arquivo:', nomeAtual);
+  if (!novo || !novo.trim() || novo === nomeAtual) return;
+  try { await api('/files/' + id, { method: 'PATCH', body: { name: novo.trim() } }); carregarPasta(pilhaPastas[pilhaPastas.length - 1].id); }
+  catch (err) { mostrarToast(mensagemErro(err), true); }
+}
+async function favoritarArquivo(id, favorito) {
+  try { await api('/files/' + id, { method: 'PATCH', body: { favorite: favorito } }); carregarPasta(pilhaPastas[pilhaPastas.length - 1].id); }
+  catch (err) { mostrarToast(mensagemErro(err), true); }
+}
+async function excluirArquivo(id) {
+  if (!confirm('Mover esse arquivo pra lixeira?')) return;
+  try { await api('/files/' + id, { method: 'DELETE' }); mostrarToast('Arquivo movido pra lixeira.'); carregarPasta(pilhaPastas[pilhaPastas.length - 1].id); }
+  catch (err) { mostrarToast(mensagemErro(err), true); }
+}
+
+/* ---------------- upload / download reais ---------------- */
+
+function abrirSeletorUpload() {
+  if (document.getElementById('tela-arquivos').classList.contains('hidden')) mostrarTela('arquivos');
+  document.getElementById('inputArquivo').click();
+}
+
+function arquivosSelecionados(fileList) {
+  var pastaAtual = pilhaPastas[pilhaPastas.length - 1];
+  Array.prototype.slice.call(fileList).forEach(function (file) { enviarArquivo(file, pastaAtual.id); });
+  document.getElementById('inputArquivo').value = '';
+}
+
+function enviarArquivo(file, folderId) {
+  var wrap = document.getElementById('uploadsEmAndamento');
+  var barraId = 'up-' + Math.random().toString(36).slice(2);
+  var div = document.createElement('div');
+  div.className = 'barra-progresso-wrap';
+  div.id = barraId;
+  div.innerHTML = '<div class="nome-arq"><span>' + esc(file.name) + '</span><span class="pct">0%</span></div><div class="barra-fundo"><div class="barra-frente" style="width:0%"></div></div>';
+  wrap.appendChild(div);
+
+  var xhr = new XMLHttpRequest();
+  xhr.open('POST', API_BASE + '/files/upload');
+  var token = localStorage.getItem('leucloud_token');
+  xhr.setRequestHeader('Authorization', 'Bearer ' + token);
+  xhr.setRequestHeader('X-File-Name', encodeURIComponent(file.name));
+  if (folderId) xhr.setRequestHeader('X-Folder-Id', folderId);
+  xhr.setRequestHeader('Content-Type', file.type || 'application/octet-stream');
+  xhr.upload.onprogress = function (e) {
+    if (!e.lengthComputable) return;
+    var pct = Math.round((e.loaded / e.total) * 100);
+    var elDiv = document.getElementById(barraId);
+    if (elDiv) { elDiv.querySelector('.pct').textContent = pct + '%'; elDiv.querySelector('.barra-frente').style.width = pct + '%'; }
+  };
+  xhr.onload = function () {
+    var elDiv = document.getElementById(barraId);
+    if (elDiv) elDiv.remove();
+    if (xhr.status >= 200 && xhr.status < 300) {
+      mostrarToast('"' + file.name + '" enviado.');
+      carregarPasta(pilhaPastas[pilhaPastas.length - 1].id);
+      atualizarResumoConta();
+    } else {
+      var erro = 'erro_desconhecido';
+      try { erro = JSON.parse(xhr.responseText).erro; } catch (e) {}
+      mostrarToast(mensagemErro({ message: erro }), true);
+    }
+  };
+  xhr.onerror = function () {
+    var elDiv = document.getElementById(barraId);
+    if (elDiv) elDiv.remove();
+    mostrarToast('Falha de conexão ao enviar "' + file.name + '". Tente de novo.', true);
+  };
+  xhr.send(file);
+}
+
+async function baixarArquivo(id, nome) {
+  mostrarToast('Baixando "' + nome + '"…');
+  try {
+    var token = localStorage.getItem('leucloud_token');
+    var res = await fetch(API_BASE + '/files/' + id + '/download', { headers: { Authorization: 'Bearer ' + token } });
+    if (!res.ok) throw new Error('falha_download');
+    var blob = await res.blob();
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url; a.download = nome;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function () { URL.revokeObjectURL(url); }, 4000);
+  } catch (err) {
+    mostrarToast('Não foi possível baixar o arquivo. Tente de novo.', true);
+  }
+}
+
+/* ---------------- lixeira ---------------- */
+
+async function carregarLixeira() {
+  var el = document.getElementById('listaLixeira');
+  el.innerHTML = '<p class="lista-vazia">Carregando…</p>';
+  try {
+    var data = await api('/trash');
+    if (!data.folders.length && !data.files.length) { el.innerHTML = '<p class="lista-vazia">A lixeira está vazia.</p>'; return; }
+    var html = '';
+    data.folders.forEach(function (p) {
+      html += '<div class="item-card"><div class="item-topo">' +
+        '<div class="item-icone" style="background:#334155;">📁</div>' +
+        '<div class="item-info"><div class="item-nome">' + esc(p.name) + '</div><div class="item-meta">Excluída em ' + formatarData(p.deleted_at) + '</div></div></div>' +
+        '<div class="item-acoes"><button onclick="restaurarPasta(\'' + p.id + '\')">↩️ Restaurar</button>' +
+        '<button class="acao-perigo" onclick="excluirDeVezPasta(\'' + p.id + '\')">🗑️ Excluir de vez</button></div></div>';
+    });
+    data.files.forEach(function (a) {
+      html += '<div class="item-card"><div class="item-topo">' +
+        '<div class="item-icone" style="background:#6b7280;">📄</div>' +
+        '<div class="item-info"><div class="item-nome">' + esc(a.name) + '</div><div class="item-meta">' + formatarBytes(a.size_bytes) + ' · Excluído em ' + formatarData(a.deleted_at) + '</div></div></div>' +
+        '<div class="item-acoes"><button onclick="restaurarArquivo(\'' + a.id + '\')">↩️ Restaurar</button>' +
+        '<button class="acao-perigo" onclick="excluirDeVezArquivo(\'' + a.id + '\')">🗑️ Excluir de vez</button></div></div>';
+    });
+    el.innerHTML = html;
+  } catch (err) {
+    if (err.status === 401) return sessaoExpirada();
+    el.innerHTML = '<p class="lista-vazia">Não foi possível carregar a lixeira.</p>';
+  }
+}
+async function restaurarPasta(id) { try { await api('/folders/' + id + '/restaurar', { method: 'POST' }); mostrarToast('Pasta restaurada.'); carregarLixeira(); } catch (err) { mostrarToast(mensagemErro(err), true); } }
+async function restaurarArquivo(id) { try { await api('/files/' + id + '/restaurar', { method: 'POST' }); mostrarToast('Arquivo restaurado.'); carregarLixeira(); atualizarResumoConta(); } catch (err) { mostrarToast(mensagemErro(err), true); } }
+async function excluirDeVezPasta(id) {
+  if (!confirm('Excluir essa pasta de vez? Não dá pra desfazer.')) return;
+  try { await api('/trash/folder/' + id, { method: 'DELETE' }); mostrarToast('Pasta excluída de vez.'); carregarLixeira(); } catch (err) { mostrarToast(mensagemErro(err), true); }
+}
+async function excluirDeVezArquivo(id) {
+  if (!confirm('Excluir esse arquivo de vez? Não dá pra desfazer.')) return;
+  try { await api('/trash/file/' + id, { method: 'DELETE' }); mostrarToast('Arquivo excluído de vez.'); carregarLixeira(); atualizarResumoConta(); } catch (err) { mostrarToast(mensagemErro(err), true); }
+}
+async function esvaziarLixeira() {
+  if (!confirm('Esvaziar a lixeira inteira? Isso apaga tudo de vez, sem volta.')) return;
+  try { await api('/trash/esvaziar', { method: 'POST' }); mostrarToast('Lixeira esvaziada.'); carregarLixeira(); atualizarResumoConta(); } catch (err) { mostrarToast(mensagemErro(err), true); }
+}
+
+/* ---------------- perfil ---------------- */
+
+function preencherPerfil() {
+  if (!currentUser) return;
+  document.getElementById('avatarPerfil').textContent = currentUser.name.charAt(0).toUpperCase();
+  document.getElementById('perfilNome').textContent = currentUser.name;
+  document.getElementById('perfilEmail').textContent = currentUser.email;
+  document.getElementById('perfilPlano').textContent = currentUser.is_admin_unlimited ? 'Ilimitado (admin)' : (currentUser.plan_id === 'gratis' ? 'Grátis' : currentUser.plan_id.toUpperCase());
+  document.getElementById('perfilArmazenamento').textContent = currentUser.is_admin_unlimited
+    ? formatarBytes(currentUser.storage_used_bytes) + ' usados · sem limite'
+    : formatarBytes(currentUser.storage_used_bytes) + ' de ' + formatarBytes(currentUser.storage_quota_bytes);
+  document.getElementById('perfilNovoNome').value = currentUser.name;
+}
+async function salvarNome() {
+  var nome = document.getElementById('perfilNovoNome').value.trim();
+  if (!nome) return;
+  try { var data = await api('/me', { method: 'PATCH', body: { name: nome } }); currentUser = data.user; mostrarToast('Nome atualizado.'); preencherPerfil(); }
+  catch (err) { mostrarToast(mensagemErro(err), true); }
+}
+async function trocarSenha() {
+  var atual = document.getElementById('senhaAtual').value;
+  var nova = document.getElementById('senhaNova').value;
+  var erroEl = document.getElementById('senhaErro');
+  erroEl.textContent = '';
+  if (!atual || nova.length < 8) { erroEl.textContent = 'Preencha a senha atual e uma nova com pelo menos 8 caracteres.'; return; }
+  try {
+    await api('/me/senha', { method: 'PATCH', body: { current_password: atual, new_password: nova } });
+    mostrarToast('Senha alterada.');
+    document.getElementById('senhaAtual').value = ''; document.getElementById('senhaNova').value = '';
+  } catch (err) { erroEl.textContent = mensagemErro(err); }
+}
+
+/* ---------------- boot ---------------- */
+
+(async function iniciar() {
+  if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(function () {});
+  var token = localStorage.getItem('leucloud_token');
+  if (!token) return;
+  try {
+    var data = await api('/me');
+    currentUser = data.user;
+    mostrarApp();
+  } catch (err) {
+    localStorage.removeItem('leucloud_token');
+    localStorage.removeItem('leucloud_device_id');
+  }
+})();
+</script>
+</body>
+</html>
