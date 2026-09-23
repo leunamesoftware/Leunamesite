@@ -1,0 +1,70 @@
+name: Verificar painel admin do LeuCloud (pontual - parte 2)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  verificar:
+    runs-on: ubuntu-latest
+    env:
+      ALVO_ID: 7b2a6d33-9a7b-4e3f-a5ac-2606056693e7
+    steps:
+      - name: Login com a conta de teste ja promovida a admin
+        run: |
+          curl -sS --fail -X POST https://api.leucloud.leunamesoftware.com.br/auth/login \
+            -H "Content-Type: application/json" \
+            -d '{"email":"teste-admin-painel@leunamesoftware.com.br","password":"senhaDeTeste123","platform":"web","device_name":"CI"}' \
+            -o /tmp/login_admin.json
+          TOKEN=$(python3 -c "import json;print(json.load(open('/tmp/login_admin.json'))['session_token'])")
+          echo "TOKEN=$TOKEN" >> "$GITHUB_ENV"
+
+      - name: GET /admin/resumo
+        run: |
+          curl -sS --fail https://api.leucloud.leunamesoftware.com.br/admin/resumo -H "Authorization: Bearer $TOKEN"
+
+      - name: GET /admin/usuarios
+        run: |
+          curl -sS --fail https://api.leucloud.leunamesoftware.com.br/admin/usuarios -H "Authorization: Bearer $TOKEN" -o /tmp/usuarios.json
+          cat /tmp/usuarios.json
+
+      - name: POST /admin/usuarios/:id/plano (mudar alvo pra 100gb)
+        run: |
+          curl -sS --fail -X POST "https://api.leucloud.leunamesoftware.com.br/admin/usuarios/$ALVO_ID/plano" \
+            -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" -d '{"plan_id":"100gb"}'
+
+      - name: POST /admin/usuarios/:id/status (suspender alvo)
+        run: |
+          curl -sS --fail -X POST "https://api.leucloud.leunamesoftware.com.br/admin/usuarios/$ALVO_ID/status" \
+            -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" -d '{"status":"suspenso"}'
+
+      - name: Confirma que o alvo suspenso nao consegue mais logar
+        run: |
+          curl -sS -o /tmp/login_suspenso.json -w "codigo: %{http_code}\n" -X POST https://api.leucloud.leunamesoftware.com.br/auth/login \
+            -H "Content-Type: application/json" -d '{"email":"teste-admin-alvo@leunamesoftware.com.br","password":"senhaDeTeste123","platform":"web","device_name":"CI"}'
+          cat /tmp/login_suspenso.json
+
+      - name: POST /admin/usuarios/:id/status (reativar alvo de volta)
+        run: |
+          curl -sS --fail -X POST "https://api.leucloud.leunamesoftware.com.br/admin/usuarios/$ALVO_ID/status" \
+            -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" -d '{"status":"ativo"}'
+
+      - name: POST /admin/usuarios/:id/ilimitado (liga e desliga)
+        run: |
+          curl -sS --fail -X POST "https://api.leucloud.leunamesoftware.com.br/admin/usuarios/$ALVO_ID/ilimitado" \
+            -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" -d '{"ilimitado":true}'
+          curl -sS --fail -X POST "https://api.leucloud.leunamesoftware.com.br/admin/usuarios/$ALVO_ID/ilimitado" \
+            -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" -d '{"ilimitado":false}'
+
+      - name: GET /admin/logs
+        run: |
+          curl -sS --fail https://api.leucloud.leunamesoftware.com.br/admin/logs -H "Authorization: Bearer $TOKEN" -o /tmp/logs.json
+          cat /tmp/logs.json
+
+      - name: Confirma que usuario NORMAL (nao admin) recebe 403 nas rotas /admin
+        run: |
+          curl -sS --fail -X POST https://api.leucloud.leunamesoftware.com.br/auth/login \
+            -H "Content-Type: application/json" -d '{"email":"teste-admin-alvo@leunamesoftware.com.br","password":"senhaDeTeste123","platform":"web","device_name":"CI2"}' \
+            -o /tmp/login_alvo.json
+          ALVO_TOKEN=$(python3 -c "import json;print(json.load(open('/tmp/login_alvo.json'))['session_token'])")
+          curl -sS -o /tmp/negado.json -w "codigo: %{http_code}\n" https://api.leucloud.leunamesoftware.com.br/admin/resumo -H "Authorization: Bearer $ALVO_TOKEN"
+          cat /tmp/negado.json
