@@ -180,6 +180,30 @@ hr.divisor{border:none; border-top:1px solid var(--borda); margin:6px 0;}
 .toast.hidden{opacity:0; transform:translateY(10px); pointer-events:none;}
 .toast.erro{border-color:rgba(239,68,68,.4); color:#fca5a5;}
 
+/* ---------- pré-visualização de foto/vídeo ---------- */
+.preview-overlay{
+  position:fixed; inset:0; z-index:60; background:rgba(4,8,6,.96);
+  display:flex; flex-direction:column; padding:env(safe-area-inset-top,0px) 0 env(safe-area-inset-bottom,0px);
+}
+.preview-overlay.hidden{display:none;}
+.preview-topo{display:flex; justify-content:space-between; align-items:center; padding:14px 16px; gap:12px;}
+.preview-nome{font-size:14px; color:var(--texto); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+.preview-fechar{background:var(--card2); border:none; color:var(--texto); width:36px; height:36px; border-radius:50%; font-size:16px; cursor:pointer; flex-shrink:0;}
+.preview-conteudo{flex:1; display:flex; align-items:center; justify-content:center; overflow:hidden; padding:0 12px;}
+.preview-conteudo img{max-width:100%; max-height:100%; object-fit:contain; border-radius:8px;}
+.preview-conteudo video{max-width:100%; max-height:100%; border-radius:8px;}
+.preview-carregando{color:var(--fraco); font-size:14px;}
+
+/* ---------- banner de arquivo recebido por compartilhamento ---------- */
+.banner-compartilhado{
+  background:var(--card2); border:1px solid var(--verde); border-radius:var(--radius); padding:14px;
+  margin-bottom:14px; display:flex; flex-direction:column; gap:10px;
+}
+.banner-compartilhado p{font-size:13.5px;}
+.banner-compartilhado .lista-nomes{font-size:12.5px; color:var(--fraco);}
+.banner-compartilhado .linha-botoes{display:flex; gap:10px;}
+.banner-compartilhado .linha-botoes .btn{flex:1;}
+
 @media (min-width:640px){
   .app-shell{max-width:640px; margin:0 auto; border-left:1px solid var(--borda); border-right:1px solid var(--borda);}
 }
@@ -319,6 +343,7 @@ hr.divisor{border:none; border-top:1px solid var(--borda); margin:6px 0;}
       </div>
 
       <div id="tela-arquivos" class="tela-shell hidden">
+        <div id="bannerCompartilhado" class="banner-compartilhado hidden"></div>
         <div class="breadcrumb" id="breadcrumbArquivos"></div>
         <div class="acoes-topo">
           <button class="btn btn-secundario btn-sm" onclick="criarPasta()">＋ Nova pasta</button>
@@ -387,11 +412,21 @@ hr.divisor{border:none; border-top:1px solid var(--borda); margin:6px 0;}
 <input type="file" id="inputArquivo" multiple hidden onchange="arquivosSelecionados(this.files)">
 <input type="file" id="inputAvatar" accept="image/*" hidden onchange="fotoSelecionada(this.files[0])">
 <div id="toast" class="toast hidden"></div>
+<div id="previewOverlay" class="preview-overlay hidden">
+  <div class="preview-topo">
+    <span class="preview-nome" id="previewNome"></span>
+    <button class="preview-fechar" onclick="fecharPreview()">✕</button>
+  </div>
+  <div class="preview-conteudo" id="previewConteudo"></div>
+</div>
 
 <script>
 var API_BASE = 'https://api.leucloud.leunamesoftware.com.br';
 var currentUser = null;
 var pilhaPastas = [{ id: null, name: 'Meus arquivos' }];
+var compartilhamentoPendenteFlag = location.search.indexOf('compartilhar=1') !== -1;
+var arquivosCompartilhadosPendentes = [];
+if (compartilhamentoPendenteFlag) { history.replaceState({}, '', location.pathname); }
 
 function irPara(idTela) {
   document.querySelectorAll('#tela-apresentacao,#tela-login,#tela-cadastro,#tela-recuperar').forEach(function (el) { el.classList.remove('active'); });
@@ -417,7 +452,7 @@ function formatarBytes(bytes) {
 }
 function formatarData(iso) {
   if (!iso) return '';
-  try { return new Date(iso.replace(' ', 'T') + 'Z').toLocaleDateString('pt-BR'); } catch (e) { return iso; }
+  try { return new Date(iso).toLocaleDateString('pt-BR'); } catch (e) { return iso; }
 }
 function nomeDispositivo() {
   var ua = navigator.userAgent || '';
@@ -555,7 +590,64 @@ function mostrarApp() {
   document.getElementById('app-shell').classList.remove('hidden');
   atualizarResumoConta();
   pilhaPastas = [{ id: null, name: 'Meus arquivos' }];
-  mostrarTela('dashboard');
+  if (compartilhamentoPendenteFlag) {
+    compartilhamentoPendenteFlag = false;
+    processarCompartilhamentoPendente();
+  } else {
+    mostrarTela('dashboard');
+  }
+}
+
+/* ---------------- recebido por compartilhamento (Android "Enviar para") ---------------- */
+
+async function processarCompartilhamentoPendente() {
+  try {
+    var cache = await caches.open('leucloud-compartilhado-v1');
+    var chaves = await cache.keys();
+    var lidos = [];
+    for (var i = 0; i < chaves.length; i++) {
+      var resp = await cache.match(chaves[i]);
+      var blob = await resp.blob();
+      var nome = decodeURIComponent(resp.headers.get('X-Nome-Original') || ('arquivo-' + i));
+      lidos.push(new File([blob], nome, { type: resp.headers.get('Content-Type') || blob.type }));
+      await cache.delete(chaves[i]);
+    }
+    arquivosCompartilhadosPendentes = lidos;
+  } catch (e) {
+    arquivosCompartilhadosPendentes = [];
+  }
+  mostrarTela('arquivos');
+  renderBannerCompartilhado();
+  if (arquivosCompartilhadosPendentes.length) {
+    mostrarToast(arquivosCompartilhadosPendentes.length + ' arquivo(s) recebido(s). Escolha a pasta e toque em "Enviar aqui".');
+  }
+}
+
+function renderBannerCompartilhado() {
+  var banner = document.getElementById('bannerCompartilhado');
+  if (!arquivosCompartilhadosPendentes.length) { banner.classList.add('hidden'); banner.innerHTML = ''; return; }
+  var nomes = arquivosCompartilhadosPendentes.map(function (f) { return esc(f.name); }).join(', ');
+  banner.innerHTML =
+    '<p>📥 ' + arquivosCompartilhadosPendentes.length + ' arquivo(s) recebido(s) por compartilhamento</p>' +
+    '<p class="lista-nomes">' + nomes + '</p>' +
+    '<p class="lista-nomes">Navegue até a pasta desejada (ou crie uma nova) e toque em "Enviar aqui".</p>' +
+    '<div class="linha-botoes">' +
+      '<button class="btn btn-secundario btn-sm" onclick="descartarCompartilhado()">Descartar</button>' +
+      '<button class="btn btn-primario btn-sm" onclick="confirmarUploadCompartilhado()">Enviar aqui</button>' +
+    '</div>';
+  banner.classList.remove('hidden');
+}
+
+function confirmarUploadCompartilhado() {
+  var pastaAtual = pilhaPastas[pilhaPastas.length - 1];
+  arquivosCompartilhadosPendentes.forEach(function (file) { enviarArquivo(file, pastaAtual.id); });
+  arquivosCompartilhadosPendentes = [];
+  renderBannerCompartilhado();
+}
+
+function descartarCompartilhado() {
+  arquivosCompartilhadosPendentes = [];
+  renderBannerCompartilhado();
 }
 
 function mostrarTela(nome) {
@@ -664,7 +756,7 @@ function renderListaArquivos(pastas, arquivos) {
   arquivos.forEach(function (a) {
     var ic = iconeCategoria(a.category);
     html += '<div class="item-card">' +
-      '<div class="item-topo">' +
+      '<div class="item-topo" style="cursor:pointer" onclick="abrirPreview(\'' + a.id + '\',\'' + esc(a.name).replace(/'/g, "\\'") + '\',\'' + a.category + '\')">' +
         '<div class="item-icone" style="background:' + ic.cor + ';">' + ic.ic + '</div>' +
         '<div class="item-info"><div class="item-nome">' + esc(a.name) + '</div><div class="item-meta">' + formatarBytes(a.size_bytes) + ' · ' + formatarData(a.created_at) + '</div></div>' +
         (a.is_favorite ? '<span class="item-favorito">⭐</span>' : '') +
@@ -796,6 +888,41 @@ async function baixarArquivo(id, nome) {
   } catch (err) {
     mostrarToast('Não foi possível baixar o arquivo. Tente de novo.', true);
   }
+}
+
+var previewObjectUrlAtual = null;
+
+async function abrirPreview(id, nome, categoria) {
+  if (categoria !== 'foto' && categoria !== 'video') {
+    mostrarToast('Esse tipo de arquivo ainda não tem pré-visualização. Use "Baixar" pra abrir.');
+    return;
+  }
+  var overlay = document.getElementById('previewOverlay');
+  var conteudo = document.getElementById('previewConteudo');
+  document.getElementById('previewNome').textContent = nome;
+  conteudo.innerHTML = '<p class="preview-carregando">Carregando…</p>';
+  overlay.classList.remove('hidden');
+  try {
+    var token = localStorage.getItem('leucloud_token');
+    var res = await fetch(API_BASE + '/files/' + id + '/download', { headers: { Authorization: 'Bearer ' + token } });
+    if (!res.ok) throw new Error('falha');
+    var blob = await res.blob();
+    if (previewObjectUrlAtual) URL.revokeObjectURL(previewObjectUrlAtual);
+    previewObjectUrlAtual = URL.createObjectURL(blob);
+    if (categoria === 'foto') {
+      conteudo.innerHTML = '<img src="' + previewObjectUrlAtual + '" alt="">';
+    } else {
+      conteudo.innerHTML = '<video src="' + previewObjectUrlAtual + '" controls autoplay playsinline></video>';
+    }
+  } catch (err) {
+    conteudo.innerHTML = '<p class="preview-carregando">Não foi possível carregar a pré-visualização.</p>';
+  }
+}
+
+function fecharPreview() {
+  document.getElementById('previewOverlay').classList.add('hidden');
+  document.getElementById('previewConteudo').innerHTML = '';
+  if (previewObjectUrlAtual) { URL.revokeObjectURL(previewObjectUrlAtual); previewObjectUrlAtual = null; }
 }
 
 /* ---------------- lixeira ---------------- */
