@@ -22,11 +22,16 @@ jobs:
         run: |
           npx wrangler@latest tail leucloud-api --format=pretty > /tmp/tail.log 2>&1 &
           TAIL_PID=$!
-          sleep 8
+          for i in $(seq 1 20); do
+            if grep -q "Connected to leucloud-api" /tmp/tail.log; then echo "tail conectado"; break; fi
+            sleep 1
+          done
+          sleep 2
           curl -sS -X POST https://api.leucloud.leunamesoftware.com.br/auth/signup \
             -H "Content-Type: application/json" \
-            -d '{"name":"Teste Depuracao","email":"teste-depuracao-500@leunamesoftware.com.br","password":"senhaDeTeste123","platform":"web","device_name":"CI"}' || true
-          sleep 8
+            -d '{"name":"Teste Depuracao","email":"teste-depuracao-500-b@leunamesoftware.com.br","password":"senhaDeTeste123","platform":"web","device_name":"CI"}' || true
+          sleep 6
           kill $TAIL_PID || true
+          sleep 1
           echo "===== LOG CAPTURADO ====="
           cat /tmp/tail.log
