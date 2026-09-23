@@ -44,7 +44,10 @@
     return 'https://wa.me/' + digitos + '?text=' + encodeURIComponent(msg);
   }
 
+  var ultimaLista = [];
+
   function renderRows(licencas) {
+    ultimaLista = licencas;
     var body = document.getElementById('licBody');
     document.getElementById('licCount').textContent = licencas.length;
     if (!licencas.length) {
@@ -56,6 +59,7 @@
         ? '<button class="admin-btn admin-btn-danger admin-btn-sm" data-revogar="' + l.chave + '">Revogar</button>'
         : '<button class="admin-btn admin-btn-outline admin-btn-sm" data-reativar="' + l.chave + '">Reativar</button>';
       var excluirBtn = '<button class="admin-btn admin-btn-danger admin-btn-sm" data-excluir="' + l.chave + '">Excluir</button>';
+      var editarBtn = '<button class="admin-btn admin-btn-outline admin-btn-sm" data-editar="' + l.chave + '">Editar</button>';
       var linkEnv = linkEnviarChave(l.cliente_contato, l.chave, l.app_id, l.cliente_nome);
       var enviarBtn = linkEnv ? '<a class="admin-btn admin-btn-outline admin-btn-sm" href="' + linkEnv + '" target="_blank" rel="noopener" style="text-decoration:none;">Enviar</a>' : '';
       var appNome = APP_LABEL[l.app_id] || l.app_id || '—';
@@ -72,7 +76,7 @@
         '<div class="lic-card__meta">' + esc(l.cliente_contato || 'sem contato') + ' · ' + esc(l.origem || 'manual') + ' · ' + fmtData(l.criado_em) +
           (l.motivo_revogacao ? '<div class="lic-card__motivo">' + esc(l.motivo_revogacao) + '</div>' : '') +
         '</div>' +
-        '<div class="admin-row-actions">' + enviarBtn + acaoBtn + excluirBtn + '</div>' +
+        '<div class="admin-row-actions">' + editarBtn + enviarBtn + acaoBtn + excluirBtn + '</div>' +
       '</div>';
     }).join('');
   }
@@ -105,6 +109,23 @@
     var revBtn = e.target.closest('[data-revogar]');
     var reatBtn = e.target.closest('[data-reativar]');
     var excBtn = e.target.closest('[data-excluir]');
+    var editBtn = e.target.closest('[data-editar]');
+    if (editBtn) {
+      var chaveEd = editBtn.getAttribute('data-editar');
+      var licAtual = ultimaLista.filter(function (x) { return x.chave === chaveEd; })[0] || {};
+      var novoNome = prompt('Nome do cliente:', licAtual.cliente_nome || '');
+      if (novoNome === null) return;
+      var novoContato = prompt('WhatsApp ou e-mail do cliente:', licAtual.cliente_contato || '');
+      if (novoContato === null) return;
+      AdminLicencasAPI.api('/admin/licencas/editar', { method: 'POST', body: JSON.stringify({ chave: chaveEd, cliente_nome: novoNome.trim(), cliente_contato: novoContato.trim() }) })
+        .then(load)
+        .catch(function (err) {
+          var msg = err && err.message;
+          if (msg === 'nome_e_contato_obrigatorios') showBanner('Preencha nome e contato.', true);
+          else showBanner('Não foi possível editar a licença.', true);
+        });
+      return;
+    }
     if (revBtn) {
       var chaveRev = revBtn.getAttribute('data-revogar');
       var motivoRev = prompt('Revogar a licença ' + chaveRev + '. Por qual motivo? (aparece pro cliente na tela e na mensagem de WhatsApp/e-mail — ex: "pagamento em atraso". Pode deixar em branco.)', '');

@@ -383,6 +383,21 @@ export default {
         return json({ ok: true, chave: body.chave, status: 'ativa' });
       }
 
+      // POST /admin/licencas/editar  { chave, cliente_nome, cliente_contato }
+      // Atualiza nome/contato de uma licenca ja existente, sem mudar chave,
+      // app ou status -- pra corrigir/completar dados depois de gerada.
+      if (pathname === '/admin/licencas/editar' && request.method === 'POST') {
+        const body = await request.json();
+        if (!body.chave) return json({ ok: false, erro: 'chave_obrigatoria' }, 400);
+        if (!body.cliente_nome || !body.cliente_contato) {
+          return json({ ok: false, erro: 'nome_e_contato_obrigatorios' }, 400);
+        }
+        await env.DB.prepare(
+          'UPDATE licencas SET cliente_nome = ?, cliente_contato = ? WHERE chave = ?'
+        ).bind(body.cliente_nome, body.cliente_contato, body.chave).run();
+        return json({ ok: true, chave: body.chave });
+      }
+
       // POST /admin/migrar-motivo-revogacao  -- roda uma unica vez pra
       // adicionar a coluna motivo_revogacao em bancos criados antes dela
       // existir. Se a coluna ja existe, so ignora o erro e responde ok.
