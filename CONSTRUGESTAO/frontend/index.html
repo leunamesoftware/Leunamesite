@@ -8699,7 +8699,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
      atualização mais abaixo), já que o service worker não recarrega
      nada por conta própria (é sempre o mesmo arquivo sw.js, só o
      index.html muda a cada deploy). */
-  var APP_BUILD_ID = 'BUILD-2026-09-23-03';
+  var APP_BUILD_ID = 'BUILD-2026-09-23-04';
 
   /* ============================================================
      CONSTRUGESTÃO — núcleo real (licença, login, banco local, CRUD)
@@ -9194,11 +9194,13 @@ html, body{ overflow-x:hidden; max-width:100%; }
   function renderLicenseRevoked() {
     document.querySelector('.app').style.display = 'none';
     var root = document.getElementById('auth-root');
+    var chave = lsGet(LICENSE_LS_KEY) || '';
     var motivo = lsGet(LICENSE_REVOKED_MOTIVO_LS_KEY) || '';
-    var msgContato = motivo ? ('Minha licença do ConstruGestão foi desativada (motivo: ' + motivo + ') e preciso resolver.') : 'Minha licença do ConstruGestão foi desativada e preciso resolver.';
+    var msgContato = motivo ? ('Minha licença do ConstruGestão (' + chave + ') foi desativada (motivo: ' + motivo + ') e preciso resolver.') : ('Minha licença do ConstruGestão (' + chave + ') foi desativada e preciso resolver.');
     root.innerHTML = authShellHTML(
-      '<h2 style="font-size:16.5px;text-align:center;margin:0 0 6px;">Licença desativada</h2>' +
-      '<div class="alert alert--danger">Sua licença foi desativada.' + (motivo ? ' Motivo: ' + esc(motivo) + '.' : '') + ' Fale com a LeuName Softwares para reativar o acesso.</div>' +
+      '<h2 style="font-size:16.5px;text-align:center;margin:0 0 2px;">Licença desativada</h2>' +
+      '<p style="font-size:12px;color:var(--text-secondary);text-align:center;margin:0 0 6px;">Licença: <code>' + esc(chave) + '</code></p>' +
+      '<div class="alert alert--danger">Sua licença foi desativada.' + (motivo ? ' Motivo: ' + esc(motivo) + '.' : '') + ' Se for pendência de pagamento, regularize e entre em contato pra reativar o acesso.</div>' +
       contatoLeuNameHTML(msgContato) +
       '<button class="btn btn--secondary" id="lic-recheck" style="width:100%;justify-content:center;margin-top:10px;">Verificar novamente</button>'
     );
@@ -12202,6 +12204,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
   document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible') { verificarVersaoNova(); recheckLicenseOnFocus(); } });
   window.addEventListener('focus', function () { verificarVersaoNova(); recheckLicenseOnFocus(); });
   setInterval(verificarVersaoNova, 60000);
+  setInterval(recheckLicenseOnFocus, 15000);
   verificarVersaoNova();
 })();
 

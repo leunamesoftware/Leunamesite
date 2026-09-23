@@ -26,6 +26,21 @@
   var STATUS_CLASS = { ativa: 'real', revogada: 'inactivo' };
   var APP_LABEL = { 'leuname-gestao': 'Gestacell', 'construgestao': 'ConstruGestão' };
 
+  // Monta o link de WhatsApp (numero) ou e-mail (mailto), dependendo do
+  // que a pessoa cadastrou em "contato" -- assim manda a chave direto
+  // sem precisar copiar/colar em lugar nenhum.
+  function linkEnviarChave(contato, chave, appId) {
+    if (!contato) return null;
+    var appNome = APP_LABEL[appId] || appId || 'LeuName Softwares';
+    var msg = 'Olá! Sua licença do ' + appNome + ' é: ' + chave + '. Baixe o app e digite essa chave pra ativar.';
+    if (contato.indexOf('@') !== -1) {
+      return 'mailto:' + contato.trim() + '?subject=' + encodeURIComponent('Sua licença do ' + appNome) + '&body=' + encodeURIComponent(msg);
+    }
+    var digitos = contato.replace(/\D/g, '');
+    if (digitos.length <= 11) digitos = '55' + digitos; // assume Brasil quando nao tem DDI
+    return 'https://wa.me/' + digitos + '?text=' + encodeURIComponent(msg);
+  }
+
   function renderRows(licencas) {
     var body = document.getElementById('licBody');
     document.getElementById('licCount').textContent = licencas.length;
@@ -38,6 +53,8 @@
         ? '<button class="admin-btn admin-btn-danger admin-btn-sm" data-revogar="' + l.chave + '">Revogar</button>'
         : '<button class="admin-btn admin-btn-outline admin-btn-sm" data-reativar="' + l.chave + '">Reativar</button>';
       var excluirBtn = '<button class="admin-btn admin-btn-danger admin-btn-sm" data-excluir="' + l.chave + '">Excluir</button>';
+      var linkEnv = linkEnviarChave(l.cliente_contato, l.chave, l.app_id);
+      var enviarBtn = linkEnv ? '<a class="admin-btn admin-btn-outline admin-btn-sm" href="' + linkEnv + '" target="_blank" rel="noopener" style="text-decoration:none;">Enviar</a>' : '';
       return '<tr data-chave="' + l.chave + '">' +
         '<td><code>' + l.chave + '</code></td>' +
         '<td>' + (APP_LABEL[l.app_id] || l.app_id || '—') + '</td>' +
@@ -46,7 +63,7 @@
         '<td>' + (l.origem || '—') + '</td>' +
         '<td><span class="admin-badge ' + (STATUS_CLASS[l.status] || 'ejemplo') + '">' + (STATUS_LABEL[l.status] || l.status) + '</span>' + (l.motivo_revogacao ? '<div style="font-size:11px;opacity:.7;margin-top:2px;">' + l.motivo_revogacao + '</div>' : '') + '</td>' +
         '<td>' + fmtData(l.criado_em) + '</td>' +
-        '<td><div class="admin-row-actions">' + acaoBtn + excluirBtn + '</div></td>' +
+        '<td><div class="admin-row-actions">' + enviarBtn + acaoBtn + excluirBtn + '</div></td>' +
       '</tr>';
     }).join('');
   }
@@ -116,7 +133,9 @@
     AdminLicencasAPI.api('/admin/licencas/gerar', { method: 'POST', body: JSON.stringify(payload) })
       .then(function (data) {
         newKeyBanner.hidden = false;
-        newKeyBanner.textContent = (payload.chave ? 'Licença registrada: ' : 'Licença gerada: ') + data.chave;
+        var linkEnv = linkEnviarChave(payload.cliente_contato, data.chave, payload.app_id);
+        newKeyBanner.innerHTML = (payload.chave ? 'Licença registrada: ' : 'Licença gerada: ') + '<code>' + data.chave + '</code>' +
+          (linkEnv ? ' &nbsp; <a href="' + linkEnv + '" target="_blank" rel="noopener" class="admin-btn admin-btn-primary admin-btn-sm" style="text-decoration:none;">Enviar pro cliente</a>' : '');
         form.reset();
         load();
       })
@@ -124,6 +143,7 @@
         var msg = err && err.message;
         if (msg === 'chave_ja_cadastrada') showBanner('Essa chave já está cadastrada.', true);
         else if (msg === 'chave_invalida') showBanner('Chave inválida (formato ou checksum errado).', true);
+        else if (msg === 'nome_e_contato_obrigatorios') showBanner('Preencha o nome e o contato do cliente.', true);
         else showBanner('Não foi possível gerar a licença.', true);
       });
   });

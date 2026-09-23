@@ -915,13 +915,15 @@ function renderTrialExpirado(){
 function renderLicenseRevoked(){
   document.getElementById('app-root').classList.remove('ready');
   const root=document.getElementById('auth-root');
+  const chave=lsGet(LICENSE_LS_KEY)||'';
   const motivo=lsGet(LICENSE_REVOKED_MOTIVO_LS_KEY)||'';
-  const msgContato=motivo?`Minha licença do Gestacell foi desativada (motivo: ${motivo}) e preciso resolver.`:'Minha licença do Gestacell foi desativada e preciso resolver.';
+  const msgContato=motivo?`Minha licença do Gestacell (${chave}) foi desativada (motivo: ${motivo}) e preciso resolver.`:`Minha licença do Gestacell (${chave}) foi desativada e preciso resolver.`;
   root.innerHTML=`
   <div class="auth-screen"><div class="auth-card">
     ${authBrandHTML()}
     <h2 style="font-size:17px;text-align:center;margin-top:6px;">Licença desativada</h2>
-    <div class="callout warn" style="margin-top:10px;"><span>${ic('warn',15)}</span><span>Sua licença foi desativada.${motivo?' Motivo: '+esc(motivo)+'.':''} Entre em contato com a LeuName Softwares para reativar o acesso.</span></div>
+    <p class="small center muted" style="margin:2px 0 0;">Licença: <code>${esc(chave)}</code></p>
+    <div class="callout warn" style="margin-top:10px;"><span>${ic('warn',15)}</span><span>Sua licença foi desativada.${motivo?' Motivo: '+esc(motivo)+'.':''} Se for pendência de pagamento, regularize e entre em contato pra reativar o acesso.</span></div>
     ${contatoLeuNameHTML(msgContato)}
     <button class="btn outline" id="lic-recheck" style="width:100%;justify-content:center;margin-top:10px;padding:11px;">Verificar novamente</button>
     ${authFooterHTML()}
@@ -3084,7 +3086,7 @@ if('serviceWorker' in navigator){ navigator.serviceWorker.register('/sw.js').cat
    de vez em quando e compara o APP_BUILD_ID; se for diferente do que já
    está rodando na tela, recarrega sozinho -- assim ninguém precisa
    desinstalar/reinstalar o app pra ver uma correção nova. */
-var APP_BUILD_ID = 'BUILD-2026-09-23-03';
+var APP_BUILD_ID = 'BUILD-2026-09-23-04';
 var jaRecarregouGestao = false;
 function verificarVersaoNovaGestao(){
   if(jaRecarregouGestao) return;
@@ -3099,6 +3101,7 @@ function recheckLicenseOnFocusGestao() {
 document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible') { verificarVersaoNovaGestao(); recheckLicenseOnFocusGestao(); } });
 window.addEventListener('focus', function () { verificarVersaoNovaGestao(); recheckLicenseOnFocusGestao(); });
 setInterval(verificarVersaoNovaGestao, 60000);
+setInterval(recheckLicenseOnFocusGestao, 15000);
 verificarVersaoNovaGestao();
 </script>
 </body>

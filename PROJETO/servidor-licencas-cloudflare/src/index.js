@@ -324,6 +324,9 @@ export default {
       // nova aleatória -- serve pra colocar nome em licenças antigas.
       if (pathname === '/admin/licencas/gerar' && request.method === 'POST') {
         const body = await request.json();
+        if (!body.cliente_nome || !body.cliente_contato) {
+          return json({ ok: false, erro: 'nome_e_contato_obrigatorios' }, 400);
+        }
         const appId = body.app_id || 'leuname-gestao';
         const app = await env.DB.prepare('SELECT id FROM apps WHERE id = ?').bind(appId).first();
         if (!app) return json({ ok: false, erro: 'app_nao_encontrado' }, 404);
