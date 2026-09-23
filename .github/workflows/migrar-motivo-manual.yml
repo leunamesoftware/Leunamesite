@@ -1,0 +1,17 @@
+name: Migrar coluna motivo_revogacao
+
+on:
+  workflow_dispatch:
+    inputs:
+      admin_token:
+        description: 'ADMIN_TOKEN do servidor de licencas'
+        required: true
+
+jobs:
+  migrar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Rodar migracao (adiciona coluna motivo_revogacao se nao existir)
+        run: |
+          curl -sS -X POST "https://api.leunamesoftware.com/admin/migrar-motivo-revogacao" \
+            -H "Authorization: Bearer ${{ inputs.admin_token }}"
