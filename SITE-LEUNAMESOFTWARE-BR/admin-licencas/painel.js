@@ -44,7 +44,7 @@
         '<td><strong>' + (l.cliente_nome || '—') + '</strong></td>' +
         '<td>' + (l.cliente_contato || '—') + '</td>' +
         '<td>' + (l.origem || '—') + '</td>' +
-        '<td><span class="admin-badge ' + (STATUS_CLASS[l.status] || 'ejemplo') + '">' + (STATUS_LABEL[l.status] || l.status) + '</span></td>' +
+        '<td><span class="admin-badge ' + (STATUS_CLASS[l.status] || 'ejemplo') + '">' + (STATUS_LABEL[l.status] || l.status) + '</span>' + (l.motivo_revogacao ? '<div style="font-size:11px;opacity:.7;margin-top:2px;">' + l.motivo_revogacao + '</div>' : '') + '</td>' +
         '<td>' + fmtData(l.criado_em) + '</td>' +
         '<td><div class="admin-row-actions">' + acaoBtn + excluirBtn + '</div></td>' +
       '</tr>';
@@ -81,8 +81,9 @@
     var excBtn = e.target.closest('[data-excluir]');
     if (revBtn) {
       var chaveRev = revBtn.getAttribute('data-revogar');
-      if (confirm('Revogar a licença ' + chaveRev + '? O app do cliente vai travar assim que detectar a revogação (pode levar até 90s se ele estiver com o app aberto, ou no próximo boot).')) {
-        AdminLicencasAPI.api('/admin/licencas/revogar', { method: 'POST', body: JSON.stringify({ chave: chaveRev }) })
+      var motivoRev = prompt('Revogar a licença ' + chaveRev + '. Por qual motivo? (aparece pro cliente na tela e na mensagem de WhatsApp/e-mail — ex: "pagamento em atraso". Pode deixar em branco.)', '');
+      if (motivoRev !== null) {
+        AdminLicencasAPI.api('/admin/licencas/revogar', { method: 'POST', body: JSON.stringify({ chave: chaveRev, motivo: motivoRev.trim() || null }) })
           .then(load)
           .catch(function () { showBanner('Não foi possível revogar a licença.', true); });
       }

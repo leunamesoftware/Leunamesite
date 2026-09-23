@@ -915,12 +915,14 @@ function renderTrialExpirado(){
 function renderLicenseRevoked(){
   document.getElementById('app-root').classList.remove('ready');
   const root=document.getElementById('auth-root');
+  const motivo=lsGet(LICENSE_REVOKED_MOTIVO_LS_KEY)||'';
+  const msgContato=motivo?`Minha licença do Gestacell foi desativada (motivo: ${motivo}) e preciso resolver.`:'Minha licença do Gestacell foi desativada e preciso resolver.';
   root.innerHTML=`
   <div class="auth-screen"><div class="auth-card">
     ${authBrandHTML()}
     <h2 style="font-size:17px;text-align:center;margin-top:6px;">Licença desativada</h2>
-    <div class="callout warn" style="margin-top:10px;"><span>${ic('warn',15)}</span><span>Sua licença foi desativada. Entre em contato com a LeuName Softwares para reativar o acesso.</span></div>
-    ${contatoLeuNameHTML('Minha licença do Gestacell foi desativada e preciso resolver.')}
+    <div class="callout warn" style="margin-top:10px;"><span>${ic('warn',15)}</span><span>Sua licença foi desativada.${motivo?' Motivo: '+esc(motivo)+'.':''} Entre em contato com a LeuName Softwares para reativar o acesso.</span></div>
+    ${contatoLeuNameHTML(msgContato)}
     <button class="btn outline" id="lic-recheck" style="width:100%;justify-content:center;margin-top:10px;padding:11px;">Verificar novamente</button>
     ${authFooterHTML()}
   </div></div>`;
@@ -2720,6 +2722,7 @@ function trialExpirado(){
   return (Date.now()-inicio) > TRIAL_DIAS*86400000;
 }
 const LICENSE_REVOKED_LS_KEY='leuname_licenca_revogada';
+const LICENSE_REVOKED_MOTIVO_LS_KEY='leuname_licenca_revogada_motivo';
 /* Consulta o servidor de licencas para saber se a chave foi revogada (ex:
    cliente inadimplente). So bloqueia com confirmacao explicita do servidor
    (status !== 'ativa'); qualquer falha de rede, resposta invalida ou chave
@@ -2734,8 +2737,8 @@ async function checkLicenseRevoked(){
   let data;
   try{ data=await resp.json(); }catch(e){ return false; }
   if(!data||!data.ok||!data.encontrada) return false;
-  if(data.status && data.status!=='ativa'){ lsSet(LICENSE_REVOKED_LS_KEY,'1'); return true; }
-  lsSet(LICENSE_REVOKED_LS_KEY,''); return false;
+  if(data.status && data.status!=='ativa'){ lsSet(LICENSE_REVOKED_LS_KEY,'1'); lsSet(LICENSE_REVOKED_MOTIVO_LS_KEY,data.motivo_revogacao||''); return true; }
+  lsSet(LICENSE_REVOKED_LS_KEY,''); lsSet(LICENSE_REVOKED_MOTIVO_LS_KEY,''); return false;
 }
 VIEWS.configuracoes = {
   render: async()=>{
@@ -3081,7 +3084,7 @@ if('serviceWorker' in navigator){ navigator.serviceWorker.register('/sw.js').cat
    de vez em quando e compara o APP_BUILD_ID; se for diferente do que já
    está rodando na tela, recarrega sozinho -- assim ninguém precisa
    desinstalar/reinstalar o app pra ver uma correção nova. */
-var APP_BUILD_ID = 'BUILD-2026-09-23-02';
+var APP_BUILD_ID = 'BUILD-2026-09-23-03';
 var jaRecarregouGestao = false;
 function verificarVersaoNovaGestao(){
   if(jaRecarregouGestao) return;

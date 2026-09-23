@@ -17,6 +17,7 @@ CREATE TABLE IF NOT EXISTS licencas (
   status TEXT NOT NULL DEFAULT 'ativa',   -- ativa | revogada
   criado_em TEXT NOT NULL,
   revogado_em TEXT,
+  motivo_revogacao TEXT,            -- por que foi revogada (ex: "pagamento em atraso"), mostrado pro cliente
   FOREIGN KEY (app_id) REFERENCES apps(id)
 );
 

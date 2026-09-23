@@ -357,13 +357,16 @@ export default {
         return json({ ok: true, licencas: results });
       }
 
-      // POST /admin/licencas/revogar  { chave }
+      // POST /admin/licencas/revogar  { chave, motivo? }
+      // "motivo" e mostrado pro cliente na tela de licenca desativada e na
+      // mensagem pronta de WhatsApp/e-mail, pra ele (e o suporte) saberem
+      // logo de cara o porque (ex: "pagamento em atraso").
       if (pathname === '/admin/licencas/revogar' && request.method === 'POST') {
         const body = await request.json();
         if (!body.chave) return json({ ok: false, erro: 'chave_obrigatoria' }, 400);
         await env.DB.prepare(
-          "UPDATE licencas SET status = 'revogada', revogado_em = datetime('now') WHERE chave = ?"
-        ).bind(body.chave).run();
+          "UPDATE licencas SET status = 'revogada', revogado_em = datetime('now'), motivo_revogacao = ? WHERE chave = ?"
+        ).bind(body.motivo || null, body.chave).run();
         return json({ ok: true, chave: body.chave, status: 'revogada' });
       }
 
@@ -372,9 +375,21 @@ export default {
         const body = await request.json();
         if (!body.chave) return json({ ok: false, erro: 'chave_obrigatoria' }, 400);
         await env.DB.prepare(
-          "UPDATE licencas SET status = 'ativa', revogado_em = NULL WHERE chave = ?"
+          "UPDATE licencas SET status = 'ativa', revogado_em = NULL, motivo_revogacao = NULL WHERE chave = ?"
         ).bind(body.chave).run();
         return json({ ok: true, chave: body.chave, status: 'ativa' });
+      }
+
+      // POST /admin/migrar-motivo-revogacao  -- roda uma unica vez pra
+      // adicionar a coluna motivo_revogacao em bancos criados antes dela
+      // existir. Se a coluna ja existe, so ignora o erro e responde ok.
+      if (pathname === '/admin/migrar-motivo-revogacao' && request.method === 'POST') {
+        try {
+          await env.DB.prepare('ALTER TABLE licencas ADD COLUMN motivo_revogacao TEXT').run();
+          return json({ ok: true, migrado: true });
+        } catch (e) {
+          return json({ ok: true, migrado: false, obs: 'coluna provavelmente ja existia' });
+        }
       }
 
       // POST /admin/licencas/excluir  { chave }  -- remove a linha de vez
@@ -389,12 +404,12 @@ export default {
       return json({ ok: false, erro: 'rota_nao_encontrada' }, 404);
     }
 
-    // GET /licencas/verificar?chave=LEU-XXXX-XXXX-XXXX  (publico -- so confirma se
-    // essa chave foi emitida por nos e se continua ativa no nosso registro; o app
-    // em si NAO chama isso hoje, e so pra suporte/consulta manual)
+    // GET /licencas/verificar?chave=LEU-XXXX-XXXX-XXXX  (publico -- o proprio
+    // app chama isso pra saber se a chave foi revogada, e por que -- ver
+    // checkLicenseRevoked() no index.html de cada app)
     if (pathname === '/licencas/verificar' && request.method === 'GET') {
       const chave = (url.searchParams.get('chave') || '').trim().toUpperCase();
-      const row = await env.DB.prepare('SELECT app_id, status, criado_em FROM licencas WHERE chave = ?')
+      const row = await env.DB.prepare('SELECT app_id, status, criado_em, motivo_revogacao FROM licencas WHERE chave = ?')
         .bind(chave).first();
       if (!row) return json({ ok: true, encontrada: false });
       return json({ ok: true, encontrada: true, ...row });
