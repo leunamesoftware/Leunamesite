@@ -1,0 +1,37 @@
+name: Ajustes pontuais de licencas
+
+on:
+  workflow_dispatch:
+    inputs:
+      admin_token:
+        description: 'ADMIN_TOKEN do servidor de licencas'
+        required: true
+
+jobs:
+  ajustar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checar status atual da chave de demonstracao (publico, sem token)
+        run: |
+          curl -sS "https://api.leunamesoftware.com/licencas/verificar?chave=LEU-0WBC-JK4F-F86C"
+
+      - name: Registrar a chave de demonstracao no banco (para poder bloquear de fato)
+        run: |
+          curl -sS -X POST "https://api.leunamesoftware.com/admin/licencas/gerar" \
+            -H "Authorization: Bearer ${{ inputs.admin_token }}" \
+            -H "Content-Type: application/json" \
+            --data-raw '{"app_id":"leuname-gestao","cliente_nome":"BLOQUEADA (video demo)","chave":"LEU-0WBC-JK4F-F86C","origem":"manual"}'
+
+      - name: Revogar a chave de demonstracao de fato
+        run: |
+          curl -sS -X POST "https://api.leunamesoftware.com/admin/licencas/revogar" \
+            -H "Authorization: Bearer ${{ inputs.admin_token }}" \
+            -H "Content-Type: application/json" \
+            --data-raw '{"chave":"LEU-0WBC-JK4F-F86C"}'
+
+      - name: Gerar licenca definitiva do ConstruGestao para o Emanuel
+        run: |
+          curl -sS -X POST "https://api.leunamesoftware.com/admin/licencas/gerar" \
+            -H "Authorization: Bearer ${{ inputs.admin_token }}" \
+            -H "Content-Type: application/json" \
+            --data-raw '{"app_id":"construgestao","cliente_nome":"Emanuel (uso proprio)","origem":"manual"}'
