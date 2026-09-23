@@ -326,8 +326,9 @@ export default {
       const id = uid();
       const agora = nowIso();
       await env.DB.prepare(
-        'INSERT INTO folders (id, user_id, parent_id, name, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)'
-      ).bind(id, auth.user.id, parentId, nome, agora, agora).run();
+        `INSERT INTO folders (id, user_id, parent_id, name, sort_order, created_at, updated_at)
+         VALUES (?, ?, ?, ?, (SELECT COALESCE(MAX(sort_order), 0) + 1 FROM folders WHERE user_id = ? AND is_deleted = 0 AND (parent_id = ? OR (parent_id IS NULL AND ? IS NULL))), ?, ?)`
+      ).bind(id, auth.user.id, parentId, nome, auth.user.id, parentId, parentId, agora, agora).run();
       return json({ ok: true, folder: { id, name: nome, parent_id: parentId } });
     }
 
@@ -337,14 +338,14 @@ export default {
       if (!auth) return json({ ok: false, erro: 'nao_autenticado' }, 401);
       const folderId = m[1] === 'root' ? null : m[1];
       const subpastas = await env.DB.prepare(
-        `SELECT id, name, is_favorite, created_at, updated_at FROM folders
+        `SELECT id, name, is_favorite, sort_order, created_at, updated_at FROM folders
          WHERE user_id = ? AND is_deleted = 0 AND (parent_id = ? OR (parent_id IS NULL AND ? IS NULL))
-         ORDER BY name COLLATE NOCASE`
+         ORDER BY sort_order, name COLLATE NOCASE`
       ).bind(auth.user.id, folderId, folderId).all();
       const arquivos = await env.DB.prepare(
-        `SELECT id, name, mime_type, size_bytes, category, is_favorite, created_at, updated_at FROM files
+        `SELECT id, name, mime_type, size_bytes, category, is_favorite, sort_order, created_at, updated_at FROM files
          WHERE user_id = ? AND is_deleted = 0 AND (folder_id = ? OR (folder_id IS NULL AND ? IS NULL))
-         ORDER BY name COLLATE NOCASE`
+         ORDER BY sort_order, name COLLATE NOCASE`
       ).bind(auth.user.id, folderId, folderId).all();
       return json({ ok: true, folders: subpastas.results, files: arquivos.results });
     }
@@ -383,6 +384,27 @@ export default {
       return json({ ok: true });
     }
 
+    // Reordenar na mao: troca a posicao (sort_order) com a pasta vizinha
+    // (mesma pasta-pai) na direcao pedida. Se ja estiver na ponta, nao faz nada.
+    m = pathname.match(/^\/folders\/([^/]+)\/mover$/);
+    if (m && method === 'POST') {
+      if (!auth) return json({ ok: false, erro: 'nao_autenticado' }, 401);
+      const body = await request.json().catch(() => ({}));
+      const item = await env.DB.prepare('SELECT parent_id, sort_order FROM folders WHERE id = ? AND user_id = ? AND is_deleted = 0').bind(m[1], auth.user.id).first();
+      if (!item) return json({ ok: false, erro: 'nao_encontrada' }, 404);
+      const subindo = body.direcao === 'cima';
+      const vizinho = await env.DB.prepare(
+        `SELECT id, sort_order FROM folders WHERE user_id = ? AND is_deleted = 0 AND (parent_id = ? OR (parent_id IS NULL AND ? IS NULL))
+         AND sort_order ${subindo ? '<' : '>'} ? ORDER BY sort_order ${subindo ? 'DESC' : 'ASC'} LIMIT 1`
+      ).bind(auth.user.id, item.parent_id, item.parent_id, item.sort_order).first();
+      if (!vizinho) return json({ ok: true, moveu: false });
+      await env.DB.batch([
+        env.DB.prepare('UPDATE folders SET sort_order = ? WHERE id = ?').bind(vizinho.sort_order, m[1]),
+        env.DB.prepare('UPDATE folders SET sort_order = ? WHERE id = ?').bind(item.sort_order, vizinho.id),
+      ]);
+      return json({ ok: true, moveu: true });
+    }
+
     // ==================== ARQUIVOS ====================
 
     if (pathname === '/files/upload' && method === 'POST') {
@@ -405,9 +427,9 @@ export default {
       const agora = nowIso();
       await env.DB.batch([
         env.DB.prepare(
-          `INSERT INTO files (id, user_id, folder_id, name, mime_type, size_bytes, r2_key, category, created_at, updated_at)
-           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
-        ).bind(fileId, auth.user.id, folderId, nomeArquivo, mime, tamanho, r2Key, categoriaDoMime(mime), agora, agora),
+          `INSERT INTO files (id, user_id, folder_id, name, mime_type, size_bytes, r2_key, category, sort_order, created_at, updated_at)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, (SELECT COALESCE(MAX(sort_order), 0) + 1 FROM files WHERE user_id = ? AND is_deleted = 0 AND (folder_id = ? OR (folder_id IS NULL AND ? IS NULL))), ?, ?)`
+        ).bind(fileId, auth.user.id, folderId, nomeArquivo, mime, tamanho, r2Key, categoriaDoMime(mime), auth.user.id, folderId, folderId, agora, agora),
         env.DB.prepare('UPDATE users SET storage_used_bytes = storage_used_bytes + ? WHERE id = ?').bind(tamanho, auth.user.id),
       ]);
       await logAtividade(env, auth.user.id, 'upload', 'file', fileId, request, { size_bytes: tamanho });
@@ -470,14 +492,36 @@ export default {
       await env.ARQUIVOS.put(novaChave, objeto.body, { httpMetadata: { contentType: arq.mime_type } });
       const agora = nowIso();
       const body = await request.json().catch(() => ({}));
+      const folderIdCopia = body.folder_id ?? arq.folder_id;
       await env.DB.batch([
         env.DB.prepare(
-          `INSERT INTO files (id, user_id, folder_id, name, mime_type, size_bytes, r2_key, category, created_at, updated_at)
-           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
-        ).bind(novoId, auth.user.id, body.folder_id ?? arq.folder_id, `Cópia de ${arq.name}`, arq.mime_type, arq.size_bytes, novaChave, arq.category, agora, agora),
+          `INSERT INTO files (id, user_id, folder_id, name, mime_type, size_bytes, r2_key, category, sort_order, created_at, updated_at)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, (SELECT COALESCE(MAX(sort_order), 0) + 1 FROM files WHERE user_id = ? AND is_deleted = 0 AND (folder_id = ? OR (folder_id IS NULL AND ? IS NULL))), ?, ?)`
+        ).bind(novoId, auth.user.id, folderIdCopia, `Cópia de ${arq.name}`, arq.mime_type, arq.size_bytes, novaChave, arq.category, auth.user.id, folderIdCopia, folderIdCopia, agora, agora),
         env.DB.prepare('UPDATE users SET storage_used_bytes = storage_used_bytes + ? WHERE id = ?').bind(arq.size_bytes, auth.user.id),
       ]);
       return json({ ok: true, file: { id: novoId } });
+    }
+
+    // Reordenar na mao: troca a posicao (sort_order) com o arquivo vizinho
+    // (mesma pasta) na direcao pedida. Se ja estiver na ponta, nao faz nada.
+    m = pathname.match(/^\/files\/([^/]+)\/mover$/);
+    if (m && method === 'POST') {
+      if (!auth) return json({ ok: false, erro: 'nao_autenticado' }, 401);
+      const body = await request.json().catch(() => ({}));
+      const item = await env.DB.prepare('SELECT folder_id, sort_order FROM files WHERE id = ? AND user_id = ? AND is_deleted = 0').bind(m[1], auth.user.id).first();
+      if (!item) return json({ ok: false, erro: 'nao_encontrado' }, 404);
+      const subindo = body.direcao === 'cima';
+      const vizinho = await env.DB.prepare(
+        `SELECT id, sort_order FROM files WHERE user_id = ? AND is_deleted = 0 AND (folder_id = ? OR (folder_id IS NULL AND ? IS NULL))
+         AND sort_order ${subindo ? '<' : '>'} ? ORDER BY sort_order ${subindo ? 'DESC' : 'ASC'} LIMIT 1`
+      ).bind(auth.user.id, item.folder_id, item.folder_id, item.sort_order).first();
+      if (!vizinho) return json({ ok: true, moveu: false });
+      await env.DB.batch([
+        env.DB.prepare('UPDATE files SET sort_order = ? WHERE id = ?').bind(vizinho.sort_order, m[1]),
+        env.DB.prepare('UPDATE files SET sort_order = ? WHERE id = ?').bind(item.sort_order, vizinho.id),
+      ]);
+      return json({ ok: true, moveu: true });
     }
 
     // ==================== LIXEIRA ====================

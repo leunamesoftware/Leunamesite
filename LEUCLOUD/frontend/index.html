@@ -154,6 +154,7 @@ hr.divisor{border:none; border-top:1px solid var(--borda); margin:6px 0;}
   border-radius:8px; padding:7px 11px; cursor:pointer; display:flex; align-items:center; gap:5px;
 }
 .item-acoes button.acao-perigo{color:#fca5a5;}
+.item-acoes button:disabled{opacity:.35; pointer-events:none;}
 .barra-progresso-wrap{background:var(--card); border:1px solid var(--borda); border-radius:var(--radius); padding:14px; margin-bottom:14px;}
 .barra-progresso-wrap .nome-arq{font-size:13px; margin-bottom:8px; display:flex; justify-content:space-between; color:var(--fraco);}
 
@@ -740,7 +741,9 @@ function renderListaArquivos(pastas, arquivos) {
   var el = document.getElementById('listaArquivos');
   if (!pastas.length && !arquivos.length) { el.innerHTML = '<p class="lista-vazia">Essa pasta está vazia. Toque em "Nova pasta" ou "Enviar" pra começar.</p>'; return; }
   var html = '';
-  pastas.forEach(function (p) {
+  pastas.forEach(function (p, i) {
+    var subirDesabilitado = i === 0 ? 'disabled' : '';
+    var descerDesabilitado = i === pastas.length - 1 ? 'disabled' : '';
     html += '<div class="item-card">' +
       '<div class="item-topo" style="cursor:pointer" onclick="abrirPasta(\'' + p.id + '\',\'' + esc(p.name).replace(/'/g, "\\'") + '\')">' +
         '<div class="item-icone" style="background:#334155;">📁</div>' +
@@ -748,13 +751,17 @@ function renderListaArquivos(pastas, arquivos) {
         (p.is_favorite ? '<span class="item-favorito">⭐</span>' : '') +
       '</div>' +
       '<div class="item-acoes">' +
+        '<button ' + subirDesabilitado + ' onclick="moverPasta(\'' + p.id + '\',\'cima\')">⬆️</button>' +
+        '<button ' + descerDesabilitado + ' onclick="moverPasta(\'' + p.id + '\',\'baixo\')">⬇️</button>' +
         '<button onclick="renomearPasta(\'' + p.id + '\',\'' + esc(p.name).replace(/'/g, "\\'") + '\')">✏️ Renomear</button>' +
         '<button onclick="favoritarPasta(\'' + p.id + '\',' + (p.is_favorite ? 'false' : 'true') + ')">⭐ ' + (p.is_favorite ? 'Desfavoritar' : 'Favoritar') + '</button>' +
         '<button class="acao-perigo" onclick="excluirPasta(\'' + p.id + '\')">🗑️ Mover pra lixeira</button>' +
       '</div></div>';
   });
-  arquivos.forEach(function (a) {
+  arquivos.forEach(function (a, i) {
     var ic = iconeCategoria(a.category);
+    var subirDesabilitado = i === 0 ? 'disabled' : '';
+    var descerDesabilitado = i === arquivos.length - 1 ? 'disabled' : '';
     html += '<div class="item-card">' +
       '<div class="item-topo" style="cursor:pointer" onclick="abrirPreview(\'' + a.id + '\',\'' + esc(a.name).replace(/'/g, "\\'") + '\',\'' + a.category + '\')">' +
         '<div class="item-icone" style="background:' + ic.cor + ';">' + ic.ic + '</div>' +
@@ -762,6 +769,8 @@ function renderListaArquivos(pastas, arquivos) {
         (a.is_favorite ? '<span class="item-favorito">⭐</span>' : '') +
       '</div>' +
       '<div class="item-acoes">' +
+        '<button ' + subirDesabilitado + ' onclick="moverArquivo(\'' + a.id + '\',\'cima\')">⬆️</button>' +
+        '<button ' + descerDesabilitado + ' onclick="moverArquivo(\'' + a.id + '\',\'baixo\')">⬇️</button>' +
         '<button onclick="baixarArquivo(\'' + a.id + '\',\'' + esc(a.name).replace(/'/g, "\\'") + '\')">⬇️ Baixar</button>' +
         '<button onclick="renomearArquivo(\'' + a.id + '\',\'' + esc(a.name).replace(/'/g, "\\'") + '\')">✏️ Renomear</button>' +
         '<button onclick="favoritarArquivo(\'' + a.id + '\',' + (a.is_favorite ? 'false' : 'true') + ')">⭐ ' + (a.is_favorite ? 'Desfavoritar' : 'Favoritar') + '</button>' +
@@ -796,6 +805,10 @@ async function favoritarPasta(id, favorito) {
   try { await api('/folders/' + id + '/favorito', { method: 'POST', body: { favorite: favorito } }); carregarPasta(pilhaPastas[pilhaPastas.length - 1].id); }
   catch (err) { mostrarToast(mensagemErro(err), true); }
 }
+async function moverPasta(id, direcao) {
+  try { await api('/folders/' + id + '/mover', { method: 'POST', body: { direcao: direcao } }); carregarPasta(pilhaPastas[pilhaPastas.length - 1].id); }
+  catch (err) { mostrarToast(mensagemErro(err), true); }
+}
 async function excluirPasta(id) {
   if (!confirm('Mover essa pasta e tudo dentro dela pra lixeira?')) return;
   try { await api('/folders/' + id, { method: 'DELETE' }); mostrarToast('Pasta movida pra lixeira.'); carregarPasta(pilhaPastas[pilhaPastas.length - 1].id); }
@@ -809,6 +822,10 @@ async function renomearArquivo(id, nomeAtual) {
 }
 async function favoritarArquivo(id, favorito) {
   try { await api('/files/' + id, { method: 'PATCH', body: { favorite: favorito } }); carregarPasta(pilhaPastas[pilhaPastas.length - 1].id); }
+  catch (err) { mostrarToast(mensagemErro(err), true); }
+}
+async function moverArquivo(id, direcao) {
+  try { await api('/files/' + id + '/mover', { method: 'POST', body: { direcao: direcao } }); carregarPasta(pilhaPastas[pilhaPastas.length - 1].id); }
   catch (err) { mostrarToast(mensagemErro(err), true); }
 }
 async function excluirArquivo(id) {
@@ -1052,7 +1069,7 @@ async function trocarSenha() {
    cache) de vez em quando e compara o APP_BUILD_ID; se for diferente
    do que já está rodando na tela, recarrega sozinho -- assim ninguém
    precisa desinstalar/reinstalar o atalho pra ver uma correção nova. */
-var APP_BUILD_ID = 'BUILD-2026-09-23-01';
+var APP_BUILD_ID = 'BUILD-2026-09-23-02';
 var jaRecarregouLeuCloud = false;
 function verificarVersaoNovaLeuCloud() {
   if (jaRecarregouLeuCloud) return;
