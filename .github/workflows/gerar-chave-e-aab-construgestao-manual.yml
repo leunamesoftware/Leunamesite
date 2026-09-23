@@ -1,0 +1,210 @@
+name: Gerar chave de assinatura + AAB do ConstruGestão (pontual)
+
+# Workflow de UMA VEZ SO: gera uma chave de assinatura de release nova
+# pro ConstruGestao (nao existia nenhuma ainda), assina o .aab com ela
+# e entrega os dois (aab + chave) como artifact, pra Emanuel poder:
+#   1) subir o .aab na Play Store
+#   2) guardar a chave de assinatura pra sempre (necessaria pra QUALQUER
+#      atualizacao futura do app -- se perder, nunca mais atualiza)
+#
+# Depois desta execucao, este arquivo de workflow deve ser apagado (nao
+# faz sentido gerar uma chave nova de novo -- usar sempre a mesma).
+on:
+  workflow_dispatch:
+
+jobs:
+  gerar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Baixar código do repositório
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Configurar Java (necessário para compilar Android e gerar a chave)
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Configurar o Android SDK
+        shell: bash
+        run: |
+          export ANDROID_SDK_ROOT="${ANDROID_SDK_ROOT:-${ANDROID_HOME:-/usr/local/lib/android/sdk}}"
+          echo "ANDROID_SDK_ROOT=$ANDROID_SDK_ROOT" >> "$GITHUB_ENV"
+          echo "ANDROID_HOME=$ANDROID_SDK_ROOT" >> "$GITHUB_ENV"
+          SDKMANAGER="$(find "$ANDROID_SDK_ROOT" -maxdepth 4 -type f -name sdkmanager 2>/dev/null | sort -V | tail -n1)"
+          if [ -z "$SDKMANAGER" ]; then
+            mkdir -p "$ANDROID_SDK_ROOT/cmdline-tools"
+            curl -sSL -o /tmp/cmdline-tools.zip \
+              https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip
+            unzip -q /tmp/cmdline-tools.zip -d "$ANDROID_SDK_ROOT/cmdline-tools"
+            mv "$ANDROID_SDK_ROOT/cmdline-tools/cmdline-tools" "$ANDROID_SDK_ROOT/cmdline-tools/latest"
+            SDKMANAGER="$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager"
+          fi
+          yes | "$SDKMANAGER" --licenses > /dev/null || true
+          "$SDKMANAGER" --install "platform-tools" "platforms;android-34" "build-tools;34.0.0" > /dev/null
+
+      - name: Instalar dependências do projeto Android
+        working-directory: ANDROID/projeto-instalador-construgestao
+        run: npm install
+
+      - name: Criar o projeto Android nativo (Capacitor)
+        working-directory: ANDROID/projeto-instalador-construgestao
+        run: npx cap add android
+
+      - name: Copiar o sistema para dentro do projeto Android
+        working-directory: ANDROID/projeto-instalador-construgestao
+        run: npx cap sync android
+
+      - name: Aplicar o ícone oficial do ConstruGestão
+        working-directory: ANDROID/projeto-instalador-construgestao
+        shell: bash
+        run: |
+          for d in mipmap-mdpi mipmap-hdpi mipmap-xhdpi mipmap-xxhdpi mipmap-xxxhdpi; do
+            cp "icones-oficiais/$d/ic_launcher.png" "android/app/src/main/res/$d/ic_launcher.png"
+            cp "icones-oficiais/$d/ic_launcher_round.png" "android/app/src/main/res/$d/ic_launcher_round.png"
+            cp "icones-oficiais/$d/ic_launcher_foreground.png" "android/app/src/main/res/$d/ic_launcher_foreground.png"
+          done
+          cp "icones-oficiais/ic_launcher_background.xml" "android/app/src/main/res/values/ic_launcher_background.xml"
+
+      - name: Gerar uma chave de assinatura nova (uma vez só, pra sempre)
+        working-directory: ANDROID/projeto-instalador-construgestao
+        shell: bash
+        run: |
+          KEYSTORE_PASSWORD="$(openssl rand -base64 24 | tr -dc 'A-Za-z0-9' | cut -c1-24)"
+          KEY_PASSWORD="$(openssl rand -base64 24 | tr -dc 'A-Za-z0-9' | cut -c1-24)"
+          echo "::add-mask::$KEYSTORE_PASSWORD"
+          echo "::add-mask::$KEY_PASSWORD"
+          keytool -genkeypair -v \
+            -keystore android/app/release.keystore \
+            -alias construgestao \
+            -keyalg RSA -keysize 2048 -validity 10000 \
+            -storepass "$KEYSTORE_PASSWORD" -keypass "$KEY_PASSWORD" \
+            -dname "CN=LeuName Softwares, OU=ConstruGestao, O=LeuName Softwares, L=Brasil, S=Brasil, C=BR"
+          echo "KEYSTORE_PASSWORD=$KEYSTORE_PASSWORD" >> "$GITHUB_ENV"
+          echo "KEY_PASSWORD=$KEY_PASSWORD" >> "$GITHUB_ENV"
+
+      - name: Configurar versão e assinatura de release no build.gradle
+        working-directory: ANDROID/projeto-instalador-construgestao
+        shell: bash
+        env:
+          KEY_ALIAS: construgestao
+        run: |
+          python3 - <<'PY'
+          import os, re
+
+          props = {}
+          with open("versao-release.properties", encoding="utf-8") as f:
+              for line in f:
+                  line = line.strip()
+                  if not line or line.startswith("#") or "=" not in line:
+                      continue
+                  k, v = line.split("=", 1)
+                  props[k.strip()] = v.strip()
+
+          version_code = props["versionCode"]
+          version_name = props["versionName"]
+
+          gradle_path = "android/app/build.gradle"
+          with open(gradle_path, encoding="utf-8") as f:
+              text = f.read()
+
+          text = re.sub(r"versionCode\s+\d+", f"versionCode {version_code}", text, count=1)
+          text = re.sub(r'versionName\s+"[^"]*"', f'versionName "{version_name}"', text, count=1)
+
+          signing_block = (
+              "    signingConfigs {\n"
+              "        release {\n"
+              "            storeFile file('release.keystore')\n"
+              "            storePassword System.getenv('KEYSTORE_PASSWORD')\n"
+              "            keyAlias System.getenv('KEY_ALIAS')\n"
+              "            keyPassword System.getenv('KEY_PASSWORD')\n"
+              "        }\n"
+              "    }\n"
+          )
+          text = text.replace("    buildTypes {", signing_block + "    buildTypes {", 1)
+          text = text.replace(
+              "        release {\n            minifyEnabled false",
+              "        release {\n            signingConfig signingConfigs.release\n            minifyEnabled false",
+              1,
+          )
+
+          with open(gradle_path, "w", encoding="utf-8") as f:
+              f.write(text)
+
+          print(f"versionCode={version_code} versionName={version_name} aplicados; signingConfig inserido.")
+          PY
+
+      - name: Dar permissão de execução ao Gradle
+        working-directory: ANDROID/projeto-instalador-construgestao/android
+        shell: bash
+        run: chmod +x gradlew
+
+      - name: Gerar o Android App Bundle (.aab) assinado
+        working-directory: ANDROID/projeto-instalador-construgestao/android
+        shell: bash
+        env:
+          KEY_ALIAS: construgestao
+        run: ./gradlew bundleRelease --no-daemon
+
+      - name: Preparar pasta de entrega (aab + chave + credenciais)
+        working-directory: ANDROID/projeto-instalador-construgestao
+        shell: bash
+        env:
+          KEY_ALIAS: construgestao
+        run: |
+          mkdir -p entrega
+          cp android/app/build/outputs/bundle/release/app-release.aab entrega/ConstruGestao.aab
+          cp android/app/release.keystore entrega/ConstruGestao-chave-assinatura.keystore
+          export B64="$(base64 -w0 android/app/release.keystore)"
+          python3 - <<'PY'
+          import os
+
+          b64 = os.environ["B64"]
+          n = len(b64)
+          tamanho = -(-n // 5)
+          partes = [b64[i:i + tamanho] for i in range(0, n, tamanho)]
+
+          linhas = [
+              "CREDENCIAIS DE ASSINATURA -- ConstruGestao",
+              "",
+              "GUARDE ESTE ARQUIVO E O ARQUIVO .keystore PRA SEMPRE, EM PELO MENOS",
+              "2 LUGARES (ex: um e-mail pra voce mesmo + um pen drive). Se perder a",
+              "chave depois do app publicado, a Google NAO deixa trocar -- nunca",
+              "mais vai dar pra atualizar esse app, teria que publicar um novo do zero.",
+              "",
+              "Alias da chave: " + os.environ["KEY_ALIAS"],
+              "Senha do keystore: " + os.environ["KEYSTORE_PASSWORD"],
+              "Senha da chave: " + os.environ["KEY_PASSWORD"],
+              "",
+              "Pra deixar reconstrucoes automaticas funcionando no futuro (workflow",
+              "'Build Android AAB ConstruGestao (Google Play)'), cadastre em",
+              "GitHub -> Settings -> Secrets and variables -> Actions:",
+              "",
+              "ANDROID_CONSTRUGESTAO_KEYSTORE_PASSWORD = a senha do keystore acima",
+              "ANDROID_CONSTRUGESTAO_KEY_ALIAS = " + os.environ["KEY_ALIAS"],
+              "ANDROID_CONSTRUGESTAO_KEY_PASSWORD = a senha da chave acima",
+              "ANDROID_CONSTRUGESTAO_KEYSTORE_B64_PART1 a PART5 = os 5 blocos abaixo,",
+              "cada um num secret separado (na ordem, sem espaco extra):",
+              "",
+          ]
+          for i, p in enumerate(partes, 1):
+              linhas.append(f"PART{i}:")
+              linhas.append(p)
+              linhas.append("")
+
+          with open("entrega/LEIA-ISSO-credenciais.txt", "w", encoding="utf-8") as f:
+              f.write("\n".join(linhas))
+          print("credenciais.txt escrito, tamanho base64:", n)
+          PY
+
+      - name: Enviar aab + chave + credenciais como Artifact do GitHub
+        uses: actions/upload-artifact@v4
+        with:
+          name: ConstruGestao-Entrega-Play-Store
+          path: ANDROID/projeto-instalador-construgestao/entrega/
+          if-no-files-found: error
