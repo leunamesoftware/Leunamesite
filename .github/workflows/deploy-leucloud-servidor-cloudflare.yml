@@ -37,7 +37,7 @@ jobs:
         working-directory: PROJETO/servidor-leucloud-cloudflare
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
-        run: npx wrangler@latest deploy | tee /tmp/deploy-output.txt
+        run: npx wrangler@latest deploy
 
       - name: Gerar e configurar o segredo PASSWORD_PEPPER (só na primeira vez)
         working-directory: PROJETO/servidor-leucloud-cloudflare
@@ -45,14 +45,16 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
         run: openssl rand -hex 32 | tr -d '\n' | npx wrangler@latest secret put PASSWORD_PEPPER
 
-      - name: Descobrir a URL do Worker publicado
+      - name: Esperar o domínio customizado propagar
+        run: sleep 20
+
+      - name: Testar o servidor no ar (domínio customizado, com algumas tentativas)
         run: |
-          URL=$(grep -Eo 'https://[a-z0-9.-]+\.workers\.dev' /tmp/deploy-output.txt | head -n1)
-          echo "URL descoberta: $URL"
-          echo "WORKER_URL=$URL" >> "$GITHUB_ENV"
-
-      - name: Esperar propagar
-        run: sleep 15
-
-      - name: Testar o servidor no ar
-        run: curl -sS --fail "$WORKER_URL/health"
+          URL="https://api.leucloud.leunamesoftware.com.br/health"
+          for i in 1 2 3 4 5; do
+            if curl -sS --fail "$URL"; then exit 0; fi
+            echo "Tentativa $i falhou, esperando mais um pouco..."
+            sleep 15
+          done
+          echo "Não respondeu depois de várias tentativas."
+          exit 1
