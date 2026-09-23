@@ -1,0 +1,40 @@
+name: Verificar reordenar pastas do LeuCloud (pontual)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  verificar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cadastro de usuario de teste
+        run: |
+          curl -sS --fail -X POST https://api.leucloud.leunamesoftware.com.br/auth/signup \
+            -H "Content-Type: application/json" \
+            -d '{"name":"Teste Reordenar","email":"teste-reordenar-v2@leunamesoftware.com.br","password":"senhaDeTeste123","platform":"web","device_name":"CI"}' \
+            -o /tmp/signup.json
+          python3 -c "import json;print(json.load(open('/tmp/signup.json'))['session_token'])" > /tmp/token.txt
+
+      - name: Criar pasta A e pasta B (nessa ordem)
+        run: |
+          TOKEN=$(cat /tmp/token.txt)
+          curl -sS --fail -X POST https://api.leucloud.leunamesoftware.com.br/folders -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" -d '{"name":"Pasta A"}' -o /tmp/a.json
+          curl -sS --fail -X POST https://api.leucloud.leunamesoftware.com.br/folders -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" -d '{"name":"Pasta B"}' -o /tmp/b.json
+          cat /tmp/a.json; echo; cat /tmp/b.json
+          python3 -c "import json;print(json.load(open('/tmp/b.json'))['folder']['id'])" > /tmp/b_id.txt
+
+      - name: Listar raiz (esperado A antes de B)
+        run: |
+          TOKEN=$(cat /tmp/token.txt)
+          curl -sS --fail https://api.leucloud.leunamesoftware.com.br/folders/root -H "Authorization: Bearer $TOKEN"
+
+      - name: Mover pasta B pra cima
+        run: |
+          TOKEN=$(cat /tmp/token.txt)
+          B_ID=$(cat /tmp/b_id.txt)
+          curl -sS --fail -X POST https://api.leucloud.leunamesoftware.com.br/folders/$B_ID/mover -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" -d '{"direcao":"cima"}'
+
+      - name: Listar raiz de novo (esperado B antes de A agora)
+        run: |
+          TOKEN=$(cat /tmp/token.txt)
+          curl -sS --fail https://api.leucloud.leunamesoftware.com.br/folders/root -H "Authorization: Bearer $TOKEN"
