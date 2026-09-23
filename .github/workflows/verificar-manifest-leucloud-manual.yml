@@ -15,12 +15,7 @@ jobs:
           echo "===== CONTEUDO ====="
           cat /tmp/manifest.json
           echo
-          python3 -c "
-import json
-m = json.load(open('/tmp/manifest.json'))
-print('share_target presente:', 'share_target' in m)
-print(json.dumps(m.get('share_target'), indent=2, ensure_ascii=False))
-"
+          python3 -c "import json; m = json.load(open('/tmp/manifest.json')); print('share_target presente:', 'share_target' in m); print(json.dumps(m.get('share_target'), indent=2, ensure_ascii=False))"
 
       - name: Baixar sw.js e conferir se tem o interceptador do POST /compartilhar
         run: |
