@@ -1,0 +1,26 @@
+name: Registrar chaves ativas conhecidas (antes de travar chave nao cadastrada)
+
+on:
+  workflow_dispatch:
+    inputs:
+      admin_token:
+        description: 'ADMIN_TOKEN do servidor de licencas'
+        required: true
+
+jobs:
+  registrar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Registrar chave trial do grupo (Gestacell, teste fechado Play Store)
+        run: |
+          curl -sS -X POST "https://api.leunamesoftware.com/admin/licencas/gerar" \
+            -H "Authorization: Bearer ${{ inputs.admin_token }}" \
+            -H "Content-Type: application/json" \
+            --data-raw '{"app_id":"leuname-gestao","cliente_nome":"Grupo trial - teste fechado Play Store","cliente_contato":"grupo","chave":"LEU-TRIA-0001-93F6","origem":"manual"}'
+
+      - name: Registrar chave de teste antiga do Emanuel (ConstruGestao)
+        run: |
+          curl -sS -X POST "https://api.leunamesoftware.com/admin/licencas/gerar" \
+            -H "Authorization: Bearer ${{ inputs.admin_token }}" \
+            -H "Content-Type: application/json" \
+            --data-raw '{"app_id":"construgestao","cliente_nome":"Emanuel (teste antigo)","cliente_contato":"emanuel","chave":"LEU-EMAN-0003-4D9E","origem":"manual"}'
