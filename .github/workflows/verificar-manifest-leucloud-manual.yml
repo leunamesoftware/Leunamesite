@@ -1,0 +1,28 @@
+name: Verificar manifest do LeuCloud (pontual)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  verificar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Baixar manifest e conferir conteudo/headers
+        run: |
+          curl -sS -D /tmp/headers.txt https://leucloud.leunamesoftware.com.br/manifest.webmanifest -o /tmp/manifest.json
+          echo "===== HEADERS ====="
+          cat /tmp/headers.txt
+          echo "===== CONTEUDO ====="
+          cat /tmp/manifest.json
+          echo
+          python3 -c "
+import json
+m = json.load(open('/tmp/manifest.json'))
+print('share_target presente:', 'share_target' in m)
+print(json.dumps(m.get('share_target'), indent=2, ensure_ascii=False))
+"
+
+      - name: Baixar sw.js e conferir se tem o interceptador do POST /compartilhar
+        run: |
+          curl -sS https://leucloud.leunamesoftware.com.br/sw.js -o /tmp/sw.js
+          grep -n "compartilhar" /tmp/sw.js || echo "NAO ACHOU a palavra compartilhar no sw.js publicado"
