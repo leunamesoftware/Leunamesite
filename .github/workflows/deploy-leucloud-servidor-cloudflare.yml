@@ -1,0 +1,58 @@
+name: Deploy Servidor do LeuCloud (Cloudflare)
+
+# Publica/atualiza o Worker "leucloud-api" na Cloudflare: sobe o código,
+# liga o banco D1 (leucloud_db) e o bucket R2 (leucloud-arquivos) — tudo
+# em uma única chamada do wrangler. Depois configura o segredo
+# PASSWORD_PEPPER (gerado aleatoriamente NESTA execução, direto no
+# runner — nunca fica salvo em nenhum arquivo do repositório; só existe
+# guardado na Cloudflare a partir daqui).
+#
+# Requer este segredo no repositório (Settings → Secrets and variables
+# → Actions → New repository secret):
+#   CF_API_TOKEN   -> mesmo token de API da Cloudflare já usado pelo
+#                     servidor de licenças (permissões: Workers Scripts
+#                     Edit, D1 Edit, Account Settings Read)
+#
+# Para futuras atualizações do código do servidor do LeuCloud, basta
+# rodar este workflow de novo (workflow_dispatch) — o PASSWORD_PEPPER
+# já configurado na Cloudflare NÃO é substituído automaticamente (senão
+# quebraria o login de quem já tem conta); só é preciso repetir o passo
+# de "wrangler secret put" manualmente se um dia precisar trocar.
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Baixar código do repositório
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Publicar o Worker (código + banco D1 + bucket R2)
+        working-directory: PROJETO/servidor-leucloud-cloudflare
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+        run: npx wrangler@latest deploy | tee /tmp/deploy-output.txt
+
+      - name: Gerar e configurar o segredo PASSWORD_PEPPER (só na primeira vez)
+        working-directory: PROJETO/servidor-leucloud-cloudflare
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+        run: openssl rand -hex 32 | tr -d '\n' | npx wrangler@latest secret put PASSWORD_PEPPER
+
+      - name: Descobrir a URL do Worker publicado
+        run: |
+          URL=$(grep -Eo 'https://[a-z0-9.-]+\.workers\.dev' /tmp/deploy-output.txt | head -n1)
+          echo "URL descoberta: $URL"
+          echo "WORKER_URL=$URL" >> "$GITHUB_ENV"
+
+      - name: Esperar propagar
+        run: sleep 15
+
+      - name: Testar o servidor no ar
+        run: curl -sS --fail "$WORKER_URL/health"

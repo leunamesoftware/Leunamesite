@@ -1,0 +1,28 @@
+name = "leucloud-api"
+main = "src/index.js"
+compatibility_date = "2026-09-19"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "leucloud_db"
+database_id = "7388484f-8d9d-48e2-93aa-c508b781ef70"
+
+# Bucket com os arquivos reais dos usuarios do LeuCloud (separado do
+# bucket "leuname-downloads", que serve so os instaladores dos outros
+# apps).
+[[r2_buckets]]
+binding = "ARQUIVOS"
+bucket_name = "leucloud-arquivos"
+
+# Rotina periodica: apaga de vez (R2 + banco) o que estiver na lixeira
+# ha mais de 30 dias, e expira tokens/sessoes vencidos. Roda 1x por dia.
+[triggers]
+crons = ["0 5 * * *"]
+
+# Dominio customizado: ainda nao existe (leucloud.com ainda nao foi
+# registrado). Por enquanto o Worker fica so no subdominio padrao
+# *.workers.dev. Quando o dominio proprio existir, descomentar e ajustar
+# o padrao abaixo, igual e feito em servidor-licencas-cloudflare.
+# [[routes]]
+# pattern = "api.leucloud.com"
+# custom_domain = true
