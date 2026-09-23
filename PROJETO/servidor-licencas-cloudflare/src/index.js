@@ -318,14 +318,26 @@ export default {
         return json({ ok: true, apps: results });
       }
 
-      // POST /admin/licencas/gerar  { app_id, cliente_nome, cliente_contato, origem }
+      // POST /admin/licencas/gerar  { app_id, cliente_nome, cliente_contato, origem, chave? }
+      // Se "chave" vier preenchida, registra ESSA chave já existente (ex: uma
+      // chave que já foi entregue ao cliente por fora) em vez de gerar uma
+      // nova aleatória -- serve pra colocar nome em licenças antigas.
       if (pathname === '/admin/licencas/gerar' && request.method === 'POST') {
         const body = await request.json();
         const appId = body.app_id || 'leuname-gestao';
         const app = await env.DB.prepare('SELECT id FROM apps WHERE id = ?').bind(appId).first();
         if (!app) return json({ ok: false, erro: 'app_nao_encontrado' }, 404);
 
-        const chave = await gerarChave();
+        let chave;
+        if (body.chave) {
+          chave = body.chave.trim().toUpperCase();
+          if (!(await chaveValida(chave))) return json({ ok: false, erro: 'chave_invalida' }, 400);
+          const existente = await env.DB.prepare('SELECT id FROM licencas WHERE chave = ?').bind(chave).first();
+          if (existente) return json({ ok: false, erro: 'chave_ja_cadastrada' }, 409);
+        } else {
+          chave = await gerarChave();
+        }
+
         const id = crypto.randomUUID();
         await env.DB.prepare(
           `INSERT INTO licencas (id, app_id, chave, cliente_nome, cliente_contato, origem, status, criado_em)

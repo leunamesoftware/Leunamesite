@@ -49,12 +49,14 @@
           <div class="admin-field">
             <label class="admin-label" for="lApp">Aplicativo</label>
             <select class="admin-select" id="lApp">
-              <option value="leuname-gestao">LeuName Gestão</option>
+              <option value="leuname-gestao">Gestacell</option>
+              <option value="construgestao">ConstruGestão</option>
             </select>
           </div>
           <div class="admin-field"><label class="admin-label" for="lOrigem">Origem</label><input class="admin-input" id="lOrigem" value="manual" placeholder="manual, loja-stripe..."></div>
           <div class="admin-field"><label class="admin-label" for="lNome">Nome do cliente</label><input class="admin-input" id="lNome" placeholder="Ex: Jefferson"></div>
           <div class="admin-field"><label class="admin-label" for="lContato">Contato (e-mail/telefone)</label><input class="admin-input" id="lContato" placeholder="opcional"></div>
+          <div class="admin-field"><label class="admin-label" for="lChave">Chave já existente (opcional)</label><input class="admin-input" id="lChave" placeholder="Deixe vazio para gerar uma nova"></div>
         </div>
         <div class="admin-form-actions">
           <button class="admin-btn admin-btn-primary" type="submit">Gerar</button>
@@ -68,8 +70,8 @@
       <h2>Todas as licenças (<span id="licCount">0</span>)</h2>
       <div class="admin-table-wrap">
         <table class="admin-table">
-          <thead><tr><th>Chave</th><th>Cliente</th><th>Contato</th><th>Origem</th><th>Status</th><th>Criada em</th><th></th></tr></thead>
-          <tbody id="licBody"><tr><td colspan="7" class="admin-empty">Carregando…</td></tr></tbody>
+          <thead><tr><th>Chave</th><th>Aplicativo</th><th>Cliente</th><th>Contato</th><th>Origem</th><th>Status</th><th>Criada em</th><th></th></tr></thead>
+          <tbody id="licBody"><tr><td colspan="8" class="admin-empty">Carregando…</td></tr></tbody>
         </table>
       </div>
     </div>

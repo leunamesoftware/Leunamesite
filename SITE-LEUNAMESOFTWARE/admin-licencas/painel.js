@@ -24,12 +24,13 @@
 
   var STATUS_LABEL = { ativa: 'Ativa', revogada: 'Revogada' };
   var STATUS_CLASS = { ativa: 'real', revogada: 'inactivo' };
+  var APP_LABEL = { 'leuname-gestao': 'Gestacell', 'construgestao': 'ConstruGestão' };
 
   function renderRows(licencas) {
     var body = document.getElementById('licBody');
     document.getElementById('licCount').textContent = licencas.length;
     if (!licencas.length) {
-      body.innerHTML = '<tr><td colspan="7" class="admin-empty">Nenhuma licença gerada ainda.</td></tr>';
+      body.innerHTML = '<tr><td colspan="8" class="admin-empty">Nenhuma licença gerada ainda.</td></tr>';
       return;
     }
     body.innerHTML = licencas.map(function (l) {
@@ -38,6 +39,7 @@
         : '<button class="admin-btn admin-btn-outline admin-btn-sm" data-reativar="' + l.chave + '">Reativar</button>';
       return '<tr data-chave="' + l.chave + '">' +
         '<td><code>' + l.chave + '</code></td>' +
+        '<td>' + (APP_LABEL[l.app_id] || l.app_id || '—') + '</td>' +
         '<td><strong>' + (l.cliente_nome || '—') + '</strong></td>' +
         '<td>' + (l.cliente_contato || '—') + '</td>' +
         '<td>' + (l.origem || '—') + '</td>' +
@@ -97,16 +99,22 @@
       app_id: document.getElementById('lApp').value,
       origem: document.getElementById('lOrigem').value.trim() || 'manual',
       cliente_nome: document.getElementById('lNome').value.trim() || null,
-      cliente_contato: document.getElementById('lContato').value.trim() || null
+      cliente_contato: document.getElementById('lContato').value.trim() || null,
+      chave: document.getElementById('lChave').value.trim() || null
     };
     AdminLicencasAPI.api('/admin/licencas/gerar', { method: 'POST', body: JSON.stringify(payload) })
       .then(function (data) {
         newKeyBanner.hidden = false;
-        newKeyBanner.textContent = 'Licença gerada: ' + data.chave;
+        newKeyBanner.textContent = (payload.chave ? 'Licença registrada: ' : 'Licença gerada: ') + data.chave;
         form.reset();
         load();
       })
-      .catch(function () { showBanner('Não foi possível gerar a licença.', true); });
+      .catch(function (err) {
+        var msg = err && err.message;
+        if (msg === 'chave_ja_cadastrada') showBanner('Essa chave já está cadastrada.', true);
+        else if (msg === 'chave_invalida') showBanner('Chave inválida (formato ou checksum errado).', true);
+        else showBanner('Não foi possível gerar a licença.', true);
+      });
   });
 
   load();
