@@ -8699,7 +8699,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
      atualização mais abaixo), já que o service worker não recarrega
      nada por conta própria (é sempre o mesmo arquivo sw.js, só o
      index.html muda a cada deploy). */
-  var APP_BUILD_ID = 'BUILD-2026-09-23-04';
+  var APP_BUILD_ID = 'BUILD-2026-09-23-05';
 
   /* ============================================================
      CONSTRUGESTÃO — núcleo real (licença, login, banco local, CRUD)
@@ -9104,7 +9104,8 @@ html, body{ overflow-x:hidden; max-width:100%; }
     if (!resp.ok) return false;
     var data;
     try { data = await resp.json(); } catch (e) { return false; }
-    if (!data || !data.ok || !data.encontrada) return false;
+    if (!data || !data.ok) return false;
+    if (!data.encontrada) { lsSet(LICENSE_REVOKED_LS_KEY, '1'); lsSet(LICENSE_REVOKED_MOTIVO_LS_KEY, 'chave não cadastrada no sistema'); return true; }
     if (data.status && data.status !== 'ativa') { lsSet(LICENSE_REVOKED_LS_KEY, '1'); lsSet(LICENSE_REVOKED_MOTIVO_LS_KEY, data.motivo_revogacao || ''); return true; }
     lsSet(LICENSE_REVOKED_LS_KEY, ''); lsSet(LICENSE_REVOKED_MOTIVO_LS_KEY, ''); return false;
   }

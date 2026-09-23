@@ -2726,9 +2726,10 @@ function trialExpirado(){
 const LICENSE_REVOKED_LS_KEY='leuname_licenca_revogada';
 const LICENSE_REVOKED_MOTIVO_LS_KEY='leuname_licenca_revogada_motivo';
 /* Consulta o servidor de licencas para saber se a chave foi revogada (ex:
-   cliente inadimplente). So bloqueia com confirmacao explicita do servidor
-   (status !== 'ativa'); qualquer falha de rede, resposta invalida ou chave
-   nao encontrada NAO bloqueia -- o app continua 100% funcional offline. */
+   cliente inadimplente) OU se ela nem existe no nosso cadastro (chave
+   forjada/copiada, nunca emitida por nos). So bloqueia com confirmacao
+   explicita do servidor; qualquer FALHA de rede ou resposta invalida
+   NAO bloqueia -- o app continua 100% funcional offline. */
 async function checkLicenseRevoked(){
   const chave=lsGet(LICENSE_LS_KEY);
   if(!chave) return false;
@@ -2738,7 +2739,8 @@ async function checkLicenseRevoked(){
   if(!resp.ok) return false;
   let data;
   try{ data=await resp.json(); }catch(e){ return false; }
-  if(!data||!data.ok||!data.encontrada) return false;
+  if(!data||!data.ok) return false;
+  if(!data.encontrada){ lsSet(LICENSE_REVOKED_LS_KEY,'1'); lsSet(LICENSE_REVOKED_MOTIVO_LS_KEY,'chave não cadastrada no sistema'); return true; }
   if(data.status && data.status!=='ativa'){ lsSet(LICENSE_REVOKED_LS_KEY,'1'); lsSet(LICENSE_REVOKED_MOTIVO_LS_KEY,data.motivo_revogacao||''); return true; }
   lsSet(LICENSE_REVOKED_LS_KEY,''); lsSet(LICENSE_REVOKED_MOTIVO_LS_KEY,''); return false;
 }
@@ -3086,7 +3088,7 @@ if('serviceWorker' in navigator){ navigator.serviceWorker.register('/sw.js').cat
    de vez em quando e compara o APP_BUILD_ID; se for diferente do que já
    está rodando na tela, recarrega sozinho -- assim ninguém precisa
    desinstalar/reinstalar o app pra ver uma correção nova. */
-var APP_BUILD_ID = 'BUILD-2026-09-23-04';
+var APP_BUILD_ID = 'BUILD-2026-09-23-05';
 var jaRecarregouGestao = false;
 function verificarVersaoNovaGestao(){
   if(jaRecarregouGestao) return;
