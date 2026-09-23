@@ -1,0 +1,32 @@
+name: Depurar erro 500 no signup do LeuCloud (pontual)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  depurar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Baixar codigo do repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Capturar logs ao vivo do Worker enquanto reproduz o erro
+        working-directory: PROJETO/servidor-leucloud-cloudflare
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+        run: |
+          npx wrangler@latest tail leucloud-api --format=pretty > /tmp/tail.log 2>&1 &
+          TAIL_PID=$!
+          sleep 8
+          curl -sS -X POST https://api.leucloud.leunamesoftware.com.br/auth/signup \
+            -H "Content-Type: application/json" \
+            -d '{"name":"Teste Depuracao","email":"teste-depuracao-500@leunamesoftware.com.br","password":"senhaDeTeste123","platform":"web","device_name":"CI"}' || true
+          sleep 8
+          kill $TAIL_PID || true
+          echo "===== LOG CAPTURADO ====="
+          cat /tmp/tail.log
