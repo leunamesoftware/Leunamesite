@@ -160,19 +160,25 @@
       cliente_contato: document.getElementById('lContato').value.trim() || null,
       chave: document.getElementById('lChave').value.trim() || null
     };
+    // Nome/contato só são obrigatorios pra chave NOVA (sem "chave" preenchida).
+    // Reativar uma chave que o cliente so mandou o codigo pode ficar sem os dois.
+    if (!payload.chave && (!payload.cliente_nome || !payload.cliente_contato)) {
+      showBanner('Preencha nome e contato pra gerar uma chave nova (ou cole uma chave já existente pra só reativar).', true);
+      return;
+    }
     AdminLicencasAPI.api('/admin/licencas/gerar', { method: 'POST', body: JSON.stringify(payload) })
       .then(function (data) {
         newKeyBanner.hidden = false;
         var linkEnv = linkEnviarChave(payload.cliente_contato, data.chave, payload.app_id, payload.cliente_nome);
-        newKeyBanner.innerHTML = (payload.chave ? 'Licença registrada: ' : 'Licença gerada: ') + '<code>' + data.chave + '</code>' +
+        var rotulo = data.reativada ? 'Licença reativada: ' : (payload.chave ? 'Licença registrada: ' : 'Licença gerada: ');
+        newKeyBanner.innerHTML = rotulo + '<code>' + data.chave + '</code>' +
           (linkEnv ? ' &nbsp; <a href="' + linkEnv + '" target="_blank" rel="noopener" class="admin-btn admin-btn-primary admin-btn-sm" style="text-decoration:none;">Enviar pro cliente</a>' : '');
         form.reset();
         load();
       })
       .catch(function (err) {
         var msg = err && err.message;
-        if (msg === 'chave_ja_cadastrada') showBanner('Essa chave já está cadastrada.', true);
-        else if (msg === 'chave_invalida') showBanner('Chave inválida (formato ou checksum errado).', true);
+        if (msg === 'chave_invalida') showBanner('Chave inválida (formato ou checksum errado).', true);
         else if (msg === 'nome_e_contato_obrigatorios') showBanner('Preencha o nome e o contato do cliente.', true);
         else showBanner('Não foi possível gerar a licença.', true);
       });

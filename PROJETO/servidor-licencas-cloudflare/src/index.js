@@ -324,7 +324,10 @@ export default {
       // nova aleatória -- serve pra colocar nome em licenças antigas.
       if (pathname === '/admin/licencas/gerar' && request.method === 'POST') {
         const body = await request.json();
-        if (!body.cliente_nome || !body.cliente_contato) {
+        // Nome/contato só são obrigatorios pra GERAR chave nova (sem
+        // "chave" preenchida). Reativar/registrar uma chave que ja existe
+        // (cliente so mandou o codigo, sem nome) pode ficar sem os dois.
+        if (!body.chave && (!body.cliente_nome || !body.cliente_contato)) {
           return json({ ok: false, erro: 'nome_e_contato_obrigatorios' }, 400);
         }
         const appId = body.app_id || 'leuname-gestao';
@@ -335,8 +338,23 @@ export default {
         if (body.chave) {
           chave = body.chave.trim().toUpperCase();
           if (!(await chaveValida(chave))) return json({ ok: false, erro: 'chave_invalida' }, 400);
-          const existente = await env.DB.prepare('SELECT id FROM licencas WHERE chave = ?').bind(chave).first();
-          if (existente) return json({ ok: false, erro: 'chave_ja_cadastrada' }, 409);
+          // Se a chave ja existe (foi excluida/revogada antes), em vez de dar
+          // erro, so reativa ela na hora -- e o "botao reativar" universal:
+          // cola a chave que o cliente mandou e clica em Gerar. So atualiza
+          // nome/contato se a pessoa preencheu (senao mantem o que ja tinha).
+          const existente = await env.DB.prepare('SELECT app_id FROM licencas WHERE chave = ?').bind(chave).first();
+          if (existente) {
+            if (body.cliente_nome && body.cliente_contato) {
+              await env.DB.prepare(
+                "UPDATE licencas SET status='ativa', revogado_em=NULL, motivo_revogacao=NULL, cliente_nome=?, cliente_contato=? WHERE chave=?"
+              ).bind(body.cliente_nome, body.cliente_contato, chave).run();
+            } else {
+              await env.DB.prepare(
+                "UPDATE licencas SET status='ativa', revogado_em=NULL, motivo_revogacao=NULL WHERE chave=?"
+              ).bind(chave).run();
+            }
+            return json({ ok: true, chave, app_id: existente.app_id, reativada: true });
+          }
         } else {
           chave = await gerarChave();
         }
