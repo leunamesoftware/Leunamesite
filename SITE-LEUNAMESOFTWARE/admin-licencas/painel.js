@@ -37,6 +37,7 @@
       var acaoBtn = l.status === 'ativa'
         ? '<button class="admin-btn admin-btn-danger admin-btn-sm" data-revogar="' + l.chave + '">Revogar</button>'
         : '<button class="admin-btn admin-btn-outline admin-btn-sm" data-reativar="' + l.chave + '">Reativar</button>';
+      var excluirBtn = '<button class="admin-btn admin-btn-danger admin-btn-sm" data-excluir="' + l.chave + '">Excluir</button>';
       return '<tr data-chave="' + l.chave + '">' +
         '<td><code>' + l.chave + '</code></td>' +
         '<td>' + (APP_LABEL[l.app_id] || l.app_id || '—') + '</td>' +
@@ -45,7 +46,7 @@
         '<td>' + (l.origem || '—') + '</td>' +
         '<td><span class="admin-badge ' + (STATUS_CLASS[l.status] || 'ejemplo') + '">' + (STATUS_LABEL[l.status] || l.status) + '</span></td>' +
         '<td>' + fmtData(l.criado_em) + '</td>' +
-        '<td><div class="admin-row-actions">' + acaoBtn + '</div></td>' +
+        '<td><div class="admin-row-actions">' + acaoBtn + excluirBtn + '</div></td>' +
       '</tr>';
     }).join('');
   }
@@ -55,7 +56,7 @@
       var data = await AdminLicencasAPI.api('/admin/licencas');
       renderRows(data.licencas || []);
     } catch (err) {
-      document.getElementById('licBody').innerHTML = '<tr><td colspan="7" class="admin-empty">Não foi possível conectar com o servidor.</td></tr>';
+      document.getElementById('licBody').innerHTML = '<tr><td colspan="8" class="admin-empty">Não foi possível conectar com o servidor.</td></tr>';
       showBanner('Não foi possível conectar com o backend (' + AdminLicencasAPI.BASE_URL + ').', true);
     }
   }
@@ -77,6 +78,7 @@
   document.getElementById('licBody').addEventListener('click', function (e) {
     var revBtn = e.target.closest('[data-revogar]');
     var reatBtn = e.target.closest('[data-reativar]');
+    var excBtn = e.target.closest('[data-excluir]');
     if (revBtn) {
       var chaveRev = revBtn.getAttribute('data-revogar');
       if (confirm('Revogar a licença ' + chaveRev + '? O app do cliente vai travar assim que detectar a revogação (pode levar até 90s se ele estiver com o app aberto, ou no próximo boot).')) {
@@ -90,6 +92,14 @@
       AdminLicencasAPI.api('/admin/licencas/reativar', { method: 'POST', body: JSON.stringify({ chave: chaveReat }) })
         .then(load)
         .catch(function () { showBanner('Não foi possível reativar a licença.', true); });
+    }
+    if (excBtn) {
+      var chaveExc = excBtn.getAttribute('data-excluir');
+      if (confirm('Excluir a licença ' + chaveExc + ' pra sempre? Isso não pode ser desfeito (diferente de revogar).')) {
+        AdminLicencasAPI.api('/admin/licencas/excluir', { method: 'POST', body: JSON.stringify({ chave: chaveExc }) })
+          .then(load)
+          .catch(function () { showBanner('Não foi possível excluir a licença.', true); });
+      }
     }
   });
 

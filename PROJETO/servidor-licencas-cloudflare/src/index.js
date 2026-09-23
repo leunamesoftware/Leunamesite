@@ -377,6 +377,15 @@ export default {
         return json({ ok: true, chave: body.chave, status: 'ativa' });
       }
 
+      // POST /admin/licencas/excluir  { chave }  -- remove a linha de vez
+      // (diferente de revogar: nao da pra desfazer, some da lista).
+      if (pathname === '/admin/licencas/excluir' && request.method === 'POST') {
+        const body = await request.json();
+        if (!body.chave) return json({ ok: false, erro: 'chave_obrigatoria' }, 400);
+        await env.DB.prepare('DELETE FROM licencas WHERE chave = ?').bind(body.chave).run();
+        return json({ ok: true, chave: body.chave, status: 'excluida' });
+      }
+
       return json({ ok: false, erro: 'rota_nao_encontrada' }, 404);
     }
 
