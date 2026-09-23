@@ -281,6 +281,36 @@ export default {
       return json({ ok: true });
     }
 
+    // Foto de perfil: guardada separada do espaco do plano (nao conta
+    // como "arquivo" do usuario, so 1 objeto por conta, sempre sobrescrito).
+    if (pathname === '/me/avatar' && method === 'POST') {
+      if (!auth) return json({ ok: false, erro: 'nao_autenticado' }, 401);
+      const mime = request.headers.get('Content-Type') || '';
+      if (!mime.startsWith('image/')) return json({ ok: false, erro: 'tipo_invalido' }, 400);
+      const tamanho = Number(request.headers.get('Content-Length') || 0);
+      if (!tamanho || tamanho > 5 * 1024 * 1024) return json({ ok: false, erro: 'imagem_muito_grande' }, 413);
+      const key = `avatars/${auth.user.id}`;
+      await env.ARQUIVOS.put(key, request.body, { httpMetadata: { contentType: mime } });
+      await env.DB.prepare('UPDATE users SET avatar_r2_key = ?, updated_at = ? WHERE id = ?').bind(key, nowIso(), auth.user.id).run();
+      return json({ ok: true });
+    }
+
+    // Publica (sem auth) de proposito: e so uma foto de perfil, nao um
+    // arquivo privado -- assim a tela pode usar <img src> direto, sem
+    // precisar buscar com token e montar blob URL.
+    let m = pathname.match(/^\/avatar\/([^/]+)$/);
+    if (m && method === 'GET') {
+      const row = await env.DB.prepare('SELECT avatar_r2_key FROM users WHERE id = ?').bind(m[1]).first();
+      if (!row || !row.avatar_r2_key) return json({ ok: false, erro: 'sem_avatar' }, 404);
+      const objeto = await env.ARQUIVOS.get(row.avatar_r2_key);
+      if (!objeto) return json({ ok: false, erro: 'nao_encontrado' }, 404);
+      const headers = new Headers();
+      objeto.writeHttpMetadata(headers);
+      headers.set('Access-Control-Allow-Origin', '*');
+      headers.set('Cache-Control', 'public, max-age=300');
+      return new Response(objeto.body, { headers });
+    }
+
     // ==================== PASTAS ====================
 
     if (pathname === '/folders' && method === 'POST') {
@@ -302,7 +332,7 @@ export default {
     }
 
     // GET /folders/:id  (":id" = "root" para a raiz) -- lista subpastas e arquivos
-    let m = pathname.match(/^\/folders\/([^/]+)$/);
+    m = pathname.match(/^\/folders\/([^/]+)$/);
     if (m && method === 'GET') {
       if (!auth) return json({ ok: false, erro: 'nao_autenticado' }, 401);
       const folderId = m[1] === 'root' ? null : m[1];

@@ -4,15 +4,15 @@
 <meta charset="UTF-8">
 <title>LeuCloud</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#0a0f0d">
+<meta name="theme-color" content="#0e1613">
 <meta name="description" content="LeuCloud — armazenamento em nuvem da LeuName Softwares.">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="favicon-32.png">
 <link rel="apple-touch-icon" href="icon-180.png">
 <style>
 :root{
-  --bg:#0a0f0d; --bg2:#0d1613; --card:#121e19; --card2:#17261f; --borda:#22342c;
-  --texto:#eaf5ef; --fraco:#8fa89c; --verde:#22c55e; --verde-forte:#16a34a; --verde-neon:#39e08a;
+  --bg:#0e1613; --bg2:#13201a; --card:#182620; --card2:#1f3128; --borda:#2f4a3c;
+  --texto:#f4fbf7; --fraco:#a8c7b8; --verde:#22c55e; --verde-forte:#16a34a; --verde-neon:#4ee89a;
   --perigo:#ef4444; --aviso:#f59e0b; --radius:16px; --radius-sm:10px;
 }
 *{box-sizing:border-box;}
@@ -31,7 +31,7 @@ button{font-family:inherit;}
 
 /* ---------- apresentação ---------- */
 #tela-apresentacao{align-items:center; justify-content:center; text-align:center; gap:22px;
-  background:radial-gradient(circle at 50% 0%, #12261d 0%, #0a0f0d 60%);}
+  background:radial-gradient(circle at 50% 0%, #1a3327 0%, #0e1613 60%);}
 #tela-apresentacao img{width:112px; height:112px; border-radius:26px; box-shadow:0 0 60px rgba(34,197,94,.35);}
 #tela-apresentacao .marca{font-size:34px; font-weight:800; letter-spacing:-.02em;}
 #tela-apresentacao .marca span{color:var(--verde-neon);}
@@ -50,6 +50,16 @@ button{font-family:inherit;}
   border-radius:var(--radius-sm); padding:13px 14px; font-size:15px; outline:none;
 }
 .campo input:focus{border-color:var(--verde);}
+/* Sem isso, o navegador pinta o campo preenchido automaticamente com
+   fundo claro e letra escura, ilegível em cima do tema escuro. */
+.campo input:-webkit-autofill,
+.campo input:-webkit-autofill:hover,
+.campo input:-webkit-autofill:focus{
+  -webkit-text-fill-color:var(--texto);
+  -webkit-box-shadow:0 0 0px 1000px var(--card) inset;
+  caret-color:var(--texto);
+  transition:background-color 9999s ease-in-out 0s;
+}
 .btn{
   border:none; border-radius:var(--radius-sm); padding:14px 18px; font-size:15px; font-weight:700;
   cursor:pointer; text-align:center; transition:opacity .15s;
@@ -86,8 +96,12 @@ hr.divisor{border:none; border-top:1px solid var(--borda); margin:6px 0;}
   flex:1; background:none; border:none; color:var(--fraco); font-size:11px; cursor:pointer;
   display:flex; flex-direction:column; align-items:center; gap:3px; padding:10px 4px 8px;
 }
-.bottom-nav button .ic{font-size:20px;}
+.bottom-nav button .ic{
+  font-size:16px; width:30px; height:30px; border-radius:9px; display:flex; align-items:center;
+  justify-content:center; background:rgba(244,197,66,.16);
+}
 .bottom-nav button.ativo{color:var(--verde-neon);}
+.bottom-nav button.ativo .ic{background:rgba(78,232,154,.18);}
 
 /* ---------- dashboard ---------- */
 .saudacao{font-size:21px; font-weight:700; margin-bottom:2px;}
@@ -103,7 +117,14 @@ hr.divisor{border:none; border-top:1px solid var(--borda); margin:6px 0;}
   background:var(--card); border:1px solid var(--borda); border-radius:var(--radius); padding:16px;
   display:flex; flex-direction:column; gap:8px; cursor:pointer; text-align:left;
 }
-.atalho .ic{font-size:22px;}
+.atalho .ic{
+  width:44px; height:44px; border-radius:13px; display:flex; align-items:center; justify-content:center;
+  font-size:21px;
+}
+.atalho .ic.ic-gold{background:rgba(244,197,66,.16);}
+.atalho .ic.ic-green{background:rgba(34,197,94,.16);}
+.atalho .ic.ic-red{background:rgba(239,68,68,.14);}
+.atalho .ic.ic-teal{background:rgba(20,184,166,.16);}
 .atalho .titulo{font-weight:700; font-size:14px;}
 .atalho .sub{font-size:12px; color:var(--fraco);}
 
@@ -137,10 +158,13 @@ hr.divisor{border:none; border-top:1px solid var(--borda); margin:6px 0;}
 .barra-progresso-wrap .nome-arq{font-size:13px; margin-bottom:8px; display:flex; justify-content:space-between; color:var(--fraco);}
 
 /* ---------- perfil ---------- */
+.avatar-perfil-wrap{display:flex; flex-direction:column; align-items:center; gap:10px; margin-bottom:14px;}
 .avatar-perfil{
-  width:72px; height:72px; border-radius:50%; background:var(--card2); display:flex; align-items:center;
-  justify-content:center; font-size:26px; font-weight:800; color:var(--verde-neon); margin:0 auto 14px;
+  width:80px; height:80px; border-radius:50%; background:var(--card2); display:flex; align-items:center;
+  justify-content:center; font-size:28px; font-weight:800; color:var(--verde-neon); overflow:hidden;
+  border:2px solid var(--borda);
 }
+.avatar-perfil img{width:100%; height:100%; object-fit:cover;}
 .secao-perfil{background:var(--card); border:1px solid var(--borda); border-radius:var(--radius); padding:16px; margin-bottom:14px;}
 .secao-perfil h3{font-size:13px; color:var(--fraco); text-transform:uppercase; letter-spacing:.04em; margin-bottom:12px;}
 .linha-perfil{display:flex; justify-content:space-between; font-size:14.5px; padding:8px 0; border-bottom:1px solid var(--borda);}
@@ -272,22 +296,22 @@ hr.divisor{border:none; border-top:1px solid var(--borda); margin:6px 0;}
         </div>
         <div class="grid-atalhos">
           <button class="atalho" onclick="mostrarTela('arquivos')">
-            <span class="ic">📁</span>
+            <span class="ic ic-gold">📁</span>
             <span class="titulo">Meus arquivos</span>
             <span class="sub">Ver pastas e arquivos</span>
           </button>
           <button class="atalho" onclick="abrirSeletorUpload()">
-            <span class="ic">⬆️</span>
+            <span class="ic ic-green">⬆️</span>
             <span class="titulo">Enviar arquivo</span>
             <span class="sub">Upload direto</span>
           </button>
           <button class="atalho" onclick="mostrarTela('lixeira')">
-            <span class="ic">🗑️</span>
+            <span class="ic ic-red">🗑️</span>
             <span class="titulo">Lixeira</span>
             <span class="sub">Itens excluídos</span>
           </button>
           <button class="atalho" onclick="mostrarTela('perfil')">
-            <span class="ic">👤</span>
+            <span class="ic ic-teal">👤</span>
             <span class="titulo">Perfil</span>
             <span class="sub">Conta e senha</span>
           </button>
@@ -314,7 +338,13 @@ hr.divisor{border:none; border-top:1px solid var(--borda); margin:6px 0;}
       </div>
 
       <div id="tela-perfil" class="tela-shell hidden">
-        <div class="avatar-perfil" id="avatarPerfil">?</div>
+        <div class="avatar-perfil-wrap">
+          <div class="avatar-perfil" id="avatarPerfil">
+            <img id="avatarFoto" src="" alt="" hidden>
+            <span id="avatarLetra">?</span>
+          </div>
+          <button class="btn btn-secundario btn-sm" onclick="document.getElementById('inputAvatar').click()">Trocar foto</button>
+        </div>
         <div class="secao-perfil">
           <h3>Conta</h3>
           <div class="linha-perfil"><span>Nome</span><span id="perfilNome">—</span></div>
@@ -355,6 +385,7 @@ hr.divisor{border:none; border-top:1px solid var(--borda); margin:6px 0;}
 </div>
 
 <input type="file" id="inputArquivo" multiple hidden onchange="arquivosSelecionados(this.files)">
+<input type="file" id="inputAvatar" accept="image/*" hidden onchange="fotoSelecionada(this.files[0])">
 <div id="toast" class="toast hidden"></div>
 
 <script>
@@ -815,7 +846,8 @@ async function esvaziarLixeira() {
 
 function preencherPerfil() {
   if (!currentUser) return;
-  document.getElementById('avatarPerfil').textContent = currentUser.name.charAt(0).toUpperCase();
+  document.getElementById('avatarLetra').textContent = currentUser.name.charAt(0).toUpperCase();
+  atualizarFotoPerfil();
   document.getElementById('perfilNome').textContent = currentUser.name;
   document.getElementById('perfilEmail').textContent = currentUser.email;
   document.getElementById('perfilPlano').textContent = currentUser.is_admin_unlimited ? 'Ilimitado (admin)' : (currentUser.plan_id === 'gratis' ? 'Grátis' : currentUser.plan_id.toUpperCase());
@@ -824,6 +856,36 @@ function preencherPerfil() {
     : formatarBytes(currentUser.storage_used_bytes) + ' de ' + formatarBytes(currentUser.storage_quota_bytes);
   document.getElementById('perfilNovoNome').value = currentUser.name;
 }
+
+function atualizarFotoPerfil() {
+  if (!currentUser) return;
+  var img = document.getElementById('avatarFoto');
+  var letra = document.getElementById('avatarLetra');
+  img.onerror = function () { img.hidden = true; letra.hidden = false; };
+  img.onload = function () { img.hidden = false; letra.hidden = true; };
+  img.src = API_BASE + '/avatar/' + currentUser.id + '?v=' + Date.now();
+}
+
+async function fotoSelecionada(file) {
+  if (!file) return;
+  if (!file.type.startsWith('image/')) { mostrarToast('Escolha uma imagem.', true); return; }
+  if (file.size > 5 * 1024 * 1024) { mostrarToast('Imagem muito grande (máximo 5 MB).', true); return; }
+  try {
+    var token = localStorage.getItem('leucloud_token');
+    var res = await fetch(API_BASE + '/me/avatar', {
+      method: 'POST',
+      headers: { Authorization: 'Bearer ' + token, 'Content-Type': file.type },
+      body: file,
+    });
+    if (!res.ok) throw new Error('falha');
+    mostrarToast('Foto atualizada.');
+    atualizarFotoPerfil();
+  } catch (err) {
+    mostrarToast('Não foi possível enviar a foto. Tente de novo.', true);
+  }
+  document.getElementById('inputAvatar').value = '';
+}
+
 async function salvarNome() {
   var nome = document.getElementById('perfilNovoNome').value.trim();
   if (!nome) return;
