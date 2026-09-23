@@ -306,6 +306,7 @@ hr.divisor{border:none; border-top:1px solid var(--borda); margin:6px 0;}
     <header class="topbar">
       <button class="voltar-icon" id="btnVoltarPasta" onclick="voltarPastaAnterior()">‹</button>
       <div id="topbarTitulo" class="marca-mini"><img src="icon-192.png" alt=""><span>LeuCloud</span></div>
+      <button class="voltar-icon mostrar" style="margin-left:auto;" onclick="mostrarTela('busca')">🔍</button>
     </header>
 
     <main class="conteudo">
@@ -330,6 +331,21 @@ hr.divisor{border:none; border-top:1px solid var(--borda); margin:6px 0;}
             <span class="titulo">Enviar arquivo</span>
             <span class="sub">Upload direto</span>
           </button>
+          <button class="atalho" onclick="mostrarTela('favoritos')">
+            <span class="ic ic-gold">⭐</span>
+            <span class="titulo">Favoritos</span>
+            <span class="sub">O que você marcou</span>
+          </button>
+          <button class="atalho" onclick="mostrarTela('fotos')">
+            <span class="ic ic-green">🖼️</span>
+            <span class="titulo">Fotos</span>
+            <span class="sub">Fotos e vídeos, álbuns</span>
+          </button>
+          <button class="atalho" onclick="mostrarTela('compartilhados')">
+            <span class="ic ic-teal">🔗</span>
+            <span class="titulo">Compartilhados</span>
+            <span class="sub">Links e envios entre contas</span>
+          </button>
           <button class="atalho" onclick="mostrarTela('lixeira')">
             <span class="ic ic-red">🗑️</span>
             <span class="titulo">Lixeira</span>
@@ -352,6 +368,41 @@ hr.divisor{border:none; border-top:1px solid var(--borda); margin:6px 0;}
         </div>
         <div id="uploadsEmAndamento"></div>
         <div id="listaArquivos"></div>
+      </div>
+
+      <div id="tela-favoritos" class="tela-shell hidden">
+        <p class="nota-fraca" style="margin-bottom:14px;">Pastas e arquivos que você marcou com ⭐ em Meus arquivos.</p>
+        <div id="listaFavoritos"></div>
+      </div>
+
+      <div id="tela-busca" class="tela-shell hidden">
+        <div class="campo" style="margin-bottom:14px;">
+          <input type="text" id="buscaInput" placeholder="Buscar por nome…" oninput="buscarComDebounce()">
+        </div>
+        <div id="listaBusca"><p class="lista-vazia">Digite pra buscar em todos os seus arquivos e pastas.</p></div>
+      </div>
+
+      <div id="tela-fotos" class="tela-shell hidden">
+        <div class="acoes-topo">
+          <button class="btn btn-secundario btn-sm" id="btnFotosAba" onclick="alternarAbaFotos()">🖼️ Ver álbuns</button>
+          <button class="btn btn-primario btn-sm" id="btnNovoAlbum" onclick="criarAlbum()">＋ Novo álbum</button>
+        </div>
+        <div id="fotosGrade"><p class="lista-vazia">Carregando…</p></div>
+        <div id="albunsLista" class="hidden"></div>
+      </div>
+
+      <div id="tela-album" class="tela-shell hidden">
+        <button class="voltar" style="padding:0 0 12px;" onclick="mostrarTela('fotos')">‹ Voltar pros álbuns</button>
+        <div id="albumConteudo"></div>
+      </div>
+
+      <div id="tela-compartilhados" class="tela-shell hidden">
+        <div class="acoes-topo">
+          <button class="btn btn-sm" id="abaLinks" onclick="mostrarAbaCompartilhados('links')">Meus links</button>
+          <button class="btn btn-sm" id="abaRecebido" onclick="mostrarAbaCompartilhados('recebido')">Recebi</button>
+          <button class="btn btn-sm" id="abaEnviado" onclick="mostrarAbaCompartilhados('enviado')">Enviei</button>
+        </div>
+        <div id="listaCompartilhados"></div>
       </div>
 
       <div id="tela-lixeira" class="tela-shell hidden">
@@ -660,7 +711,10 @@ function mostrarTela(nome) {
   document.querySelectorAll('.tela-shell').forEach(function (el) { el.classList.add('hidden'); });
   document.getElementById('tela-' + nome).classList.remove('hidden');
   document.querySelectorAll('.bottom-nav button').forEach(function (b) { b.classList.toggle('ativo', b.dataset.nav === nome); });
-  var titulo = { dashboard: 'LeuCloud', arquivos: pilhaPastas[pilhaPastas.length - 1].name, lixeira: 'Lixeira', perfil: 'Perfil' }[nome];
+  var titulo = {
+    dashboard: 'LeuCloud', arquivos: pilhaPastas[pilhaPastas.length - 1].name, lixeira: 'Lixeira', perfil: 'Perfil',
+    favoritos: 'Favoritos', busca: 'Buscar', fotos: 'Fotos', album: 'Álbum', compartilhados: 'Compartilhados',
+  }[nome];
   var topEl = document.getElementById('topbarTitulo');
   var voltarBtn = document.getElementById('btnVoltarPasta');
   if (nome === 'arquivos') {
@@ -676,6 +730,9 @@ function mostrarTela(nome) {
     voltarBtn.classList.remove('mostrar');
     if (nome === 'lixeira') carregarLixeira();
     if (nome === 'perfil') preencherPerfil();
+    if (nome === 'favoritos') carregarFavoritos();
+    if (nome === 'fotos') carregarFotos();
+    if (nome === 'compartilhados') mostrarAbaCompartilhados('links');
   }
 }
 
@@ -760,6 +817,7 @@ function renderListaArquivos(pastas, arquivos) {
         '<button ' + descerDesabilitado + ' onclick="moverPasta(\'' + p.id + '\',\'baixo\')">⬇️</button>' +
         '<button onclick="renomearPasta(\'' + p.id + '\',\'' + esc(p.name).replace(/'/g, "\\'") + '\')">✏️ Renomear</button>' +
         '<button onclick="favoritarPasta(\'' + p.id + '\',' + (p.is_favorite ? 'false' : 'true') + ')">⭐ ' + (p.is_favorite ? 'Desfavoritar' : 'Favoritar') + '</button>' +
+        '<button onclick="compartilharItem(\'folder\',\'' + p.id + '\',\'' + esc(p.name).replace(/'/g, "\\'") + '\')">🔗 Compartilhar</button>' +
         '<button class="acao-perigo" onclick="excluirPasta(\'' + p.id + '\')">🗑️ Mover pra lixeira</button>' +
       '</div></div>';
   });
@@ -779,6 +837,7 @@ function renderListaArquivos(pastas, arquivos) {
         '<button onclick="baixarArquivo(\'' + a.id + '\',\'' + esc(a.name).replace(/'/g, "\\'") + '\')">⬇️ Baixar</button>' +
         '<button onclick="renomearArquivo(\'' + a.id + '\',\'' + esc(a.name).replace(/'/g, "\\'") + '\')">✏️ Renomear</button>' +
         '<button onclick="favoritarArquivo(\'' + a.id + '\',' + (a.is_favorite ? 'false' : 'true') + ')">⭐ ' + (a.is_favorite ? 'Desfavoritar' : 'Favoritar') + '</button>' +
+        '<button onclick="compartilharItem(\'file\',\'' + a.id + '\',\'' + esc(a.name).replace(/'/g, "\\'") + '\')">🔗 Compartilhar</button>' +
         '<button class="acao-perigo" onclick="excluirArquivo(\'' + a.id + '\')">🗑️ Mover pra lixeira</button>' +
       '</div></div>';
   });
@@ -1060,6 +1119,320 @@ async function trocarSenha() {
   } catch (err) { erroEl.textContent = mensagemErro(err); }
 }
 
+/* ---------------- favoritos ---------------- */
+
+async function carregarFavoritos() {
+  var el = document.getElementById('listaFavoritos');
+  el.innerHTML = '<p class="lista-vazia">Carregando…</p>';
+  try {
+    var data = await api('/favoritos');
+    if (!data.folders.length && !data.files.length) { el.innerHTML = '<p class="lista-vazia">Você ainda não marcou nada com ⭐.</p>'; return; }
+    var html = '';
+    data.folders.forEach(function (p) {
+      html += '<div class="item-card">' +
+        '<div class="item-topo" style="cursor:pointer" onclick="abrirPasta(\'' + p.id + '\',\'' + esc(p.name).replace(/'/g, "\\'") + '\')">' +
+          '<div class="item-icone" style="background:#334155;">📁</div>' +
+          '<div class="item-info"><div class="item-nome">' + esc(p.name) + '</div><div class="item-meta">Pasta</div></div>' +
+        '</div>' +
+        '<div class="item-acoes">' +
+          '<button onclick="favoritarPasta(\'' + p.id + '\',false)">⭐ Desfavoritar</button>' +
+          '<button onclick="compartilharItem(\'folder\',\'' + p.id + '\',\'' + esc(p.name).replace(/'/g, "\\'") + '\')">🔗 Compartilhar</button>' +
+        '</div></div>';
+    });
+    data.files.forEach(function (a) {
+      var ic = iconeCategoria(a.category);
+      html += '<div class="item-card">' +
+        '<div class="item-topo" style="cursor:pointer" onclick="abrirPreview(\'' + a.id + '\',\'' + esc(a.name).replace(/'/g, "\\'") + '\',\'' + a.category + '\')">' +
+          '<div class="item-icone" style="background:' + ic.cor + ';">' + ic.ic + '</div>' +
+          '<div class="item-info"><div class="item-nome">' + esc(a.name) + '</div><div class="item-meta">' + formatarBytes(a.size_bytes) + '</div></div>' +
+        '</div>' +
+        '<div class="item-acoes">' +
+          '<button onclick="baixarArquivo(\'' + a.id + '\',\'' + esc(a.name).replace(/'/g, "\\'") + '\')">⬇️ Baixar</button>' +
+          '<button onclick="favoritarArquivo(\'' + a.id + '\',false)">⭐ Desfavoritar</button>' +
+          '<button onclick="compartilharItem(\'file\',\'' + a.id + '\',\'' + esc(a.name).replace(/'/g, "\\'") + '\')">🔗 Compartilhar</button>' +
+        '</div></div>';
+    });
+    el.innerHTML = html;
+  } catch (err) {
+    if (err.status === 401) return sessaoExpirada();
+    el.innerHTML = '<p class="lista-vazia">Não foi possível carregar os favoritos.</p>';
+  }
+}
+
+/* ---------------- busca global ---------------- */
+
+var buscaTimer = null;
+function buscarComDebounce() {
+  clearTimeout(buscaTimer);
+  buscaTimer = setTimeout(executarBusca, 400);
+}
+async function executarBusca() {
+  var termo = document.getElementById('buscaInput').value.trim();
+  var el = document.getElementById('listaBusca');
+  if (!termo) { el.innerHTML = '<p class="lista-vazia">Digite pra buscar em todos os seus arquivos e pastas.</p>'; return; }
+  el.innerHTML = '<p class="lista-vazia">Buscando…</p>';
+  try {
+    var data = await api('/busca?q=' + encodeURIComponent(termo));
+    if (!data.folders.length && !data.files.length) { el.innerHTML = '<p class="lista-vazia">Nada encontrado pra "' + esc(termo) + '".</p>'; return; }
+    var html = '';
+    data.folders.forEach(function (p) {
+      html += '<div class="item-card"><div class="item-topo" style="cursor:pointer" onclick="abrirPastaDaBusca(\'' + p.id + '\',\'' + esc(p.name).replace(/'/g, "\\'") + '\')">' +
+        '<div class="item-icone" style="background:#334155;">📁</div>' +
+        '<div class="item-info"><div class="item-nome">' + esc(p.name) + '</div><div class="item-meta">Pasta</div></div></div></div>';
+    });
+    data.files.forEach(function (a) {
+      var ic = iconeCategoria(a.category);
+      html += '<div class="item-card"><div class="item-topo" style="cursor:pointer" onclick="abrirPreview(\'' + a.id + '\',\'' + esc(a.name).replace(/'/g, "\\'") + '\',\'' + a.category + '\')">' +
+        '<div class="item-icone" style="background:' + ic.cor + ';">' + ic.ic + '</div>' +
+        '<div class="item-info"><div class="item-nome">' + esc(a.name) + '</div><div class="item-meta">' + formatarBytes(a.size_bytes) + '</div></div></div>' +
+        '<div class="item-acoes"><button onclick="baixarArquivo(\'' + a.id + '\',\'' + esc(a.name).replace(/'/g, "\\'") + '\')">⬇️ Baixar</button></div></div>';
+    });
+    el.innerHTML = html;
+  } catch (err) {
+    if (err.status === 401) return sessaoExpirada();
+    el.innerHTML = '<p class="lista-vazia">Não foi possível buscar agora.</p>';
+  }
+}
+function abrirPastaDaBusca(id, nome) {
+  pilhaPastas = [{ id: null, name: 'Meus arquivos' }, { id: id, name: nome }];
+  mostrarTela('arquivos');
+}
+
+/* ---------------- fotos e álbuns ---------------- */
+
+var abaFotosAtual = 'grade';
+function alternarAbaFotos() {
+  abaFotosAtual = abaFotosAtual === 'grade' ? 'albuns' : 'grade';
+  document.getElementById('fotosGrade').classList.toggle('hidden', abaFotosAtual !== 'grade');
+  document.getElementById('albunsLista').classList.toggle('hidden', abaFotosAtual !== 'albuns');
+  document.getElementById('btnFotosAba').textContent = abaFotosAtual === 'grade' ? '📚 Ver álbuns' : '🖼️ Ver fotos';
+  document.getElementById('btnNovoAlbum').classList.toggle('hidden', abaFotosAtual !== 'albuns');
+  if (abaFotosAtual === 'albuns') carregarAlbuns(); else carregarFotos();
+}
+async function carregarFotos() {
+  abaFotosAtual = 'grade';
+  document.getElementById('fotosGrade').classList.remove('hidden');
+  document.getElementById('albunsLista').classList.add('hidden');
+  document.getElementById('btnFotosAba').textContent = '📚 Ver álbuns';
+  document.getElementById('btnNovoAlbum').classList.add('hidden');
+  var el = document.getElementById('fotosGrade');
+  el.innerHTML = '<p class="lista-vazia">Carregando…</p>';
+  try {
+    var data = await api('/fotos');
+    if (!data.files.length) { el.innerHTML = '<p class="lista-vazia">Nenhuma foto ou vídeo enviado ainda.</p>'; return; }
+    var html = '';
+    data.files.forEach(function (a) {
+      var ic = iconeCategoria(a.category);
+      html += '<div class="item-card">' +
+        '<div class="item-topo" style="cursor:pointer" onclick="abrirPreview(\'' + a.id + '\',\'' + esc(a.name).replace(/'/g, "\\'") + '\',\'' + a.category + '\')">' +
+          '<div class="item-icone" style="background:' + ic.cor + ';">' + ic.ic + '</div>' +
+          '<div class="item-info"><div class="item-nome">' + esc(a.name) + '</div><div class="item-meta">' + formatarBytes(a.size_bytes) + ' · ' + formatarData(a.created_at) + '</div></div>' +
+        '</div>' +
+        '<div class="item-acoes">' +
+          '<button onclick="adicionarAoAlbum(\'' + a.id + '\')">＋ Álbum</button>' +
+          '<button onclick="compartilharItem(\'file\',\'' + a.id + '\',\'' + esc(a.name).replace(/'/g, "\\'") + '\')">🔗 Compartilhar</button>' +
+        '</div></div>';
+    });
+    el.innerHTML = html;
+  } catch (err) {
+    if (err.status === 401) return sessaoExpirada();
+    el.innerHTML = '<p class="lista-vazia">Não foi possível carregar as fotos.</p>';
+  }
+}
+async function carregarAlbuns() {
+  var el = document.getElementById('albunsLista');
+  el.innerHTML = '<p class="lista-vazia">Carregando…</p>';
+  try {
+    var data = await api('/albuns');
+    if (!data.albuns.length) { el.innerHTML = '<p class="lista-vazia">Nenhum álbum criado ainda.</p>'; return; }
+    el.innerHTML = data.albuns.map(function (a) {
+      return '<div class="item-card"><div class="item-topo" style="cursor:pointer" onclick="abrirAlbum(\'' + a.id + '\')">' +
+        '<div class="item-icone" style="background:#334155;">📚</div>' +
+        '<div class="item-info"><div class="item-nome">' + esc(a.name) + '</div><div class="item-meta">' + a.quantidade + ' item(ns)</div></div></div></div>';
+    }).join('');
+  } catch (err) { el.innerHTML = '<p class="lista-vazia">Não foi possível carregar os álbuns.</p>'; }
+}
+async function criarAlbum() {
+  var nome = prompt('Nome do novo álbum:');
+  if (!nome || !nome.trim()) return;
+  try { await api('/albuns', { method: 'POST', body: { name: nome.trim() } }); mostrarToast('Álbum criado.'); carregarAlbuns(); }
+  catch (err) { mostrarToast(mensagemErro(err), true); }
+}
+async function adicionarAoAlbum(fileId) {
+  try {
+    var data = await api('/albuns');
+    if (!data.albuns.length) {
+      var nomeNovo = prompt('Você ainda não tem álbuns. Nome do novo álbum:');
+      if (!nomeNovo || !nomeNovo.trim()) return;
+      var r = await api('/albuns', { method: 'POST', body: { name: nomeNovo.trim() } });
+      await api('/albuns/' + r.album.id + '/itens', { method: 'POST', body: { file_id: fileId } });
+      mostrarToast('Álbum "' + nomeNovo.trim() + '" criado e foto adicionada.');
+      return;
+    }
+    var lista = data.albuns.map(function (a, i) { return (i + 1) + ' = ' + a.name; }).join('\n');
+    var escolha = (prompt('Adicionar a qual álbum?\n' + lista + '\n\nOu digite um nome novo:') || '').trim();
+    if (!escolha) return;
+    var idx = parseInt(escolha, 10);
+    if (idx >= 1 && idx <= data.albuns.length) {
+      await api('/albuns/' + data.albuns[idx - 1].id + '/itens', { method: 'POST', body: { file_id: fileId } });
+      mostrarToast('Adicionado ao álbum.');
+    } else {
+      var r2 = await api('/albuns', { method: 'POST', body: { name: escolha } });
+      await api('/albuns/' + r2.album.id + '/itens', { method: 'POST', body: { file_id: fileId } });
+      mostrarToast('Álbum "' + escolha + '" criado e foto adicionada.');
+    }
+  } catch (err) { mostrarToast(mensagemErro(err), true); }
+}
+var albumAtualId = null;
+async function abrirAlbum(id) {
+  albumAtualId = id;
+  mostrarTela('album');
+  var el = document.getElementById('albumConteudo');
+  el.innerHTML = '<p class="lista-vazia">Carregando…</p>';
+  try {
+    var data = await api('/albuns/' + id);
+    var html = '<h2 style="margin-bottom:14px;">' + esc(data.album.name) + '</h2>';
+    html += '<button class="btn btn-perigo btn-sm" style="margin-bottom:14px;" onclick="excluirAlbum(\'' + id + '\')">🗑️ Excluir álbum</button>';
+    if (!data.files.length) {
+      html += '<p class="lista-vazia">Nenhuma foto neste álbum ainda.</p>';
+    } else {
+      data.files.forEach(function (a) {
+        var ic = iconeCategoria(a.category);
+        html += '<div class="item-card">' +
+          '<div class="item-topo" style="cursor:pointer" onclick="abrirPreview(\'' + a.id + '\',\'' + esc(a.name).replace(/'/g, "\\'") + '\',\'' + a.category + '\')">' +
+            '<div class="item-icone" style="background:' + ic.cor + ';">' + ic.ic + '</div>' +
+            '<div class="item-info"><div class="item-nome">' + esc(a.name) + '</div><div class="item-meta">' + formatarBytes(a.size_bytes) + '</div></div>' +
+          '</div>' +
+          '<div class="item-acoes"><button class="acao-perigo" onclick="removerDoAlbum(\'' + id + '\',\'' + a.id + '\')">✕ Remover do álbum</button></div></div>';
+      });
+    }
+    el.innerHTML = html;
+  } catch (err) { el.innerHTML = '<p class="lista-vazia">Não foi possível carregar o álbum.</p>'; }
+}
+async function removerDoAlbum(albumId, fileId) {
+  try { await api('/albuns/' + albumId + '/itens/' + fileId, { method: 'DELETE' }); abrirAlbum(albumId); }
+  catch (err) { mostrarToast(mensagemErro(err), true); }
+}
+async function excluirAlbum(id) {
+  if (!confirm('Excluir esse álbum? As fotos continuam nos seus arquivos, só o álbum é apagado.')) return;
+  try { await api('/albuns/' + id, { method: 'DELETE' }); mostrarToast('Álbum excluído.'); mostrarTela('fotos'); }
+  catch (err) { mostrarToast(mensagemErro(err), true); }
+}
+
+/* ---------------- compartilhamento ---------------- */
+
+function compartilharItem(tipo, id, nome) {
+  var escolha = (prompt('Compartilhar "' + nome + '":\n\n1 = Criar link público (qualquer pessoa com o link acessa)\n2 = Compartilhar direto com outra conta LeuCloud (por e-mail)\n\nDigite 1 ou 2:') || '').trim();
+  if (escolha === '1') criarLinkPublico(tipo, id);
+  else if (escolha === '2') compartilharComConta(tipo, id);
+}
+async function criarLinkPublico(tipo, id) {
+  var senha = prompt('Senha pro link (deixe em branco pra não pedir senha):') || '';
+  var body = tipo === 'file' ? { file_id: id, password: senha || undefined } : { folder_id: id, password: senha || undefined };
+  try {
+    var data = await api('/shares', { method: 'POST', body: body });
+    try { await navigator.clipboard.writeText(data.share.url); mostrarToast('Link copiado: ' + data.share.url); }
+    catch (e) { alert('Link criado:\n' + data.share.url); }
+  } catch (err) { mostrarToast(mensagemErro(err), true); }
+}
+async function compartilharComConta(tipo, id) {
+  var email = (prompt('E-mail da conta LeuCloud pra compartilhar:') || '').trim();
+  if (!email) return;
+  var body = tipo === 'file' ? { file_id: id, email: email } : { folder_id: id, email: email };
+  try {
+    await api('/compartilhar-com', { method: 'POST', body: body });
+    mostrarToast('Compartilhado com ' + email + '.');
+  } catch (err) {
+    if (err.message === 'usuario_nao_encontrado') mostrarToast('Não existe conta LeuCloud com esse e-mail.', true);
+    else mostrarToast(mensagemErro(err), true);
+  }
+}
+
+var abaCompartilhadosAtual = 'links';
+function mostrarAbaCompartilhados(aba) {
+  abaCompartilhadosAtual = aba;
+  ['links', 'recebido', 'enviado'].forEach(function (a) {
+    document.getElementById('aba' + a.charAt(0).toUpperCase() + a.slice(1)).className = 'btn btn-sm ' + (a === aba ? 'btn-primario' : 'btn-secundario');
+  });
+  if (aba === 'links') carregarMeusLinks();
+  else if (aba === 'recebido') carregarCompartilhadoComigo();
+  else carregarCompartilhadoPorMim();
+}
+async function carregarMeusLinks() {
+  var el = document.getElementById('listaCompartilhados');
+  el.innerHTML = '<p class="lista-vazia">Carregando…</p>';
+  try {
+    var data = await api('/shares');
+    if (!data.shares.length) { el.innerHTML = '<p class="lista-vazia">Você ainda não criou nenhum link público.</p>'; return; }
+    el.innerHTML = data.shares.map(function (s) {
+      var nome = s.arquivo_nome || s.pasta_nome || '(item removido)';
+      return '<div class="item-card"><div class="item-topo">' +
+        '<div class="item-icone" style="background:#334155;">' + (s.arquivo_nome ? '📄' : '📁') + '</div>' +
+        '<div class="item-info"><div class="item-nome">' + esc(nome) + '</div><div class="item-meta">' +
+          (s.tem_senha ? '🔒 Com senha · ' : '') + s.download_count + ' download(s)</div></div></div>' +
+        '<div class="item-acoes">' +
+          '<button onclick="copiarLink(\'' + s.url + '\')">📋 Copiar link</button>' +
+          '<button class="acao-perigo" onclick="revogarLink(\'' + s.id + '\')">✕ Revogar</button>' +
+        '</div></div>';
+    }).join('');
+  } catch (err) {
+    if (err.status === 401) return sessaoExpirada();
+    el.innerHTML = '<p class="lista-vazia">Não foi possível carregar os links.</p>';
+  }
+}
+async function copiarLink(url) {
+  try { await navigator.clipboard.writeText(url); mostrarToast('Link copiado.'); }
+  catch (e) { alert(url); }
+}
+async function revogarLink(id) {
+  if (!confirm('Revogar esse link? Quem já tiver o endereço não vai conseguir mais acessar.')) return;
+  try { await api('/shares/' + id, { method: 'DELETE' }); mostrarToast('Link revogado.'); carregarMeusLinks(); }
+  catch (err) { mostrarToast(mensagemErro(err), true); }
+}
+async function carregarCompartilhadoComigo() {
+  var el = document.getElementById('listaCompartilhados');
+  el.innerHTML = '<p class="lista-vazia">Carregando…</p>';
+  try {
+    var data = await api('/compartilhado-comigo');
+    if (!data.itens.length) { el.innerHTML = '<p class="lista-vazia">Ninguém compartilhou nada com você ainda.</p>'; return; }
+    el.innerHTML = data.itens.map(function (it) {
+      var nome = it.arquivo_nome || it.pasta_nome || '(item removido)';
+      var abrir = it.file_id
+        ? "abrirPreview('" + it.file_id + "','" + esc(nome).replace(/'/g, "\\'") + "','" + (it.category || '') + "')"
+        : "abrirPastaDaBusca('" + it.folder_id + "','" + esc(nome).replace(/'/g, "\\'") + "')";
+      return '<div class="item-card"><div class="item-topo" style="cursor:pointer" onclick="' + abrir + '">' +
+        '<div class="item-icone" style="background:#334155;">' + (it.file_id ? '📄' : '📁') + '</div>' +
+        '<div class="item-info"><div class="item-nome">' + esc(nome) + '</div><div class="item-meta">De ' + esc(it.dono_nome) + '</div></div></div></div>';
+    }).join('');
+  } catch (err) {
+    if (err.status === 401) return sessaoExpirada();
+    el.innerHTML = '<p class="lista-vazia">Não foi possível carregar.</p>';
+  }
+}
+async function carregarCompartilhadoPorMim() {
+  var el = document.getElementById('listaCompartilhados');
+  el.innerHTML = '<p class="lista-vazia">Carregando…</p>';
+  try {
+    var data = await api('/compartilhado-por-mim');
+    if (!data.itens.length) { el.innerHTML = '<p class="lista-vazia">Você ainda não compartilhou nada direto com outra conta.</p>'; return; }
+    el.innerHTML = data.itens.map(function (it) {
+      var nome = it.arquivo_nome || it.pasta_nome || '(item removido)';
+      return '<div class="item-card"><div class="item-topo">' +
+        '<div class="item-icone" style="background:#334155;">' + (it.file_id ? '📄' : '📁') + '</div>' +
+        '<div class="item-info"><div class="item-nome">' + esc(nome) + '</div><div class="item-meta">Com ' + esc(it.destino_nome) + '</div></div></div>' +
+        '<div class="item-acoes"><button class="acao-perigo" onclick="revogarCompartilhadoPorMim(\'' + it.id + '\')">✕ Revogar acesso</button></div></div>';
+    }).join('');
+  } catch (err) {
+    if (err.status === 401) return sessaoExpirada();
+    el.innerHTML = '<p class="lista-vazia">Não foi possível carregar.</p>';
+  }
+}
+async function revogarCompartilhadoPorMim(id) {
+  if (!confirm('Revogar o acesso dessa pessoa a esse item?')) return;
+  try { await api('/compartilhado/' + id, { method: 'DELETE' }); mostrarToast('Acesso revogado.'); carregarCompartilhadoPorMim(); }
+  catch (err) { mostrarToast(mensagemErro(err), true); }
+}
+
 /* ---------------- boot ---------------- */
 
 (async function iniciar() {
@@ -1080,7 +1453,7 @@ async function trocarSenha() {
    cache) de vez em quando e compara o APP_BUILD_ID; se for diferente
    do que já está rodando na tela, recarrega sozinho -- assim ninguém
    precisa desinstalar/reinstalar o atalho pra ver uma correção nova. */
-var APP_BUILD_ID = 'BUILD-2026-09-23-04';
+var APP_BUILD_ID = 'BUILD-2026-09-23-05';
 var jaRecarregouLeuCloud = false;
 function verificarVersaoNovaLeuCloud() {
   if (jaRecarregouLeuCloud) return;

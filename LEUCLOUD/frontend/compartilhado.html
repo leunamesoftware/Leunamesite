@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Compartilhado via LeuCloud</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#14532d">
+<meta name="robots" content="noindex">
+<link rel="icon" href="favicon-32.png">
+<style>
+:root{
+  --bg:#14532d; --bg2:#1a6b3a; --card:#1f7a42; --card2:#24904e; --borda:#3ab265;
+  --texto:#ffffff; --fraco:#dcf7e7; --verde:#34d399; --verde-forte:#22c55e; --verde-neon:#6ef5b3;
+  --perigo:#ef4444; --radius:16px; --radius-sm:10px;
+}
+*{box-sizing:border-box;}
+html,body{height:100%;}
+body{
+  margin:0; background:var(--bg); color:var(--texto); min-height:100dvh;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  display:flex; align-items:center; justify-content:center; padding:24px;
+}
+.cartao{
+  background:var(--card); border:1px solid var(--borda); border-radius:var(--radius);
+  padding:26px 22px; max-width:420px; width:100%; text-align:center;
+}
+.marca{font-size:15px; font-weight:800; color:var(--verde-neon); margin-bottom:18px; letter-spacing:.02em;}
+.icone{font-size:44px; margin-bottom:14px;}
+h1{font-size:19px; margin:0 0 6px; word-break:break-word;}
+.meta{color:var(--fraco); font-size:13.5px; margin-bottom:18px;}
+input{
+  width:100%; background:var(--card2); border:1px solid var(--borda); color:var(--texto);
+  border-radius:var(--radius-sm); padding:12px 14px; font-size:15px; outline:none; margin-bottom:12px;
+}
+button{
+  width:100%; border:none; border-radius:var(--radius-sm); padding:14px 18px; font-size:15px; font-weight:700;
+  cursor:pointer; background:linear-gradient(135deg,var(--verde),var(--verde-forte)); color:#04120a; margin-bottom:10px;
+}
+button:disabled{opacity:.55;}
+.erro{color:#fca5a5; font-size:13.5px; min-height:16px; margin-bottom:6px;}
+.item-lista{
+  display:flex; align-items:center; gap:10px; background:var(--card2); border:1px solid var(--borda);
+  border-radius:var(--radius-sm); padding:12px; margin-bottom:10px; text-align:left;
+}
+.item-lista .nome{flex:1; font-size:14px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+.item-lista button{width:auto; padding:8px 12px; font-size:12.5px; margin:0;}
+.rodape{color:var(--fraco); font-size:12px; margin-top:14px;}
+</style>
+</head>
+<body>
+<div class="cartao" id="cartao">
+  <div class="marca">Leu☁️Cloud</div>
+  <p class="meta">Carregando…</p>
+</div>
+<script>
+var API_BASE = 'https://api.leucloud.leunamesoftware.com.br';
+var token = new URLSearchParams(location.search).get('t') || '';
+var infoAtual = null;
+
+function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+function formatarBytes(bytes) {
+  if (!bytes) return '0 B';
+  var u = ['B', 'KB', 'MB', 'GB', 'TB'];
+  var i = Math.min(Math.floor(Math.log(bytes) / Math.log(1024)), u.length - 1);
+  return (bytes / Math.pow(1024, i)).toFixed(i === 0 ? 0 : 1) + ' ' + u[i];
+}
+
+async function iniciar() {
+  var cartao = document.getElementById('cartao');
+  if (!token) { cartao.innerHTML = '<div class="marca">LeuCloud</div><div class="icone">🔗</div><h1>Link inválido</h1><p class="meta">Esse endereço não tem um código de compartilhamento válido.</p>'; return; }
+  try {
+    var res = await fetch(API_BASE + '/s/' + encodeURIComponent(token));
+    var data = await res.json();
+    if (!res.ok || !data.ok) throw new Error('invalido');
+    infoAtual = data;
+    renderTela();
+  } catch (e) {
+    cartao.innerHTML = '<div class="marca">LeuCloud</div><div class="icone">⚠️</div><h1>Link inválido ou expirado</h1><p class="meta">Peça pra pessoa que compartilhou gerar um novo link.</p>';
+  }
+}
+
+function renderTela(erroSenha) {
+  var cartao = document.getElementById('cartao');
+  var icone = infoAtual.tipo === 'folder' ? '📁' : '📄';
+  var html = '<div class="marca">LeuCloud</div><div class="icone">' + icone + '</div>';
+  html += '<h1>' + esc(infoAtual.nome) + '</h1>';
+  html += '<p class="meta">' + (infoAtual.tipo === 'folder' ? 'Pasta compartilhada' : formatarBytes(infoAtual.tamanho)) + '</p>';
+  if (infoAtual.requer_senha) {
+    html += '<p class="erro">' + (erroSenha ? 'Senha incorreta.' : '') + '</p>';
+    html += '<input type="password" id="senhaInput" placeholder="Senha do link">';
+    html += '<button onclick="confirmarSenha()">Acessar</button>';
+  } else if (infoAtual.tipo === 'file') {
+    html += '<button onclick="baixarArquivoCompartilhado()">⬇️ Baixar arquivo</button>';
+  } else {
+    html += '<div id="listaPasta"><button onclick="abrirPastaCompartilhada()">📂 Ver arquivos da pasta</button></div>';
+  }
+  html += '<p class="rodape">Compartilhado com você pelo LeuCloud, da LeuName Softwares.</p>';
+  cartao.innerHTML = html;
+}
+
+function confirmarSenha() {
+  var senha = document.getElementById('senhaInput').value;
+  if (infoAtual.tipo === 'file') baixarArquivoCompartilhado(senha);
+  else abrirPastaCompartilhada(senha);
+}
+
+async function baixarArquivoCompartilhado(senha) {
+  var url = API_BASE + '/s/' + encodeURIComponent(token) + '/download' + (senha ? ('?password=' + encodeURIComponent(senha)) : '');
+  try {
+    var res = await fetch(url);
+    if (res.status === 401) { renderTela(true); return; }
+    if (!res.ok) throw new Error('falha');
+    var blob = await res.blob();
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = infoAtual.nome;
+    document.body.appendChild(a); a.click(); a.remove();
+  } catch (e) {
+    document.getElementById('cartao').innerHTML += '<p class="erro">Não foi possível baixar. Tente de novo.</p>';
+  }
+}
+
+async function abrirPastaCompartilhada(senha) {
+  try {
+    var res = await fetch(API_BASE + '/s/' + encodeURIComponent(token) + '/pasta', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ password: senha || '' }),
+    });
+    if (res.status === 401) { renderTela(true); return; }
+    var data = await res.json();
+    if (!res.ok || !data.ok) throw new Error('falha');
+    var html = '<div class="marca">LeuCloud</div><div class="icone">📁</div><h1>' + esc(infoAtual.nome) + '</h1>';
+    if (!data.files.length) {
+      html += '<p class="meta">Essa pasta está vazia.</p>';
+    } else {
+      html += '<div>';
+      data.files.forEach(function (f) {
+        html += '<div class="item-lista"><span class="nome">' + esc(f.name) + '</span>' +
+          '<button onclick="baixarArquivoDaPasta(\'' + f.id + '\',\'' + esc(f.name).replace(/'/g, "\\'") + '\',\'' + (senha || '') + '\')">⬇️</button></div>';
+      });
+      html += '</div>';
+    }
+    html += '<p class="rodape">Compartilhado com você pelo LeuCloud, da LeuName Softwares.</p>';
+    document.getElementById('cartao').innerHTML = html;
+  } catch (e) {
+    document.getElementById('cartao').innerHTML += '<p class="erro">Não foi possível abrir a pasta.</p>';
+  }
+}
+
+async function baixarArquivoDaPasta(fileId, nome, senha) {
+  try {
+    var res = await fetch(API_BASE + '/s/' + encodeURIComponent(token) + '/pasta/arquivo/' + fileId + '/download', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ password: senha || '' }),
+    });
+    if (!res.ok) throw new Error('falha');
+    var blob = await res.blob();
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = nome;
+    document.body.appendChild(a); a.click(); a.remove();
+  } catch (e) { alert('Não foi possível baixar esse arquivo.'); }
+}
+
+iniciar();
+</script>
+</body>
+</html>
