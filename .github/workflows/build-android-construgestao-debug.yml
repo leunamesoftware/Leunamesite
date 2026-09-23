@@ -1,0 +1,111 @@
+name: Build Android APK ConstruGestão (teste, sem loja)
+
+# Gera um .apk de teste do ConstruGestão (assinado com a chave de debug
+# do Android -- sem precisar de keystore/secrets) e publica no link fixo:
+# https://api.leunamesoftware.com/download/construgestao.apk
+#
+# Esse .apk ja pode ser instalado direto no celular pra testar. Para
+# publicar de verdade na Google Play, use o workflow separado
+# "Build Android AAB ConstruGestão (Google Play)", que gera o .aab
+# assinado com o keystore de release.
+on:
+  workflow_dispatch:
+
+jobs:
+  build-android:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Baixar código do repositório
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Configurar Java (necessário para compilar Android)
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Configurar o Android SDK
+        shell: bash
+        run: |
+          export ANDROID_SDK_ROOT="${ANDROID_SDK_ROOT:-${ANDROID_HOME:-/usr/local/lib/android/sdk}}"
+          echo "ANDROID_SDK_ROOT=$ANDROID_SDK_ROOT" >> "$GITHUB_ENV"
+          echo "ANDROID_HOME=$ANDROID_SDK_ROOT" >> "$GITHUB_ENV"
+          SDKMANAGER="$(find "$ANDROID_SDK_ROOT" -maxdepth 4 -type f -name sdkmanager 2>/dev/null | sort -V | tail -n1)"
+          if [ -z "$SDKMANAGER" ]; then
+            mkdir -p "$ANDROID_SDK_ROOT/cmdline-tools"
+            curl -sSL -o /tmp/cmdline-tools.zip \
+              https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip
+            unzip -q /tmp/cmdline-tools.zip -d "$ANDROID_SDK_ROOT/cmdline-tools"
+            mv "$ANDROID_SDK_ROOT/cmdline-tools/cmdline-tools" "$ANDROID_SDK_ROOT/cmdline-tools/latest"
+            SDKMANAGER="$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager"
+          fi
+          yes | "$SDKMANAGER" --licenses > /dev/null || true
+          "$SDKMANAGER" --install "platform-tools" "platforms;android-34" "build-tools;34.0.0" > /dev/null
+
+      - name: Instalar dependências do projeto Android
+        working-directory: ANDROID/projeto-instalador-construgestao
+        run: npm install
+
+      - name: Criar o projeto Android nativo (Capacitor)
+        working-directory: ANDROID/projeto-instalador-construgestao
+        run: npx cap add android
+
+      - name: Copiar o sistema para dentro do projeto Android
+        working-directory: ANDROID/projeto-instalador-construgestao
+        run: npx cap sync android
+
+      - name: Aplicar o ícone oficial do ConstruGestão
+        working-directory: ANDROID/projeto-instalador-construgestao
+        shell: bash
+        run: |
+          for d in mipmap-mdpi mipmap-hdpi mipmap-xhdpi mipmap-xxhdpi mipmap-xxxhdpi; do
+            cp "icones-oficiais/$d/ic_launcher.png" "android/app/src/main/res/$d/ic_launcher.png"
+            cp "icones-oficiais/$d/ic_launcher_round.png" "android/app/src/main/res/$d/ic_launcher_round.png"
+            cp "icones-oficiais/$d/ic_launcher_foreground.png" "android/app/src/main/res/$d/ic_launcher_foreground.png"
+          done
+          cp "icones-oficiais/ic_launcher_background.xml" "android/app/src/main/res/values/ic_launcher_background.xml"
+
+      - name: Dar permissão de execução ao Gradle
+        working-directory: ANDROID/projeto-instalador-construgestao/android
+        shell: bash
+        run: chmod +x gradlew
+
+      - name: Gerar o APK
+        working-directory: ANDROID/projeto-instalador-construgestao/android
+        shell: bash
+        run: ./gradlew assembleDebug --no-daemon
+
+      - name: Renomear o APK final
+        working-directory: ANDROID/projeto-instalador-construgestao
+        shell: bash
+        run: |
+          cp android/app/build/outputs/apk/debug/app-debug.apk \
+             android/app/build/outputs/apk/debug/ConstruGestao.apk
+
+      - name: Enviar o APK como Artifact do GitHub
+        uses: actions/upload-artifact@v4
+        with:
+          name: ConstruGestao-Android-APK-teste
+          path: ANDROID/projeto-instalador-construgestao/android/app/build/outputs/apk/debug/ConstruGestao.apk
+          if-no-files-found: error
+
+      - name: Configurar Node.js 22 (exigido pelo wrangler)
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Publicar o APK no link fixo de download
+        working-directory: PROJETO/servidor-licencas-cloudflare
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+        run: |
+          npx wrangler@latest r2 object put \
+            leuname-downloads/construgestao.apk \
+            --file ../../ANDROID/projeto-instalador-construgestao/android/app/build/outputs/apk/debug/ConstruGestao.apk \
+            --content-type application/vnd.android.package-archive \
+            --remote
