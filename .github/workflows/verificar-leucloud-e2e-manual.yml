@@ -8,7 +8,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Site do app responde
-        run: curl -sS --fail -o /dev/null -w "site: %{http_code}\n" https://leucloud.leunamesoftware.com.br/
+        run: |
+          curl -sS --fail -o /dev/null -w "site respondeu com codigo %{http_code}\n" https://leucloud.leunamesoftware.com.br/
 
       - name: API responde (health)
         run: curl -sS --fail https://api.leucloud.leunamesoftware.com.br/health
