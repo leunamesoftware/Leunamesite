@@ -566,6 +566,88 @@ export default {
       return json({ ok: true });
     }
 
+    // ==================== ADMIN ====================
+    // Nao existe senha mestra separada: quem for admin de verdade
+    // (is_admin_unlimited=1 na propria conta LeuCloud) entra com o
+    // proprio login. Toda rota abaixo exige isso.
+    if (pathname.startsWith('/admin/')) {
+      if (!auth) return json({ ok: false, erro: 'nao_autenticado' }, 401);
+      if (!auth.user.is_admin_unlimited) return json({ ok: false, erro: 'acesso_negado' }, 403);
+    }
+
+    if (pathname === '/admin/resumo' && method === 'GET') {
+      const totais = await env.DB.prepare(
+        `SELECT COUNT(*) AS total_usuarios,
+                SUM(storage_used_bytes) AS total_armazenamento_bytes,
+                SUM(CASE WHEN status = 'ativo' THEN 1 ELSE 0 END) AS usuarios_ativos,
+                SUM(CASE WHEN status = 'suspenso' THEN 1 ELSE 0 END) AS usuarios_suspensos
+         FROM users`
+      ).first();
+      const porPlano = await env.DB.prepare(
+        `SELECT plan_id, COUNT(*) AS quantidade FROM users GROUP BY plan_id`
+      ).all();
+      return json({ ok: true, totais, por_plano: porPlano.results });
+    }
+
+    if (pathname === '/admin/usuarios' && method === 'GET') {
+      const { results } = await env.DB.prepare(
+        `SELECT u.id, u.name, u.email, u.plan_id, u.storage_used_bytes, u.storage_quota_override_bytes,
+                u.is_admin_unlimited, u.status, u.created_at, u.last_login_at, p.storage_bytes AS plan_storage_bytes
+         FROM users u JOIN plans p ON p.id = u.plan_id
+         ORDER BY u.created_at DESC`
+      ).all();
+      return json({ ok: true, usuarios: results });
+    }
+
+    m = pathname.match(/^\/admin\/usuarios\/([^/]+)\/plano$/);
+    if (m && method === 'POST') {
+      const body = await request.json().catch(() => ({}));
+      const plano = await env.DB.prepare('SELECT id FROM plans WHERE id = ?').bind(body.plan_id).first();
+      if (!plano) return json({ ok: false, erro: 'plano_invalido' }, 400);
+      await env.DB.prepare('UPDATE users SET plan_id = ?, updated_at = ? WHERE id = ?').bind(body.plan_id, nowIso(), m[1]).run();
+      await logAtividade(env, auth.user.id, 'admin_plan_change', 'user', m[1], request, { plan_id: body.plan_id });
+      return json({ ok: true });
+    }
+
+    m = pathname.match(/^\/admin\/usuarios\/([^/]+)\/status$/);
+    if (m && method === 'POST') {
+      const body = await request.json().catch(() => ({}));
+      if (body.status !== 'ativo' && body.status !== 'suspenso') return json({ ok: false, erro: 'status_invalido' }, 400);
+      await env.DB.prepare('UPDATE users SET status = ?, updated_at = ? WHERE id = ?').bind(body.status, nowIso(), m[1]).run();
+      if (body.status === 'suspenso') {
+        await env.DB.prepare('UPDATE sessions SET revoked_at = ? WHERE user_id = ? AND revoked_at IS NULL').bind(nowIso(), m[1]).run();
+      }
+      await logAtividade(env, auth.user.id, 'admin_status_change', 'user', m[1], request, { status: body.status });
+      return json({ ok: true });
+    }
+
+    m = pathname.match(/^\/admin\/usuarios\/([^/]+)\/ilimitado$/);
+    if (m && method === 'POST') {
+      const body = await request.json().catch(() => ({}));
+      await env.DB.prepare('UPDATE users SET is_admin_unlimited = ?, updated_at = ? WHERE id = ?')
+        .bind(body.ilimitado ? 1 : 0, nowIso(), m[1]).run();
+      await logAtividade(env, auth.user.id, 'admin_unlimited_change', 'user', m[1], request, { ilimitado: !!body.ilimitado });
+      return json({ ok: true });
+    }
+
+    m = pathname.match(/^\/admin\/usuarios\/([^/]+)\/cota$/);
+    if (m && method === 'POST') {
+      const body = await request.json().catch(() => ({}));
+      const bytes = body.storage_quota_override_bytes === null ? null : Number(body.storage_quota_override_bytes);
+      await env.DB.prepare('UPDATE users SET storage_quota_override_bytes = ?, updated_at = ? WHERE id = ?')
+        .bind(bytes, nowIso(), m[1]).run();
+      await logAtividade(env, auth.user.id, 'admin_quota_change', 'user', m[1], request, { storage_quota_override_bytes: bytes });
+      return json({ ok: true });
+    }
+
+    if (pathname === '/admin/logs' && method === 'GET') {
+      const { results } = await env.DB.prepare(
+        `SELECT id, user_id, action, target_type, target_id, ip, metadata, created_at
+         FROM activity_logs ORDER BY created_at DESC LIMIT 200`
+      ).all();
+      return json({ ok: true, logs: results });
+    }
+
     return json({ ok: false, erro: 'rota_nao_encontrada' }, 404);
   },
 

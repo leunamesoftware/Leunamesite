@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>LeuCloud — Admin</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="favicon-32.png">
+<style>
+:root{
+  --bg:#14532d; --bg2:#1a6b3a; --card:#1f7a42; --card2:#24904e; --borda:#3ab265;
+  --texto:#ffffff; --fraco:#dcf7e7; --verde:#34d399; --verde-forte:#22c55e; --verde-neon:#6ef5b3;
+  --perigo:#ef4444; --aviso:#f59e0b; --radius:16px; --radius-sm:10px;
+}
+*{box-sizing:border-box;}
+body{
+  margin:0; background:var(--bg); color:var(--texto); min-height:100vh;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+}
+button{font-family:inherit; color:inherit;}
+.hidden{display:none !important;}
+.tela{min-height:100vh; padding:24px; display:flex; flex-direction:column;}
+
+/* login */
+#tela-login{align-items:center; justify-content:center; gap:18px;}
+#tela-login .caixa{background:var(--card); border:1px solid var(--borda); border-radius:var(--radius); padding:28px; width:100%; max-width:360px; display:flex; flex-direction:column; gap:14px;}
+#tela-login h1{margin:0; font-size:22px;}
+#tela-login .sub{color:var(--fraco); font-size:13.5px; margin:-8px 0 4px;}
+.campo{display:flex; flex-direction:column; gap:6px;}
+.campo label{font-size:13px; color:var(--fraco);}
+.campo input, .campo select{
+  background:var(--bg2); border:1px solid var(--borda); color:var(--texto);
+  border-radius:var(--radius-sm); padding:11px 12px; font-size:14.5px; outline:none;
+}
+.campo input:focus, .campo select:focus{border-color:var(--verde-neon);}
+.btn{border:none; border-radius:var(--radius-sm); padding:12px 16px; font-size:14.5px; font-weight:700; cursor:pointer;}
+.btn-primario{background:linear-gradient(135deg,var(--verde),var(--verde-forte)); color:#04120a;}
+.btn-secundario{background:var(--bg2); color:var(--texto); border:1px solid var(--borda);}
+.btn-perigo{background:rgba(239,68,68,.15); color:#fecaca; border:1px solid rgba(239,68,68,.4);}
+.btn-sm{padding:7px 11px; font-size:12.5px; border-radius:8px;}
+.erro-form{color:#fecaca; font-size:13px; min-height:16px;}
+
+/* shell logado */
+#app-shell{max-width:1080px; margin:0 auto; width:100%;}
+.topo-admin{display:flex; justify-content:space-between; align-items:center; margin-bottom:22px; flex-wrap:wrap; gap:12px;}
+.topo-admin h1{margin:0; font-size:22px;}
+.abas{display:flex; gap:8px; margin-bottom:20px; flex-wrap:wrap;}
+.abas button{background:var(--card); border:1px solid var(--borda); color:var(--fraco); padding:9px 16px; border-radius:999px; cursor:pointer; font-size:13.5px;}
+.abas button.ativa{background:var(--verde-forte); color:#04120a; border-color:var(--verde-forte); font-weight:700;}
+.painel{display:none;}
+.painel.ativo{display:block;}
+
+.grid-resumo{display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:14px; margin-bottom:24px;}
+.stat{background:var(--card); border:1px solid var(--borda); border-radius:var(--radius); padding:18px;}
+.stat .valor{font-size:26px; font-weight:800;}
+.stat .rotulo{font-size:12.5px; color:var(--fraco); margin-top:4px;}
+
+.lista-usuarios{display:flex; flex-direction:column; gap:12px;}
+.user-card{background:var(--card); border:1px solid var(--borda); border-radius:var(--radius); padding:16px;}
+.user-topo{display:flex; justify-content:space-between; align-items:flex-start; gap:12px; margin-bottom:10px;}
+.user-nome{font-weight:700; font-size:15px;}
+.user-email{font-size:12.5px; color:var(--fraco);}
+.badge{font-size:11px; padding:3px 9px; border-radius:999px; font-weight:700; white-space:nowrap;}
+.badge-ativo{background:rgba(52,211,153,.2); color:var(--verde-neon);}
+.badge-suspenso{background:rgba(239,68,68,.2); color:#fecaca;}
+.badge-ilimitado{background:rgba(245,158,11,.2); color:#fde68a;}
+.barra-fundo{background:var(--bg2); border-radius:999px; height:7px; overflow:hidden; margin:8px 0;}
+.barra-frente{background:linear-gradient(90deg,var(--verde-forte),var(--verde-neon)); height:100%; border-radius:999px;}
+.user-meta{font-size:12px; color:var(--fraco); margin-bottom:10px;}
+.user-acoes{display:flex; gap:8px; flex-wrap:wrap;}
+.user-acoes select{background:var(--bg2); border:1px solid var(--borda); color:var(--texto); border-radius:8px; padding:7px 9px; font-size:12.5px;}
+
+.log-linha{background:var(--card); border:1px solid var(--borda); border-radius:10px; padding:10px 14px; margin-bottom:8px; font-size:13px;}
+.log-linha .acao{font-weight:700;}
+.log-linha .quando{color:var(--fraco); font-size:11.5px;}
+
+.carregando, .vazio{color:var(--fraco); text-align:center; padding:30px;}
+.toast{
+  position:fixed; left:16px; right:16px; bottom:20px; z-index:50; max-width:400px; margin:0 auto;
+  background:var(--card2); border:1px solid var(--borda); color:var(--texto); padding:13px 16px;
+  border-radius:var(--radius-sm); font-size:13.5px; text-align:center; box-shadow:0 8px 30px rgba(0,0,0,.4);
+}
+.toast.erro{border-color:rgba(239,68,68,.5); color:#fecaca;}
+</style>
+</head>
+<body>
+
+<section id="tela-login" class="tela">
+  <div class="caixa">
+    <h1>LeuCloud — Admin</h1>
+    <p class="sub">Entra com sua conta ilimitada.</p>
+    <div class="campo">
+      <label>E-mail</label>
+      <input type="email" id="loginEmail" autocomplete="email">
+    </div>
+    <div class="campo">
+      <label>Senha</label>
+      <input type="password" id="loginSenha" autocomplete="current-password">
+    </div>
+    <p class="erro-form" id="loginErro"></p>
+    <button class="btn btn-primario" id="btnLogin" onclick="fazerLogin()">Entrar</button>
+  </div>
+</section>
+
+<div id="app-shell" class="hidden" style="padding:24px;">
+  <div class="topo-admin">
+    <h1>Painel LeuCloud</h1>
+    <button class="btn btn-secundario btn-sm" onclick="sair()">Sair</button>
+  </div>
+  <div class="abas">
+    <button class="ativa" data-aba="resumo" onclick="mostrarAba('resumo')">Resumo</button>
+    <button data-aba="usuarios" onclick="mostrarAba('usuarios')">Usuários</button>
+    <button data-aba="logs" onclick="mostrarAba('logs')">Logs</button>
+  </div>
+
+  <div id="painel-resumo" class="painel ativo">
+    <div class="grid-resumo" id="gridResumo"><p class="carregando">Carregando…</p></div>
+  </div>
+
+  <div id="painel-usuarios" class="painel">
+    <div class="lista-usuarios" id="listaUsuarios"><p class="carregando">Carregando…</p></div>
+  </div>
+
+  <div id="painel-logs" class="painel">
+    <div id="listaLogs"><p class="carregando">Carregando…</p></div>
+  </div>
+</div>
+
+<div id="toast" class="toast hidden"></div>
+
+<script>
+var API_BASE = 'https://api.leucloud.leunamesoftware.com.br';
+var PLANOS_LABEL = { gratis: 'Grátis 5GB', '100gb': '100 GB', '200gb': '200 GB', '500gb': '500 GB', '1tb': '1 TB', '2tb': '2 TB+' };
+var usuariosCache = [];
+
+function mostrarToast(msg, isErro) {
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.toggle('erro', !!isErro);
+  t.classList.remove('hidden');
+  clearTimeout(t._timer);
+  t._timer = setTimeout(function () { t.classList.add('hidden'); }, 3500);
+}
+function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+function formatarBytes(bytes) {
+  if (!bytes) return '0 B';
+  var u = ['B', 'KB', 'MB', 'GB', 'TB'];
+  var i = Math.min(u.length - 1, Math.floor(Math.log(bytes) / Math.log(1024)));
+  return (bytes / Math.pow(1024, i)).toFixed(i === 0 ? 0 : 2) + ' ' + u[i];
+}
+function formatarData(iso) {
+  if (!iso) return '—';
+  try { return new Date(iso).toLocaleString('pt-BR'); } catch (e) { return iso; }
+}
+
+async function api(path, opts) {
+  opts = opts || {};
+  var headers = Object.assign({}, opts.headers || {});
+  var token = localStorage.getItem('leucloud_admin_token');
+  if (token) headers['Authorization'] = 'Bearer ' + token;
+  if (opts.body !== undefined) { headers['Content-Type'] = 'application/json'; opts = Object.assign({}, opts, { body: JSON.stringify(opts.body) }); }
+  var res = await fetch(API_BASE + path, Object.assign({}, opts, { headers: headers }));
+  var data = null;
+  try { data = await res.json(); } catch (e) {}
+  if (!res.ok) { var err = new Error((data && data.erro) || 'erro'); err.status = res.status; throw err; }
+  return data;
+}
+
+async function fazerLogin() {
+  var email = document.getElementById('loginEmail').value.trim();
+  var senha = document.getElementById('loginSenha').value;
+  var erroEl = document.getElementById('loginErro');
+  erroEl.textContent = '';
+  if (!email || !senha) { erroEl.textContent = 'Preencha e-mail e senha.'; return; }
+  var btn = document.getElementById('btnLogin'); btn.disabled = true;
+  try {
+    var data = await api('/auth/login', { method: 'POST', body: { email: email, password: senha, platform: 'web', device_name: 'Painel Admin' } });
+    if (!data.user.is_admin_unlimited) {
+      erroEl.textContent = 'Essa conta não é administradora.';
+      return;
+    }
+    localStorage.setItem('leucloud_admin_token', data.session_token);
+    mostrarApp();
+  } catch (err) {
+    erroEl.textContent = err.message === 'credenciais_invalidas' ? 'E-mail ou senha incorretos.' : 'Não foi possível entrar.';
+  } finally { btn.disabled = false; }
+}
+
+function sair() {
+  localStorage.removeItem('leucloud_admin_token');
+  document.getElementById('app-shell').classList.add('hidden');
+  document.getElementById('tela-login').classList.remove('hidden');
+}
+
+function mostrarApp() {
+  document.getElementById('tela-login').classList.add('hidden');
+  document.getElementById('app-shell').classList.remove('hidden');
+  carregarResumo();
+  carregarUsuarios();
+}
+
+function mostrarAba(nome) {
+  document.querySelectorAll('.painel').forEach(function (p) { p.classList.remove('ativo'); });
+  document.getElementById('painel-' + nome).classList.add('ativo');
+  document.querySelectorAll('.abas button').forEach(function (b) { b.classList.toggle('ativa', b.dataset.aba === nome); });
+  if (nome === 'logs') carregarLogs();
+}
+
+async function carregarResumo() {
+  var el = document.getElementById('gridResumo');
+  try {
+    var data = await api('/admin/resumo');
+    var t = data.totais;
+    var porPlanoHtml = data.por_plano.map(function (p) {
+      return '<div class="stat"><div class="valor">' + p.quantidade + '</div><div class="rotulo">' + (PLANOS_LABEL[p.plan_id] || p.plan_id) + '</div></div>';
+    }).join('');
+    el.innerHTML =
+      '<div class="stat"><div class="valor">' + (t.total_usuarios || 0) + '</div><div class="rotulo">Usuários totais</div></div>' +
+      '<div class="stat"><div class="valor">' + (t.usuarios_ativos || 0) + '</div><div class="rotulo">Ativos</div></div>' +
+      '<div class="stat"><div class="valor">' + (t.usuarios_suspensos || 0) + '</div><div class="rotulo">Suspensos</div></div>' +
+      '<div class="stat"><div class="valor">' + formatarBytes(t.total_armazenamento_bytes) + '</div><div class="rotulo">Armazenamento usado</div></div>' +
+      porPlanoHtml;
+  } catch (err) {
+    if (err.status === 401 || err.status === 403) return sair();
+    el.innerHTML = '<p class="vazio">Não foi possível carregar.</p>';
+  }
+}
+
+async function carregarUsuarios() {
+  var el = document.getElementById('listaUsuarios');
+  try {
+    var data = await api('/admin/usuarios');
+    usuariosCache = data.usuarios;
+    if (!usuariosCache.length) { el.innerHTML = '<p class="vazio">Nenhum usuário ainda.</p>'; return; }
+    el.innerHTML = usuariosCache.map(renderUsuario).join('');
+  } catch (err) {
+    if (err.status === 401 || err.status === 403) return sair();
+    el.innerHTML = '<p class="vazio">Não foi possível carregar.</p>';
+  }
+}
+
+function renderUsuario(u) {
+  var limite = u.is_admin_unlimited ? null : (u.storage_quota_override_bytes ?? u.plan_storage_bytes);
+  var pct = limite ? Math.min(100, Math.round((u.storage_used_bytes / limite) * 100)) : 3;
+  var optsPlanos = Object.keys(PLANOS_LABEL).map(function (id) {
+    return '<option value="' + id + '"' + (id === u.plan_id ? ' selected' : '') + '>' + PLANOS_LABEL[id] + '</option>';
+  }).join('');
+  return '<div class="user-card">' +
+    '<div class="user-topo">' +
+      '<div><div class="user-nome">' + esc(u.name) + '</div><div class="user-email">' + esc(u.email) + '</div></div>' +
+      '<span class="badge ' + (u.status === 'ativo' ? 'badge-ativo' : 'badge-suspenso') + '">' + (u.status === 'ativo' ? 'Ativo' : 'Suspenso') + '</span>' +
+    '</div>' +
+    '<div class="barra-fundo"><div class="barra-frente" style="width:' + pct + '%"></div></div>' +
+    '<div class="user-meta">' + formatarBytes(u.storage_used_bytes) + (limite ? ' de ' + formatarBytes(limite) : ' · sem limite') +
+      (u.is_admin_unlimited ? ' <span class="badge badge-ilimitado">Ilimitado</span>' : '') +
+      '<br>Cadastrado em ' + formatarData(u.created_at) + ' · Último login: ' + formatarData(u.last_login_at) +
+    '</div>' +
+    '<div class="user-acoes">' +
+      '<select onchange="mudarPlano(\'' + u.id + '\', this.value)">' + optsPlanos + '</select>' +
+      '<button class="btn-sm ' + (u.status === 'ativo' ? 'btn-perigo' : 'btn-secundario') + '" onclick="mudarStatus(\'' + u.id + '\',\'' + (u.status === 'ativo' ? 'suspenso' : 'ativo') + '\')">' + (u.status === 'ativo' ? 'Suspender' : 'Reativar') + '</button>' +
+      '<button class="btn-sm btn-secundario" onclick="mudarIlimitado(\'' + u.id + '\',' + (!u.is_admin_unlimited) + ')">' + (u.is_admin_unlimited ? 'Remover ilimitado' : 'Tornar ilimitado') + '</button>' +
+    '</div>' +
+  '</div>';
+}
+
+async function mudarPlano(id, planoId) {
+  try { await api('/admin/usuarios/' + id + '/plano', { method: 'POST', body: { plan_id: planoId } }); mostrarToast('Plano atualizado.'); carregarUsuarios(); }
+  catch (err) { mostrarToast('Não foi possível trocar o plano.', true); }
+}
+async function mudarStatus(id, status) {
+  if (status === 'suspenso' && !confirm('Suspender essa conta? A sessão dela é desconectada na hora.')) return;
+  try { await api('/admin/usuarios/' + id + '/status', { method: 'POST', body: { status: status } }); mostrarToast('Status atualizado.'); carregarUsuarios(); }
+  catch (err) { mostrarToast('Não foi possível atualizar o status.', true); }
+}
+async function mudarIlimitado(id, ilimitado) {
+  try { await api('/admin/usuarios/' + id + '/ilimitado', { method: 'POST', body: { ilimitado: ilimitado } }); mostrarToast('Atualizado.'); carregarUsuarios(); }
+  catch (err) { mostrarToast('Não foi possível atualizar.', true); }
+}
+
+async function carregarLogs() {
+  var el = document.getElementById('listaLogs');
+  el.innerHTML = '<p class="carregando">Carregando…</p>';
+  try {
+    var data = await api('/admin/logs');
+    if (!data.logs.length) { el.innerHTML = '<p class="vazio">Nenhum log ainda.</p>'; return; }
+    el.innerHTML = data.logs.map(function (l) {
+      return '<div class="log-linha"><span class="acao">' + esc(l.action) + '</span> · ' + esc(l.target_type || '') + ' ' + esc(l.target_id || '') +
+        '<div class="quando">' + formatarData(l.created_at) + '</div></div>';
+    }).join('');
+  } catch (err) {
+    if (err.status === 401 || err.status === 403) return sair();
+    el.innerHTML = '<p class="vazio">Não foi possível carregar.</p>';
+  }
+}
+
+(function iniciar() {
+  var token = localStorage.getItem('leucloud_admin_token');
+  if (token) mostrarApp();
+})();
+</script>
+</body>
+</html>
