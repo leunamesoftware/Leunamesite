@@ -1,0 +1,89 @@
+name: Verificar Fase 3 do LeuCloud (pontual)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  verificar:
+    runs-on: ubuntu-latest
+    env:
+      API: https://api.leucloud.leunamesoftware.com.br
+    steps:
+      - name: Cadastrar conta de teste
+        run: |
+          curl -sS --fail -X POST "$API/auth/signup" -H "Content-Type: application/json" \
+            -d '{"name":"Teste Fase3","email":"teste-fase3@leunamesoftware.com.br","password":"senhaDeTeste123","platform":"web","device_name":"Aparelho 1"}' \
+            -o /tmp/a.json
+          TOKEN=$(python3 -c "import json;print(json.load(open('/tmp/a.json'))['session_token'])")
+          USER_ID=$(python3 -c "import json;print(json.load(open('/tmp/a.json'))['user']['id'])")
+          echo "TOKEN=$TOKEN" >> "$GITHUB_ENV"
+          echo "USER_ID=$USER_ID" >> "$GITHUB_ENV"
+
+      - name: Upload da versao 1 de um arquivo
+        run: |
+          echo "conteudo versao 1" > /tmp/v1.txt
+          curl -sS --fail -X POST "$API/files/upload" -H "Authorization: Bearer $TOKEN" \
+            -H "X-File-Name: documento.txt" -H "Content-Type: text/plain" --data-binary @/tmp/v1.txt -o /tmp/upload.json
+          FILE_ID=$(python3 -c "import json;print(json.load(open('/tmp/upload.json'))['file']['id'])")
+          echo "FILE_ID=$FILE_ID" >> "$GITHUB_ENV"
+
+      - name: Enviar versao 2 e confirmar historico + download da versao antiga
+        run: |
+          echo "conteudo versao 2, bem diferente" > /tmp/v2.txt
+          curl -sS --fail -X POST "$API/files/$FILE_ID/nova-versao" -H "Authorization: Bearer $TOKEN" \
+            -H "Content-Type: text/plain" --data-binary @/tmp/v2.txt -o /tmp/versao2.json
+          python3 -c "import json; d=json.load(open('/tmp/versao2.json')); assert d['version']==2, d"
+          curl -sS --fail "$API/files/$FILE_ID/versoes" -H "Authorization: Bearer $TOKEN" -o /tmp/versoes.json
+          python3 -c "import json; d=json.load(open('/tmp/versoes.json')); assert d['versao_atual']['version_number']==2; assert len(d['anteriores'])==1 and d['anteriores'][0]['version_number']==1; print('OK: historico tem v1 e v2')"
+          curl -sS --fail "$API/files/$FILE_ID/versoes/1/download" -H "Authorization: Bearer $TOKEN" -o /tmp/baixado_v1.txt
+          diff /tmp/v1.txt /tmp/baixado_v1.txt && echo "OK: download da versao 1 antiga bateu com o conteudo original"
+          curl -sS --fail "$API/files/$FILE_ID/download" -H "Authorization: Bearer $TOKEN" -o /tmp/baixado_atual.txt
+          diff /tmp/v2.txt /tmp/baixado_atual.txt && echo "OK: download atual bateu com a versao 2"
+
+      - name: Fazer login de um segundo aparelho e confirmar em GET /devices
+        run: |
+          curl -sS --fail -X POST "$API/auth/login" -H "Content-Type: application/json" \
+            -d '{"email":"teste-fase3@leunamesoftware.com.br","password":"senhaDeTeste123","platform":"android","device_name":"Aparelho 2"}' \
+            -o /tmp/login2.json
+          TOKEN2=$(python3 -c "import json;print(json.load(open('/tmp/login2.json'))['session_token'])")
+          curl -sS --fail "$API/devices" -H "Authorization: Bearer $TOKEN" -o /tmp/devices.json
+          python3 -c "import json; d=json.load(open('/tmp/devices.json')); assert len(d['devices'])==2, d; print('OK: dois dispositivos listados')"
+          OUTRO_ID=$(python3 -c "import json; d=json.load(open('/tmp/devices.json')); print(next(dv['id'] for dv in d['devices'] if not dv['is_this_device']))")
+          curl -sS --fail -X DELETE "$API/devices/$OUTRO_ID" -H "Authorization: Bearer $TOKEN"
+          CODIGO=$(curl -sS -o /tmp/apos_desconectar.json -w "%{http_code}" "$API/me" -H "Authorization: Bearer $TOKEN2")
+          test "$CODIGO" = "401" && echo "OK: aparelho desconectado nao consegue mais chamar a API"
+
+      - name: Ativar 2FA de verdade (segredo real, codigo TOTP calculado)
+        run: |
+          curl -sS --fail -X POST "$API/me/2fa/iniciar" -H "Authorization: Bearer $TOKEN" -o /tmp/2fa_iniciar.json
+          SECRET=$(python3 -c "import json;print(json.load(open('/tmp/2fa_iniciar.json'))['secret'])")
+          echo "SECRET=$SECRET" >> "$GITHUB_ENV"
+          CODIGO=$(python3 -c "import base64,hmac,hashlib,struct,time; key=base64.b32decode('$SECRET'.upper()); counter=int(time.time()//30); msg=struct.pack('>Q', counter); h=hmac.new(key, msg, hashlib.sha1).digest(); o=h[19]&0xf; code=(struct.unpack('>I', h[o:o+4])[0] & 0x7fffffff) % 1000000; print(str(code).zfill(6))")
+          curl -sS --fail -X POST "$API/me/2fa/confirmar" -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" -d "{\"code\":\"$CODIGO\"}"
+          echo "OK: 2FA ativado com codigo TOTP real"
+
+      - name: Login com 2FA ativo exige o codigo, e o codigo errado e rejeitado
+        run: |
+          curl -sS --fail -X POST "$API/auth/login" -H "Content-Type: application/json" \
+            -d '{"email":"teste-fase3@leunamesoftware.com.br","password":"senhaDeTeste123","platform":"web","device_name":"Aparelho 3"}' \
+            -o /tmp/login3.json
+          python3 -c "import json; d=json.load(open('/tmp/login3.json')); assert d.get('requer_2fa')==True, d; print('OK: login pede 2FA')"
+          TEMP_TOKEN=$(python3 -c "import json;print(json.load(open('/tmp/login3.json'))['temp_token'])")
+          CODIGO_ERRADO=$(curl -sS -o /tmp/2fa_errado.json -w "%{http_code}" -X POST "$API/auth/login/2fa" -H "Content-Type: application/json" -d "{\"temp_token\":\"$TEMP_TOKEN\",\"code\":\"000000\"}")
+          test "$CODIGO_ERRADO" = "401" && echo "OK: codigo TOTP errado rejeitado"
+          CODIGO_CERTO=$(python3 -c "import base64,hmac,hashlib,struct,time; key=base64.b32decode('$SECRET'.upper()); counter=int(time.time()//30); msg=struct.pack('>Q', counter); h=hmac.new(key, msg, hashlib.sha1).digest(); o=h[19]&0xf; code=(struct.unpack('>I', h[o:o+4])[0] & 0x7fffffff) % 1000000; print(str(code).zfill(6))")
+          curl -sS --fail -X POST "$API/auth/login/2fa" -H "Content-Type: application/json" -d "{\"temp_token\":\"$TEMP_TOKEN\",\"code\":\"$CODIGO_CERTO\"}" -o /tmp/login3_ok.json
+          python3 -c "import json; d=json.load(open('/tmp/login3_ok.json')); assert d['ok']==True and d.get('session_token'); print('OK: login com codigo certo cria sessao')"
+
+      - name: Desativar 2FA (senha errada e rejeitada, senha certa funciona)
+        run: |
+          CODIGO=$(curl -sS -o /tmp/2fa_senha_errada.json -w "%{http_code}" -X POST "$API/me/2fa/desativar" -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" -d '{"current_password":"senhaErrada"}')
+          test "$CODIGO" = "401" && echo "OK: senha errada nao desativa 2FA"
+          curl -sS --fail -X POST "$API/me/2fa/desativar" -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" -d '{"current_password":"senhaDeTeste123"}'
+          curl -sS --fail -X POST "$API/auth/login" -H "Content-Type: application/json" \
+            -d '{"email":"teste-fase3@leunamesoftware.com.br","password":"senhaDeTeste123","platform":"web","device_name":"Aparelho 4"}' \
+            -o /tmp/login4.json
+          python3 -c "import json; d=json.load(open('/tmp/login4.json')); assert not d.get('requer_2fa') and d.get('session_token'); print('OK: 2FA desativado, login volta ao normal')"
+
+      - name: Imprimir ID de teste para limpeza manual no D1
+        run: echo "USER_ID=$USER_ID"
