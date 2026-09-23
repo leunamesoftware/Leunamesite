@@ -395,12 +395,15 @@ export default {
         }
       }
 
-      // POST /admin/licencas/excluir  { chave }  -- remove a linha de vez
-      // (diferente de revogar: nao da pra desfazer, some da lista).
+      // POST /admin/licencas/excluir  { chave }  -- marca como excluida (NAO
+      // apaga a linha de fato). Da pra desfazer: reativar volta ela pra
+      // 'ativa' de novo, sem precisar redigitar a chave.
       if (pathname === '/admin/licencas/excluir' && request.method === 'POST') {
         const body = await request.json();
         if (!body.chave) return json({ ok: false, erro: 'chave_obrigatoria' }, 400);
-        await env.DB.prepare('DELETE FROM licencas WHERE chave = ?').bind(body.chave).run();
+        await env.DB.prepare(
+          "UPDATE licencas SET status = 'excluida', revogado_em = datetime('now') WHERE chave = ?"
+        ).bind(body.chave).run();
         return json({ ok: true, chave: body.chave, status: 'excluida' });
       }
 

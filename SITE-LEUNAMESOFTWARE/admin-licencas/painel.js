@@ -22,8 +22,8 @@
     try { return new Date(iso.replace(' ', 'T') + 'Z').toLocaleString('pt-BR'); } catch (e) { return iso; }
   }
 
-  var STATUS_LABEL = { ativa: 'Ativa', revogada: 'Revogada' };
-  var STATUS_CLASS = { ativa: 'real', revogada: 'inactivo' };
+  var STATUS_LABEL = { ativa: 'Ativa', revogada: 'Revogada', excluida: 'Excluída' };
+  var STATUS_CLASS = { ativa: 'real', revogada: 'inactivo', excluida: 'inactivo' };
   var APP_LABEL = { 'leuname-gestao': 'Gestacell', 'construgestao': 'ConstruGestão' };
 
   // Monta o link de WhatsApp (numero) ou e-mail (mailto), dependendo do
@@ -113,7 +113,7 @@
     }
     if (excBtn) {
       var chaveExc = excBtn.getAttribute('data-excluir');
-      if (confirm('Excluir a licença ' + chaveExc + ' pra sempre? Isso não pode ser desfeito (diferente de revogar).')) {
+      if (confirm('Excluir a licença ' + chaveExc + '? Ela sai do ar na hora, mas continua na lista marcada como "Excluída" -- se for engano, clica em "Reativar" que ela volta.')) {
         AdminLicencasAPI.api('/admin/licencas/excluir', { method: 'POST', body: JSON.stringify({ chave: chaveExc }) })
           .then(load)
           .catch(function () { showBanner('Não foi possível excluir a licença.', true); });

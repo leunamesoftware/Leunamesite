@@ -2682,7 +2682,8 @@ async function checkLicenseRevoked(){
   if(!resp.ok) return false;
   let data;
   try{ data=await resp.json(); }catch(e){ return false; }
-  if(!data||!data.ok||!data.encontrada) return false;
+  if(!data||!data.ok) return false;
+  if(!data.encontrada){ lsSet(LICENSE_REVOKED_LS_KEY,'1'); return true; }
   if(data.status && data.status!=='ativa'){ lsSet(LICENSE_REVOKED_LS_KEY,'1'); return true; }
   lsSet(LICENSE_REVOKED_LS_KEY,''); return false;
 }
