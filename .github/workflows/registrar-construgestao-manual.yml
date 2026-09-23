@@ -1,0 +1,26 @@
+name: Registrar app ConstruGestao e licenca do Rodolfo
+
+on:
+  workflow_dispatch:
+    inputs:
+      admin_token:
+        description: 'ADMIN_TOKEN do servidor de licencas'
+        required: true
+
+jobs:
+  registrar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cadastrar app ConstruGestao (se ainda nao existir)
+        run: |
+          curl -sS -X POST "https://api.leunamesoftware.com/admin/apps" \
+            -H "Authorization: Bearer ${{ inputs.admin_token }}" \
+            -H "Content-Type: application/json" \
+            --data-raw '{"id":"construgestao","nome":"ConstruGestão"}'
+
+      - name: Registrar a licenca ja existente do Rodolfo (ConstruGestao)
+        run: |
+          curl -sS -X POST "https://api.leunamesoftware.com/admin/licencas/gerar" \
+            -H "Authorization: Bearer ${{ inputs.admin_token }}" \
+            -H "Content-Type: application/json" \
+            --data-raw '{"app_id":"construgestao","cliente_nome":"Rodolfo","chave":"LEU-CLI1-0001-7ADB","origem":"manual"}'
