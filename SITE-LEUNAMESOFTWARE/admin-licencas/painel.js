@@ -27,12 +27,13 @@
   var APP_LABEL = { 'leuname-gestao': 'Gestacell', 'construgestao': 'ConstruGestão' };
 
   // Monta o link de WhatsApp (numero) ou e-mail (mailto), dependendo do
-  // que a pessoa cadastrou em "contato" -- assim manda a chave direto
-  // sem precisar copiar/colar em lugar nenhum.
-  function linkEnviarChave(contato, chave, appId) {
+  // que a pessoa cadastrou em "contato" -- manda um link pro "envelope"
+  // (licenca.html) em vez da chave crua, pra ficar bonito de abrir.
+  function linkEnviarChave(contato, chave, appId, nome) {
     if (!contato) return null;
     var appNome = APP_LABEL[appId] || appId || 'LeuName Softwares';
-    var msg = 'Olá! Sua licença do ' + appNome + ' é: ' + chave + '. Baixe o app e digite essa chave pra ativar.';
+    var linkEnvelope = location.origin + '/licenca.html?chave=' + encodeURIComponent(chave) + '&app=' + encodeURIComponent(appId || '') + (nome ? '&nome=' + encodeURIComponent(nome) : '');
+    var msg = 'Olá' + (nome ? ', ' + nome : '') + '! Você recebeu uma licença do ' + appNome + ' 🎁 Toque aqui pra abrir: ' + linkEnvelope;
     if (contato.indexOf('@') !== -1) {
       return 'mailto:' + contato.trim() + '?subject=' + encodeURIComponent('Sua licença do ' + appNome) + '&body=' + encodeURIComponent(msg);
     }
@@ -53,7 +54,7 @@
         ? '<button class="admin-btn admin-btn-danger admin-btn-sm" data-revogar="' + l.chave + '">Revogar</button>'
         : '<button class="admin-btn admin-btn-outline admin-btn-sm" data-reativar="' + l.chave + '">Reativar</button>';
       var excluirBtn = '<button class="admin-btn admin-btn-danger admin-btn-sm" data-excluir="' + l.chave + '">Excluir</button>';
-      var linkEnv = linkEnviarChave(l.cliente_contato, l.chave, l.app_id);
+      var linkEnv = linkEnviarChave(l.cliente_contato, l.chave, l.app_id, l.cliente_nome);
       var enviarBtn = linkEnv ? '<a class="admin-btn admin-btn-outline admin-btn-sm" href="' + linkEnv + '" target="_blank" rel="noopener" style="text-decoration:none;">Enviar</a>' : '';
       return '<tr data-chave="' + l.chave + '">' +
         '<td><code>' + l.chave + '</code></td>' +
@@ -133,7 +134,7 @@
     AdminLicencasAPI.api('/admin/licencas/gerar', { method: 'POST', body: JSON.stringify(payload) })
       .then(function (data) {
         newKeyBanner.hidden = false;
-        var linkEnv = linkEnviarChave(payload.cliente_contato, data.chave, payload.app_id);
+        var linkEnv = linkEnviarChave(payload.cliente_contato, data.chave, payload.app_id, payload.cliente_nome);
         newKeyBanner.innerHTML = (payload.chave ? 'Licença registrada: ' : 'Licença gerada: ') + '<code>' + data.chave + '</code>' +
           (linkEnv ? ' &nbsp; <a href="' + linkEnv + '" target="_blank" rel="noopener" class="admin-btn admin-btn-primary admin-btn-sm" style="text-decoration:none;">Enviar pro cliente</a>' : '');
         form.reset();
