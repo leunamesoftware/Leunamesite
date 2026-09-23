@@ -8699,7 +8699,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
      atualização mais abaixo), já que o service worker não recarrega
      nada por conta própria (é sempre o mesmo arquivo sw.js, só o
      index.html muda a cada deploy). */
-  var APP_BUILD_ID = 'BUILD-2026-09-22-11';
+  var APP_BUILD_ID = 'BUILD-2026-09-23-01';
 
   /* ============================================================
      CONSTRUGESTÃO — núcleo real (licença, login, banco local, CRUD)
@@ -12181,8 +12181,11 @@ html, body{ overflow-x:hidden; max-width:100%; }
       if (m && m[1] && m[1] !== APP_BUILD_ID) { jaRecarregou = true; window.location.reload(); }
     }).catch(function () {});
   }
-  document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible') verificarVersaoNova(); });
-  window.addEventListener('focus', verificarVersaoNova);
+  function recheckLicenseOnFocus() {
+    checkLicenseRevoked().then(function (revoked) { if (revoked) renderLicenseRevoked(); }).catch(function () {});
+  }
+  document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible') { verificarVersaoNova(); recheckLicenseOnFocus(); } });
+  window.addEventListener('focus', function () { verificarVersaoNova(); recheckLicenseOnFocus(); });
   setInterval(verificarVersaoNova, 60000);
   verificarVersaoNova();
 })();

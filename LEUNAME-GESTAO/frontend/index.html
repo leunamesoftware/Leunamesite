@@ -3068,7 +3068,7 @@ if('serviceWorker' in navigator){ navigator.serviceWorker.register('/sw.js').cat
    de vez em quando e compara o APP_BUILD_ID; se for diferente do que já
    está rodando na tela, recarrega sozinho -- assim ninguém precisa
    desinstalar/reinstalar o app pra ver uma correção nova. */
-var APP_BUILD_ID = 'BUILD-2026-09-22-04';
+var APP_BUILD_ID = 'BUILD-2026-09-23-01';
 var jaRecarregouGestao = false;
 function verificarVersaoNovaGestao(){
   if(jaRecarregouGestao) return;
@@ -3077,8 +3077,11 @@ function verificarVersaoNovaGestao(){
     if (m && m[1] && m[1] !== APP_BUILD_ID) { jaRecarregouGestao = true; window.location.reload(); }
   }).catch(function () {});
 }
-document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible') verificarVersaoNovaGestao(); });
-window.addEventListener('focus', verificarVersaoNovaGestao);
+function recheckLicenseOnFocusGestao() {
+  checkLicenseRevoked().then(function (revoked) { if (revoked) renderLicenseRevoked(); }).catch(function () {});
+}
+document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible') { verificarVersaoNovaGestao(); recheckLicenseOnFocusGestao(); } });
+window.addEventListener('focus', function () { verificarVersaoNovaGestao(); recheckLicenseOnFocusGestao(); });
 setInterval(verificarVersaoNovaGestao, 60000);
 verificarVersaoNovaGestao();
 </script>
