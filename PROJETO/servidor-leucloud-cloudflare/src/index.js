@@ -339,12 +339,12 @@ export default {
       const subpastas = await env.DB.prepare(
         `SELECT id, name, is_favorite, created_at, updated_at FROM folders
          WHERE user_id = ? AND is_deleted = 0 AND (parent_id = ? OR (parent_id IS NULL AND ? IS NULL))
-         ORDER BY name`
+         ORDER BY name COLLATE NOCASE`
       ).bind(auth.user.id, folderId, folderId).all();
       const arquivos = await env.DB.prepare(
         `SELECT id, name, mime_type, size_bytes, category, is_favorite, created_at, updated_at FROM files
          WHERE user_id = ? AND is_deleted = 0 AND (folder_id = ? OR (folder_id IS NULL AND ? IS NULL))
-         ORDER BY name`
+         ORDER BY name COLLATE NOCASE`
       ).bind(auth.user.id, folderId, folderId).all();
       return json({ ok: true, folders: subpastas.results, files: arquivos.results });
     }
