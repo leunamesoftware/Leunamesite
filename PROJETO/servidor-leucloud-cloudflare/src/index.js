@@ -15,7 +15,10 @@
 
 const SESSION_DIAS = 30;
 const LIXEIRA_DIAS = 30;
-const PBKDF2_ITERACOES = 300000;
+// O WebCrypto do Cloudflare Workers rejeita PBKDF2 acima de 100000
+// iteracoes ("iteration counts above 100000 are not supported") -- esse
+// e o maximo permitido nesse runtime, entao usamos exatamente esse valor.
+const PBKDF2_ITERACOES = 100000;
 
 function json(data, status = 200) {
   return new Response(JSON.stringify(data), {

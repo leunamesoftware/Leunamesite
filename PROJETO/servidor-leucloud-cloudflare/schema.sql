@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS users (
   password_hash TEXT NOT NULL,         -- PBKDF2 derivado, base64
   password_salt TEXT NOT NULL,         -- salt aleatório por usuário, base64
   password_algo TEXT NOT NULL DEFAULT 'PBKDF2-SHA256-v1', -- versionado p/ poder trocar parâmetros no futuro sem quebrar hashes antigos
-  password_iterations INTEGER NOT NULL DEFAULT 300000,
+  password_iterations INTEGER NOT NULL DEFAULT 100000, -- maximo aceito pelo WebCrypto do Cloudflare Workers
   plan_id TEXT NOT NULL DEFAULT 'gratis' REFERENCES plans(id),
   storage_used_bytes INTEGER NOT NULL DEFAULT 0,     -- contador denormalizado, atualizado a cada upload/exclusão/esvaziar lixeira
   storage_quota_override_bytes INTEGER,              -- NULL = usa a cota do plano; permite ajuste manual sem trocar de plano
