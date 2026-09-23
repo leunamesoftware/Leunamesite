@@ -302,6 +302,20 @@ hr.divisor{border:none; border-top:1px solid var(--borda); margin:6px 0;}
     <button class="btn btn-secundario" id="btnRedefinir" onclick="redefinirComToken()">Redefinir senha</button>
   </section>
 
+  <section id="tela-login-2fa" class="screen tela-form">
+    <button class="voltar" onclick="irPara('tela-login')">‹ Voltar</button>
+    <div>
+      <h1>Verificação em duas etapas</h1>
+      <p class="sub">Digite o código de 6 dígitos do seu app autenticador.</p>
+    </div>
+    <div class="campo">
+      <label>Código</label>
+      <input type="text" id="login2faCodigo" inputmode="numeric" maxlength="6" placeholder="000000" autocomplete="one-time-code">
+    </div>
+    <p class="erro-form" id="login2faErro"></p>
+    <button class="btn btn-primario" id="btnLogin2fa" onclick="confirmarLogin2fa()">Confirmar</button>
+  </section>
+
   <div id="app-shell" class="app-shell hidden">
     <header class="topbar">
       <button class="voltar-icon" id="btnVoltarPasta" onclick="voltarPastaAnterior()">‹</button>
@@ -449,7 +463,8 @@ hr.divisor{border:none; border-top:1px solid var(--borda); margin:6px 0;}
         </div>
         <div class="secao-perfil">
           <h3>Segurança</h3>
-          <button class="btn btn-secundario btn-sm" onclick="mostrarTela('dispositivos')">📱 Dispositivos conectados</button>
+          <button class="btn btn-secundario btn-sm" style="margin-bottom:10px;" onclick="mostrarTela('dispositivos')">📱 Dispositivos conectados</button>
+          <div id="bloco2fa"></div>
         </div>
         <button class="btn btn-perigo" onclick="fazerLogout()">Sair da conta</button>
       </div>
@@ -498,7 +513,7 @@ var arquivosCompartilhadosPendentes = [];
 if (compartilhamentoPendenteFlag) { history.replaceState({}, '', location.pathname); }
 
 function irPara(idTela) {
-  document.querySelectorAll('#tela-apresentacao,#tela-login,#tela-cadastro,#tela-recuperar').forEach(function (el) { el.classList.remove('active'); });
+  document.querySelectorAll('#tela-apresentacao,#tela-login,#tela-cadastro,#tela-recuperar,#tela-login-2fa').forEach(function (el) { el.classList.remove('active'); });
   document.getElementById(idTela).classList.add('active');
 }
 
@@ -579,9 +594,32 @@ async function fazerLogin() {
   var btn = document.getElementById('btnLogin'); btn.disabled = true;
   try {
     var data = await api('/auth/login', { method: 'POST', body: { email: email, password: senha, platform: 'web', device_name: nomeDispositivo() } });
-    aposLogin(data);
+    if (data.requer_2fa) {
+      tempToken2fa = data.temp_token;
+      document.getElementById('login2faCodigo').value = '';
+      document.getElementById('login2faErro').textContent = '';
+      irPara('tela-login-2fa');
+    } else {
+      aposLogin(data);
+    }
   } catch (err) {
     erroEl.textContent = mensagemErro(err);
+  } finally { btn.disabled = false; }
+}
+
+var tempToken2fa = null;
+async function confirmarLogin2fa() {
+  var codigo = document.getElementById('login2faCodigo').value.trim();
+  var erroEl = document.getElementById('login2faErro');
+  erroEl.textContent = '';
+  if (!/^\d{6}$/.test(codigo)) { erroEl.textContent = 'Digite os 6 dígitos do código.'; return; }
+  var btn = document.getElementById('btnLogin2fa'); btn.disabled = true;
+  try {
+    var data = await api('/auth/login/2fa', { method: 'POST', body: { temp_token: tempToken2fa, code: codigo, platform: 'web', device_name: nomeDispositivo() } });
+    tempToken2fa = null;
+    aposLogin(data);
+  } catch (err) {
+    erroEl.textContent = err.message === 'codigo_invalido' ? 'Código incorreto.' : mensagemErro(err);
   } finally { btn.disabled = false; }
 }
 
@@ -655,7 +693,7 @@ async function fazerLogout() {
 /* ---------------- shell / navegação do app ---------------- */
 
 function mostrarApp() {
-  document.querySelectorAll('#tela-apresentacao,#tela-login,#tela-cadastro,#tela-recuperar').forEach(function (el) { el.classList.remove('active'); });
+  document.querySelectorAll('#tela-apresentacao,#tela-login,#tela-cadastro,#tela-recuperar,#tela-login-2fa').forEach(function (el) { el.classList.remove('active'); });
   document.getElementById('app-shell').classList.remove('hidden');
   atualizarResumoConta();
   pilhaPastas = [{ id: null, name: 'Meus arquivos' }];
@@ -1166,6 +1204,56 @@ function preencherPerfil() {
     ? formatarBytes(currentUser.storage_used_bytes) + ' usados · sem limite'
     : formatarBytes(currentUser.storage_used_bytes) + ' de ' + formatarBytes(currentUser.storage_quota_bytes);
   document.getElementById('perfilNovoNome').value = currentUser.name;
+  renderBloco2fa();
+}
+
+function renderBloco2fa() {
+  var el = document.getElementById('bloco2fa');
+  if (currentUser.two_factor_enabled) {
+    el.innerHTML = '<p class="msg-ok" style="margin-bottom:10px;">✅ Verificação em duas etapas ativada.</p>' +
+      '<button class="btn btn-perigo btn-sm" onclick="desativar2fa()">Desativar verificação em duas etapas</button>';
+  } else {
+    el.innerHTML = '<button class="btn btn-secundario btn-sm" onclick="ativar2fa()">🔐 Ativar verificação em duas etapas</button>';
+  }
+}
+
+async function ativar2fa() {
+  try {
+    var data = await api('/me/2fa/iniciar', { method: 'POST' });
+    var el = document.getElementById('bloco2fa');
+    el.innerHTML =
+      '<p class="sub" style="margin-bottom:8px;">Abra seu app autenticador (Google Authenticator, Authy, etc), escolha "Adicionar conta manualmente" e cole esta chave:</p>' +
+      '<div class="campo" style="margin-bottom:10px;"><input type="text" readonly value="' + data.secret + '" onclick="this.select()"></div>' +
+      '<p class="nota-fraca" style="margin-bottom:10px;">Conta: LeuCloud (' + esc(currentUser.email) + ')</p>' +
+      '<div class="campo" style="margin-bottom:10px;"><label>Código gerado pelo app</label><input type="text" id="codigo2faConfirmar" inputmode="numeric" maxlength="6" placeholder="000000"></div>' +
+      '<p class="erro-form" id="erro2faConfirmar"></p>' +
+      '<button class="btn btn-primario btn-sm" onclick="confirmar2fa()">Confirmar e ativar</button>';
+  } catch (err) { mostrarToast(mensagemErro(err), true); }
+}
+async function confirmar2fa() {
+  var codigo = document.getElementById('codigo2faConfirmar').value.trim();
+  var erroEl = document.getElementById('erro2faConfirmar');
+  if (!/^\d{6}$/.test(codigo)) { erroEl.textContent = 'Digite os 6 dígitos do código.'; return; }
+  try {
+    await api('/me/2fa/confirmar', { method: 'POST', body: { code: codigo } });
+    currentUser.two_factor_enabled = true;
+    mostrarToast('Verificação em duas etapas ativada.');
+    renderBloco2fa();
+  } catch (err) {
+    erroEl.textContent = err.message === 'codigo_invalido' ? 'Código incorreto. Confira o app e tente de novo.' : mensagemErro(err);
+  }
+}
+async function desativar2fa() {
+  var senha = prompt('Digite sua senha atual pra desativar a verificação em duas etapas:');
+  if (!senha) return;
+  try {
+    await api('/me/2fa/desativar', { method: 'POST', body: { current_password: senha } });
+    currentUser.two_factor_enabled = false;
+    mostrarToast('Verificação em duas etapas desativada.');
+    renderBloco2fa();
+  } catch (err) {
+    mostrarToast(err.message === 'senha_atual_incorreta' ? 'Senha incorreta.' : mensagemErro(err), true);
+  }
 }
 
 function atualizarFotoPerfil() {
@@ -1577,7 +1665,7 @@ async function desconectarDispositivo(id) {
    cache) de vez em quando e compara o APP_BUILD_ID; se for diferente
    do que já está rodando na tela, recarrega sozinho -- assim ninguém
    precisa desinstalar/reinstalar o atalho pra ver uma correção nova. */
-var APP_BUILD_ID = 'BUILD-2026-09-23-07';
+var APP_BUILD_ID = 'BUILD-2026-09-23-08';
 var jaRecarregouLeuCloud = false;
 function verificarVersaoNovaLeuCloud() {
   if (jaRecarregouLeuCloud) return;

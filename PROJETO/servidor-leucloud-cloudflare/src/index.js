@@ -191,9 +191,44 @@ export default {
       await registrarTentativa(env, email || 'sem-email', 'login', ok);
       if (!user || !ok || user.status !== 'ativo') return json({ ok: false, erro: 'credenciais_invalidas' }, 401);
 
+      // Senha certa, mas a conta tem 2FA -- ainda nao cria sessao. Devolve
+      // um token temporario (uso unico, 5 min) que o app troca pelo
+      // codigo TOTP em /auth/login/2fa.
+      if (user.two_factor_enabled) {
+        const tempToken = tokenAleatorio();
+        const tempHash = await sha256Hex(tempToken);
+        const expira = new Date(Date.now() + 5 * 60 * 1000).toISOString();
+        await env.DB.prepare(
+          `INSERT INTO auth_tokens (id, user_id, purpose, token_hash, expires_at, requested_ip, created_at)
+           VALUES (?, ?, '2fa_login', ?, ?, ?, ?)`
+        ).bind(uid(), user.id, tempHash, expira, request.headers.get('CF-Connecting-IP') || null, nowIso()).run();
+        return json({ ok: true, requer_2fa: true, temp_token: tempToken, plataforma: body.platform || 'web', device_name: body.device_name || null });
+      }
+
       const { sessionToken, deviceId } = await criarSessao(env, user.id, body.platform || 'web', body.device_name || null, request);
       await env.DB.prepare('UPDATE users SET last_login_at = ? WHERE id = ?').bind(nowIso(), user.id).run();
       await logAtividade(env, user.id, 'login', 'user', user.id, request);
+      return json({ ok: true, session_token: sessionToken, device_id: deviceId, user: await perfilPublico(env, user.id) });
+    }
+
+    if (pathname === '/auth/login/2fa' && method === 'POST') {
+      const body = await request.json().catch(() => ({}));
+      const tempToken = body.temp_token || '';
+      const codigo = (body.code || '').trim();
+      if (!tempToken || !codigo) return json({ ok: false, erro: 'dados_invalidos' }, 400);
+      const tempHash = await sha256Hex(tempToken);
+      const row = await env.DB.prepare(
+        `SELECT * FROM auth_tokens WHERE token_hash = ? AND purpose = '2fa_login' AND used_at IS NULL AND expires_at > ?`
+      ).bind(tempHash, nowIso()).first();
+      if (!row) return json({ ok: false, erro: 'token_invalido_ou_expirado' }, 400);
+      const user = await env.DB.prepare('SELECT * FROM users WHERE id = ?').bind(row.user_id).first();
+      if (!user || !user.two_factor_secret || !(await verificarTotp(user.two_factor_secret, codigo))) {
+        return json({ ok: false, erro: 'codigo_invalido' }, 401);
+      }
+      await env.DB.prepare('UPDATE auth_tokens SET used_at = ? WHERE id = ?').bind(nowIso(), row.id).run();
+      const { sessionToken, deviceId } = await criarSessao(env, user.id, body.platform || 'web', body.device_name || null, request);
+      await env.DB.prepare('UPDATE users SET last_login_at = ? WHERE id = ?').bind(nowIso(), user.id).run();
+      await logAtividade(env, user.id, 'login_2fa', 'user', user.id, request);
       return json({ ok: true, session_token: sessionToken, device_id: deviceId, user: await perfilPublico(env, user.id) });
     }
 
@@ -266,6 +301,41 @@ export default {
       if (!nome) return json({ ok: false, erro: 'nome_obrigatorio' }, 400);
       await env.DB.prepare('UPDATE users SET name = ?, updated_at = ? WHERE id = ?').bind(nome, nowIso(), auth.user.id).run();
       return json({ ok: true, user: await perfilPublico(env, auth.user.id) });
+    }
+
+    // Gera um segredo TOTP novo (ainda NAO ativado -- so vira efetivo depois
+    // de confirmar um codigo valido em /me/2fa/confirmar). Repetir essa
+    // chamada troca o segredo pendente, sem afetar 2FA ja ativo.
+    if (pathname === '/me/2fa/iniciar' && method === 'POST') {
+      if (!auth) return json({ ok: false, erro: 'nao_autenticado' }, 401);
+      const secret = base32Encode(crypto.getRandomValues(new Uint8Array(20)));
+      await env.DB.prepare('UPDATE users SET two_factor_secret = ?, updated_at = ? WHERE id = ?').bind(secret, nowIso(), auth.user.id).run();
+      const otpauth = `otpauth://totp/LeuCloud:${encodeURIComponent(auth.user.email)}?secret=${secret}&issuer=LeuCloud&algorithm=SHA1&digits=6&period=30`;
+      return json({ ok: true, secret, otpauth_uri: otpauth });
+    }
+
+    if (pathname === '/me/2fa/confirmar' && method === 'POST') {
+      if (!auth) return json({ ok: false, erro: 'nao_autenticado' }, 401);
+      const body = await request.json().catch(() => ({}));
+      const linha = await env.DB.prepare('SELECT two_factor_secret FROM users WHERE id = ?').bind(auth.user.id).first();
+      if (!linha || !linha.two_factor_secret) return json({ ok: false, erro: '2fa_nao_iniciado' }, 400);
+      if (!(await verificarTotp(linha.two_factor_secret, (body.code || '').trim()))) return json({ ok: false, erro: 'codigo_invalido' }, 401);
+      await env.DB.prepare('UPDATE users SET two_factor_enabled = 1, updated_at = ? WHERE id = ?').bind(nowIso(), auth.user.id).run();
+      await logAtividade(env, auth.user.id, '2fa_enabled', 'user', auth.user.id, request);
+      return json({ ok: true });
+    }
+
+    // Desativar exige a senha (nao o codigo TOTP) -- se a pessoa perdeu o
+    // celular com o app autenticador mas ainda sabe a senha, precisa
+    // conseguir desligar o 2FA mesmo assim.
+    if (pathname === '/me/2fa/desativar' && method === 'POST') {
+      if (!auth) return json({ ok: false, erro: 'nao_autenticado' }, 401);
+      const body = await request.json().catch(() => ({}));
+      const ok = await verificarSenha(body.current_password || '', auth.user.password_salt, auth.user.password_hash, auth.user.password_iterations, env);
+      if (!ok) return json({ ok: false, erro: 'senha_atual_incorreta' }, 401);
+      await env.DB.prepare('UPDATE users SET two_factor_enabled = 0, two_factor_secret = NULL, updated_at = ? WHERE id = ?').bind(nowIso(), auth.user.id).run();
+      await logAtividade(env, auth.user.id, '2fa_disabled', 'user', auth.user.id, request);
+      return json({ ok: true });
     }
 
     if (pathname === '/me/senha' && method === 'PATCH') {
@@ -1165,6 +1235,45 @@ async function confirmaSenhaShare(share, senhaDigitada, env) {
   if (!share.password_hash) return true;
   const dados = JSON.parse(share.password_hash);
   return verificarSenha(senhaDigitada || '', dados.salt, dados.hash, dados.iterations, env);
+}
+
+// ---- TOTP (RFC 6238) para 2FA -- HMAC-SHA1 via WebCrypto + base32 ----
+const BASE32_ALFABETO = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
+function base32Encode(bytes) {
+  let bits = '';
+  for (const b of bytes) bits += b.toString(2).padStart(8, '0');
+  let saida = '';
+  for (let i = 0; i + 5 <= bits.length; i += 5) saida += BASE32_ALFABETO[parseInt(bits.slice(i, i + 5), 2)];
+  const resto = bits.length % 5;
+  if (resto) saida += BASE32_ALFABETO[parseInt(bits.slice(bits.length - resto).padEnd(5, '0'), 2)];
+  return saida;
+}
+function base32Decode(str) {
+  const limpo = str.toUpperCase().replace(/[^A-Z2-7]/g, '');
+  let bits = '';
+  for (const c of limpo) bits += BASE32_ALFABETO.indexOf(c).toString(2).padStart(5, '0');
+  const bytes = [];
+  for (let i = 0; i + 8 <= bits.length; i += 8) bytes.push(parseInt(bits.slice(i, i + 8), 2));
+  return new Uint8Array(bytes);
+}
+async function gerarCodigoTotp(secretB32, contador) {
+  const chave = await crypto.subtle.importKey('raw', base32Decode(secretB32), { name: 'HMAC', hash: 'SHA-1' }, false, ['sign']);
+  const buf = new ArrayBuffer(8);
+  new DataView(buf).setBigUint64(0, BigInt(contador), false);
+  const assinatura = new Uint8Array(await crypto.subtle.sign('HMAC', chave, buf));
+  const offset = assinatura[19] & 0xf;
+  const binCode = ((assinatura[offset] & 0x7f) << 24) | ((assinatura[offset + 1] & 0xff) << 16) | ((assinatura[offset + 2] & 0xff) << 8) | (assinatura[offset + 3] & 0xff);
+  return String(binCode % 1000000).padStart(6, '0');
+}
+// Aceita o passo atual de 30s e um passo antes/depois (tolerancia de
+// relogio) -- mesma janela que Google Authenticator/Authy usam de fato.
+async function verificarTotp(secretB32, codigoDigitado) {
+  if (!/^\d{6}$/.test(codigoDigitado)) return false;
+  const passoAtual = Math.floor(Date.now() / 1000 / 30);
+  for (const delta of [0, -1, 1]) {
+    if ((await gerarCodigoTotp(secretB32, passoAtual + delta)) === codigoDigitado) return true;
+  }
+  return false;
 }
 
 async function respostaDownloadShare(env, fileId) {
