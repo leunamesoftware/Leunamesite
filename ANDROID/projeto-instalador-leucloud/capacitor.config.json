@@ -1,0 +1,13 @@
+{
+  "appId": "com.leunamesoftwares.leucloud",
+  "appName": "LeuCloud",
+  "webDir": "www",
+  "backgroundColor": "#14532d",
+  "android": {
+    "backgroundColor": "#14532d",
+    "allowMixedContent": false
+  },
+  "server": {
+    "androidScheme": "https"
+  }
+}
