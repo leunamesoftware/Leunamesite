@@ -14,6 +14,19 @@
 <meta name="mobile-web-app-capable" content="yes">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../admin/admin.css">
+<style>
+  /* Lista de licenças em cards -- pra nunca precisar rolar de lado no
+     celular pra ver nome/chave, diferente de uma tabela larga. */
+  .lic-list{ display:flex; flex-direction:column; gap:10px; }
+  .lic-card{ border:1px solid var(--gray-200); border-radius:var(--radius-m,10px); padding:14px; background:var(--white); }
+  .lic-card__top{ display:flex; align-items:flex-start; justify-content:space-between; gap:8px; margin-bottom:8px; }
+  .lic-card__chave{ font-family:ui-monospace,'SF Mono',Consolas,monospace; font-weight:700; font-size:14.5px; letter-spacing:.2px; word-break:break-all; color:var(--ink-900); }
+  .lic-card__nome{ font-size:16.5px; font-weight:800; color:var(--ink-900); margin:0 0 3px; }
+  .lic-card__app{ display:inline-block; font-size:10.5px; font-weight:800; padding:3px 9px; border-radius:999px; color:#fff; margin-bottom:6px; }
+  .lic-card__meta{ font-size:12.5px; color:var(--ink-400); line-height:1.5; margin-bottom:12px; }
+  .lic-card__motivo{ font-size:11.5px; opacity:.75; margin-top:3px; }
+  .lic-card .admin-row-actions{ flex-wrap:wrap; }
+</style>
 </head>
 <body class="admin-body">
 <div class="admin-shell">
@@ -68,12 +81,7 @@
 
     <div class="admin-card">
       <h2>Todas as licenças (<span id="licCount">0</span>)</h2>
-      <div class="admin-table-wrap">
-        <table class="admin-table">
-          <thead><tr><th>Chave</th><th>Aplicativo</th><th>Cliente</th><th>Contato</th><th>Origem</th><th>Status</th><th>Criada em</th><th></th></tr></thead>
-          <tbody id="licBody"><tr><td colspan="8" class="admin-empty">Carregando…</td></tr></tbody>
-        </table>
-      </div>
+      <div class="lic-list" id="licBody"><p class="admin-empty">Carregando…</p></div>
     </div>
   </main>
 </div>

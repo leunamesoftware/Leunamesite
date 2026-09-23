@@ -25,6 +25,9 @@
   var STATUS_LABEL = { ativa: 'Ativa', revogada: 'Revogada', excluida: 'Excluída' };
   var STATUS_CLASS = { ativa: 'real', revogada: 'inactivo', excluida: 'inactivo' };
   var APP_LABEL = { 'leuname-gestao': 'Gestacell', 'construgestao': 'ConstruGestão' };
+  var APP_COLOR = { 'leuname-gestao': 'linear-gradient(135deg,#3b82f6,#0a2647)', 'construgestao': 'linear-gradient(135deg,#f97316,#c2410c)' };
+
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
 
   // Monta o link de WhatsApp (numero) ou e-mail (mailto), dependendo do
   // que a pessoa cadastrou em "contato" -- manda a chave direto no texto,
@@ -45,7 +48,7 @@
     var body = document.getElementById('licBody');
     document.getElementById('licCount').textContent = licencas.length;
     if (!licencas.length) {
-      body.innerHTML = '<tr><td colspan="8" class="admin-empty">Nenhuma licença gerada ainda.</td></tr>';
+      body.innerHTML = '<p class="admin-empty">Nenhuma licença gerada ainda.</p>';
       return;
     }
     body.innerHTML = licencas.map(function (l) {
@@ -55,16 +58,22 @@
       var excluirBtn = '<button class="admin-btn admin-btn-danger admin-btn-sm" data-excluir="' + l.chave + '">Excluir</button>';
       var linkEnv = linkEnviarChave(l.cliente_contato, l.chave, l.app_id, l.cliente_nome);
       var enviarBtn = linkEnv ? '<a class="admin-btn admin-btn-outline admin-btn-sm" href="' + linkEnv + '" target="_blank" rel="noopener" style="text-decoration:none;">Enviar</a>' : '';
-      return '<tr data-chave="' + l.chave + '">' +
-        '<td><code>' + l.chave + '</code></td>' +
-        '<td>' + (APP_LABEL[l.app_id] || l.app_id || '—') + '</td>' +
-        '<td><strong>' + (l.cliente_nome || '—') + '</strong></td>' +
-        '<td>' + (l.cliente_contato || '—') + '</td>' +
-        '<td>' + (l.origem || '—') + '</td>' +
-        '<td><span class="admin-badge ' + (STATUS_CLASS[l.status] || 'ejemplo') + '">' + (STATUS_LABEL[l.status] || l.status) + '</span>' + (l.motivo_revogacao ? '<div style="font-size:11px;opacity:.7;margin-top:2px;">' + l.motivo_revogacao + '</div>' : '') + '</td>' +
-        '<td>' + fmtData(l.criado_em) + '</td>' +
-        '<td><div class="admin-row-actions">' + enviarBtn + acaoBtn + excluirBtn + '</div></td>' +
-      '</tr>';
+      var appNome = APP_LABEL[l.app_id] || l.app_id || '—';
+      var appCor = APP_COLOR[l.app_id] || '#64748b';
+      return '<div class="lic-card" data-chave="' + l.chave + '">' +
+        '<div class="lic-card__top">' +
+          '<div>' +
+            '<p class="lic-card__nome">' + esc(l.cliente_nome || 'Sem nome') + '</p>' +
+            '<code class="lic-card__chave">' + esc(l.chave) + '</code>' +
+          '</div>' +
+          '<span class="admin-badge ' + (STATUS_CLASS[l.status] || 'ejemplo') + '">' + (STATUS_LABEL[l.status] || l.status) + '</span>' +
+        '</div>' +
+        '<span class="lic-card__app" style="background:' + appCor + '">' + esc(appNome) + '</span>' +
+        '<div class="lic-card__meta">' + esc(l.cliente_contato || 'sem contato') + ' · ' + esc(l.origem || 'manual') + ' · ' + fmtData(l.criado_em) +
+          (l.motivo_revogacao ? '<div class="lic-card__motivo">' + esc(l.motivo_revogacao) + '</div>' : '') +
+        '</div>' +
+        '<div class="admin-row-actions">' + enviarBtn + acaoBtn + excluirBtn + '</div>' +
+      '</div>';
     }).join('');
   }
 
@@ -73,7 +82,7 @@
       var data = await AdminLicencasAPI.api('/admin/licencas');
       renderRows(data.licencas || []);
     } catch (err) {
-      document.getElementById('licBody').innerHTML = '<tr><td colspan="8" class="admin-empty">Não foi possível conectar com o servidor.</td></tr>';
+      document.getElementById('licBody').innerHTML = '<p class="admin-empty">Não foi possível conectar com o servidor.</p>';
       showBanner('Não foi possível conectar com o backend (' + AdminLicencasAPI.BASE_URL + ').', true);
     }
   }
