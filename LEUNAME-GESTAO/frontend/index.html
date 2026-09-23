@@ -856,6 +856,17 @@ function authFooterHTML(){
   return `<p class="small center muted" style="margin-top:22px;opacity:.55;letter-spacing:.3px;">LeuName Softwares</p>`;
 }
 
+const LEUNAME_WHATSAPP='5524998721557';
+const LEUNAME_EMAIL='contato@leunamesoftware.com.br';
+function contatoLeuNameHTML(msg){
+  const wa=`https://wa.me/${LEUNAME_WHATSAPP}?text=${encodeURIComponent(msg)}`;
+  const mail=`mailto:${LEUNAME_EMAIL}?subject=${encodeURIComponent('Gestacell — '+msg)}`;
+  return `<div style="display:flex;gap:8px;margin-top:12px;">
+    <a class="btn outline" style="flex:1;justify-content:center;text-decoration:none;" href="${wa}" target="_blank" rel="noopener">WhatsApp</a>
+    <a class="btn outline" style="flex:1;justify-content:center;text-decoration:none;" href="${mail}">E-mail</a>
+  </div>`;
+}
+
 function renderLicenseGate(errMsg){
   document.getElementById('app-root').classList.remove('ready');
   const root=document.getElementById('auth-root');
@@ -896,6 +907,7 @@ function renderTrialExpirado(){
     ${authBrandHTML()}
     <h2 style="font-size:17px;text-align:center;margin-top:6px;">Período de teste encerrado</h2>
     <div class="callout warn" style="margin-top:10px;"><span>${ic('warn',15)}</span><span>Seus ${TRIAL_DIAS} dias de teste do Gestacell terminaram. Gostou do sistema? Fale com a LeuName Softwares pra adquirir a licença completa.</span></div>
+    ${contatoLeuNameHTML('Meu período de teste do Gestacell terminou e quero adquirir a licença completa.')}
     ${authFooterHTML()}
   </div></div>`;
 }
@@ -908,7 +920,8 @@ function renderLicenseRevoked(){
     ${authBrandHTML()}
     <h2 style="font-size:17px;text-align:center;margin-top:6px;">Licença desativada</h2>
     <div class="callout warn" style="margin-top:10px;"><span>${ic('warn',15)}</span><span>Sua licença foi desativada. Entre em contato com a LeuName Softwares para reativar o acesso.</span></div>
-    <button class="btn outline" id="lic-recheck" style="width:100%;justify-content:center;margin-top:16px;padding:11px;">Verificar novamente</button>
+    ${contatoLeuNameHTML('Minha licença do Gestacell foi desativada e preciso resolver.')}
+    <button class="btn outline" id="lic-recheck" style="width:100%;justify-content:center;margin-top:10px;padding:11px;">Verificar novamente</button>
     ${authFooterHTML()}
   </div></div>`;
   document.getElementById('lic-recheck').onclick=async()=>{
@@ -3068,7 +3081,7 @@ if('serviceWorker' in navigator){ navigator.serviceWorker.register('/sw.js').cat
    de vez em quando e compara o APP_BUILD_ID; se for diferente do que já
    está rodando na tela, recarrega sozinho -- assim ninguém precisa
    desinstalar/reinstalar o app pra ver uma correção nova. */
-var APP_BUILD_ID = 'BUILD-2026-09-23-01';
+var APP_BUILD_ID = 'BUILD-2026-09-23-02';
 var jaRecarregouGestao = false;
 function verificarVersaoNovaGestao(){
   if(jaRecarregouGestao) return;

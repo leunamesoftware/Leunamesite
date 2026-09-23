@@ -8699,7 +8699,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
      atualização mais abaixo), já que o service worker não recarrega
      nada por conta própria (é sempre o mesmo arquivo sw.js, só o
      index.html muda a cada deploy). */
-  var APP_BUILD_ID = 'BUILD-2026-09-23-01';
+  var APP_BUILD_ID = 'BUILD-2026-09-23-02';
 
   /* ============================================================
      CONSTRUGESTÃO — núcleo real (licença, login, banco local, CRUD)
@@ -9152,6 +9152,17 @@ html, body{ overflow-x:hidden; max-width:100%; }
       '<span style="font-weight:800;font-size:18px;">ConstruGestão</span></div>' + inner + '</div></div>';
   }
 
+  var LEUNAME_WHATSAPP = '5524998721557';
+  var LEUNAME_EMAIL = 'contato@leunamesoftware.com.br';
+  function contatoLeuNameHTML(msg) {
+    var wa = 'https://wa.me/' + LEUNAME_WHATSAPP + '?text=' + encodeURIComponent(msg);
+    var mail = 'mailto:' + LEUNAME_EMAIL + '?subject=' + encodeURIComponent('ConstruGestão — ' + msg);
+    return '<div style="display:flex;gap:8px;margin-top:12px;">' +
+      '<a class="btn btn--secondary" style="flex:1;justify-content:center;text-decoration:none;" href="' + wa + '" target="_blank" rel="noopener">WhatsApp</a>' +
+      '<a class="btn btn--secondary" style="flex:1;justify-content:center;text-decoration:none;" href="' + mail + '">E-mail</a>' +
+    '</div>';
+  }
+
   function renderLicenseGate(errMsg) {
     var root = document.getElementById('auth-root');
     document.querySelector('.app').style.display = 'none';
@@ -9185,7 +9196,8 @@ html, body{ overflow-x:hidden; max-width:100%; }
     root.innerHTML = authShellHTML(
       '<h2 style="font-size:16.5px;text-align:center;margin:0 0 6px;">Licença desativada</h2>' +
       '<div class="alert alert--danger">Sua licença foi desativada. Fale com a LeuName Softwares para reativar o acesso.</div>' +
-      '<button class="btn btn--secondary" id="lic-recheck" style="width:100%;justify-content:center;margin-top:16px;">Verificar novamente</button>'
+      contatoLeuNameHTML('Minha licença do ConstruGestão foi desativada e preciso resolver.') +
+      '<button class="btn btn--secondary" id="lic-recheck" style="width:100%;justify-content:center;margin-top:10px;">Verificar novamente</button>'
     );
     document.getElementById('lic-recheck').onclick = async function () {
       var revoked = await checkLicenseRevoked();
