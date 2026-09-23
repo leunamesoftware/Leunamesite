@@ -447,7 +447,16 @@ hr.divisor{border:none; border-top:1px solid var(--borda); margin:6px 0;}
           <p class="erro-form" id="senhaErro"></p>
           <button class="btn btn-secundario btn-sm" onclick="trocarSenha()">Salvar senha</button>
         </div>
+        <div class="secao-perfil">
+          <h3>Segurança</h3>
+          <button class="btn btn-secundario btn-sm" onclick="mostrarTela('dispositivos')">📱 Dispositivos conectados</button>
+        </div>
         <button class="btn btn-perigo" onclick="fazerLogout()">Sair da conta</button>
+      </div>
+
+      <div id="tela-dispositivos" class="tela-shell hidden">
+        <p class="nota-fraca" style="margin-bottom:14px;">Todo aparelho onde você fez login aparece aqui. Desconectar um aparelho encerra a sessão dele imediatamente — a próxima vez que ele tentar usar o LeuCloud vai precisar entrar de novo.</p>
+        <div id="listaDispositivos"></div>
       </div>
     </main>
 
@@ -463,6 +472,14 @@ hr.divisor{border:none; border-top:1px solid var(--borda); margin:6px 0;}
 
 <input type="file" id="inputArquivo" multiple hidden onchange="arquivosSelecionados(this.files)">
 <input type="file" id="inputAvatar" accept="image/*" hidden onchange="fotoSelecionada(this.files[0])">
+<input type="file" id="inputNovaVersao" hidden onchange="novaVersaoSelecionada(this.files[0])">
+<div id="historicoOverlay" class="preview-overlay hidden">
+  <div class="preview-topo">
+    <span class="preview-nome" id="historicoNome"></span>
+    <button class="preview-fechar" onclick="fecharHistorico()">✕</button>
+  </div>
+  <div class="preview-conteudo" id="historicoConteudo" style="flex-direction:column; align-items:stretch; overflow-y:auto; padding:0 16px 16px;"></div>
+</div>
 <div id="toast" class="toast hidden"></div>
 <div id="previewOverlay" class="preview-overlay hidden">
   <div class="preview-topo">
@@ -714,6 +731,7 @@ function mostrarTela(nome) {
   var titulo = {
     dashboard: 'LeuCloud', arquivos: pilhaPastas[pilhaPastas.length - 1].name, lixeira: 'Lixeira', perfil: 'Perfil',
     favoritos: 'Favoritos', busca: 'Buscar', fotos: 'Fotos', album: 'Álbum', compartilhados: 'Compartilhados',
+    dispositivos: 'Dispositivos',
   }[nome];
   var topEl = document.getElementById('topbarTitulo');
   var voltarBtn = document.getElementById('btnVoltarPasta');
@@ -733,6 +751,7 @@ function mostrarTela(nome) {
     if (nome === 'favoritos') carregarFavoritos();
     if (nome === 'fotos') carregarFotos();
     if (nome === 'compartilhados') mostrarAbaCompartilhados('links');
+    if (nome === 'dispositivos') carregarDispositivos();
   }
 }
 
@@ -838,6 +857,8 @@ function renderListaArquivos(pastas, arquivos) {
         '<button onclick="renomearArquivo(\'' + a.id + '\',\'' + esc(a.name).replace(/'/g, "\\'") + '\')">✏️ Renomear</button>' +
         '<button onclick="favoritarArquivo(\'' + a.id + '\',' + (a.is_favorite ? 'false' : 'true') + ')">⭐ ' + (a.is_favorite ? 'Desfavoritar' : 'Favoritar') + '</button>' +
         '<button onclick="compartilharItem(\'file\',\'' + a.id + '\',\'' + esc(a.name).replace(/'/g, "\\'") + '\')">🔗 Compartilhar</button>' +
+        '<button onclick="enviarNovaVersao(\'' + a.id + '\')">🔁 Nova versão</button>' +
+        '<button onclick="abrirHistorico(\'' + a.id + '\',\'' + esc(a.name).replace(/'/g, "\\'") + '\')">🕘 Histórico</button>' +
         '<button class="acao-perigo" onclick="excluirArquivo(\'' + a.id + '\')">🗑️ Mover pra lixeira</button>' +
       '</div></div>';
   });
@@ -1010,6 +1031,82 @@ function fecharPreview() {
   document.getElementById('previewOverlay').classList.add('hidden');
   document.getElementById('previewConteudo').innerHTML = '';
   if (previewObjectUrlAtual) { URL.revokeObjectURL(previewObjectUrlAtual); previewObjectUrlAtual = null; }
+}
+
+/* ---------------- versoes de arquivo ---------------- */
+
+var pendingVersaoFileId = null;
+function enviarNovaVersao(id) {
+  pendingVersaoFileId = id;
+  document.getElementById('inputNovaVersao').click();
+}
+function novaVersaoSelecionada(file) {
+  if (!file || !pendingVersaoFileId) return;
+  var id = pendingVersaoFileId;
+  pendingVersaoFileId = null;
+  var token = localStorage.getItem('leucloud_token');
+  var xhr = new XMLHttpRequest();
+  xhr.open('POST', API_BASE + '/files/' + id + '/nova-versao');
+  xhr.setRequestHeader('Authorization', 'Bearer ' + token);
+  xhr.setRequestHeader('Content-Type', file.type || 'application/octet-stream');
+  mostrarToast('Enviando nova versão de "' + file.name + '"…');
+  xhr.onload = function () {
+    if (xhr.status >= 200 && xhr.status < 300) {
+      mostrarToast('Nova versão enviada.');
+      carregarPasta(pilhaPastas[pilhaPastas.length - 1].id);
+      atualizarResumoConta();
+    } else {
+      var erro = 'erro_desconhecido';
+      try { erro = JSON.parse(xhr.responseText).erro; } catch (e) {}
+      mostrarToast(mensagemErro({ message: erro }), true);
+    }
+  };
+  xhr.onerror = function () { mostrarToast('Falha de conexão ao enviar a nova versão.', true); };
+  xhr.send(file);
+  document.getElementById('inputNovaVersao').value = '';
+}
+
+async function abrirHistorico(id, nome) {
+  document.getElementById('historicoNome').textContent = 'Histórico de "' + nome + '"';
+  var conteudo = document.getElementById('historicoConteudo');
+  conteudo.innerHTML = '<p class="preview-carregando">Carregando…</p>';
+  document.getElementById('historicoOverlay').classList.remove('hidden');
+  try {
+    var data = await api('/files/' + id + '/versoes');
+    var html = '<div class="item-card"><div class="item-info"><div class="item-nome">Versão atual (v' + data.versao_atual.version_number + ')</div>' +
+      '<div class="item-meta">' + formatarBytes(data.versao_atual.size_bytes) + ' · ' + formatarData(data.versao_atual.created_at) + '</div></div></div>';
+    if (!data.anteriores.length) {
+      html += '<p class="nota-fraca">Ainda não existe nenhuma versão anterior deste arquivo. Toque em "🔁 Nova versão" pra criar uma.</p>';
+    } else {
+      data.anteriores.forEach(function (v) {
+        html += '<div class="item-card"><div class="item-info"><div class="item-nome">Versão v' + v.version_number + '</div>' +
+          '<div class="item-meta">' + formatarBytes(v.size_bytes) + ' · ' + formatarData(v.created_at) + '</div></div>' +
+          '<div class="item-acoes"><button onclick="baixarVersaoAntiga(\'' + id + '\',' + v.version_number + ',\'' + esc(nome).replace(/'/g, "\\'") + '\')">⬇️ Baixar essa versão</button></div></div>';
+      });
+    }
+    conteudo.innerHTML = html;
+  } catch (err) {
+    conteudo.innerHTML = '<p class="preview-carregando">Não foi possível carregar o histórico.</p>';
+  }
+}
+function fecharHistorico() {
+  document.getElementById('historicoOverlay').classList.add('hidden');
+}
+async function baixarVersaoAntiga(id, versionNumber, nome) {
+  mostrarToast('Baixando versão v' + versionNumber + '…');
+  try {
+    var token = localStorage.getItem('leucloud_token');
+    var res = await fetch(API_BASE + '/files/' + id + '/versoes/' + versionNumber + '/download', { headers: { Authorization: 'Bearer ' + token } });
+    if (!res.ok) throw new Error('falha');
+    var blob = await res.blob();
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url; a.download = 'v' + versionNumber + '-' + nome;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function () { URL.revokeObjectURL(url); }, 4000);
+  } catch (err) {
+    mostrarToast('Não foi possível baixar essa versão.', true);
+  }
 }
 
 /* ---------------- lixeira ---------------- */
@@ -1433,6 +1530,33 @@ async function revogarCompartilhadoPorMim(id) {
   catch (err) { mostrarToast(mensagemErro(err), true); }
 }
 
+/* ---------------- dispositivos ---------------- */
+
+async function carregarDispositivos() {
+  var el = document.getElementById('listaDispositivos');
+  el.innerHTML = '<p class="lista-vazia">Carregando…</p>';
+  try {
+    var data = await api('/devices');
+    if (!data.devices.length) { el.innerHTML = '<p class="lista-vazia">Nenhum dispositivo conectado.</p>'; return; }
+    el.innerHTML = data.devices.map(function (d) {
+      return '<div class="item-card"><div class="item-topo">' +
+        '<div class="item-icone" style="background:#334155;">' + (d.platform === 'android' ? '📱' : d.platform === 'desktop' ? '💻' : '🌐') + '</div>' +
+        '<div class="item-info"><div class="item-nome">' + esc(d.name || d.platform) + (d.is_this_device ? ' (este aparelho)' : '') + '</div>' +
+        '<div class="item-meta">Ativo por último em ' + formatarData(d.last_seen_at) + '</div></div></div>' +
+        (d.is_this_device ? '' : '<div class="item-acoes"><button class="acao-perigo" onclick="desconectarDispositivo(\'' + d.id + '\')">🔌 Desconectar</button></div>') +
+        '</div>';
+    }).join('');
+  } catch (err) {
+    if (err.status === 401) return sessaoExpirada();
+    el.innerHTML = '<p class="lista-vazia">Não foi possível carregar os dispositivos.</p>';
+  }
+}
+async function desconectarDispositivo(id) {
+  if (!confirm('Desconectar esse aparelho? Ele vai precisar entrar de novo pra usar o LeuCloud.')) return;
+  try { await api('/devices/' + id, { method: 'DELETE' }); mostrarToast('Aparelho desconectado.'); carregarDispositivos(); }
+  catch (err) { mostrarToast(mensagemErro(err), true); }
+}
+
 /* ---------------- boot ---------------- */
 
 (async function iniciar() {
@@ -1453,7 +1577,7 @@ async function revogarCompartilhadoPorMim(id) {
    cache) de vez em quando e compara o APP_BUILD_ID; se for diferente
    do que já está rodando na tela, recarrega sozinho -- assim ninguém
    precisa desinstalar/reinstalar o atalho pra ver uma correção nova. */
-var APP_BUILD_ID = 'BUILD-2026-09-23-05';
+var APP_BUILD_ID = 'BUILD-2026-09-23-07';
 var jaRecarregouLeuCloud = false;
 function verificarVersaoNovaLeuCloud() {
   if (jaRecarregouLeuCloud) return;

@@ -534,6 +534,67 @@ export default {
       return json({ ok: true, moveu: true });
     }
 
+    // Envia um novo conteudo para um arquivo JA EXISTENTE, guardando a
+    // versao anterior em file_versions (nunca sobrescreve sem historico).
+    // O objeto antigo continua no R2 (agora "historico"); o novo vira o
+    // r2_key atual do arquivo.
+    m = pathname.match(/^\/files\/([^/]+)\/nova-versao$/);
+    if (m && method === 'POST') {
+      if (!auth) return json({ ok: false, erro: 'nao_autenticado' }, 401);
+      const arq = await env.DB.prepare('SELECT * FROM files WHERE id = ? AND user_id = ? AND is_deleted = 0').bind(m[1], auth.user.id).first();
+      if (!arq) return json({ ok: false, erro: 'nao_encontrado' }, 404);
+      const tamanhoNovo = Number(request.headers.get('Content-Length') || 0);
+      if (!tamanhoNovo) return json({ ok: false, erro: 'cabecalhos_obrigatorios_ausentes' }, 400);
+      const limite = quotaBytes(auth.user);
+      const delta = tamanhoNovo - arq.size_bytes;
+      if (limite !== null && delta > 0 && auth.user.storage_used_bytes + delta > limite) return json({ ok: false, erro: 'espaco_insuficiente' }, 413);
+
+      const novaVersao = arq.current_version + 1;
+      const mime = request.headers.get('Content-Type') || arq.mime_type || 'application/octet-stream';
+      const novaChave = `users/${auth.user.id}/${arq.id}/v${novaVersao}`;
+      await env.ARQUIVOS.put(novaChave, request.body, { httpMetadata: { contentType: mime } });
+
+      const agora = nowIso();
+      await env.DB.batch([
+        env.DB.prepare(
+          'INSERT INTO file_versions (id, file_id, version_number, r2_key, size_bytes, created_at) VALUES (?, ?, ?, ?, ?, ?)'
+        ).bind(uid(), arq.id, arq.current_version, arq.r2_key, arq.size_bytes, agora),
+        env.DB.prepare(
+          'UPDATE files SET r2_key = ?, size_bytes = ?, mime_type = ?, category = ?, current_version = ?, updated_at = ? WHERE id = ?'
+        ).bind(novaChave, tamanhoNovo, mime, categoriaDoMime(mime), novaVersao, agora, arq.id),
+        env.DB.prepare('UPDATE users SET storage_used_bytes = MAX(0, storage_used_bytes + ?) WHERE id = ?').bind(delta, auth.user.id),
+      ]);
+      await logAtividade(env, auth.user.id, 'file_new_version', 'file', arq.id, request, { version: novaVersao });
+      return json({ ok: true, version: novaVersao });
+    }
+
+    m = pathname.match(/^\/files\/([^/]+)\/versoes$/);
+    if (m && method === 'GET') {
+      if (!auth) return json({ ok: false, erro: 'nao_autenticado' }, 401);
+      const arq = await env.DB.prepare('SELECT id, current_version, size_bytes, updated_at FROM files WHERE id = ? AND user_id = ?').bind(m[1], auth.user.id).first();
+      if (!arq) return json({ ok: false, erro: 'nao_encontrado' }, 404);
+      const { results } = await env.DB.prepare(
+        'SELECT version_number, size_bytes, created_at FROM file_versions WHERE file_id = ? ORDER BY version_number DESC'
+      ).bind(m[1]).all();
+      return json({ ok: true, versao_atual: { version_number: arq.current_version, size_bytes: arq.size_bytes, created_at: arq.updated_at }, anteriores: results });
+    }
+
+    m = pathname.match(/^\/files\/([^/]+)\/versoes\/(\d+)\/download$/);
+    if (m && method === 'GET') {
+      if (!auth) return json({ ok: false, erro: 'nao_autenticado' }, 401);
+      const arq = await env.DB.prepare('SELECT name, user_id FROM files WHERE id = ? AND user_id = ?').bind(m[1], auth.user.id).first();
+      if (!arq) return json({ ok: false, erro: 'nao_encontrado' }, 404);
+      const versao = await env.DB.prepare('SELECT r2_key FROM file_versions WHERE file_id = ? AND version_number = ?').bind(m[1], Number(m[2])).first();
+      if (!versao) return json({ ok: false, erro: 'versao_nao_encontrada' }, 404);
+      const objeto = await env.ARQUIVOS.get(versao.r2_key);
+      if (!objeto) return json({ ok: false, erro: 'arquivo_perdido_no_armazenamento' }, 500);
+      const headers = new Headers();
+      objeto.writeHttpMetadata(headers);
+      headers.set('Content-Disposition', `attachment; filename="v${m[2]}-${arq.name.replace(/"/g, '')}"`);
+      headers.set('Access-Control-Allow-Origin', '*');
+      return new Response(objeto.body, { headers });
+    }
+
     // ==================== LIXEIRA ====================
 
     if (pathname === '/trash' && method === 'GET') {
