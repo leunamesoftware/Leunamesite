@@ -38,6 +38,12 @@ jobs:
         with:
           node-version: '22'
 
+      - name: Criar o projeto no Cloudflare Pages (não falha se já existir)
+        working-directory: ECONOROTA/app
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+        run: npx wrangler@latest pages project create econorota --production-branch=main || echo "Projeto já deve existir -- seguindo para o deploy."
+
       - name: Publicar no Cloudflare Pages
         working-directory: ECONOROTA/app
         env:
