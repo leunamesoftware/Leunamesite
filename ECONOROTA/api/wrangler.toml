@@ -9,7 +9,7 @@ enabled = true
 [vars]
 # Origens liberadas para o app web/painéis (separadas por vírgula). "*" só em desenvolvimento;
 # em produção use o domínio do site, ex.: "https://app.econorota.com.br".
-ALLOWED_ORIGINS = "*"
+ALLOWED_ORIGINS = "https://econorota.pages.dev"
 TOKEN_TTL_HOURS = "168"
 # Pedido mínimo do EconoRota (soma de todos os mercados), em centavos.
 MIN_ORDER_CENTS = "10000"
