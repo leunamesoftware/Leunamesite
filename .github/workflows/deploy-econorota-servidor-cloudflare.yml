@@ -1,0 +1,77 @@
+name: Deploy Servidor do EconoRota (Cloudflare)
+
+# Roda as migrations remotas do D1 (econorota) e publica o Worker
+# "econorota-api" (código + banco D1 + bucket R2). Gera JWT_SECRET e
+# DATA_KEY na primeira execução (nunca substituídos automaticamente
+# depois -- trocar quebraria sessões existentes e dados já cifrados).
+#
+# NAO configura ASAAS_API_KEY / ASAAS_WEBHOOK_TOKEN (dependem da conta
+# Asaas do Emanuel) -- enquanto nao existirem, so as rotas de pagamento
+# ficam indisponiveis; o resto do sistema funciona normalmente.
+#
+# Requer o mesmo secret CF_API_TOKEN ja usado pelos outros workers.
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Baixar código do repositório
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Instalar dependências da API
+        working-directory: ECONOROTA/api
+        run: npm install
+
+      - name: Rodar as migrations do banco D1 (remoto)
+        working-directory: ECONOROTA/api
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+        run: npx wrangler@latest d1 migrations apply econorota --remote
+
+      - name: Publicar o Worker (código + banco D1 + bucket R2)
+        working-directory: ECONOROTA/api
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+        run: npx wrangler@latest deploy
+
+      - name: Gerar e configurar JWT_SECRET (só se ainda não existir)
+        working-directory: ECONOROTA/api
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+        run: |
+          if npx wrangler@latest secret list | grep -q '"name": *"JWT_SECRET"'; then
+            echo "JWT_SECRET já existe -- não mexe."
+          else
+            echo "JWT_SECRET ainda não existe -- gerando pela primeira vez."
+            openssl rand -hex 48 | tr -d '\n' | npx wrangler@latest secret put JWT_SECRET
+          fi
+
+      - name: Gerar e configurar DATA_KEY (só se ainda não existir)
+        working-directory: ECONOROTA/api
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+        run: |
+          if npx wrangler@latest secret list | grep -q '"name": *"DATA_KEY"'; then
+            echo "DATA_KEY já existe -- não mexe (trocar agora impediria ler CPF/CNH/Pix já gravados)."
+          else
+            echo "DATA_KEY ainda não existe -- gerando pela primeira vez."
+            openssl rand -base64 32 | tr -d '\n' | npx wrangler@latest secret put DATA_KEY
+          fi
+
+      - name: Testar o servidor no ar
+        run: |
+          URL="https://econorota-api.emanuelantunes2024.workers.dev/health"
+          for i in 1 2 3 4 5; do
+            if curl -sS --fail "$URL"; then exit 0; fi
+            echo "Tentativa $i falhou, esperando mais um pouco..."
+            sleep 15
+          done
+          echo "Não respondeu depois de várias tentativas."
+          exit 1

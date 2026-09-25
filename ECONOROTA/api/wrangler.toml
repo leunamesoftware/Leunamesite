@@ -25,7 +25,7 @@ APP_LATEST_VERSION = "1.0.0"
 [[d1_databases]]
 binding = "DB"
 database_name = "econorota"
-database_id = "COLE_AQUI_O_DATABASE_ID"
+database_id = "a1b667d1-d024-4d6d-bf6d-9a11249216ca"
 migrations_dir = "migrations"
 
 # Fotos privadas (documentos e veículo do entregador). Crie com: npx wrangler r2 bucket create econorota-arquivos
