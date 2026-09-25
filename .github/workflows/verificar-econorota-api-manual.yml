@@ -29,7 +29,7 @@ jobs:
       - name: GET /auth/me com o token da conta de teste
         run: |
           curl -sS --fail "$API/auth/me" -H "Authorization: Bearer $TOKEN" -o /tmp/me.json
-          python3 -c "import json; d=json.load(open('/tmp/me.json')); assert d['email']=='teste-econorota@leunamesoftware.com.br'; print('OK: /auth/me confirma a conta cadastrada')"
+          python3 -c "import json; d=json.load(open('/tmp/me.json')); assert d['user']['email']=='teste-econorota@leunamesoftware.com.br'; print('OK: /auth/me confirma a conta cadastrada')"
 
       - name: Login de novo com a mesma conta
         run: |
