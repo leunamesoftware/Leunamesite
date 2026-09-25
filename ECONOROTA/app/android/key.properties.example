@@ -1,0 +1,6 @@
+# Copie para android/key.properties (NÃO versionar) e preencha. Gere a chave com:
+# keytool -genkey -v -keystore ~/econorota-upload.jks -keyalg RSA -keysize 2048 -validity 10000 -alias upload
+storePassword=
+keyPassword=
+keyAlias=upload
+storeFile=/caminho/para/econorota-upload.jks

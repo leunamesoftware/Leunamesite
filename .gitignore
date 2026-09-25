@@ -1,6 +1,11 @@
 node_modules/
 release/
 android/
+# Exceção: ECONOROTA/app/android e' o projeto Flutter Android de VERDADE
+# (nao gerado em build, precisa ficar versionado) -- diferente das pastas
+# android/ geradas pelo Capacitor dentro de ANDROID/projeto-instalador-*/.
+!ECONOROTA/app/android/
+!ECONOROTA/app/android/**
 *.log
 .DS_Store
 Thumbs.db
