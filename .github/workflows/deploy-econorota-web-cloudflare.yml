@@ -1,0 +1,45 @@
+name: Deploy Web do EconoRota (Cloudflare Pages)
+
+# Compila o app Flutter em modo Web (mesmo codigo do app Android) e
+# publica no Cloudflare Pages, projeto "econorota". Aponta pra API real
+# (nao usa dados de demonstracao). Mapa usa o servidor publico do
+# OpenStreetMap por padrao -- funciona de verdade, mas o ENTREGA.md
+# recomenda trocar por um provedor pago (MapTiler/Stadia) antes de uso
+# real em produção; passar MAP_TILES_URL como secret/input no futuro
+# quando essa conta existir.
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Baixar código do repositório
+        uses: actions/checkout@v4
+
+      - name: Configurar Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+
+      - name: Instalar dependências do app
+        working-directory: ECONOROTA/app
+        run: flutter pub get
+
+      - name: Compilar o app Flutter Web (release, API real)
+        working-directory: ECONOROTA/app
+        run: |
+          flutter build web --release \
+            --dart-define=USE_MOCK=false \
+            --dart-define=API_URL=https://econorota-api.emanuelantunes2024.workers.dev
+
+      - name: Configurar Node.js (exigido pelo wrangler)
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Publicar no Cloudflare Pages
+        working-directory: ECONOROTA/app
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+        run: npx wrangler@latest pages deploy build/web --project-name=econorota --branch=main
