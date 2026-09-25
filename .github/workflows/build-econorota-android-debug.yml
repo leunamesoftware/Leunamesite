@@ -1,0 +1,62 @@
+name: Build Android APK EconoRota (teste, sem loja)
+
+# Gera um .apk de teste do EconoRota (Flutter, assinado com a chave de
+# debug -- sem precisar de keystore/secrets) e publica no link fixo:
+# https://api.leunamesoftware.com/download/econorota.apk
+#
+# Aponta pra API real (mesma do app Web). Para publicar de verdade na
+# Google Play, sera preciso gerar uma chave de assinatura de release
+# propria do EconoRota (ainda nao existe).
+on:
+  workflow_dispatch:
+
+jobs:
+  build-android:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Baixar código do repositório
+        uses: actions/checkout@v4
+
+      - name: Configurar Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+
+      - name: Instalar dependências do app
+        working-directory: ECONOROTA/app
+        run: flutter pub get
+
+      - name: Gerar o APK de teste (debug, API real)
+        working-directory: ECONOROTA/app
+        run: |
+          flutter build apk --debug \
+            --dart-define=USE_MOCK=false \
+            --dart-define=API_URL=https://econorota-api.emanuelantunes2024.workers.dev
+
+      - name: Renomear o APK final
+        working-directory: ECONOROTA/app
+        shell: bash
+        run: cp build/app/outputs/flutter-apk/app-debug.apk build/app/outputs/flutter-apk/EconoRota.apk
+
+      - name: Enviar o APK como Artifact do GitHub
+        uses: actions/upload-artifact@v4
+        with:
+          name: EconoRota-Android-APK-teste
+          path: ECONOROTA/app/build/app/outputs/flutter-apk/EconoRota.apk
+          if-no-files-found: error
+
+      - name: Configurar Node.js (exigido pelo wrangler)
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Publicar o APK no link fixo de download
+        working-directory: PROJETO/servidor-licencas-cloudflare
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+        run: |
+          npx wrangler@latest r2 object put \
+            leuname-downloads/econorota.apk \
+            --file ../../ECONOROTA/app/build/app/outputs/flutter-apk/EconoRota.apk \
+            --content-type application/vnd.android.package-archive \
+            --remote
