@@ -1,0 +1,26 @@
+{
+  "name": "econorota-api",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "typecheck": "tsc --noEmit",
+    "db:migrate:local": "wrangler d1 migrations apply econorota --local",
+    "db:migrate:remote": "wrangler d1 migrations apply econorota --remote",
+    "db:seed:local": "wrangler d1 execute econorota --local --file=seed/demo.sql",
+    "create-admin": "node scripts/create-admin.mjs",
+    "smoke": "bash scripts/smoke.sh",
+    "test": "node --experimental-strip-types --test test/optimizer.test.ts test/listParser.test.ts test/cpf.test.ts test/operations.test.ts test/fieldCrypto.test.ts",
+    "load": "node scripts/load.mjs"
+  },
+  "dependencies": {
+    "hono": "^4.13.9"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^5.20260924.1",
+    "typescript": "^7.0.2",
+    "wrangler": "^4.137.0"
+  }
+}

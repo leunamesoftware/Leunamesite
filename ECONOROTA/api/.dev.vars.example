@@ -1,0 +1,24 @@
+# Copie para .dev.vars (não versionado) para rodar localmente.
+JWT_SECRET=troque-por-um-valor-aleatorio-com-64-caracteres
+# Somente local: mostra o código de verificação na resposta e no log (NUNCA em produção).
+DEV_MODE=true
+# Cifra CPF, CNH e chaves Pix no banco (obrigatória em produção). Gere com: openssl rand -base64 32
+DATA_KEY=
+# Opcionais (ver README): envio de e-mail, WhatsApp e login Google.
+# RESEND_API_KEY=
+# EMAIL_FROM=EconoRota <nao-responda@seudominio.com>
+# WHATSAPP_TOKEN=
+# WHATSAPP_PHONE_ID=
+# WHATSAPP_TEMPLATE=codigo_verificacao
+# GOOGLE_CLIENT_IDS=xxxx.apps.googleusercontent.com
+
+# Somente local: fixa a hora dos mercados para testes previsíveis.
+DEV_CLOCK=12:00
+# Pagamentos: sem chave, o DEV_MODE usa o simulador (botões "Simular aprovado/recusado").
+# Para testar com o sandbox real do Asaas:
+# ASAAS_API_KEY=
+# ASAAS_WEBHOOK_TOKEN=
+# Push no celular (Firebase Cloud Messaging, opcional). Conta de serviço do projeto Firebase:
+# FCM_PROJECT_ID=
+# FCM_CLIENT_EMAIL=
+# FCM_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----\n"

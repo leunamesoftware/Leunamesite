@@ -1,0 +1,114 @@
+{
+  "@@locale": "pt",
+  "appName": "EconoRota",
+  "slogan": "Mais economia, mais perto de você.",
+  "roleTitle": "Como você quer usar o EconoRota?",
+  "roleSubtitle": "Escolha seu perfil para continuar.",
+  "roleCustomer": "Cliente",
+  "roleCustomerDesc": "Compra produtos e acompanha pedidos.",
+  "roleMarket": "Mercado",
+  "roleMarketDesc": "Gerencia produtos e estoque.",
+  "roleCourier": "Entregador",
+  "roleCourierDesc": "Recebe e realiza entregas.",
+  "roleAdmin": "Administrador",
+  "roleAdminDesc": "Gerencia todo o sistema.",
+  "navHome": "Início",
+  "navSearch": "Busca",
+  "navCart": "Carrinho",
+  "navProfile": "Perfil",
+  "menuMarkets": "Mercados",
+  "menuCategories": "Categorias",
+  "menuOrders": "Pedidos",
+  "menuSettings": "Configurações",
+  "menuComponents": "Componentes",
+  "menuLogout": "Sair",
+  "searchHint": "Buscar produtos...",
+  "hello": "Olá!",
+  "deliverTo": "Entregar em",
+  "noAddress": "Definir endereço",
+  "categories": "Categorias",
+  "nearbyMarkets": "Mercados próximos",
+  "offers": "Ofertas",
+  "seeAll": "Ver todos",
+  "added": "{name} adicionado ao carrinho",
+  "@added": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "emptyCart": "Seu carrinho está vazio",
+  "emptyCartDesc": "Adicione produtos para comparar preços entre mercados.",
+  "cartItems": "{count, plural, =0{Nenhum item} =1{1 item} other{{count} itens}}",
+  "@cartItems": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "comingSoon": "Em construção",
+  "comingSoonDesc": "Esta área será liberada na {phase}.",
+  "@comingSoonDesc": {
+    "placeholders": {
+      "phase": {
+        "type": "String"
+      }
+    }
+  },
+  "demoMode": "Modo demonstração",
+  "switchProfile": "Trocar perfil",
+  "primaryButton": "Botão principal",
+  "secondaryButton": "Botão secundário",
+  "dashboard": "Dashboard",
+  "products": "Produtos",
+  "stock": "Estoque",
+  "finance": "Financeiro",
+  "deliveries": "Entregas",
+  "earnings": "Ganhos",
+  "history": "Histórico",
+  "customers": "Clientes",
+  "couriers": "Entregadores",
+  "reports": "Relatórios",
+  "availableOrders": "Pedidos disponíveis",
+  "online": "Disponível",
+  "offline": "Indisponível",
+  "km": "{value} km",
+  "@km": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "noResults": "Nenhum produto encontrado",
+  "total": "Total",
+  "addresses": "Endereços",
+  "payments": "Formas de pagamento",
+  "help": "Ajuda",
+  "profileRole": "Perfil: {role}",
+  "@profileRole": {
+    "placeholders": {
+      "role": {
+        "type": "String"
+      }
+    }
+  },
+  "checkout": "Continuar",
+  "phaseLabel": "Fase {n}",
+  "@phaseLabel": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "notifications": "Notificações",
+  "todayOrders": "Pedidos hoje",
+  "revenue": "Faturamento",
+  "lowStock": "Estoque baixo",
+  "activeMarkets": "Mercados ativos",
+  "activeCouriers": "Entregadores ativos",
+  "modules": "Módulos"
+}

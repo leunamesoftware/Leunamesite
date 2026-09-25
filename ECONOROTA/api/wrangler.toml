@@ -1,0 +1,42 @@
+name = "econorota-api"
+main = "src/index.ts"
+compatibility_date = "2026-09-01"
+
+# Logs e métricas no painel da Cloudflare (Workers → econorota-api → Observability).
+[observability]
+enabled = true
+
+[vars]
+# Origens liberadas para o app web/painéis (separadas por vírgula). "*" só em desenvolvimento;
+# em produção use o domínio do site, ex.: "https://app.econorota.com.br".
+ALLOWED_ORIGINS = "*"
+TOKEN_TTL_HOURS = "168"
+# Pedido mínimo do EconoRota (soma de todos os mercados), em centavos.
+MIN_ORDER_CENTS = "10000"
+# Pagamentos (Asaas). Testes: sandbox. Produção: https://api.asaas.com/v3
+ASAAS_BASE_URL = "https://sandbox.asaas.com/api/v3"
+# Parte da taxa de entrega que fica com o entregador, em % (definida no final).
+COURIER_SHARE_PCT = "80"
+# Versão do app: abaixo da mínima, o app bloqueia e pede atualização.
+APP_MIN_VERSION = "1.0.0"
+APP_LATEST_VERSION = "1.0.0"
+
+# Crie o banco com: npx wrangler d1 create econorota  → cole o database_id abaixo.
+[[d1_databases]]
+binding = "DB"
+database_name = "econorota"
+database_id = "COLE_AQUI_O_DATABASE_ID"
+migrations_dir = "migrations"
+
+# Fotos privadas (documentos e veículo do entregador). Crie com: npx wrangler r2 bucket create econorota-arquivos
+[[r2_buckets]]
+binding = "FILES"
+bucket_name = "econorota-arquivos"
+
+# Segredo obrigatório (não fica no código):
+#   npx wrangler secret put JWT_SECRET
+#   npx wrangler secret put ASAAS_API_KEY         (chave da conta Asaas)
+#   npx wrangler secret put ASAAS_WEBHOOK_TOKEN   (mesmo token cadastrado no webhook do Asaas)
+#   npx wrangler secret put DATA_KEY              (openssl rand -base64 32 — cifra CPF, CNH e Pix; guarde uma cópia segura)
+# Opcionais: RESEND_API_KEY, EMAIL_FROM, WHATSAPP_TOKEN, WHATSAPP_PHONE_ID, WHATSAPP_TEMPLATE, GOOGLE_CLIENT_IDS,
+#            FCM_PROJECT_ID, FCM_CLIENT_EMAIL, FCM_PRIVATE_KEY
