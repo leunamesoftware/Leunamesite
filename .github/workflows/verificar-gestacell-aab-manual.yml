@@ -1,0 +1,16 @@
+name: Verificar link fixo do AAB do Gestacell (manual, temporário)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  verificar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Baixar e checar o arquivo
+        run: |
+          curl --fail -sS -o gestacell.aab https://api.leunamesoftware.com/download/gestacell.aab
+          echo "Tamanho em bytes:"
+          wc -c < gestacell.aab
+          echo "Assinatura do arquivo:"
+          file gestacell.aab
