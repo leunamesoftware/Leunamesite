@@ -218,7 +218,11 @@ export default {
       const headers = new Headers();
       obj.writeHttpMetadata(headers);
       headers.set('Content-Disposition', `attachment; filename="${fileName}"`);
-      headers.set('Cache-Control', 'no-cache');
+      // no-store: impede qualquer cache (navegador, proxy) de reter uma
+      // copia antiga do arquivo depois que um novo build e publicado no
+      // mesmo link fixo -- ja causou confusao real (usuario baixou de novo
+      // e recebeu, aparentemente, o .aab anterior).
+      headers.set('Cache-Control', 'no-store, no-cache, must-revalidate');
       return new Response(obj.body, { headers });
     }
 
