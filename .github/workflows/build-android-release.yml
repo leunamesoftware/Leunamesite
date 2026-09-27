@@ -59,7 +59,7 @@ jobs:
             SDKMANAGER="$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager"
           fi
           yes | "$SDKMANAGER" --licenses > /dev/null || true
-          "$SDKMANAGER" --install "platform-tools" "platforms;android-34" "build-tools;34.0.0" > /dev/null
+          "$SDKMANAGER" --install "platform-tools" "platforms;android-34" "build-tools;34.0.0" "platforms;android-36" "build-tools;36.0.0" > /dev/null
 
       - name: Instalar dependências do projeto Android
         working-directory: ANDROID/projeto-instalador-android
@@ -72,6 +72,23 @@ jobs:
       - name: Copiar o sistema para dentro do projeto Android
         working-directory: ANDROID/projeto-instalador-android
         run: npx cap sync android
+
+      - name: Atualizar a versão de API exigida pela Google Play (nível 36)
+        # O Capacitor gera o projeto Android sempre com compileSdk/targetSdk 34
+        # (nao e versionado, e recriado do zero em "cap add android" a cada
+        # execucao). A partir de 2026 a Google Play exige nivel de API pelo
+        # menos 36 para novas versoes -- sem isso o Console recusa a versao
+        # com "Detectamos alguns problemas". Ajustamos aqui, apos o projeto
+        # ser gerado, e liberamos o AGP 8.2.1 (que e anterior ao lancamento
+        # da API 36) a compilar contra ela.
+        working-directory: ANDROID/projeto-instalador-android
+        shell: bash
+        run: |
+          sed -i 's/compileSdkVersion = 34/compileSdkVersion = 36/' android/variables.gradle
+          sed -i 's/targetSdkVersion = 34/targetSdkVersion = 36/' android/variables.gradle
+          echo "android.suppressUnsupportedCompileSdk=36" >> android/gradle.properties
+          echo "--- variables.gradle ---"
+          cat android/variables.gradle
 
       - name: Aplicar o ícone oficial da LeuName Softwares
         working-directory: ANDROID/projeto-instalador-android
