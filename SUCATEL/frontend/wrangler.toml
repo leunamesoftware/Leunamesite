@@ -8,3 +8,10 @@ compatibility_date = "2026-09-28"
 # arquivos do app (HTML/CSS/JS/ícones/manifest).
 [assets]
 directory = "./"
+
+# Domínio customizado: subdomínio do leunamesoftware.com.br (mesmo domínio
+# já ativo na Cloudflare, usado pelo ConstruGestão/LeuName Gestão/LeuCloud)
+# -- assim o cliente nunca vê "workers.dev" nem "api" no link.
+[[routes]]
+pattern = "sucatell.leunamesoftware.com.br"
+custom_domain = true
