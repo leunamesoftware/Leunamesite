@@ -76,13 +76,13 @@ jobs:
 
           echo "== 5) o anuncio aparece na busca do bairro =="
           curl -sS --fail "$BASE/anuncios?bairro_id=$BAIRRO_ID" > busca.json
-          python3 -c "
-import json
-d = json.load(open('busca.json'))
-ids = [a['id'] for a in d['anuncios']]
-assert '$ANUNCIO_ID' in ids, ids
-print('OK: anuncio aparece na busca')
-"
+          ANUNCIO_ID="$ANUNCIO_ID" python3 - <<'PY'
+          import json, os
+          d = json.load(open('busca.json'))
+          ids = [a['id'] for a in d['anuncios']]
+          assert os.environ['ANUNCIO_ID'] in ids, ids
+          print('OK: anuncio aparece na busca')
+          PY
 
           echo "== 6) marcar uma venda =="
           curl -sS --fail -X POST "$BASE/anuncios/$ANUNCIO_ID/vender" -H "Authorization: Bearer $TOKEN_V" > venda.json
