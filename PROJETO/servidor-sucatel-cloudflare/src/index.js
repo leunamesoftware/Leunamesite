@@ -247,6 +247,41 @@ export default {
       return json({ ok: true, usuario: usuarioPublico(sess) });
     }
 
+    if (pathname === '/auth/me' && request.method === 'PATCH') {
+      const sess = await autenticar(request, env);
+      if (!sess) return json({ ok: false, erro: 'nao_autenticado' }, 401);
+      const { nome, telefone, bairro_id } = await request.json();
+      if (nome && !nome.trim()) return json({ ok: false, erro: 'nome_invalido' }, 400);
+      await env.DB.prepare('UPDATE users SET nome = ?, telefone = ?, bairro_id = ? WHERE id = ?')
+        .bind(nome ? nome.trim() : sess.nome, telefone !== undefined ? (telefone || null) : sess.telefone, bairro_id || sess.bairro_id, sess.id).run();
+      const atualizado = await env.DB.prepare('SELECT * FROM users WHERE id = ?').bind(sess.id).first();
+      return json({ ok: true, usuario: usuarioPublico(atualizado) });
+    }
+
+    if (pathname === '/auth/trocar-senha' && request.method === 'POST') {
+      const sess = await autenticar(request, env);
+      if (!sess) return json({ ok: false, erro: 'nao_autenticado' }, 401);
+      const { senha_atual, nova_senha } = await request.json();
+      if (!senha_atual || !nova_senha) return json({ ok: false, erro: 'campos_obrigatorios' }, 400);
+      if (nova_senha.length < 6) return json({ ok: false, erro: 'senha_muito_curta' }, 400);
+      const valido = await verificarSenha(senha_atual, sess.senha_hash, env);
+      if (!valido) return json({ ok: false, erro: 'senha_atual_incorreta' }, 401);
+      const novoHash = await hashSenha(nova_senha, env);
+      await env.DB.prepare('UPDATE users SET senha_hash = ? WHERE id = ?').bind(novoHash, sess.id).run();
+      return json({ ok: true });
+    }
+
+    if (pathname === '/auth/me' && request.method === 'DELETE') {
+      const sess = await autenticar(request, env);
+      if (!sess) return json({ ok: false, erro: 'nao_autenticado' }, 401);
+      await env.DB.batch([
+        env.DB.prepare('UPDATE sessoes SET revogada_em = ? WHERE user_id = ?').bind(nowIso(), sess.id),
+        env.DB.prepare("UPDATE anuncios SET status = 'removido_admin' WHERE vendedor_id = ?").bind(sess.id),
+        env.DB.prepare('DELETE FROM users WHERE id = ?').bind(sess.id),
+      ]);
+      return json({ ok: true });
+    }
+
     // ---- créditos ----
     if (pathname === '/creditos/saldo' && request.method === 'GET') {
       const sess = await autenticar(request, env);
