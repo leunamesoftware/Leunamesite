@@ -143,31 +143,36 @@ let STATE = { usuario:null, bairroId:null, aba:'inicio', marcas:[], tiposPeca:[]
 
 // ---------------- helpers ----------------
 function esc(s){ return (s||'').toString().replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
-function opcoesComNovoBairro(bairros){
-  return '<option value="">Selecione</option>' + (bairros||[]).map(b=>`<option value="${b.id}">${esc(b.nome)}</option>`).join('') + '<option value="__novo__">+ Não encontrei meu bairro</option>';
+function opcoesComNovo(itens, texto){
+  return '<option value="">Selecione</option>' + (itens||[]).map(i=>`<option value="${i.id}">${esc(i.nome)}</option>`).join('') + `<option value="__novo__">${texto}</option>`;
 }
-function tratarSelectBairro(selectEl, obterCidadeId, aoMudar){
-  let caixaNovo = selectEl.nextElementSibling && selectEl.nextElementSibling.classList && selectEl.nextElementSibling.classList.contains('caixa-novo-bairro')
+// Genérico: usado tanto pro select de bairro quanto de cidade. Deixa a
+// pessoa cadastrar o próprio bairro/cidade quando não está na nossa lista
+// inicial (que cobre só alguns exemplos, o Brasil real é gigante).
+function tratarSelectComNovo(selectEl, opcoes){
+  const { obterPaiId, aoMudar, endpoint, campoPai, campoResposta, placeholder, mensagemSucesso } = opcoes;
+  let caixaNovo = selectEl.nextElementSibling && selectEl.nextElementSibling.classList && selectEl.nextElementSibling.classList.contains('caixa-novo-item')
     ? selectEl.nextElementSibling : null;
   if (!caixaNovo) {
     caixaNovo = document.createElement('div');
-    caixaNovo.className = 'caixa-novo-bairro';
+    caixaNovo.className = 'caixa-novo-item';
     caixaNovo.hidden = true;
     caixaNovo.style.marginTop = '8px';
-    caixaNovo.innerHTML = `<input class="nb-input" placeholder="ex: Vila Santa Alice"><button class="btn pequeno nb-salvar" style="margin-top:8px; width:100%;">Salvar bairro novo</button>`;
+    caixaNovo.innerHTML = `<input class="ni-input" placeholder="${esc(placeholder)}"><button class="btn pequeno ni-salvar" style="margin-top:8px; width:100%;">Salvar</button>`;
     selectEl.insertAdjacentElement('afterend', caixaNovo);
-    caixaNovo.querySelector('.nb-salvar').onclick = async () => {
-      const nome = caixaNovo.querySelector('.nb-input').value.trim();
-      if (!nome) return toast('Digite o nome do bairro.', 'erro');
-      const cidadeId = obterCidadeId();
-      const { data } = await api('/localizacao/bairros', { method:'POST', body:{ cidade_id: cidadeId, nome } });
-      if (!data.ok) return toast('Erro ao adicionar bairro.', 'erro');
+    caixaNovo.querySelector('.ni-salvar').onclick = async () => {
+      const nome = caixaNovo.querySelector('.ni-input').value.trim();
+      if (!nome) return toast('Digite o nome.', 'erro');
+      const paiId = obterPaiId();
+      const { data } = await api(endpoint, { method:'POST', body:{ [campoPai]: paiId, nome } });
+      if (!data.ok) return toast('Erro ao adicionar.', 'erro');
+      const item = data[campoResposta];
       const opt = document.createElement('option');
-      opt.value = data.bairro.id; opt.textContent = data.bairro.nome;
+      opt.value = item.id; opt.textContent = item.nome;
       selectEl.insertBefore(opt, selectEl.lastElementChild);
-      selectEl.value = data.bairro.id;
+      selectEl.value = item.id;
       caixaNovo.hidden = true;
-      toast('Bairro adicionado!', 'sucesso');
+      toast(mensagemSucesso, 'sucesso');
       aoMudar();
     };
   }
@@ -328,16 +333,25 @@ async function renderCadastro(){
     if (!e.target.value) { cidadeSel.disabled = true; cidadeSel.innerHTML = '<option value="">Escolha o estado primeiro</option>'; return; }
     const { data } = await api('/localizacao/cidades?estado_id=' + e.target.value);
     cidadeSel.disabled = false;
-    cidadeSel.innerHTML = '<option value="">Selecione</option>' + (data.cidades||[]).map(c=>`<option value="${c.id}">${esc(c.nome)}</option>`).join('');
+    cidadeSel.innerHTML = opcoesComNovo(data.cidades, '+ Não encontrei minha cidade');
+    tratarSelectComNovo(cidadeSel, {
+      obterPaiId: () => document.getElementById('cd-estado').value, aoMudar: () => {},
+      endpoint: '/localizacao/cidades', campoPai: 'estado_id', campoResposta: 'cidade',
+      placeholder: 'ex: Sua cidade', mensagemSucesso: 'Cidade adicionada!',
+    });
     bairroSel.disabled = true; bairroSel.innerHTML = '<option value="">Escolha a cidade primeiro</option>';
   };
   document.getElementById('cd-cidade').onchange = async (e) => {
     const bairroSel = document.getElementById('cd-bairro');
-    if (!e.target.value) { bairroSel.disabled = true; bairroSel.innerHTML = '<option value="">Escolha a cidade primeiro</option>'; return; }
+    if (!e.target.value || e.target.value === '__novo__') { bairroSel.disabled = true; bairroSel.innerHTML = '<option value="">Escolha a cidade primeiro</option>'; return; }
     const { data } = await api('/localizacao/bairros?cidade_id=' + e.target.value);
     bairroSel.disabled = false;
-    bairroSel.innerHTML = opcoesComNovoBairro(data.bairros);
-    tratarSelectBairro(bairroSel, () => document.getElementById('cd-cidade').value, () => {});
+    bairroSel.innerHTML = opcoesComNovo(data.bairros, '+ Não encontrei meu bairro');
+    tratarSelectComNovo(bairroSel, {
+      obterPaiId: () => document.getElementById('cd-cidade').value, aoMudar: () => {},
+      endpoint: '/localizacao/bairros', campoPai: 'cidade_id', campoResposta: 'bairro',
+      placeholder: 'ex: Vila Santa Alice', mensagemSucesso: 'Bairro adicionado!',
+    });
   };
   document.getElementById('cd-criar').onclick = fazerCadastro;
 }
@@ -392,17 +406,26 @@ async function carregarSeletorBairro(){
     if (!e.target.value) { cidadeSel.disabled = true; return; }
     const { data } = await api('/localizacao/cidades?estado_id=' + e.target.value);
     cidadeSel.disabled = false;
-    cidadeSel.innerHTML = '<option value="">Selecione</option>' + (data.cidades||[]).map(c=>`<option value="${c.id}">${esc(c.nome)}</option>`).join('');
+    cidadeSel.innerHTML = opcoesComNovo(data.cidades, '+ Não encontrei minha cidade');
+    tratarSelectComNovo(cidadeSel, {
+      obterPaiId: () => document.getElementById('sb-estado').value, aoMudar: () => {},
+      endpoint: '/localizacao/cidades', campoPai: 'estado_id', campoResposta: 'cidade',
+      placeholder: 'ex: Sua cidade', mensagemSucesso: 'Cidade adicionada!',
+    });
   };
   document.getElementById('sb-cidade').onchange = async (e) => {
     const bairroSel = document.getElementById('sb-bairro');
-    if (!e.target.value) { bairroSel.disabled = true; return; }
+    if (!e.target.value || e.target.value === '__novo__') { bairroSel.disabled = true; return; }
     const { data } = await api('/localizacao/bairros?cidade_id=' + e.target.value);
     bairroSel.disabled = false;
-    bairroSel.innerHTML = opcoesComNovoBairro(data.bairros);
-    tratarSelectBairro(bairroSel, () => document.getElementById('sb-cidade').value, () => {
-      const v = bairroSel.value;
-      document.getElementById('sb-confirmar').disabled = !v || v === '__novo__';
+    bairroSel.innerHTML = opcoesComNovo(data.bairros, '+ Não encontrei meu bairro');
+    tratarSelectComNovo(bairroSel, {
+      obterPaiId: () => document.getElementById('sb-cidade').value, aoMudar: () => {
+        const v = bairroSel.value;
+        document.getElementById('sb-confirmar').disabled = !v || v === '__novo__';
+      },
+      endpoint: '/localizacao/bairros', campoPai: 'cidade_id', campoResposta: 'bairro',
+      placeholder: 'ex: Vila Santa Alice', mensagemSucesso: 'Bairro adicionado!',
     });
   };
   document.getElementById('sb-confirmar').onclick = async () => {

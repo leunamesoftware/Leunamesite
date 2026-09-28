@@ -180,6 +180,25 @@ export default {
       const { results } = await env.DB.prepare('SELECT * FROM cidades WHERE estado_id = ? ORDER BY nome').bind(estadoId).all();
       return json({ ok: true, cidades: results });
     }
+    // Mesma lógica do bairro: só temos a capital de cada estado cadastrada
+    // de início, então a pessoa cadastra a cidade dela se não estiver na lista.
+    if (pathname === '/localizacao/cidades' && request.method === 'POST') {
+      const ip = request.headers.get('CF-Connecting-IP') || 'sem-ip';
+      if (await limiteExcedido(env, ip, 'criar_cidade', 20)) return json({ ok: false, erro: 'muitas_tentativas' }, 429);
+      const { estado_id, nome } = await request.json();
+      if (!estado_id || !nome || !nome.trim()) return json({ ok: false, erro: 'campos_obrigatorios' }, 400);
+      const estado = await env.DB.prepare('SELECT id FROM estados WHERE id = ?').bind(estado_id).first();
+      if (!estado) return json({ ok: false, erro: 'estado_invalido' }, 400);
+      const nomeFinal = nome.trim().slice(0, 80);
+      await registrarTentativa(env, ip, 'criar_cidade', true);
+      const existente = await env.DB.prepare('SELECT * FROM cidades WHERE estado_id = ? AND LOWER(nome) = LOWER(?)').bind(estado_id, nomeFinal).first();
+      if (existente) return json({ ok: true, cidade: existente });
+      let id = slugify(nomeFinal) || uid();
+      if (await env.DB.prepare('SELECT id FROM cidades WHERE id = ?').bind(id).first()) id = id + '-' + uid().slice(0, 6);
+      await env.DB.prepare('INSERT INTO cidades (id, estado_id, nome) VALUES (?, ?, ?)').bind(id, estado_id, nomeFinal).run();
+      const cidade = await env.DB.prepare('SELECT * FROM cidades WHERE id = ?').bind(id).first();
+      return json({ ok: true, cidade }, 201);
+    }
     if (pathname === '/localizacao/bairros' && request.method === 'GET') {
       const cidadeId = url.searchParams.get('cidade_id');
       if (!cidadeId) return json({ ok: false, erro: 'cidade_id_obrigatorio' }, 400);
