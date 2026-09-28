@@ -1,0 +1,140 @@
+name: Build Android APK Sucatell Admin (teste, sem loja)
+
+# Gera um .apk de teste do painel administrativo do Sucatell -- separado
+# do app da loja (cliente), com seu próprio ícone e nome na tela do
+# celular ("Sucatell Admin"), pra instalar do lado do app normal e
+# entrar direto, sem precisar digitar o link no navegador toda vez.
+on:
+  workflow_dispatch:
+
+jobs:
+  build-android:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Baixar código do repositório
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Configurar Java (necessário para compilar Android)
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Configurar o Android SDK
+        shell: bash
+        run: |
+          export ANDROID_SDK_ROOT="${ANDROID_SDK_ROOT:-${ANDROID_HOME:-/usr/local/lib/android/sdk}}"
+          echo "ANDROID_SDK_ROOT=$ANDROID_SDK_ROOT" >> "$GITHUB_ENV"
+          echo "ANDROID_HOME=$ANDROID_SDK_ROOT" >> "$GITHUB_ENV"
+          SDKMANAGER="$(find "$ANDROID_SDK_ROOT" -maxdepth 4 -type f -name sdkmanager 2>/dev/null | sort -V | tail -n1)"
+          if [ -z "$SDKMANAGER" ]; then
+            mkdir -p "$ANDROID_SDK_ROOT/cmdline-tools"
+            curl -sSL -o /tmp/cmdline-tools.zip \
+              https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip
+            unzip -q /tmp/cmdline-tools.zip -d "$ANDROID_SDK_ROOT/cmdline-tools"
+            mv "$ANDROID_SDK_ROOT/cmdline-tools/cmdline-tools" "$ANDROID_SDK_ROOT/cmdline-tools/latest"
+            SDKMANAGER="$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager"
+          fi
+          yes | "$SDKMANAGER" --licenses > /dev/null || true
+          "$SDKMANAGER" --install "platform-tools" "platforms;android-34" "build-tools;34.0.0" > /dev/null
+
+      - name: Instalar dependências do projeto Android
+        working-directory: ANDROID/projeto-instalador-sucatell-admin
+        run: npm install
+
+      - name: Criar o projeto Android nativo (Capacitor)
+        working-directory: ANDROID/projeto-instalador-sucatell-admin
+        run: npx cap add android
+
+      - name: Copiar o sistema para dentro do projeto Android
+        working-directory: ANDROID/projeto-instalador-sucatell-admin
+        run: npx cap sync android
+
+      - name: Aplicar o ícone oficial do Sucatell Admin
+        working-directory: ANDROID/projeto-instalador-sucatell-admin
+        shell: bash
+        run: |
+          for d in mipmap-mdpi mipmap-hdpi mipmap-xhdpi mipmap-xxhdpi mipmap-xxxhdpi; do
+            cp "icones-oficiais/$d/ic_launcher.png" "android/app/src/main/res/$d/ic_launcher.png"
+            cp "icones-oficiais/$d/ic_launcher_round.png" "android/app/src/main/res/$d/ic_launcher_round.png"
+            cp "icones-oficiais/$d/ic_launcher_foreground.png" "android/app/src/main/res/$d/ic_launcher_foreground.png"
+          done
+          cp "icones-oficiais/ic_launcher_background.xml" "android/app/src/main/res/values/ic_launcher_background.xml"
+
+      - name: Deixar a tela de abertura (splash) com a cor da marca
+        working-directory: ANDROID/projeto-instalador-sucatell-admin
+        shell: bash
+        run: |
+          cat > "android/app/src/main/res/values/colors.xml" <<'EOF'
+          <?xml version="1.0" encoding="utf-8"?>
+          <resources>
+              <color name="colorSplashBackground">#0d3b1f</color>
+          </resources>
+          EOF
+          cat > "android/app/src/main/res/values/styles.xml" <<'EOF'
+          <?xml version="1.0" encoding="utf-8"?>
+          <resources>
+
+              <!-- Base application theme. -->
+              <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+                  <!-- Customize your theme here. -->
+              </style>
+
+              <style name="AppTheme.NoActionBar" parent="Theme.AppCompat.DayNight.NoActionBar">
+                  <item name="windowActionBar">false</item>
+                  <item name="windowNoTitle">true</item>
+                  <item name="android:background">@null</item>
+              </style>
+
+              <style name="AppTheme.NoActionBarLaunch" parent="Theme.SplashScreen">
+                  <item name="android:background">@color/colorSplashBackground</item>
+                  <item name="windowSplashScreenBackground">@color/colorSplashBackground</item>
+                  <item name="postSplashScreenTheme">@style/AppTheme.NoActionBar</item>
+              </style>
+          </resources>
+          EOF
+
+      - name: Dar permissão de execução ao Gradle
+        working-directory: ANDROID/projeto-instalador-sucatell-admin/android
+        shell: bash
+        run: chmod +x gradlew
+
+      - name: Gerar o APK
+        working-directory: ANDROID/projeto-instalador-sucatell-admin/android
+        shell: bash
+        run: ./gradlew assembleDebug --no-daemon
+
+      - name: Renomear o APK final
+        working-directory: ANDROID/projeto-instalador-sucatell-admin
+        shell: bash
+        run: |
+          cp android/app/build/outputs/apk/debug/app-debug.apk \
+             android/app/build/outputs/apk/debug/SucatellAdmin.apk
+
+      - name: Enviar o APK como Artifact do GitHub
+        uses: actions/upload-artifact@v4
+        with:
+          name: SucatellAdmin-Android-APK-teste
+          path: ANDROID/projeto-instalador-sucatell-admin/android/app/build/outputs/apk/debug/SucatellAdmin.apk
+          if-no-files-found: error
+
+      - name: Configurar Node.js 22 (exigido pelo wrangler)
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Publicar o APK no link fixo de download
+        working-directory: PROJETO/servidor-licencas-cloudflare
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+        run: |
+          npx wrangler@latest r2 object put \
+            leuname-downloads/sucatell-admin.apk \
+            --file ../../ANDROID/projeto-instalador-sucatell-admin/android/app/build/outputs/apk/debug/SucatellAdmin.apk \
+            --content-type application/vnd.android.package-archive \
+            --remote

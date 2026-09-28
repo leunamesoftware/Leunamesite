@@ -1,0 +1,13 @@
+{
+  "appId": "com.leunamesoftwares.sucatelladmin",
+  "appName": "Sucatell Admin",
+  "webDir": "www",
+  "backgroundColor": "#0d3b1f",
+  "android": {
+    "backgroundColor": "#0d3b1f",
+    "allowMixedContent": false
+  },
+  "server": {
+    "androidScheme": "https"
+  }
+}
