@@ -32,12 +32,19 @@ jobs:
           echo "== estados.json cru =="
           cat estados.json
           echo
-          echo "== diagnostico extra =="
-          ls -la estados.json
-          which python3
-          python3 -c "import os; print('cwd=', os.getcwd())"
-          python3 -c "print(repr(open('estados.json','rb').read()))"
-          ESTADO_ID=$(python3 -c "import json;print(json.load(open('estados.json'))['estados'][0]['id'])")
+          echo "== diagnostico unificado (um so processo python) =="
+          ESTADO_ID=$(python3 - <<'PY'
+          import json, os
+          raw = open('estados.json','rb').read()
+          print('LEN=', len(raw), file=__import__('sys').stderr)
+          print('RAW=', raw, file=__import__('sys').stderr)
+          data = json.loads(raw)
+          print('KEYS=', list(data.keys()), file=__import__('sys').stderr)
+          print('ESTADOS_VALUE=', data.get('estados'), file=__import__('sys').stderr)
+          print(data['estados'][0]['id'])
+          PY
+          )
+          echo "ESTADO_ID=$ESTADO_ID"
           curl -sS --fail "$BASE/localizacao/cidades?estado_id=$ESTADO_ID" > cidades.json
           CIDADE_ID=$(python3 -c "import json;print(json.load(open('cidades.json'))['cidades'][0]['id'])")
           curl -sS --fail "$BASE/localizacao/bairros?cidade_id=$CIDADE_ID" > bairros.json
