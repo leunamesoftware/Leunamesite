@@ -94,6 +94,7 @@ async function autenticar(request, env) {
     `SELECT s.id AS session_id, u.* FROM sessoes s JOIN users u ON u.id = s.user_id
      WHERE s.session_token_hash = ? AND s.revogada_em IS NULL AND s.expira_em > ?`
   ).bind(hash, nowIso()).first();
+  if (row && row.bloqueado) return null;
   return row || null;
 }
 
@@ -302,6 +303,7 @@ export default {
       const valido = user ? await verificarSenha(senha, user.senha_hash, env) : false;
       await registrarTentativa(env, ident, 'login', valido);
       if (!valido) return json({ ok: false, erro: 'credenciais_invalidas' }, 401);
+      if (user.bloqueado) return json({ ok: false, erro: 'conta_bloqueada' }, 403);
       const token = tokenAleatorio();
       await env.DB.prepare(
         'INSERT INTO sessoes (id, session_token_hash, user_id, expira_em) VALUES (?, ?, ?, ?)'
@@ -780,8 +782,51 @@ export default {
     if (pathname === '/admin/usuarios' && request.method === 'GET') {
       const sess = await autenticar(request, env);
       if (!sess || !sess.is_admin) return json({ ok: false, erro: 'nao_autorizado' }, 401);
-      const { results } = await env.DB.prepare('SELECT id, nome, email, verificado, reputacao, criado_em FROM users ORDER BY criado_em DESC LIMIT 200').all();
-      return json({ ok: true, usuarios: results });
+      const { results } = await env.DB.prepare('SELECT id, nome, email, telefone, verificado, bloqueado, is_admin, reputacao, criado_em FROM users ORDER BY criado_em DESC LIMIT 200').all();
+      return json({ ok: true, usuarios: results.map(u => ({ ...u, verificado: !!u.verificado, bloqueado: !!u.bloqueado, is_admin: !!u.is_admin })) });
+    }
+    const matchEditarUsuarioAdmin = pathname.match(/^\/admin\/usuarios\/([^/]+)$/);
+    if (matchEditarUsuarioAdmin && request.method === 'PATCH') {
+      const sess = await autenticar(request, env);
+      if (!sess || !sess.is_admin) return json({ ok: false, erro: 'nao_autorizado' }, 401);
+      const { nome, telefone } = await request.json().catch(() => ({}));
+      if (!nome || !nome.trim()) return json({ ok: false, erro: 'nome_obrigatorio' }, 400);
+      await env.DB.prepare('UPDATE users SET nome = ?, telefone = ? WHERE id = ?')
+        .bind(nome.trim(), telefone ? telefone.trim() : null, matchEditarUsuarioAdmin[1]).run();
+      return json({ ok: true });
+    }
+    const matchBloquearUsuario = pathname.match(/^\/admin\/usuarios\/([^/]+)\/bloquear$/);
+    if (matchBloquearUsuario && request.method === 'POST') {
+      const sess = await autenticar(request, env);
+      if (!sess || !sess.is_admin) return json({ ok: false, erro: 'nao_autorizado' }, 401);
+      const { bloqueado } = await request.json().catch(() => ({}));
+      const alvo = await env.DB.prepare('SELECT is_admin FROM users WHERE id = ?').bind(matchBloquearUsuario[1]).first();
+      if (!alvo) return json({ ok: false, erro: 'nao_encontrado' }, 404);
+      if (alvo.is_admin) return json({ ok: false, erro: 'nao_pode_bloquear_admin' }, 400);
+      await env.DB.batch([
+        env.DB.prepare('UPDATE users SET bloqueado = ? WHERE id = ?').bind(bloqueado ? 1 : 0, matchBloquearUsuario[1]),
+        env.DB.prepare('UPDATE sessoes SET revogada_em = ? WHERE user_id = ?').bind(nowIso(), matchBloquearUsuario[1]),
+      ]);
+      return json({ ok: true });
+    }
+    const matchExcluirUsuarioAdmin = pathname.match(/^\/admin\/usuarios\/([^/]+)$/);
+    if (matchExcluirUsuarioAdmin && request.method === 'DELETE') {
+      const sess = await autenticar(request, env);
+      if (!sess || !sess.is_admin) return json({ ok: false, erro: 'nao_autorizado' }, 401);
+      const alvoId = matchExcluirUsuarioAdmin[1];
+      const alvo = await env.DB.prepare('SELECT is_admin FROM users WHERE id = ?').bind(alvoId).first();
+      if (!alvo) return json({ ok: false, erro: 'nao_encontrado' }, 404);
+      if (alvo.is_admin) return json({ ok: false, erro: 'nao_pode_excluir_admin' }, 400);
+      // Mesma lógica de "excluir minha conta" (anonimiza, não apaga a
+      // linha, pra não quebrar referências de conversas/avaliações).
+      const senhaInutilizavel = await hashSenha(tokenAleatorio(), env);
+      await env.DB.batch([
+        env.DB.prepare('UPDATE sessoes SET revogada_em = ? WHERE user_id = ?').bind(nowIso(), alvoId),
+        env.DB.prepare("UPDATE anuncios SET status = 'removido_admin' WHERE vendedor_id = ?").bind(alvoId),
+        env.DB.prepare("UPDATE users SET nome = 'Conta removida pelo admin', email = ?, telefone = NULL, senha_hash = ?, bloqueado = 1 WHERE id = ?")
+          .bind(`removido-${alvoId}@sucatel.invalid`, senhaInutilizavel, alvoId),
+      ]);
+      return json({ ok: true });
     }
     if (pathname === '/admin/stats' && request.method === 'GET') {
       const sess = await autenticar(request, env);

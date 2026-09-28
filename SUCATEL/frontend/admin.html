@@ -116,16 +116,43 @@ async function carregarUsuarios(){
   if (!data.ok || !data.usuarios.length) { box.innerHTML = '<p class="muted">Nenhum usuário ainda.</p>'; return; }
   box.innerHTML = data.usuarios.map(u => `
     <div class="card">
-      <div><strong>${esc(u.nome)}</strong> ${u.verificado ? '✅' : ''}</div>
-      <div class="muted">${esc(u.email)} · reputação ${u.reputacao}</div>
-      <div class="row">
+      <div><strong>${esc(u.nome)}</strong> ${u.verificado ? '✅' : ''} ${u.is_admin ? '⭐ admin' : ''} ${u.bloqueado ? '🚫 bloqueado' : ''}</div>
+      <div class="muted">${esc(u.email)}${u.telefone ? ' · ' + esc(u.telefone) : ''} · reputação ${u.reputacao}</div>
+      <div class="row" style="flex-wrap:wrap;">
         <button onclick="alternarVerificado('${u.id}', ${u.verificado ? 'false' : 'true'})">${u.verificado ? 'Remover verificação' : 'Marcar como verificado'}</button>
+        <button class="secundario" onclick="editarUsuario('${u.id}', '${esc(u.nome).replace(/'/g,"\\'")}', '${esc(u.telefone||'').replace(/'/g,"\\'")}')">Editar</button>
+        ${u.is_admin ? '' : `
+        <button class="secundario" onclick="alternarBloqueio('${u.id}', ${u.bloqueado ? 'false' : 'true'})">${u.bloqueado ? 'Desbloquear' : 'Bloquear'}</button>
+        <button class="perigo" onclick="excluirUsuario('${u.id}', '${esc(u.nome).replace(/'/g,"\\'")}')">Excluir</button>`}
       </div>
     </div>`).join('');
 }
 window.alternarVerificado = async function(id, verificado){
   await api('/admin/usuarios/' + id + '/verificar', { method:'POST', body:{ verificado } });
   carregarUsuarios();
+};
+window.editarUsuario = async function(id, nomeAtual, telefoneAtual){
+  const nome = prompt('Nome:', nomeAtual);
+  if (nome === null) return;
+  if (!nome.trim()) { alert('O nome não pode ficar vazio.'); return; }
+  const telefone = prompt('Telefone (deixe em branco pra remover):', telefoneAtual);
+  if (telefone === null) return;
+  const data = await api('/admin/usuarios/' + id, { method:'PATCH', body:{ nome, telefone } });
+  if (!data.ok) { alert('Erro ao salvar.'); return; }
+  carregarUsuarios();
+};
+window.alternarBloqueio = async function(id, bloqueado){
+  if (bloqueado && !confirm('Bloquear essa conta? A pessoa não vai conseguir mais entrar.')) return;
+  const data = await api('/admin/usuarios/' + id + '/bloquear', { method:'POST', body:{ bloqueado } });
+  if (!data.ok) { alert('Erro ao ' + (bloqueado ? 'bloquear' : 'desbloquear') + '.'); return; }
+  carregarUsuarios();
+};
+window.excluirUsuario = async function(id, nome){
+  if (!confirm(`Excluir a conta de "${nome}"? Os anúncios dela somem e não tem como desfazer.`)) return;
+  const data = await api('/admin/usuarios/' + id, { method:'DELETE' });
+  if (!data.ok) { alert('Erro ao excluir.'); return; }
+  carregarUsuarios();
+  carregarStats();
 };
 async function boot(){
   const token = localStorage.getItem(LS_TOKEN);

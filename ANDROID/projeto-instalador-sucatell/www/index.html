@@ -340,7 +340,7 @@ async function fazerLogin(){
   const senha = document.getElementById('lg-senha').value;
   if (!email || !senha) return toast('Preencha e-mail e senha.', 'erro');
   const { data } = await api('/auth/login', { method:'POST', body:{ email, senha } });
-  if (!data.ok) return toast(data.erro === 'credenciais_invalidas' ? 'E-mail ou senha errados.' : 'Erro ao entrar.', 'erro');
+  if (!data.ok) return toast(data.erro === 'credenciais_invalidas' ? 'E-mail ou senha errados.' : (data.erro === 'conta_bloqueada' ? 'Essa conta foi bloqueada.' : 'Erro ao entrar.'), 'erro');
   localStorage.setItem(LS_TOKEN, data.token);
   STATE.usuario = data.usuario;
   STATE.bairroId = data.usuario.bairro_id;
