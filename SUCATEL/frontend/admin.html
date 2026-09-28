@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sucatell Admin</title>
+<style>
+:root{ --bg:#0d3b1f; --card:#155c32; --card2:#1a6b3a; --borda:#2f8a54; --texto:#fff; --fraco:#c9f2d8; --verde:#4ade80; --verde-forte:#22c55e; --erro:#ef4444; --alerta:#f59e0b; }
+*{box-sizing:border-box;}
+body{margin:0; background:var(--bg); color:var(--texto); font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;}
+.wrap{max-width:760px; margin:0 auto; padding:20px;}
+h1{font-size:20px;}
+input{width:100%; padding:11px; border-radius:10px; background:var(--card); border:1px solid var(--borda); color:var(--texto); margin-bottom:10px;}
+button{padding:10px 16px; border-radius:10px; border:none; background:var(--verde-forte); color:#06210f; font-weight:700; cursor:pointer;}
+button.secundario{background:var(--card2); color:var(--texto); border:1px solid var(--borda);}
+button.perigo{background:var(--erro); color:#fff;}
+.card{background:var(--card); border:1px solid var(--borda); border-radius:12px; padding:14px; margin-bottom:12px;}
+.stats{display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-bottom:18px;}
+.stat{background:var(--card2); border:1px solid var(--borda); border-radius:10px; padding:12px; text-align:center;}
+.stat b{display:block; font-size:22px; color:var(--verde);}
+.stat span{font-size:11px; color:var(--fraco);}
+.muted{color:var(--fraco); font-size:13px;}
+.row{display:flex; gap:8px; margin-top:8px;}
+#login-box{max-width:360px; margin:60px auto;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div id="login-box">
+    <h1>Sucatell — Painel Admin</h1>
+    <input id="lg-email" type="email" placeholder="E-mail admin">
+    <input id="lg-senha" type="password" placeholder="Senha">
+    <button id="lg-entrar" style="width:100%;">Entrar</button>
+    <p class="muted" id="lg-erro"></p>
+  </div>
+  <div id="painel" style="display:none;">
+    <h1>Sucatell — Painel Admin</h1>
+    <div class="stats" id="stats"></div>
+    <h3>Denúncias pendentes</h3>
+    <div id="denuncias"></div>
+  </div>
+</div>
+<script>
+const API = 'https://sucatel-api.emanuelantunes2024.workers.dev';
+const LS_TOKEN = 'sucatel_admin_token';
+function esc(s){ return (s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+async function api(path, opts={}){
+  const token = localStorage.getItem(LS_TOKEN);
+  const headers = Object.assign({}, opts.headers||{});
+  if (token) headers['Authorization'] = 'Bearer ' + token;
+  if (opts.body && typeof opts.body !== 'string') { headers['Content-Type']='application/json'; opts.body = JSON.stringify(opts.body); }
+  const resp = await fetch(API + path, Object.assign({}, opts, { headers }));
+  return await resp.json();
+}
+document.getElementById('lg-entrar').onclick = async () => {
+  const email = document.getElementById('lg-email').value.trim();
+  const senha = document.getElementById('lg-senha').value;
+  const data = await api('/auth/login', { method:'POST', body:{ email, senha } });
+  if (!data.ok) { document.getElementById('lg-erro').textContent = 'Login inválido.'; return; }
+  if (!data.usuario.is_admin) { document.getElementById('lg-erro').textContent = 'Essa conta não é admin.'; return; }
+  localStorage.setItem(LS_TOKEN, data.token);
+  boot();
+};
+async function carregarStats(){
+  const data = await api('/admin/stats');
+  if (!data.ok) return;
+  document.getElementById('stats').innerHTML = `
+    <div class="stat"><b>${data.usuarios}</b><span>usuários</span></div>
+    <div class="stat"><b>${data.anuncios_ativos}</b><span>anúncios ativos</span></div>
+    <div class="stat"><b>${data.vendas_totais}</b><span>vendas registradas</span></div>
+    <div class="stat"><b>${data.denuncias_pendentes}</b><span>denúncias pendentes</span></div>`;
+}
+async function carregarDenuncias(){
+  const data = await api('/admin/denuncias');
+  const box = document.getElementById('denuncias');
+  if (!data.ok || !data.denuncias.length) { box.innerHTML = '<p class="muted">Nenhuma denúncia pendente.</p>'; return; }
+  box.innerHTML = data.denuncias.map(d => `
+    <div class="card">
+      <div><strong>${esc(d.anuncio_titulo)}</strong></div>
+      <div class="muted">Motivo: ${esc(d.motivo)} · Denunciado por: ${esc(d.denunciante_nome)}</div>
+      ${d.detalhes ? `<div class="muted">"${esc(d.detalhes)}"</div>` : ''}
+      <div class="row">
+        <button onclick="resolver('${d.id}', true)">Procedente + remover anúncio</button>
+        <button class="secundario" onclick="resolver('${d.id}', false)">Improcedente</button>
+      </div>
+    </div>`).join('');
+}
+window.resolver = async function(id, procedente){
+  await api('/admin/denuncias/' + id + '/resolver', { method:'POST', body: procedente
+    ? { status:'procedente', remover_anuncio:true, penalidade_reputacao:10 }
+    : { status:'improcedente' } });
+  carregarDenuncias();
+  carregarStats();
+};
+async function boot(){
+  const token = localStorage.getItem(LS_TOKEN);
+  if (!token) return;
+  const me = await api('/auth/me');
+  if (!me.ok || !me.usuario.is_admin) { localStorage.removeItem(LS_TOKEN); return; }
+  document.getElementById('login-box').style.display = 'none';
+  document.getElementById('painel').style.display = 'block';
+  carregarStats();
+  carregarDenuncias();
+}
+boot();
+</script>
+</body>
+</html>
