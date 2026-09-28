@@ -1,0 +1,23 @@
+name: Criar admin do Sucatel (manual, temporário)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  criar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cadastrar conta admin
+        run: |
+          set -e
+          BASE="https://sucatel-api.emanuelantunes2024.workers.dev"
+          curl -sS --fail -X POST "$BASE/auth/cadastro" -H 'Content-Type: application/json' \
+            -d '{"nome":"Emanuel (Admin)","email":"emanuelantunes2021@gmail.com","senha":"oLpkwuQHzNeUZl6R","bairro_id":"xerem"}' \
+            -o cadastro_admin.json
+          python3 -c "
+          import json
+          d = json.load(open('cadastro_admin.json'))
+          print('ok=', d.get('ok'))
+          print('usuario_id=', d.get('usuario', {}).get('id'))
+          print('email=', d.get('usuario', {}).get('email'))
+          "
