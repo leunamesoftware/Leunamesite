@@ -25,7 +25,13 @@ jobs:
           echo "== health =="
           curl -sS --fail "$BASE/health"; echo
 
-          curl -sS --fail "$BASE/localizacao/estados" > estados.json
+          curl -sS -i "$BASE/localizacao/estados" | tee estados_raw.txt
+          echo "== conteudo cru salvo acima =="
+          pwd
+          curl -sS --fail "$BASE/localizacao/estados" -o estados.json
+          echo "== estados.json cru =="
+          cat estados.json
+          echo
           ESTADO_ID=$(python3 -c "import json;print(json.load(open('estados.json'))['estados'][0]['id'])")
           curl -sS --fail "$BASE/localizacao/cidades?estado_id=$ESTADO_ID" > cidades.json
           CIDADE_ID=$(python3 -c "import json;print(json.load(open('cidades.json'))['cidades'][0]['id'])")
