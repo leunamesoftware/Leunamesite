@@ -6,6 +6,8 @@
 <title>Sucatell</title>
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#0d3b1f">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <style>
 :root{
   --verde-escuro:#0d3b1f; --verde:#178a43; --verde-forte:#16a34a; --verde-claro:#e7f5ea;
@@ -90,6 +92,8 @@ a{color:var(--verde);}
 .cat-item{display:flex; flex-direction:column; align-items:center; gap:6px; background:var(--card); border:1px solid var(--borda); border-radius:14px; padding:14px 4px; cursor:pointer; font-size:11.5px; font-weight:600; text-align:center; color:var(--texto);}
 .cat-item .cat-icone{font-size:26px;}
 .mapa-fake{background:var(--verde-claro); border-radius:12px; height:90px; display:flex; align-items:center; justify-content:center; gap:8px; color:var(--verde); font-weight:600; font-size:13px;}
+.mapa-real{height:160px; border-radius:12px; overflow:hidden; z-index:0;}
+.mapa-real .leaflet-control-attribution{font-size:9px;}
 .avatar{width:52px; height:52px; border-radius:50%; background:var(--verde-escuro); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:18px; flex-shrink:0;}
 .avatar.pequeno{width:38px; height:38px; font-size:14px;}
 .estat-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin:14px 0;}
@@ -412,16 +416,42 @@ function abrirSeletorBairro(){
     <div id="sel-bairro-estado-area"></div>`);
   carregarSeletorBairro();
 }
+let mapaSeletorInstancia = null;
+async function carregarMapaSeletor(){
+  const el = document.getElementById('sb-mapa');
+  if (!el || !window.L) return;
+  const { data } = await api('/localizacao/bairros-no-mapa');
+  if (!data.ok || !data.bairros.length) { el.remove(); return; }
+  const centro = data.bairros.find(b => b.id === STATE.bairroId) || data.bairros[0];
+  if (mapaSeletorInstancia) { mapaSeletorInstancia.remove(); mapaSeletorInstancia = null; }
+  const mapa = L.map('sb-mapa').setView([centro.lat, centro.lng], 11);
+  mapaSeletorInstancia = mapa;
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18, attribution: '© OpenStreetMap' }).addTo(mapa);
+  data.bairros.forEach(b => {
+    const marcador = L.marker([b.lat, b.lng]).addTo(mapa).bindPopup(`<b>${esc(b.nome)}</b><br>${esc(b.cidade_nome)}<br><button onclick="selecionarBairroDoMapa('${b.id}','${esc(b.nome).replace(/'/g,"\\'")}')" style="margin-top:6px; padding:6px 10px; border-radius:8px; border:none; background:#178a43; color:#fff; font-weight:700;">Usar este bairro</button>`);
+    if (b.id === STATE.bairroId) marcador.openPopup();
+  });
+}
+window.selecionarBairroDoMapa = function(id, nome){
+  STATE.bairroId = id;
+  localStorage.setItem('sucatel_bairro_visualizacao', JSON.stringify({ id, nome }));
+  fecharModal();
+  setTab(STATE.aba, true);
+  toast(`Bairro definido: ${nome}`, 'sucesso');
+};
 async function carregarSeletorBairro(){
   const { data: estadosData } = await api('/localizacao/estados');
   const area = document.getElementById('sel-bairro-estado-area');
   area.innerHTML = `
     <button class="btn secundario" id="sb-usar-gps" style="margin-top:0;">📍 Usar minha localização</button>
     <p class="muted" id="sb-gps-status"></p>
+    <div id="sb-mapa" class="mapa-real" style="margin-bottom:6px;"></div>
+    <p class="muted" style="margin-top:0;">Toque num pino pra escolher direto, ou selecione manualmente abaixo.</p>
     <label>Estado</label><select id="sb-estado"><option value="">Selecione</option>${(estadosData.estados||[]).map(e=>`<option value="${e.id}">${esc(e.nome)}</option>`).join('')}</select>
     <label>Cidade</label><select id="sb-cidade" disabled><option value="">Escolha o estado</option></select>
     <label>Bairro</label><select id="sb-bairro" disabled><option value="">Escolha a cidade</option></select>
     <button class="btn" id="sb-confirmar" disabled>Usar este bairro</button>`;
+  carregarMapaSeletor();
   document.getElementById('sb-usar-gps').onclick = () => {
     if (!navigator.geolocation) { document.getElementById('sb-gps-status').textContent = 'Seu navegador não suporta localização automática.'; return; }
     document.getElementById('sb-gps-status').textContent = 'Buscando sua localização...';
@@ -658,11 +688,21 @@ function telaDetalheAnuncio(a){
       </div>
     </div>
     <div class="card">
-      <div class="mapa-fake">📍 ${esc(a.bairro_nome)}${a.distancia_km!=null?' · '+distanciaLabel(a.distancia_km):''}</div>
+      ${a.bairro_lat != null ? `<div id="mapa-anuncio" class="mapa-real"></div><p class="muted" style="margin:6px 0 0;">📍 ${esc(a.bairro_nome)}${a.distancia_km!=null?' · '+distanciaLabel(a.distancia_km):''} — região aproximada, não o endereço exato</p>`
+        : `<div class="mapa-fake">📍 ${esc(a.bairro_nome)}${a.distancia_km!=null?' · '+distanciaLabel(a.distancia_km):''}</div>`}
     </div>
     ${souVendedor ? '<p class="muted" style="text-align:center;">Este é o seu anúncio.</p>' : `
       <button class="btn" onclick="iniciarConversa('${a.id}')">💬 Conversar com o vendedor</button>
       <button class="btn secundario" onclick="abrirDenunciar('${a.id}')">🚩 Denunciar anúncio</button>`}`;
+  if (a.bairro_lat != null && window.L) {
+    setTimeout(() => {
+      const mapaEl = document.getElementById('mapa-anuncio');
+      if (!mapaEl) return;
+      const mapa = L.map('mapa-anuncio', { zoomControl:false, attributionControl:true }).setView([a.bairro_lat, a.bairro_lng], 14);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18, attribution: '© OpenStreetMap' }).addTo(mapa);
+      L.circle([a.bairro_lat, a.bairro_lng], { radius: 700, color:'#178a43', fillColor:'#178a43', fillOpacity:0.25 }).addTo(mapa);
+    }, 50);
+  }
 }
 function abrirDenunciar(id){
   abrirModal(`

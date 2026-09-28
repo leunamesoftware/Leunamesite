@@ -244,6 +244,15 @@ export default {
       return json({ ok: true, bairro: maisPerto, distancia_km: Math.round(menorDistancia * 10) / 10 });
     }
 
+    // Lista de bairros com coordenada real, pro mapa visual do seletor de
+    // região (poucas linhas, sem paginação -- ainda é um conjunto pequeno).
+    if (pathname === '/localizacao/bairros-no-mapa' && request.method === 'GET') {
+      const { results } = await env.DB.prepare(
+        `SELECT b.id, b.nome, b.lat, b.lng, c.nome AS cidade_nome FROM bairros b JOIN cidades c ON c.id = b.cidade_id WHERE b.lat IS NOT NULL AND b.lng IS NOT NULL`
+      ).all();
+      return json({ ok: true, bairros: results });
+    }
+
     // ---- categorias (marca > modelo > tipo de peça) ----
     if (pathname === '/categorias/marcas' && request.method === 'GET') {
       const { results } = await env.DB.prepare('SELECT * FROM marcas ORDER BY ordem, nome').all();
