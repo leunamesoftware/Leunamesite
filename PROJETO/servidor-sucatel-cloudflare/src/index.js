@@ -108,6 +108,7 @@ async function usuarioPublico(u, env) {
     bairro_id: u.bairro_id, bairro_nome, saldo_creditos: u.saldo_creditos,
     vendas_confirmadas_total: u.vendas_confirmadas_total, reputacao: u.reputacao,
     is_admin: !!u.is_admin, verificado: !!u.verificado, criado_em: u.criado_em,
+    foto_url: u.foto_url || null,
   };
 }
 
@@ -299,10 +300,16 @@ export default {
     if (pathname === '/auth/me' && request.method === 'PATCH') {
       const sess = await autenticar(request, env);
       if (!sess) return json({ ok: false, erro: 'nao_autenticado' }, 401);
-      const { nome, telefone, bairro_id } = await request.json();
+      const { nome, telefone, bairro_id, foto_url } = await request.json();
       if (nome && !nome.trim()) return json({ ok: false, erro: 'nome_invalido' }, 400);
-      await env.DB.prepare('UPDATE users SET nome = ?, telefone = ?, bairro_id = ? WHERE id = ?')
-        .bind(nome ? nome.trim() : sess.nome, telefone !== undefined ? (telefone || null) : sess.telefone, bairro_id || sess.bairro_id, sess.id).run();
+      await env.DB.prepare('UPDATE users SET nome = ?, telefone = ?, bairro_id = ?, foto_url = ? WHERE id = ?')
+        .bind(
+          nome ? nome.trim() : sess.nome,
+          telefone !== undefined ? (telefone || null) : sess.telefone,
+          bairro_id || sess.bairro_id,
+          foto_url !== undefined ? (foto_url || null) : sess.foto_url,
+          sess.id
+        ).run();
       const atualizado = await env.DB.prepare('SELECT * FROM users WHERE id = ?').bind(sess.id).first();
       return json({ ok: true, usuario: await usuarioPublico(atualizado, env) });
     }
@@ -454,7 +461,7 @@ export default {
       const raioKm = Number(env.RAIO_BUSCA_KM || 10);
       const { ids: bairrosRegiao, distancias } = await bairrosDaRegiao(env, bairroId, raioKm);
 
-      let sql = `SELECT a.*, u.nome AS vendedor_nome, u.reputacao AS vendedor_reputacao, u.verificado AS vendedor_verificado,
+      let sql = `SELECT a.*, u.nome AS vendedor_nome, u.reputacao AS vendedor_reputacao, u.verificado AS vendedor_verificado, u.foto_url AS vendedor_foto,
                         m.nome AS marca_nome, mo.nome AS modelo_nome, tp.nome AS tipo_peca_nome, b.nome AS bairro_nome
                  FROM anuncios a
                  JOIN users u ON u.id = a.vendedor_id
@@ -482,7 +489,7 @@ export default {
       const bairroVisitante = url.searchParams.get('bairro_id');
       const anuncio = await env.DB.prepare(
         `SELECT a.*, u.nome AS vendedor_nome, u.telefone AS vendedor_telefone, u.reputacao AS vendedor_reputacao,
-                u.verificado AS vendedor_verificado, u.criado_em AS vendedor_desde,
+                u.verificado AS vendedor_verificado, u.criado_em AS vendedor_desde, u.foto_url AS vendedor_foto,
                 m.nome AS marca_nome, mo.nome AS modelo_nome, tp.nome AS tipo_peca_nome, b.nome AS bairro_nome, b.lat AS bairro_lat, b.lng AS bairro_lng
          FROM anuncios a JOIN users u ON u.id = a.vendedor_id
          JOIN marcas m ON m.id = a.marca_id JOIN modelos mo ON mo.id = a.modelo_id JOIN tipos_peca tp ON tp.id = a.tipo_peca_id
@@ -573,7 +580,7 @@ export default {
     // ---- perfil público do vendedor ----
     const matchUsuarioPublico = pathname.match(/^\/usuarios\/([^/]+)$/);
     if (matchUsuarioPublico && request.method === 'GET') {
-      const u = await env.DB.prepare('SELECT id, nome, criado_em, reputacao, vendas_confirmadas_total, verificado FROM users WHERE id = ?').bind(matchUsuarioPublico[1]).first();
+      const u = await env.DB.prepare('SELECT id, nome, criado_em, reputacao, vendas_confirmadas_total, verificado, foto_url FROM users WHERE id = ?').bind(matchUsuarioPublico[1]).first();
       if (!u) return json({ ok: false, erro: 'nao_encontrado' }, 404);
       const [anunciosAtivos, av] = await Promise.all([
         env.DB.prepare("SELECT COUNT(*) AS n FROM anuncios WHERE vendedor_id = ? AND status = 'ativo'").bind(u.id).first(),
@@ -583,7 +590,7 @@ export default {
         ok: true,
         usuario: {
           id: u.id, nome: u.nome, criado_em: u.criado_em, reputacao: u.reputacao,
-          vendas_confirmadas_total: u.vendas_confirmadas_total, verificado: !!u.verificado,
+          vendas_confirmadas_total: u.vendas_confirmadas_total, verificado: !!u.verificado, foto_url: u.foto_url || null,
           anuncios_ativos: anunciosAtivos.n, total_avaliacoes: av.n, media_avaliacoes: av.media ? Math.round(av.media * 10) / 10 : null,
         },
       });

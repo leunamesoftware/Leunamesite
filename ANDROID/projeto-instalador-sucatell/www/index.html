@@ -184,6 +184,12 @@ function tratarSelectComNovo(selectEl, opcoes){
 function safeJsonParse(s, fallback){ try { return JSON.parse(s); } catch(e) { return fallback; } }
 function centavosParaReais(c){ return 'R$ ' + (c/100).toFixed(2).replace('.', ','); }
 function iniciais(nome){ return (nome||'?').trim().split(/\s+/).slice(0,2).map(p=>p[0]).join('').toUpperCase(); }
+function avatarHtml(nome, fotoUrl, estilo){
+  const st = estilo || '';
+  return fotoUrl
+    ? `<img class="avatar" style="${st} object-fit:cover;" src="${esc(fotoUrl)}">`
+    : `<div class="avatar" style="${st}">${iniciais(nome)}</div>`;
+}
 function dataPorExtenso(iso){
   if(!iso) return '';
   const d = new Date(iso.includes('T') ? iso : iso.replace(' ','T')+'Z');
@@ -599,7 +605,7 @@ function telaDetalheAnuncio(a){
     </div>
     <div class="card" style="cursor:pointer;" onclick="abrirPerfilVendedor('${a.vendedor_id}')">
       <div style="display:flex; align-items:center; gap:12px;">
-        <div class="avatar">${iniciais(a.vendedor_nome)}</div>
+        ${avatarHtml(a.vendedor_nome, a.vendedor_foto)}
         <div style="flex:1;">
           <b>${esc(a.vendedor_nome)}</b>
           ${a.vendedor_verificado ? '<div class="selo-verificado" style="margin-top:3px;">✅ Verificado</div>' : ''}
@@ -827,7 +833,9 @@ async function renderPerfilConta(){
   const p = perfilPub.ok ? perfilPub.usuario : {};
   document.getElementById('conteudo').innerHTML = `
     <div class="card" style="text-align:center;">
-      <div class="avatar" style="margin:0 auto 10px; width:64px; height:64px; font-size:22px;">${iniciais(u.nome)}</div>
+      ${avatarHtml(u.nome, u.foto_url, 'margin:0 auto 6px; width:72px; height:72px; font-size:24px;')}
+      <div><button class="btn pequeno secundario" id="pf-trocar-foto" style="margin-bottom:10px;">Trocar foto</button>
+      <input id="pf-foto-input" type="file" accept="image/*" hidden></div>
       <b style="font-size:17px;">${esc(u.nome)}</b>
       ${u.verificado ? '<div class="selo-verificado" style="margin:6px auto;">✅ Verificado</div>' : ''}
       <div class="muted">Membro desde ${dataPorExtenso(u.criado_em)}</div>
@@ -855,6 +863,19 @@ async function renderPerfilConta(){
   document.getElementById('mi-creditos').onclick = () => irPara(renderComprarCreditos);
   document.getElementById('mi-config').onclick = () => irPara(renderConfiguracoes);
   document.getElementById('pf-sair').onclick = async () => { await api('/auth/logout', { method:'POST' }); localStorage.removeItem(LS_TOKEN); location.reload(); };
+  document.getElementById('pf-trocar-foto').onclick = () => document.getElementById('pf-foto-input').click();
+  document.getElementById('pf-foto-input').onchange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const resp = await fetch(API + '/upload-foto', { method:'POST', headers:{ 'Authorization':'Bearer '+localStorage.getItem(LS_TOKEN), 'X-File-Name':file.name, 'Content-Type':file.type }, body:file });
+    const d = await resp.json();
+    if (!d.ok) return toast('Erro ao enviar foto.', 'erro');
+    const { data } = await api('/auth/me', { method:'PATCH', body:{ foto_url: API + d.url } });
+    if (!data.ok) return toast('Erro ao salvar foto.', 'erro');
+    STATE.usuario = data.usuario;
+    toast('Foto atualizada!', 'sucesso');
+    renderPerfilConta();
+  };
 }
 
 async function renderMeusDados(){
@@ -975,7 +996,7 @@ async function renderPerfilVendedor(usuarioId, aba){
   topoComVoltar('Perfil do vendedor', voltar);
   document.getElementById('conteudo').innerHTML = `
     <div class="card" style="text-align:center;">
-      <div class="avatar" style="margin:0 auto 10px; width:64px; height:64px; font-size:22px;">${iniciais(u.nome)}</div>
+      ${avatarHtml(u.nome, u.foto_url, 'margin:0 auto 10px; width:64px; height:64px; font-size:22px;')}
       <b style="font-size:17px;">${esc(u.nome)}</b>
       ${u.verificado ? '<div class="selo-verificado" style="margin:6px auto;">✅ Vendedor verificado</div>' : ''}
       <div class="muted">Membro desde ${dataPorExtenso(u.criado_em)}</div>
