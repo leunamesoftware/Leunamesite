@@ -105,10 +105,17 @@ a{color:var(--verde);}
 .cat-chip span{font-size:11px; font-weight:600; text-align:center; color:var(--texto); line-height:1.2;}
 .grid-cat-grande{display:grid; grid-template-columns:1fr 1fr; gap:12px;}
 .cat-card-grande{background:var(--card); border:1px solid var(--borda); border-radius:16px; overflow:hidden; cursor:pointer;}
-.cat-card-grande .topo-icone-grande{height:86px; background:var(--verde-claro); display:flex; align-items:center; justify-content:center; font-size:42px;}
+.cat-card-grande .topo-icone-grande{height:86px; background:var(--verde-claro) center/cover no-repeat; display:flex; align-items:center; justify-content:center; font-size:42px;}
 .cat-card-grande .rodape-cat{display:flex; align-items:center; justify-content:space-between; padding:11px 13px; font-weight:700; font-size:13.5px; gap:6px;}
 .cat-card-grande .rodape-cat .seta{color:var(--fraco); font-weight:400; flex-shrink:0;}
 .mapa-fake{background:var(--verde-claro); border-radius:12px; height:90px; display:flex; align-items:center; justify-content:center; gap:8px; color:var(--verde); font-weight:600; font-size:13px;}
+.galeria-anuncio{position:relative; margin-bottom:8px;}
+.galeria-scroll{display:flex; overflow-x:auto; scroll-snap-type:x mandatory; border-radius:14px;}
+.galeria-scroll img{width:100%; flex:0 0 100%; height:250px; object-fit:cover; scroll-snap-align:start;}
+.galeria-contador{position:absolute; right:10px; top:10px; background:rgba(0,0,0,.6); color:#fff; font-size:12px; font-weight:700; padding:3px 10px; border-radius:20px;}
+.galeria-miniaturas{display:flex; gap:6px; overflow-x:auto; margin-bottom:10px;}
+.galeria-miniaturas img{width:54px; height:54px; object-fit:cover; border-radius:8px; flex-shrink:0; cursor:pointer; opacity:.55; border:2px solid transparent;}
+.galeria-miniaturas img.ativa{opacity:1; border-color:var(--verde-forte);}
 .mapa-real{height:160px; border-radius:12px; overflow:hidden; z-index:0;}
 .mapa-real .leaflet-control-attribution{font-size:9px;}
 .avatar{width:52px; height:52px; border-radius:50%; background:var(--verde-escuro); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:18px; flex-shrink:0;}
@@ -235,19 +242,19 @@ function distanciaLabel(km){
 const CONDICOES = { novo:'Novo', usado:'Usado', com_defeito:'Com defeito', sucata:'Sucata' };
 const ICONE_TIPO = { celular:'📱', tela:'🔲', placa:'🖲️', bateria:'🔋', carcaca:'🛠️', camera:'📷', 'alto-falante':'🔊', 'conector-carga':'🔌', 'vidro-traseiro':'🪟', flex:'➰', outro:'📦', acessorio:'🔌', capinha:'🛡️', 'fone-ouvido':'🎧', smartwatch:'⌚', tablet:'📓', lote:'📦' };
 const CATEGORIAS_GRID = [
-  { grupo:'celular', nome:'Celulares', icone:'📱' },
-  { grupo:'peca', nome:'Peças', icone:'🔧' },
-  { grupo:'tela', nome:'Telas', icone:'🔲' },
-  { grupo:'bateria', nome:'Baterias', icone:'🔋' },
-  { grupo:'camera', nome:'Câmeras', icone:'📷' },
-  { grupo:'placa', nome:'Placas', icone:'🖲️' },
+  { grupo:'celular', nome:'Celulares', icone:'📱', foto:'img/categorias/celular.jpg' },
+  { grupo:'peca', nome:'Peças', icone:'🔧', foto:'img/categorias/peca.jpg' },
+  { grupo:'tela', nome:'Telas', icone:'🔲', foto:'img/categorias/tela.jpg' },
+  { grupo:'bateria', nome:'Baterias', icone:'🔋', foto:'img/categorias/bateria.jpg' },
+  { grupo:'camera', nome:'Câmeras', icone:'📷', foto:'img/categorias/camera.jpg' },
+  { grupo:'placa', nome:'Placas', icone:'🖲️', foto:'img/categorias/placa.jpg' },
   { grupo:'lote', nome:'Lotes', icone:'📦' },
-  { grupo:'acessorio', nome:'Acessórios', icone:'🔌' },
-  { grupo:'capinha', nome:'Capinhas', icone:'🛡️' },
-  { grupo:'fone-ouvido', nome:'Fones de ouvido', icone:'🎧' },
-  { grupo:'smartwatch', nome:'Smartwatches', icone:'⌚' },
-  { grupo:'tablet', nome:'Tablets', icone:'📓' },
-  { grupo:'outro', nome:'Outros', icone:'📦' },
+  { grupo:'acessorio', nome:'Acessórios', icone:'🔌', foto:'img/categorias/acessorio.jpg' },
+  { grupo:'capinha', nome:'Capinhas', icone:'🛡️', foto:'img/categorias/capinha.jpg' },
+  { grupo:'fone-ouvido', nome:'Fones de ouvido', icone:'🎧', foto:'img/categorias/fone-ouvido.jpg' },
+  { grupo:'smartwatch', nome:'Smartwatches', icone:'⌚', foto:'img/categorias/smartwatch.jpg' },
+  { grupo:'tablet', nome:'Tablets', icone:'📓', foto:'img/categorias/tablet.jpg' },
+  { grupo:'outro', nome:'Outros', icone:'📦', foto:'img/categorias/outro.jpg' },
 ];
 function tempoRelativo(iso){
   if(!iso) return '';
@@ -618,7 +625,7 @@ function renderCategorias(){
     <p class="muted" style="margin-top:0;">Escolha o que você procura</p>
     <div class="grid-cat-grande">${CATEGORIAS_GRID.map(c => `
       <div class="cat-card-grande" data-grupo="${c.grupo}">
-        <div class="topo-icone-grande">${c.icone}</div>
+        <div class="topo-icone-grande" ${c.foto ? `style="background-image:url('${c.foto}');"` : ''}>${c.foto ? '' : c.icone}</div>
         <div class="rodape-cat">${esc(c.nome)} <span class="seta">›</span></div>
       </div>`).join('')}</div>`;
   document.querySelectorAll('.grid-cat-grande .cat-card-grande').forEach(item => {
@@ -725,7 +732,11 @@ function telaDetalheAnuncio(a){
     <button class="icone" onclick="navigator.share ? navigator.share({title:'${esc(a.titulo)}'}).catch(()=>{}) : toast('Copie o link da página pra compartilhar.')">📤</button>`);
   document.getElementById('conteudo').innerHTML = `
     ${fotos.length ? `
-      <div style="display:flex; gap:8px; overflow-x:auto; margin-bottom:8px; border-radius:14px;">${fotos.map(f=>`<img src="${esc(f)}" style="width:100%; max-width:340px; height:230px; object-fit:cover; border-radius:14px; flex-shrink:0;">`).join('')}</div>
+      <div class="galeria-anuncio">
+        <div class="galeria-scroll" id="galeria-scroll">${fotos.map(f=>`<img src="${esc(f)}">`).join('')}</div>
+        ${fotos.length > 1 ? `<div class="galeria-contador" id="galeria-contador">1/${fotos.length}</div>` : ''}
+      </div>
+      ${fotos.length > 1 ? `<div class="galeria-miniaturas" id="galeria-miniaturas">${fotos.map((f,i)=>`<img src="${esc(f)}" data-i="${i}" class="${i===0?'ativa':''}">`).join('')}</div>` : ''}
     ` : `<div style="height:200px; border-radius:14px; background:var(--verde-claro); display:flex; align-items:center; justify-content:center; font-size:60px; margin-bottom:8px;">${ICONE_TIPO[a.tipo_peca_id]||'📦'}</div>`}
     <div class="card">
       <h2 style="margin:0 0 4px; font-size:19px;">${esc(a.titulo)}</h2>
@@ -758,6 +769,19 @@ function telaDetalheAnuncio(a){
     ${souVendedor ? '<p class="muted" style="text-align:center;">Este é o seu anúncio.</p>' : `
       <button class="btn" onclick="iniciarConversa('${a.id}')">💬 Conversar com o vendedor</button>
       <button class="btn secundario" onclick="abrirDenunciar('${a.id}')">🚩 Denunciar anúncio</button>`}`;
+  if (fotos.length > 1) {
+    const scrollEl = document.getElementById('galeria-scroll');
+    const contadorEl = document.getElementById('galeria-contador');
+    const miniaturas = document.querySelectorAll('#galeria-miniaturas img');
+    scrollEl.onscroll = () => {
+      const i = Math.round(scrollEl.scrollLeft / scrollEl.clientWidth);
+      contadorEl.textContent = (i+1) + '/' + fotos.length;
+      miniaturas.forEach((m,idx) => m.classList.toggle('ativa', idx === i));
+    };
+    miniaturas.forEach(m => m.onclick = () => {
+      scrollEl.scrollTo({ left: Number(m.dataset.i) * scrollEl.clientWidth, behavior:'smooth' });
+    });
+  }
   if (a.bairro_lat != null && window.L) {
     setTimeout(() => {
       const mapaEl = document.getElementById('mapa-anuncio');
