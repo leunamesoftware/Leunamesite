@@ -1,0 +1,119 @@
+name: Verificar Sucatel de ponta a ponta (manual, temporário)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  verificar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Baixar código do repositório
+        uses: actions/checkout@v4
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Testar API e fluxo completo (cadastro, anúncio, venda, chat)
+        working-directory: PROJETO/servidor-sucatel-cloudflare
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+        run: |
+          set -e
+          BASE="https://sucatel-api.emanuelantunes2024.workers.dev"
+
+          echo "== health =="
+          curl -sS --fail "$BASE/health"; echo
+
+          curl -sS --fail "$BASE/localizacao/estados" > estados.json
+          ESTADO_ID=$(python3 -c "import json;print(json.load(open('estados.json'))['estados'][0]['id'])")
+          curl -sS --fail "$BASE/localizacao/cidades?estado_id=$ESTADO_ID" > cidades.json
+          CIDADE_ID=$(python3 -c "import json;print(json.load(open('cidades.json'))['cidades'][0]['id'])")
+          curl -sS --fail "$BASE/localizacao/bairros?cidade_id=$CIDADE_ID" > bairros.json
+          BAIRRO_ID=$(python3 -c "import json;print(json.load(open('bairros.json'))['bairros'][0]['id'])")
+
+          curl -sS --fail "$BASE/categorias/marcas" > marcas.json
+          MARCA_ID=$(python3 -c "import json;print(json.load(open('marcas.json'))['marcas'][0]['id'])")
+          curl -sS --fail "$BASE/categorias/modelos?marca_id=$MARCA_ID" > modelos.json
+          MODELO_ID=$(python3 -c "import json;print(json.load(open('modelos.json'))['modelos'][0]['id'])")
+          curl -sS --fail "$BASE/categorias/tipos-peca" > tipos.json
+          TIPO_ID=$(python3 -c "import json;print(json.load(open('tipos.json'))['tipos_peca'][0]['id'])")
+          echo "bairro=$BAIRRO_ID marca=$MARCA_ID modelo=$MODELO_ID tipo=$TIPO_ID"
+
+          EMAIL_V="teste-vendedor-$(date +%s)@sucatel-teste.com"
+          curl -sS --fail -X POST "$BASE/auth/cadastro" -H 'Content-Type: application/json' \
+            -d "{\"nome\":\"Vendedor Teste\",\"email\":\"$EMAIL_V\",\"senha\":\"senha123456\",\"bairro_id\":\"$BAIRRO_ID\"}" > cadastro_v.json
+          TOKEN_V=$(python3 -c "import json;print(json.load(open('cadastro_v.json'))['token'])")
+          VENDEDOR_ID=$(python3 -c "import json;print(json.load(open('cadastro_v.json'))['usuario']['id'])")
+
+          EMAIL_C="teste-comprador-$(date +%s)@sucatel-teste.com"
+          curl -sS --fail -X POST "$BASE/auth/cadastro" -H 'Content-Type: application/json' \
+            -d "{\"nome\":\"Comprador Teste\",\"email\":\"$EMAIL_C\",\"senha\":\"senha123456\",\"bairro_id\":\"$BAIRRO_ID\"}" > cadastro_c.json
+          TOKEN_C=$(python3 -c "import json;print(json.load(open('cadastro_c.json'))['token'])")
+          COMPRADOR_ID=$(python3 -c "import json;print(json.load(open('cadastro_c.json'))['usuario']['id'])")
+          echo "vendedor=$VENDEDOR_ID comprador=$COMPRADOR_ID"
+
+          echo "== 1) anunciar fora do tema deve bloquear (sem gastar credito) =="
+          curl -sS -X POST "$BASE/anuncios" -H "Authorization: Bearer $TOKEN_V" -H 'Content-Type: application/json' \
+            -d "{\"marca_id\":\"$MARCA_ID\",\"modelo_id\":\"$MODELO_ID\",\"tipo_peca_id\":\"$TIPO_ID\",\"titulo\":\"Vendo uma cama de casal\",\"preco_centavos\":10000,\"bairro_id\":\"$BAIRRO_ID\"}" > fora_tema.json
+          python3 -c "import json;d=json.load(open('fora_tema.json'));assert d.get('erro')=='fora_do_tema', d"
+          echo "OK: bloqueado corretamente"
+
+          echo "== 2) anunciar sem credito deve bloquear =="
+          curl -sS -X POST "$BASE/anuncios" -H "Authorization: Bearer $TOKEN_V" -H 'Content-Type: application/json' \
+            -d "{\"marca_id\":\"$MARCA_ID\",\"modelo_id\":\"$MODELO_ID\",\"tipo_peca_id\":\"$TIPO_ID\",\"titulo\":\"Placa teste automatizado\",\"preco_centavos\":10000,\"bairro_id\":\"$BAIRRO_ID\"}" > sem_credito.json
+          python3 -c "import json;d=json.load(open('sem_credito.json'));assert d.get('erro')=='sem_creditos', d"
+          echo "OK: bloqueado corretamente"
+
+          echo "== 3) dar 2 creditos ao vendedor direto no banco (simula pagamento confirmado) =="
+          npx wrangler@latest d1 execute sucatel --remote --command "UPDATE users SET saldo_creditos = 2 WHERE id = '$VENDEDOR_ID'"
+
+          echo "== 4) anunciar com credito deve funcionar =="
+          curl -sS --fail -X POST "$BASE/anuncios" -H "Authorization: Bearer $TOKEN_V" -H 'Content-Type: application/json' \
+            -d "{\"marca_id\":\"$MARCA_ID\",\"modelo_id\":\"$MODELO_ID\",\"tipo_peca_id\":\"$TIPO_ID\",\"titulo\":\"Placa teste automatizado\",\"descricao\":\"anuncio de teste\",\"preco_centavos\":10000,\"bairro_id\":\"$BAIRRO_ID\"}" > anuncio.json
+          ANUNCIO_ID=$(python3 -c "import json;print(json.load(open('anuncio.json'))['anuncio']['id'])")
+          echo "anuncio criado: $ANUNCIO_ID"
+
+          echo "== 5) o anuncio aparece na busca do bairro =="
+          curl -sS --fail "$BASE/anuncios?bairro_id=$BAIRRO_ID" > busca.json
+          python3 -c "
+import json
+d = json.load(open('busca.json'))
+ids = [a['id'] for a in d['anuncios']]
+assert '$ANUNCIO_ID' in ids, ids
+print('OK: anuncio aparece na busca')
+"
+
+          echo "== 6) marcar uma venda =="
+          curl -sS --fail -X POST "$BASE/anuncios/$ANUNCIO_ID/vender" -H "Authorization: Bearer $TOKEN_V" > venda.json
+          cat venda.json
+
+          echo "== 7) comprador inicia conversa e manda mensagem com telefone (deve ser bloqueada) =="
+          curl -sS --fail -X POST "$BASE/conversas" -H "Authorization: Bearer $TOKEN_C" -H 'Content-Type: application/json' \
+            -d "{\"anuncio_id\":\"$ANUNCIO_ID\"}" > conversa.json
+          CONVERSA_ID=$(python3 -c "import json;print(json.load(open('conversa.json'))['conversa']['id'])")
+          curl -sS --fail -X POST "$BASE/conversas/$CONVERSA_ID/mensagens" -H "Authorization: Bearer $TOKEN_C" -H 'Content-Type: application/json' \
+            -d '{"texto":"Meu whatsapp é 21999998888, me chama"}' > msg_bloqueada.json
+          python3 -c "import json;d=json.load(open('msg_bloqueada.json'));assert d['bloqueada']==True, d"
+          echo "OK: telefone/whatsapp bloqueado no chat"
+
+          echo "== 8) mensagem normal deve passar =="
+          curl -sS --fail -X POST "$BASE/conversas/$CONVERSA_ID/mensagens" -H "Authorization: Bearer $TOKEN_C" -H 'Content-Type: application/json' \
+            -d '{"texto":"Ainda tem essa peça disponível?"}' > msg_ok.json
+          python3 -c "import json;d=json.load(open('msg_ok.json'));assert d['bloqueada']==False, d"
+          echo "OK: mensagem normal passou"
+
+          echo "== 9) vendedor renova anuncio (gasta o 2o credito) =="
+          curl -sS --fail -X POST "$BASE/anuncios/$ANUNCIO_ID/renovar" -H "Authorization: Bearer $TOKEN_V" > renovado.json
+          cat renovado.json
+
+          echo "TUDO OK" > "$GITHUB_WORKSPACE/RESULTADO_OK.txt"
+
+          echo "== limpeza: apagar dados de teste =="
+          npx wrangler@latest d1 execute sucatel --remote --command "DELETE FROM mensagens WHERE conversa_id = '$CONVERSA_ID'"
+          npx wrangler@latest d1 execute sucatel --remote --command "DELETE FROM conversas WHERE id = '$CONVERSA_ID'"
+          npx wrangler@latest d1 execute sucatel --remote --command "DELETE FROM vendas WHERE anuncio_id = '$ANUNCIO_ID'"
+          npx wrangler@latest d1 execute sucatel --remote --command "DELETE FROM anuncios WHERE vendedor_id = '$VENDEDOR_ID'"
+          npx wrangler@latest d1 execute sucatel --remote --command "DELETE FROM sessoes WHERE user_id = '$VENDEDOR_ID' OR user_id = '$COMPRADOR_ID'"
+          npx wrangler@latest d1 execute sucatel --remote --command "DELETE FROM users WHERE id = '$VENDEDOR_ID' OR id = '$COMPRADOR_ID'"
+          echo "limpeza concluída"
