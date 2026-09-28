@@ -576,6 +576,7 @@ async function renderInicio(){
     <div class="filtro-chips" id="in-condicoes">
       ${['','novo','usado','sucata','com_defeito'].map(c => `<button data-c="${c}" class="${c===''?'ativo':''}">${c===''?'Todos':(c==='novo'?'Novos':c==='usado'?'Usados':c==='sucata'?'Sucata':'Com defeito')}</button>`).join('')}
     </div>
+    <img id="in-banner" src="img/banner-inicio.jpg" alt="Celulares e peças perto de você" style="width:100%; border-radius:16px; margin:6px 0 14px; display:block;">
     <div style="display:flex; align-items:baseline; justify-content:space-between; margin:14px 0 10px;">
       <h3 style="margin:0; font-size:16px;">Ofertas perto de você</h3>
       <a href="javascript:void(0)" id="in-ver-todos" style="font-size:13px; font-weight:700;">Ver todos</a>
@@ -587,6 +588,12 @@ async function renderInicio(){
     item.onclick = () => irPara(() => renderListaProdutos({ grupo: item.dataset.grupo, nome: CATEGORIAS_GRID.find(c=>c.grupo===item.dataset.grupo).nome }));
   });
   document.getElementById('in-ver-todos').onclick = () => irPara(() => renderListaProdutos({ nome: 'Todos os anúncios' }));
+  api('/configuracoes/publicas').then(({ data }) => {
+    if (data.ok && data.config.banner_home_url) {
+      const img = document.getElementById('in-banner');
+      if (img) img.src = data.config.banner_home_url;
+    }
+  }).catch(() => {});
   let condicaoInicio = '';
   document.querySelectorAll('#in-condicoes button').forEach(b => b.onclick = () => {
     document.querySelectorAll('#in-condicoes button').forEach(x=>x.classList.remove('ativo'));

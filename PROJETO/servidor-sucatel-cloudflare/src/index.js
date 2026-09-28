@@ -755,6 +755,26 @@ export default {
       return json({ ok: true, bloqueada, texto: textoFinal }, 201);
     }
 
+    // ---- configurações do app (banner da tela inicial, editável pelo admin) ----
+    const CONFIGS_PERMITIDAS = ['banner_home_url'];
+    if (pathname === '/configuracoes/publicas' && request.method === 'GET') {
+      const { results } = await env.DB.prepare('SELECT chave, valor FROM configuracoes WHERE chave IN (' + CONFIGS_PERMITIDAS.map(()=>'?').join(',') + ')').bind(...CONFIGS_PERMITIDAS).all();
+      const config = {};
+      for (const r of results) config[r.chave] = r.valor;
+      return json({ ok: true, config });
+    }
+    if (pathname === '/admin/configuracoes' && request.method === 'POST') {
+      const sess = await autenticar(request, env);
+      if (!sess || !sess.is_admin) return json({ ok: false, erro: 'nao_autorizado' }, 401);
+      const { chave, valor } = await request.json().catch(() => ({}));
+      if (!CONFIGS_PERMITIDAS.includes(chave)) return json({ ok: false, erro: 'chave_invalida' }, 400);
+      await env.DB.prepare(
+        `INSERT INTO configuracoes (chave, valor, atualizado_em) VALUES (?, ?, datetime('now'))
+         ON CONFLICT(chave) DO UPDATE SET valor = excluded.valor, atualizado_em = excluded.atualizado_em`
+      ).bind(chave, valor || null).run();
+      return json({ ok: true });
+    }
+
     // ---- admin ----
     if (pathname === '/admin/denuncias' && request.method === 'GET') {
       const sess = await autenticar(request, env);

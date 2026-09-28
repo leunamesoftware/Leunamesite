@@ -111,6 +111,7 @@ h2.titulo-view{font-size:17px; margin:0 0 14px;}
     <button class="tab ativo" data-tab="dashboard">📊 Painel</button>
     <button class="tab" data-tab="usuarios">👥 Usuários</button>
     <button class="tab" data-tab="denuncias">🚩 Denúncias<span class="badge-num" id="badge-denuncias" hidden>0</span></button>
+    <button class="tab" data-tab="aparencia">🎨 Aparência</button>
   </nav>
   <main class="wrap">
     <section class="view" id="view-dashboard">
@@ -124,6 +125,20 @@ h2.titulo-view{font-size:17px; margin:0 0 14px;}
     <section class="view" id="view-denuncias" hidden>
       <h2 class="titulo-view">Denúncias pendentes</h2>
       <div id="denuncias"></div>
+    </section>
+    <section class="view" id="view-aparencia" hidden>
+      <h2 class="titulo-view">Aparência do app</h2>
+      <div class="card">
+        <b style="display:block; margin-bottom:8px;">Banner da tela inicial</b>
+        <p class="muted" style="margin-top:0;">Essa imagem aparece pra todo mundo, logo abaixo das categorias, na tela Início do app.</p>
+        <img id="ap-banner-preview" style="width:100%; border-radius:10px; margin-bottom:10px; display:block; background:var(--bg);">
+        <input type="file" id="ap-banner-input" accept="image/*" hidden>
+        <div class="row" style="margin-top:0;">
+          <button id="ap-banner-trocar">Trocar banner</button>
+          <button class="secundario" id="ap-banner-padrao">Usar o padrão</button>
+        </div>
+        <p class="muted" id="ap-banner-status"></p>
+      </div>
     </section>
   </main>
 </div>
@@ -269,6 +284,37 @@ window.excluirUsuario = async function(id, nome){
   carregarStats();
 };
 
+const BANNER_PADRAO = 'img/banner-inicio.jpg';
+async function carregarAparencia(){
+  const { data } = await api('/configuracoes/publicas');
+  document.getElementById('ap-banner-preview').src = (data.ok && data.config.banner_home_url) || BANNER_PADRAO;
+}
+document.getElementById('ap-banner-trocar').onclick = () => document.getElementById('ap-banner-input').click();
+document.getElementById('ap-banner-input').onchange = async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const status = document.getElementById('ap-banner-status');
+  status.textContent = 'Enviando...';
+  const token = localStorage.getItem(LS_TOKEN);
+  const resp = await fetch(API + '/upload-foto', {
+    method: 'POST',
+    headers: { 'Authorization': 'Bearer ' + token, 'X-File-Name': file.name, 'Content-Type': file.type },
+    body: file,
+  });
+  const up = await resp.json();
+  if (!up.ok) { status.textContent = 'Erro ao enviar a imagem.'; return; }
+  const url = API + up.url;
+  await api('/admin/configuracoes', { method:'POST', body:{ chave:'banner_home_url', valor: url } });
+  document.getElementById('ap-banner-preview').src = url;
+  status.textContent = 'Banner atualizado!';
+  e.target.value = '';
+};
+document.getElementById('ap-banner-padrao').onclick = async () => {
+  await api('/admin/configuracoes', { method:'POST', body:{ chave:'banner_home_url', valor: null } });
+  document.getElementById('ap-banner-preview').src = BANNER_PADRAO;
+  document.getElementById('ap-banner-status').textContent = 'Voltou pro banner padrão.';
+};
+
 async function boot(){
   const token = localStorage.getItem(LS_TOKEN);
   if (!token) return;
@@ -279,6 +325,7 @@ async function boot(){
   carregarStats();
   carregarDenuncias();
   carregarUsuarios();
+  carregarAparencia();
 }
 boot();
 </script>
