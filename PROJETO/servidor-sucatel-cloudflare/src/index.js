@@ -228,6 +228,22 @@ export default {
       return json({ ok: true, bairro }, 201);
     }
 
+    // Bairro mais perto de uma coordenada real (usado pelo botão "Usar
+    // minha localização", com a permissão de GPS do navegador/celular).
+    if (pathname === '/localizacao/bairro-mais-perto' && request.method === 'GET') {
+      const lat = Number(url.searchParams.get('lat'));
+      const lng = Number(url.searchParams.get('lng'));
+      if (!Number.isFinite(lat) || !Number.isFinite(lng)) return json({ ok: false, erro: 'coordenadas_invalidas' }, 400);
+      const { results } = await env.DB.prepare('SELECT * FROM bairros WHERE lat IS NOT NULL AND lng IS NOT NULL').all();
+      if (!results.length) return json({ ok: false, erro: 'nenhum_bairro_com_coordenada' }, 404);
+      let maisPerto = null, menorDistancia = Infinity;
+      for (const b of results) {
+        const d = distanciaKm(lat, lng, b.lat, b.lng);
+        if (d < menorDistancia) { menorDistancia = d; maisPerto = b; }
+      }
+      return json({ ok: true, bairro: maisPerto, distancia_km: Math.round(menorDistancia * 10) / 10 });
+    }
+
     // ---- categorias (marca > modelo > tipo de peça) ----
     if (pathname === '/categorias/marcas' && request.method === 'GET') {
       const { results } = await env.DB.prepare('SELECT * FROM marcas ORDER BY ordem, nome').all();
@@ -504,7 +520,14 @@ export default {
         const origem = await env.DB.prepare('SELECT lat, lng FROM bairros WHERE id = ?').bind(bairroVisitante).first();
         if (origem && origem.lat != null) distanciaKmAtual = Math.round(distanciaKm(origem.lat, origem.lng, anuncio.bairro_lat, anuncio.bairro_lng) * 10) / 10;
       }
-      return json({ ok: true, anuncio: { ...anuncio, distancia_km: distanciaKmAtual } });
+      const av = await env.DB.prepare('SELECT COUNT(*) AS n, AVG(nota) AS media FROM avaliacoes WHERE vendedor_id = ?').bind(anuncio.vendedor_id).first();
+      return json({
+        ok: true,
+        anuncio: {
+          ...anuncio, distancia_km: distanciaKmAtual,
+          vendedor_total_avaliacoes: av.n, vendedor_media_avaliacoes: av.media ? Math.round(av.media * 10) / 10 : null,
+        },
+      });
     }
 
     const matchVender = pathname.match(/^\/anuncios\/([^/]+)\/vender$/);

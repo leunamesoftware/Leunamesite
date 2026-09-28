@@ -201,7 +201,7 @@ function distanciaLabel(km){
   return Math.round(km*10)/10 + ' km';
 }
 const CONDICOES = { novo:'Novo', usado:'Usado', com_defeito:'Com defeito', sucata:'Sucata' };
-const ICONE_TIPO = { celular:'📱', tela:'🔲', placa:'🖲️', bateria:'🔋', carcaca:'🛠️', camera:'📷', 'alto-falante':'🔊', 'conector-carga':'🔌', 'vidro-traseiro':'🪟', flex:'➰', outro:'📦', acessorio:'🔌', capinha:'🛡️', 'fone-ouvido':'🎧', smartwatch:'⌚', tablet:'📓' };
+const ICONE_TIPO = { celular:'📱', tela:'🔲', placa:'🖲️', bateria:'🔋', carcaca:'🛠️', camera:'📷', 'alto-falante':'🔊', 'conector-carga':'🔌', 'vidro-traseiro':'🪟', flex:'➰', outro:'📦', acessorio:'🔌', capinha:'🛡️', 'fone-ouvido':'🎧', smartwatch:'⌚', tablet:'📓', lote:'📦' };
 const CATEGORIAS_GRID = [
   { grupo:'celular', nome:'Celulares', icone:'📱' },
   { grupo:'peca', nome:'Peças', icone:'🔧' },
@@ -209,6 +209,7 @@ const CATEGORIAS_GRID = [
   { grupo:'bateria', nome:'Baterias', icone:'🔋' },
   { grupo:'camera', nome:'Câmeras', icone:'📷' },
   { grupo:'placa', nome:'Placas', icone:'🖲️' },
+  { grupo:'lote', nome:'Lotes', icone:'📦' },
   { grupo:'acessorio', nome:'Acessórios', icone:'🔌' },
   { grupo:'capinha', nome:'Capinhas', icone:'🛡️' },
   { grupo:'fone-ouvido', nome:'Fones de ouvido', icone:'🎧' },
@@ -216,6 +217,18 @@ const CATEGORIAS_GRID = [
   { grupo:'tablet', nome:'Tablets', icone:'📓' },
   { grupo:'outro', nome:'Outros', icone:'📦' },
 ];
+function tempoRelativo(iso){
+  if(!iso) return '';
+  const d = new Date(iso.includes('T') ? iso : iso.replace(' ','T')+'Z');
+  const diffMin = Math.floor((Date.now() - d.getTime()) / 60000);
+  if (diffMin < 60) return diffMin <= 1 ? 'agora mesmo' : `há ${diffMin} min`;
+  const diffH = Math.floor(diffMin / 60);
+  if (diffH < 24) return `há ${diffH}h`;
+  const diffD = Math.floor(diffH / 24);
+  if (diffD === 1) return 'há 1 dia';
+  if (diffD < 30) return `há ${diffD} dias`;
+  return dataPorExtenso(iso);
+}
 
 function toast(msg, tipo){
   const el = document.createElement('div');
@@ -403,10 +416,27 @@ async function carregarSeletorBairro(){
   const { data: estadosData } = await api('/localizacao/estados');
   const area = document.getElementById('sel-bairro-estado-area');
   area.innerHTML = `
-    <label style="margin-top:0;">Estado</label><select id="sb-estado"><option value="">Selecione</option>${(estadosData.estados||[]).map(e=>`<option value="${e.id}">${esc(e.nome)}</option>`).join('')}</select>
+    <button class="btn secundario" id="sb-usar-gps" style="margin-top:0;">📍 Usar minha localização</button>
+    <p class="muted" id="sb-gps-status"></p>
+    <label>Estado</label><select id="sb-estado"><option value="">Selecione</option>${(estadosData.estados||[]).map(e=>`<option value="${e.id}">${esc(e.nome)}</option>`).join('')}</select>
     <label>Cidade</label><select id="sb-cidade" disabled><option value="">Escolha o estado</option></select>
     <label>Bairro</label><select id="sb-bairro" disabled><option value="">Escolha a cidade</option></select>
     <button class="btn" id="sb-confirmar" disabled>Usar este bairro</button>`;
+  document.getElementById('sb-usar-gps').onclick = () => {
+    if (!navigator.geolocation) { document.getElementById('sb-gps-status').textContent = 'Seu navegador não suporta localização automática.'; return; }
+    document.getElementById('sb-gps-status').textContent = 'Buscando sua localização...';
+    navigator.geolocation.getCurrentPosition(async (pos) => {
+      const { data } = await api(`/localizacao/bairro-mais-perto?lat=${pos.coords.latitude}&lng=${pos.coords.longitude}`);
+      if (!data.ok) { document.getElementById('sb-gps-status').textContent = 'Não achamos um bairro perto de você. Escolha manualmente abaixo.'; return; }
+      STATE.bairroId = data.bairro.id;
+      localStorage.setItem('sucatel_bairro_visualizacao', JSON.stringify({ id: data.bairro.id, nome: data.bairro.nome }));
+      fecharModal();
+      setTab(STATE.aba, true);
+      toast(`Bairro definido: ${data.bairro.nome} (${distanciaLabel(data.distancia_km)})`, 'sucesso');
+    }, () => {
+      document.getElementById('sb-gps-status').textContent = 'Não conseguimos acessar sua localização. Escolha manualmente abaixo.';
+    });
+  };
   document.getElementById('sb-estado').onchange = async (e) => {
     const cidadeSel = document.getElementById('sb-cidade');
     if (!e.target.value) { cidadeSel.disabled = true; return; }
@@ -513,7 +543,7 @@ function cartaoProduto(a){
   <div class="card produto-card" onclick="abrirAnuncio('${a.id}')">
     ${capa ? `<img class="produto-foto" src="${esc(capa)}" alt="">` : `<div class="produto-foto produto-foto-vazia">${ICONE_TIPO[a.tipo_peca_id]||'📦'}</div>`}
     <div class="produto-info">
-      <div class="produto-local">📍 ${esc(a.bairro_nome||'')} ${a.distancia_km!=null?'· '+distanciaLabel(a.distancia_km):''}</div>
+      <div class="produto-local">📍 ${esc(a.bairro_nome||'')} ${a.distancia_km!=null?'· '+distanciaLabel(a.distancia_km):''} · ${tempoRelativo(a.criado_em)}</div>
       <div class="produto-titulo">${esc(a.titulo)}</div>
       <div style="display:flex; align-items:center; gap:6px; margin-bottom:3px;">
         <span class="chip cinza" style="margin:0;">${esc(CONDICOES[a.condicao]||'Usado')}</span>
@@ -536,11 +566,19 @@ async function renderListaProdutos(filtro){
       <span style="font-size:26px;">${ICONE_TIPO[filtroAtual.grupo] || (CATEGORIAS_GRID.find(c=>c.grupo===filtroAtual.grupo)||{}).icone || '🔍'}</span>
       <div><div style="font-weight:800; font-size:17px;">${esc(filtroAtual.nome||'')}</div><div class="muted" id="lp-contagem">carregando...</div></div>
     </div>
+    <div class="filtro-chips" id="lp-ordenar">
+      ${[['perto','Perto de você'],['recentes','Mais recentes'],['preco','Menor preço']].map(([v,l]) => `<button data-o="${v}" class="${v==='perto'?'ativo':''}">${l}</button>`).join('')}
+    </div>
     <div class="filtro-chips" id="lp-condicoes">
       ${['','novo','usado','sucata','com_defeito'].map(c => `<button data-c="${c}" class="${c===''?'ativo':''}">${c===''?'Todos':(c==='novo'?'Novos':c==='usado'?'Usados':c==='sucata'?'Sucata':'Com defeito')}</button>`).join('')}
     </div>
     <div id="lp-resultados"></div>`;
   document.getElementById('lp-filtros').onclick = abrirFiltrosBusca;
+  filtroAtual.ordenar = 'perto';
+  document.querySelectorAll('#lp-ordenar button').forEach(b => b.onclick = () => {
+    document.querySelectorAll('#lp-ordenar button').forEach(x=>x.classList.remove('ativo'));
+    b.classList.add('ativo'); filtroAtual.ordenar = b.dataset.o; buscarEListar();
+  });
   document.querySelectorAll('#lp-condicoes button').forEach(b => b.onclick = () => {
     document.querySelectorAll('#lp-condicoes button').forEach(x=>x.classList.remove('ativo'));
     b.classList.add('ativo'); filtroAtual.condicao = b.dataset.c; buscarEListar();
@@ -569,8 +607,11 @@ async function buscarEListar(){
   const box = document.getElementById('lp-resultados');
   const contagem = document.getElementById('lp-contagem');
   if (!data.ok) { box.innerHTML = '<div class="empty">Erro ao buscar.</div>'; return; }
-  if (contagem) contagem.textContent = data.anuncios.length + ' anúncio(s) na sua região';
-  box.innerHTML = data.anuncios.length ? data.anuncios.map(cartaoProduto).join('') : '<div class="empty"><span class="emoji-vazio">📭</span>Nenhum anúncio encontrado.</div>';
+  let anuncios = data.anuncios;
+  if (filtroAtual.ordenar === 'recentes') anuncios = [...anuncios].sort((x,y) => new Date(y.criado_em) - new Date(x.criado_em));
+  else if (filtroAtual.ordenar === 'preco') anuncios = [...anuncios].sort((x,y) => x.preco_centavos - y.preco_centavos);
+  if (contagem) contagem.textContent = anuncios.length + ' anúncio(s) na sua região';
+  box.innerHTML = anuncios.length ? anuncios.map(cartaoProduto).join('') : '<div class="empty"><span class="emoji-vazio">📭</span>Nenhum anúncio encontrado.</div>';
 }
 
 // ---------------- DETALHE DO PRODUTO ----------------
@@ -594,8 +635,9 @@ function telaDetalheAnuncio(a){
     ` : `<div style="height:200px; border-radius:14px; background:var(--verde-claro); display:flex; align-items:center; justify-content:center; font-size:60px; margin-bottom:8px;">${ICONE_TIPO[a.tipo_peca_id]||'📦'}</div>`}
     <div class="card">
       <h2 style="margin:0 0 4px; font-size:19px;">${esc(a.titulo)}</h2>
-      <div class="muted" style="margin-bottom:6px;">${esc(CONDICOES[a.condicao]||'Usado')}</div>
-      <div class="preco" style="font-size:22px;">${centavosParaReais(a.preco_centavos)}</div>
+      <div class="muted" style="margin-bottom:6px;">📍 ${esc(a.bairro_nome)} · ${tempoRelativo(a.criado_em)}</div>
+      <span class="chip cinza">${esc(CONDICOES[a.condicao]||'Usado')}</span>
+      <div class="preco" style="font-size:22px; margin-top:8px;">${centavosParaReais(a.preco_centavos)}</div>
       <div class="linha2" style="margin-top:14px;">
         <div class="card" style="margin:0; padding:10px;"><span class="muted">Marca</span><br><b>${esc(a.marca_nome)}</b></div>
         <div class="card" style="margin:0; padding:10px;"><span class="muted">Modelo</span><br><b>${esc(a.modelo_nome)}</b></div>
@@ -608,6 +650,7 @@ function telaDetalheAnuncio(a){
         ${avatarHtml(a.vendedor_nome, a.vendedor_foto)}
         <div style="flex:1;">
           <b>${esc(a.vendedor_nome)}</b>
+          ${a.vendedor_media_avaliacoes ? `<div class="estrelas" style="font-size:13px;">${'★'.repeat(Math.round(a.vendedor_media_avaliacoes))}${'☆'.repeat(5-Math.round(a.vendedor_media_avaliacoes))} <span class="muted">(${a.vendedor_total_avaliacoes})</span></div>` : ''}
           ${a.vendedor_verificado ? '<div class="selo-verificado" style="margin-top:3px;">✅ Verificado</div>' : ''}
           <div class="muted">Membro desde ${dataPorExtenso(a.vendedor_desde)}</div>
         </div>
@@ -1081,6 +1124,7 @@ async function renderConfiguracoes(){
       <b style="display:block; margin-bottom:8px;">Conta</b>
       <div class="menu-item" id="cf-dados"><span class="icone-menu">👤</span><div class="texto-menu"><b>Editar meus dados</b></div><span class="seta">›</span></div>
       <div class="menu-item" id="cf-seguranca"><span class="icone-menu">🔒</span><div class="texto-menu"><b>Segurança / senha</b></div><span class="seta">›</span></div>
+      <div class="menu-item" id="cf-localizacao"><span class="icone-menu">📍</span><div class="texto-menu"><b>Minha localização</b><span class="muted">${esc(nomeBairroAtual())}</span></div><span class="seta">›</span></div>
     </div>
     <div class="card">
       <b style="display:block; margin-bottom:8px;">Preferências</b>
@@ -1093,14 +1137,22 @@ async function renderConfiguracoes(){
     <div class="card">
       <b style="display:block; margin-bottom:8px;">Ajuda</b>
       <div class="menu-item" id="cf-ajuda"><span class="icone-menu">❓</span><div class="texto-menu"><b>Central de ajuda</b><span class="muted">Como funciona o Sucatell</span></div><span class="seta">›</span></div>
+      <div class="menu-item" id="cf-sobre"><span class="icone-menu">ℹ️</span><div class="texto-menu"><b>Sobre o app</b><span class="muted">Versão e empresa</span></div><span class="seta">›</span></div>
     </div>`;
   document.getElementById('cf-dados').onclick = () => irPara(renderMeusDados);
   document.getElementById('cf-seguranca').onclick = () => irPara(renderSeguranca);
+  document.getElementById('cf-localizacao').onclick = abrirSeletorBairro;
   document.getElementById('cf-ajuda').onclick = () => abrirModal(`
     <button class="fechar-folha" onclick="fecharModal()">✕</button>
     <h3>Como funciona o Sucatell</h3>
     <p class="muted">Cada anúncio custa 1 crédito (R$5) e fica ativo por 30 dias, podendo vender quantas unidades quiser nesse período. A cada 20 vendas confirmadas você ganha 1 crédito de bônus. A busca mostra sempre a sua região, e o chat bloqueia telefone/WhatsApp pra manter a negociação seguindo pelo app.</p>
     <p class="muted">Dúvidas? Fale com o vendedor pelo chat interno ou use "Denunciar" em qualquer anúncio suspeito.</p>`);
+  document.getElementById('cf-sobre').onclick = () => abrirModal(`
+    <button class="fechar-folha" onclick="fecharModal()">✕</button>
+    <h3>Sobre o Sucatell</h3>
+    <p class="muted">Sucatell — marketplace de celulares e peças usadas, por região.</p>
+    <p class="muted">Versão 1.0.0</p>
+    <p class="muted">Um produto LeuName Softwares.</p>`);
   document.querySelectorAll('#cf-tema button').forEach(b => b.onclick = () => {
     localStorage.setItem(LS_TEMA, b.dataset.t); aplicarTema();
     document.querySelectorAll('#cf-tema button').forEach(x=>x.classList.remove('ativo')); b.classList.add('ativo');
