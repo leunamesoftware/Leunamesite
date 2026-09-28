@@ -1,0 +1,1113 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sucatell</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0d3b1f">
+<style>
+:root{
+  --verde-escuro:#0d3b1f; --verde:#178a43; --verde-forte:#16a34a; --verde-claro:#e7f5ea;
+  --bg:#f4f7f4; --card:#ffffff; --borda:#e3e9e3; --texto:#152018; --fraco:#68796d;
+  --erro:#dc2626; --alerta:#b45309; --alerta-bg:#fef3c7;
+  --safe-t:env(safe-area-inset-top,0px); --safe-b:env(safe-area-inset-bottom,0px);
+}
+:root[data-tema="escuro"]{
+  --bg:#0e1712; --card:#152019; --borda:#25352b; --texto:#eef6ef; --fraco:#93a89b; --verde-claro:#153524; --alerta-bg:#3a2f10;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-tema="claro"]):not([data-tema="escuro"]){
+    --bg:#0e1712; --card:#152019; --borda:#25352b; --texto:#eef6ef; --fraco:#93a89b; --verde-claro:#153524; --alerta-bg:#3a2f10;
+  }
+}
+*{box-sizing:border-box;}
+body{margin:0; background:var(--bg); color:var(--texto); font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif; -webkit-font-smoothing:antialiased;}
+input,select,textarea,button{font-family:inherit; font-size:15px;}
+input,select,textarea{width:100%; padding:12px 13px; border-radius:10px; background:var(--card); border:1.5px solid var(--borda); color:var(--texto);}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--verde); outline-offset:-1px;}
+input::placeholder,textarea::placeholder{color:var(--fraco); opacity:.85;}
+label{display:block; font-size:13px; font-weight:600; color:var(--fraco); margin-bottom:6px; margin-top:14px;}
+a{color:var(--verde);}
+.btn{display:flex; align-items:center; justify-content:center; gap:7px; width:100%; padding:14px; border-radius:12px; border:none; background:var(--verde-forte); color:#fff; font-weight:700; cursor:pointer; margin-top:16px;}
+.btn.secundario{background:var(--card); color:var(--texto); border:1.5px solid var(--borda);}
+.btn.perigo{background:#fff; color:var(--erro); border:1.5px solid var(--erro);}
+.btn.pequeno{width:auto; padding:9px 14px; margin-top:0; font-size:13px;}
+.btn:disabled{opacity:.5;}
+.linha2{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
+.app-root{display:none; flex-direction:column; height:100vh;}
+.app-root.pronto{display:flex;}
+.topo{background:var(--verde-escuro); color:#fff; padding:calc(12px + var(--safe-t)) 16px 12px; flex-shrink:0;}
+.topo-linha{display:flex; align-items:center; gap:10px;}
+.topo h2{font-size:17px; margin:0; flex:1; font-weight:700;}
+.topo button.icone{background:rgba(255,255,255,.12); border:none; color:#fff; font-size:18px; width:38px; height:38px; border-radius:10px; cursor:pointer; flex-shrink:0; display:flex; align-items:center; justify-content:center;}
+.marca-topo{flex:1; font-size:19px; font-weight:800; white-space:nowrap;}
+.marca-topo b{color:var(--verde-forte);}
+.pill-local{display:flex; align-items:center; gap:6px; background:rgba(255,255,255,.14); border:1px solid rgba(255,255,255,.25); border-radius:20px; padding:7px 12px; font-size:13px; color:#fff; cursor:pointer; max-width:180px;}
+.pill-local span{overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+.busca-barra{margin-top:10px; position:relative;}
+.busca-barra input{padding-left:38px; border:none;}
+.busca-barra .lupa{position:absolute; left:12px; top:50%; transform:translateY(-50%); opacity:.55;}
+.conteudo{flex:1; overflow-y:auto; padding:16px; padding-bottom:calc(90px + var(--safe-b));}
+.tabbar{display:flex; align-items:flex-end; border-top:1px solid var(--borda); background:var(--card); flex-shrink:0; padding:6px 4px calc(6px + var(--safe-b)); position:fixed; bottom:0; left:0; right:0;}
+.tabbar button{flex:1; background:none; border:none; color:var(--fraco); padding:6px 0; display:flex; flex-direction:column; align-items:center; gap:3px; font-size:11px; cursor:pointer;}
+.tabbar button.ativo{color:var(--verde-forte); font-weight:700;}
+.tabbar .icone-tab{font-size:19px;}
+.tabbar .tab-anunciar{flex:0 0 56px;}
+.tabbar .tab-anunciar .icone-tab{width:52px; height:52px; margin-top:-26px; background:var(--verde-forte); color:#fff; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:26px; box-shadow:0 4px 14px rgba(0,0,0,.25);}
+.card{background:var(--card); border:1px solid var(--borda); border-radius:14px; padding:15px; margin-bottom:12px;}
+.chip{display:inline-flex; align-items:center; background:var(--verde-claro); color:var(--verde); border-radius:20px; padding:5px 12px; font-size:12px; font-weight:600; margin:2px 4px 2px 0;}
+.chip.cinza{background:var(--bg); color:var(--fraco); border:1px solid var(--borda);}
+.filtro-chips{display:flex; gap:8px; overflow-x:auto; padding-bottom:4px; margin-bottom:12px;}
+.filtro-chips button{flex-shrink:0; background:var(--card); border:1.5px solid var(--borda); color:var(--texto); border-radius:20px; padding:8px 14px; font-size:13px; font-weight:600; cursor:pointer;}
+.filtro-chips button.ativo{background:var(--verde-escuro); color:#fff; border-color:var(--verde-escuro);}
+.preco{font-weight:800; color:var(--verde-forte); font-size:16px;}
+.muted{color:var(--fraco); font-size:13px;}
+.toast{position:fixed; left:16px; right:16px; bottom:calc(96px + var(--safe-b)); background:#1a1a1a; color:#fff; padding:13px 16px; border-radius:10px; text-align:center; z-index:1200; box-shadow:0 6px 20px rgba(0,0,0,.3); font-size:14px;}
+.toast.erro{background:var(--erro);}
+.toast.sucesso{background:var(--verde-forte);}
+.foto-preview{display:flex; gap:8px; flex-wrap:wrap; margin-top:8px;}
+.foto-preview .miniatura{position:relative; width:76px; height:76px;}
+.foto-preview img{width:76px; height:76px; object-fit:cover; border-radius:10px; border:1px solid var(--borda);}
+.foto-preview .remover{position:absolute; top:-6px; right:-6px; width:20px; height:20px; border-radius:50%; background:#000; color:#fff; border:none; font-size:12px; cursor:pointer;}
+.foto-add{width:76px; height:76px; border-radius:10px; border:1.5px dashed var(--borda); display:flex; flex-direction:column; align-items:center; justify-content:center; font-size:11px; color:var(--fraco); cursor:pointer; text-align:center; gap:2px;}
+.msg{max-width:78%; padding:10px 13px; border-radius:15px; margin-bottom:8px; font-size:14px; line-height:1.4;}
+.msg.minha{background:var(--verde-forte); color:#fff; margin-left:auto; border-bottom-right-radius:4px;}
+.msg.outra{background:var(--card); border:1px solid var(--borda); border-bottom-left-radius:4px;}
+.msg.bloqueada{opacity:.7; font-style:italic;}
+.respostas-rapidas{display:flex; gap:8px; overflow-x:auto; margin-bottom:10px;}
+.respostas-rapidas button{flex-shrink:0; background:var(--verde-claro); color:var(--verde); border:none; border-radius:16px; padding:8px 13px; font-size:12.5px; font-weight:600; cursor:pointer;}
+.empty{text-align:center; padding:50px 20px; color:var(--fraco);}
+.empty .emoji-vazio{font-size:38px; display:block; margin-bottom:10px;}
+.produto-card{display:flex; gap:12px; padding:12px; cursor:pointer;}
+.produto-foto{width:78px; height:78px; border-radius:12px; object-fit:cover; flex-shrink:0; background:var(--verde-claro);}
+.produto-foto-vazia{display:flex; align-items:center; justify-content:center; font-size:26px;}
+.produto-info{flex:1; min-width:0;}
+.produto-titulo{font-weight:700; margin:2px 0 3px; font-size:14.5px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+.produto-local{display:flex; align-items:center; gap:4px; color:var(--fraco); font-size:12px;}
+.grid-cat{display:grid; grid-template-columns:repeat(3,1fr); gap:10px;}
+.grid-cat.pequeno{grid-template-columns:repeat(4,1fr);}
+.cat-item{display:flex; flex-direction:column; align-items:center; gap:6px; background:var(--card); border:1px solid var(--borda); border-radius:14px; padding:14px 4px; cursor:pointer; font-size:11.5px; font-weight:600; text-align:center; color:var(--texto);}
+.cat-item .cat-icone{font-size:26px;}
+.mapa-fake{background:var(--verde-claro); border-radius:12px; height:90px; display:flex; align-items:center; justify-content:center; gap:8px; color:var(--verde); font-weight:600; font-size:13px;}
+.avatar{width:52px; height:52px; border-radius:50%; background:var(--verde-escuro); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:18px; flex-shrink:0;}
+.avatar.pequeno{width:38px; height:38px; font-size:14px;}
+.estat-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin:14px 0;}
+.estat-item{background:var(--verde-claro); border-radius:10px; padding:10px 4px; text-align:center;}
+.estat-item b{display:block; font-size:18px; color:var(--verde-escuro);}
+.estat-item span{font-size:10.5px; color:var(--fraco);}
+.selo-verificado{display:inline-flex; align-items:center; gap:4px; background:var(--verde-claro); color:var(--verde); font-size:12px; font-weight:700; padding:4px 10px; border-radius:20px;}
+.menu-item{display:flex; align-items:center; gap:13px; padding:14px 4px; cursor:pointer; border-bottom:1px solid var(--borda);}
+.menu-item:last-child{border-bottom:none;}
+.menu-item .icone-menu{font-size:20px; width:28px; text-align:center;}
+.menu-item .texto-menu{flex:1;}
+.menu-item .texto-menu b{display:block; font-size:14.5px;}
+.menu-item .seta{color:var(--fraco);}
+.estrelas{color:#f59e0b; font-size:15px; letter-spacing:1px;}
+.barra-nota{display:flex; align-items:center; gap:8px; font-size:13px; margin-bottom:4px;}
+.barra-nota .fundo{flex:1; height:7px; background:var(--borda); border-radius:6px; overflow:hidden;}
+.barra-nota .preenchida{height:100%; background:#f59e0b;}
+.abas-perfil{display:flex; border-bottom:1px solid var(--borda); margin-bottom:14px;}
+.abas-perfil button{flex:1; background:none; border:none; padding:10px 0; font-size:13.5px; font-weight:700; color:var(--fraco); cursor:pointer; border-bottom:2px solid transparent;}
+.abas-perfil button.ativo{color:var(--verde-escuro); border-color:var(--verde-forte);}
+.overlay{position:fixed; inset:0; background:rgba(0,0,0,.45); z-index:1000; display:flex; align-items:flex-end;}
+.folha{background:var(--bg); width:100%; max-height:88vh; overflow-y:auto; border-radius:18px 18px 0 0; padding:18px 18px calc(18px + var(--safe-b));}
+.folha h3{margin-top:0;}
+.fechar-folha{background:var(--card); border:1px solid var(--borda); border-radius:50%; width:30px; height:30px; float:right; cursor:pointer; font-size:14px;}
+.pix-caixa{background:var(--verde-claro); border-radius:12px; padding:16px; text-align:center; margin-top:12px;}
+.pix-caixa img{max-width:200px; border-radius:8px; margin:10px 0;}
+[hidden]{display:none!important;}
+</style>
+</head>
+<body>
+<div id="auth-root"></div>
+<div id="app-root" class="app-root">
+  <div class="topo" id="topo"></div>
+  <div id="conteudo" class="conteudo"></div>
+  <nav class="tabbar" id="tabbar">
+    <button data-tab="inicio"><span class="icone-tab">🏠</span><span>Início</span></button>
+    <button data-tab="categorias"><span class="icone-tab">▦</span><span>Categorias</span></button>
+    <button data-tab="anunciar" class="tab-anunciar"><span class="icone-tab">➕</span></button>
+    <button data-tab="chat"><span class="icone-tab">💬</span><span>Chat</span></button>
+    <button data-tab="perfil"><span class="icone-tab">👤</span><span>Perfil</span></button>
+  </nav>
+</div>
+<div id="modal-root"></div>
+
+<script>
+const API = 'https://sucatel-api.emanuelantunes2024.workers.dev';
+const LS_TOKEN = 'sucatel_token';
+const LS_TEMA = 'sucatel_tema';
+const LS_FAVORITOS = 'sucatel_favoritos';
+let STATE = { usuario:null, bairroId:null, aba:'inicio', marcas:[], tiposPeca:[], pilha:[] };
+
+// ---------------- helpers ----------------
+function esc(s){ return (s||'').toString().replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function opcoesComNovo(itens, texto){
+  return '<option value="">Selecione</option>' + (itens||[]).map(i=>`<option value="${i.id}">${esc(i.nome)}</option>`).join('') + `<option value="__novo__">${texto}</option>`;
+}
+// Genérico: usado tanto pro select de bairro quanto de cidade. Deixa a
+// pessoa cadastrar o próprio bairro/cidade quando não está na nossa lista
+// inicial (que cobre só alguns exemplos, o Brasil real é gigante).
+function tratarSelectComNovo(selectEl, opcoes){
+  const { obterPaiId, aoMudar, endpoint, campoPai, campoResposta, placeholder, mensagemSucesso } = opcoes;
+  let caixaNovo = selectEl.nextElementSibling && selectEl.nextElementSibling.classList && selectEl.nextElementSibling.classList.contains('caixa-novo-item')
+    ? selectEl.nextElementSibling : null;
+  if (!caixaNovo) {
+    caixaNovo = document.createElement('div');
+    caixaNovo.className = 'caixa-novo-item';
+    caixaNovo.hidden = true;
+    caixaNovo.style.marginTop = '8px';
+    caixaNovo.innerHTML = `<input class="ni-input" placeholder="${esc(placeholder)}"><button class="btn pequeno ni-salvar" style="margin-top:8px; width:100%;">Salvar</button>`;
+    selectEl.insertAdjacentElement('afterend', caixaNovo);
+    caixaNovo.querySelector('.ni-salvar').onclick = async () => {
+      const nome = caixaNovo.querySelector('.ni-input').value.trim();
+      if (!nome) return toast('Digite o nome.', 'erro');
+      const paiId = obterPaiId();
+      const { data } = await api(endpoint, { method:'POST', body:{ [campoPai]: paiId, nome } });
+      if (!data.ok) return toast('Erro ao adicionar.', 'erro');
+      const item = data[campoResposta];
+      const opt = document.createElement('option');
+      opt.value = item.id; opt.textContent = item.nome;
+      selectEl.insertBefore(opt, selectEl.lastElementChild);
+      selectEl.value = item.id;
+      caixaNovo.hidden = true;
+      toast(mensagemSucesso, 'sucesso');
+      aoMudar();
+    };
+  }
+  selectEl.onchange = () => {
+    caixaNovo.hidden = selectEl.value !== '__novo__';
+    aoMudar();
+  };
+}
+function safeJsonParse(s, fallback){ try { return JSON.parse(s); } catch(e) { return fallback; } }
+function centavosParaReais(c){ return 'R$ ' + (c/100).toFixed(2).replace('.', ','); }
+function iniciais(nome){ return (nome||'?').trim().split(/\s+/).slice(0,2).map(p=>p[0]).join('').toUpperCase(); }
+function dataPorExtenso(iso){
+  if(!iso) return '';
+  const d = new Date(iso.includes('T') ? iso : iso.replace(' ','T')+'Z');
+  return d.toLocaleDateString('pt-BR', { month:'long', year:'numeric' });
+}
+function distanciaLabel(km){
+  if(km === null || km === undefined) return '';
+  if(km < 1) return 'menos de 1 km';
+  return Math.round(km*10)/10 + ' km';
+}
+const CONDICOES = { novo:'Novo', usado:'Usado', com_defeito:'Com defeito', sucata:'Sucata' };
+const ICONE_TIPO = { celular:'📱', tela:'🔲', placa:'🖲️', bateria:'🔋', carcaca:'🛠️', camera:'📷', 'alto-falante':'🔊', 'conector-carga':'🔌', 'vidro-traseiro':'🪟', flex:'➰', outro:'📦', acessorio:'🔌', capinha:'🛡️', 'fone-ouvido':'🎧', smartwatch:'⌚', tablet:'📓' };
+const CATEGORIAS_GRID = [
+  { grupo:'celular', nome:'Celulares', icone:'📱' },
+  { grupo:'peca', nome:'Peças', icone:'🔧' },
+  { grupo:'tela', nome:'Telas', icone:'🔲' },
+  { grupo:'bateria', nome:'Baterias', icone:'🔋' },
+  { grupo:'camera', nome:'Câmeras', icone:'📷' },
+  { grupo:'placa', nome:'Placas', icone:'🖲️' },
+  { grupo:'acessorio', nome:'Acessórios', icone:'🔌' },
+  { grupo:'capinha', nome:'Capinhas', icone:'🛡️' },
+  { grupo:'fone-ouvido', nome:'Fones de ouvido', icone:'🎧' },
+  { grupo:'smartwatch', nome:'Smartwatches', icone:'⌚' },
+  { grupo:'tablet', nome:'Tablets', icone:'📓' },
+  { grupo:'outro', nome:'Outros', icone:'📦' },
+];
+
+function toast(msg, tipo){
+  const el = document.createElement('div');
+  el.className = 'toast' + (tipo ? ' ' + tipo : '');
+  el.textContent = msg;
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 3400);
+}
+function abrirModal(html){
+  document.getElementById('modal-root').innerHTML = `<div class="overlay" id="modal-overlay"><div class="folha">${html}</div></div>`;
+  document.getElementById('modal-overlay').onclick = (e) => { if (e.target.id === 'modal-overlay') fecharModal(); };
+}
+function fecharModal(){ document.getElementById('modal-root').innerHTML = ''; }
+window.fecharModal = fecharModal;
+
+function favoritos(){ return safeJsonParse(localStorage.getItem(LS_FAVORITOS), []); }
+function alternarFavorito(id){
+  let f = favoritos();
+  f = f.includes(id) ? f.filter(x => x !== id) : [...f, id];
+  localStorage.setItem(LS_FAVORITOS, JSON.stringify(f));
+  return f.includes(id);
+}
+
+async function api(path, opts={}){
+  const token = localStorage.getItem(LS_TOKEN);
+  const headers = Object.assign({}, opts.headers || {});
+  if (token) headers['Authorization'] = 'Bearer ' + token;
+  if (opts.body && !(opts.body instanceof ArrayBuffer) && typeof opts.body !== 'string') {
+    headers['Content-Type'] = 'application/json';
+    opts.body = JSON.stringify(opts.body);
+  }
+  const resp = await fetch(API + path, Object.assign({}, opts, { headers }));
+  let data;
+  try { data = await resp.json(); } catch(e) { data = { ok:false, erro:'resposta_invalida' }; }
+  return { status: resp.status, data };
+}
+
+function setTopo(html){ document.getElementById('topo').innerHTML = html; }
+function topoComVoltar(titulo, aoVoltar, direita){
+  setTopo(`<div class="topo-linha">
+    <button class="icone" id="topo-voltar">←</button>
+    <h2>${esc(titulo)}</h2>
+    ${direita || ''}
+  </div>`);
+  document.getElementById('topo-voltar').onclick = aoVoltar;
+}
+
+// ---------------- tema ----------------
+function aplicarTema(){
+  // Padrão é sempre claro (o visual aprovado) -- só fica escuro/automático
+  // se a pessoa escolher isso de propósito em Configurações.
+  const t = localStorage.getItem(LS_TEMA) || 'claro';
+  if (t === 'automatico') document.documentElement.removeAttribute('data-tema');
+  else document.documentElement.setAttribute('data-tema', t);
+}
+aplicarTema();
+
+// ---------------- AUTH ----------------
+function heroMarca(){
+  return `<div style="background:linear-gradient(135deg,var(--verde-escuro),#154a28); border-radius:18px; padding:22px 18px; color:#fff; margin-bottom:20px;">
+    <div style="font-size:22px; font-weight:800; margin-bottom:6px;">Celulares e peças<br><span style="color:#4ade80;">perto de você</span></div>
+    <div style="font-size:13.5px; opacity:.85; margin-bottom:14px;">Compre, venda e encontre as melhores ofertas na sua região.</div>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; font-size:11.5px;">
+      <div style="background:rgba(255,255,255,.12); border-radius:10px; padding:8px; text-align:center;">🏷️ Novos e usados</div>
+      <div style="background:rgba(255,255,255,.12); border-radius:10px; padding:8px; text-align:center;">🛡️ Com segurança</div>
+      <div style="background:rgba(255,255,255,.12); border-radius:10px; padding:8px; text-align:center;">📍 Na sua região</div>
+      <div style="background:rgba(255,255,255,.12); border-radius:10px; padding:8px; text-align:center;">♻️ Reaproveita e economiza</div>
+    </div>
+  </div>`;
+}
+function renderAuth(tela){
+  const root = document.getElementById('auth-root');
+  document.getElementById('app-root').classList.remove('pronto');
+  if (tela === 'cadastro') return renderCadastro();
+  root.innerHTML = `
+  <div style="min-height:100vh; padding:calc(24px + var(--safe-t)) 20px calc(24px + var(--safe-b)); background:var(--bg);">
+    <div style="max-width:380px; margin:0 auto;">
+      <div style="text-align:center; font-size:24px; font-weight:800; margin-bottom:18px;">Sucat<span style="color:var(--verde-forte);">ell</span></div>
+      ${heroMarca()}
+      <label style="margin-top:0;">E-mail</label><input id="lg-email" type="email" placeholder="seu@email.com">
+      <label>Senha</label><input id="lg-senha" type="password" placeholder="Sua senha">
+      <button class="btn" id="lg-entrar">Entrar</button>
+      <button class="btn secundario" id="lg-ir-cadastro">Criar conta grátis</button>
+    </div>
+  </div>`;
+  document.getElementById('lg-entrar').onclick = fazerLogin;
+  document.getElementById('lg-ir-cadastro').onclick = () => renderAuth('cadastro');
+}
+async function fazerLogin(){
+  const email = document.getElementById('lg-email').value.trim();
+  const senha = document.getElementById('lg-senha').value;
+  if (!email || !senha) return toast('Preencha e-mail e senha.', 'erro');
+  const { data } = await api('/auth/login', { method:'POST', body:{ email, senha } });
+  if (!data.ok) return toast(data.erro === 'credenciais_invalidas' ? 'E-mail ou senha errados.' : 'Erro ao entrar.', 'erro');
+  localStorage.setItem(LS_TOKEN, data.token);
+  STATE.usuario = data.usuario;
+  STATE.bairroId = data.usuario.bairro_id;
+  await boot();
+}
+async function renderCadastro(){
+  const root = document.getElementById('auth-root');
+  const { data: estadosData } = await api('/localizacao/estados');
+  root.innerHTML = `
+  <div style="min-height:100vh; padding:calc(24px + var(--safe-t)) 20px calc(24px + var(--safe-b)); background:var(--bg);">
+    <div style="max-width:380px; margin:0 auto;">
+      <div style="text-align:center; font-size:22px; font-weight:800; margin-bottom:18px;">Criar conta no Sucat<span style="color:var(--verde-forte);">ell</span></div>
+      <label style="margin-top:0;">Nome</label><input id="cd-nome" placeholder="Seu nome">
+      <label>E-mail</label><input id="cd-email" type="email" placeholder="seu@email.com">
+      <label>Telefone (opcional, não aparece pra outros usuários)</label><input id="cd-telefone" placeholder="(21) 9....">
+      <label>Senha (mínimo 6 caracteres)</label><input id="cd-senha" type="password" placeholder="Crie uma senha">
+      <label>Estado</label><select id="cd-estado"><option value="">Selecione</option>${(estadosData.estados||[]).map(e=>`<option value="${e.id}">${esc(e.nome)}</option>`).join('')}</select>
+      <label>Cidade</label><select id="cd-cidade" disabled><option value="">Escolha o estado primeiro</option></select>
+      <label>Bairro/Região</label><select id="cd-bairro" disabled><option value="">Escolha a cidade primeiro</option></select>
+      <button class="btn" id="cd-criar">Criar conta</button>
+      <button class="btn secundario" id="cd-voltar">Já tenho conta</button>
+    </div>
+  </div>`;
+  document.getElementById('cd-voltar').onclick = () => renderAuth('login');
+  document.getElementById('cd-estado').onchange = async (e) => {
+    const cidadeSel = document.getElementById('cd-cidade'); const bairroSel = document.getElementById('cd-bairro');
+    if (!e.target.value) { cidadeSel.disabled = true; cidadeSel.innerHTML = '<option value="">Escolha o estado primeiro</option>'; return; }
+    const { data } = await api('/localizacao/cidades?estado_id=' + e.target.value);
+    cidadeSel.disabled = false;
+    cidadeSel.innerHTML = opcoesComNovo(data.cidades, '+ Não encontrei minha cidade');
+    tratarSelectComNovo(cidadeSel, {
+      obterPaiId: () => document.getElementById('cd-estado').value, aoMudar: () => {},
+      endpoint: '/localizacao/cidades', campoPai: 'estado_id', campoResposta: 'cidade',
+      placeholder: 'ex: Sua cidade', mensagemSucesso: 'Cidade adicionada!',
+    });
+    bairroSel.disabled = true; bairroSel.innerHTML = '<option value="">Escolha a cidade primeiro</option>';
+  };
+  document.getElementById('cd-cidade').onchange = async (e) => {
+    const bairroSel = document.getElementById('cd-bairro');
+    if (!e.target.value || e.target.value === '__novo__') { bairroSel.disabled = true; bairroSel.innerHTML = '<option value="">Escolha a cidade primeiro</option>'; return; }
+    const { data } = await api('/localizacao/bairros?cidade_id=' + e.target.value);
+    bairroSel.disabled = false;
+    bairroSel.innerHTML = opcoesComNovo(data.bairros, '+ Não encontrei meu bairro');
+    tratarSelectComNovo(bairroSel, {
+      obterPaiId: () => document.getElementById('cd-cidade').value, aoMudar: () => {},
+      endpoint: '/localizacao/bairros', campoPai: 'cidade_id', campoResposta: 'bairro',
+      placeholder: 'ex: Vila Santa Alice', mensagemSucesso: 'Bairro adicionado!',
+    });
+  };
+  document.getElementById('cd-criar').onclick = fazerCadastro;
+}
+async function fazerCadastro(){
+  const nome = document.getElementById('cd-nome').value.trim();
+  const email = document.getElementById('cd-email').value.trim();
+  const telefone = document.getElementById('cd-telefone').value.trim();
+  const senha = document.getElementById('cd-senha').value;
+  const bairro_id = document.getElementById('cd-bairro').value;
+  if (!nome || !email || !senha || !bairro_id || bairro_id === '__novo__') return toast('Preencha todos os campos e escolha seu bairro.', 'erro');
+  if (senha.length < 6) return toast('A senha precisa ter pelo menos 6 caracteres.', 'erro');
+  const { data } = await api('/auth/cadastro', { method:'POST', body:{ nome, email, senha, telefone, bairro_id } });
+  if (!data.ok) return toast(data.erro === 'email_ja_cadastrado' ? 'Esse e-mail já tem conta.' : 'Erro ao cadastrar.', 'erro');
+  localStorage.setItem(LS_TOKEN, data.token);
+  STATE.usuario = data.usuario; STATE.bairroId = data.usuario.bairro_id;
+  toast('Conta criada!', 'sucesso');
+  await boot();
+}
+
+// ---------------- navegação por abas + pilha (voltar) ----------------
+function irPara(renderFn){ STATE.pilha.push(renderFn); renderFn(); }
+function voltar(){
+  STATE.pilha.pop();
+  const anterior = STATE.pilha[STATE.pilha.length - 1];
+  if (anterior) anterior(); else setTab(STATE.aba, true);
+}
+function setTab(tab, semEmpilhar){
+  STATE.aba = tab; STATE.pilha = [];
+  document.querySelectorAll('#tabbar button').forEach(b => b.classList.toggle('ativo', b.dataset.tab === tab));
+  ({ inicio:renderInicio, categorias:renderCategorias, anunciar:renderAnunciar, chat:renderConversas, perfil:renderPerfilConta })[tab]();
+}
+
+// ---------------- seletor de bairro (região) ----------------
+function abrirSeletorBairro(){
+  abrirModal(`
+    <button class="fechar-folha" onclick="fecharModal()">✕</button>
+    <h3>Escolher bairro/região</h3>
+    <p class="muted">Mostramos anúncios do seu bairro e da região perto dele.</p>
+    <div id="sel-bairro-estado-area"></div>`);
+  carregarSeletorBairro();
+}
+async function carregarSeletorBairro(){
+  const { data: estadosData } = await api('/localizacao/estados');
+  const area = document.getElementById('sel-bairro-estado-area');
+  area.innerHTML = `
+    <label style="margin-top:0;">Estado</label><select id="sb-estado"><option value="">Selecione</option>${(estadosData.estados||[]).map(e=>`<option value="${e.id}">${esc(e.nome)}</option>`).join('')}</select>
+    <label>Cidade</label><select id="sb-cidade" disabled><option value="">Escolha o estado</option></select>
+    <label>Bairro</label><select id="sb-bairro" disabled><option value="">Escolha a cidade</option></select>
+    <button class="btn" id="sb-confirmar" disabled>Usar este bairro</button>`;
+  document.getElementById('sb-estado').onchange = async (e) => {
+    const cidadeSel = document.getElementById('sb-cidade');
+    if (!e.target.value) { cidadeSel.disabled = true; return; }
+    const { data } = await api('/localizacao/cidades?estado_id=' + e.target.value);
+    cidadeSel.disabled = false;
+    cidadeSel.innerHTML = opcoesComNovo(data.cidades, '+ Não encontrei minha cidade');
+    tratarSelectComNovo(cidadeSel, {
+      obterPaiId: () => document.getElementById('sb-estado').value, aoMudar: () => {},
+      endpoint: '/localizacao/cidades', campoPai: 'estado_id', campoResposta: 'cidade',
+      placeholder: 'ex: Sua cidade', mensagemSucesso: 'Cidade adicionada!',
+    });
+  };
+  document.getElementById('sb-cidade').onchange = async (e) => {
+    const bairroSel = document.getElementById('sb-bairro');
+    if (!e.target.value || e.target.value === '__novo__') { bairroSel.disabled = true; return; }
+    const { data } = await api('/localizacao/bairros?cidade_id=' + e.target.value);
+    bairroSel.disabled = false;
+    bairroSel.innerHTML = opcoesComNovo(data.bairros, '+ Não encontrei meu bairro');
+    tratarSelectComNovo(bairroSel, {
+      obterPaiId: () => document.getElementById('sb-cidade').value, aoMudar: () => {
+        const v = bairroSel.value;
+        document.getElementById('sb-confirmar').disabled = !v || v === '__novo__';
+      },
+      endpoint: '/localizacao/bairros', campoPai: 'cidade_id', campoResposta: 'bairro',
+      placeholder: 'ex: Vila Santa Alice', mensagemSucesso: 'Bairro adicionado!',
+    });
+  };
+  document.getElementById('sb-confirmar').onclick = async () => {
+    const bairroId = document.getElementById('sb-bairro').value;
+    const nomeBairro = document.getElementById('sb-bairro').selectedOptions[0].textContent;
+    STATE.bairroId = bairroId;
+    localStorage.setItem('sucatel_bairro_visualizacao', JSON.stringify({ id: bairroId, nome: nomeBairro }));
+    fecharModal();
+    setTab(STATE.aba, true);
+  };
+}
+function nomeBairroAtual(){
+  const salvo = safeJsonParse(localStorage.getItem('sucatel_bairro_visualizacao'), null);
+  if (salvo && salvo.id === STATE.bairroId) return salvo.nome;
+  return STATE.usuario?.bairro_nome || 'Meu bairro';
+}
+
+// ---------------- topo padrão das abas (com localização) ----------------
+function topoAba(titulo, comBusca){
+  setTopo(`
+    <div class="topo-linha">
+      <div class="marca-topo">Sucat<b>ell</b></div>
+      <button class="pill-local" id="topo-pill-local">📍 <span>${esc(nomeBairroAtual())}</span> ▾</button>
+      <button class="icone" id="topo-sino" title="Notificações">🔔</button>
+    </div>
+    ${comBusca ? `<div class="busca-barra"><span class="lupa">🔍</span><input id="topo-busca" placeholder="Buscar celulares, peças, marcas..."></div>` : ''}
+  `);
+  document.getElementById('topo-pill-local').onclick = abrirSeletorBairro;
+  document.getElementById('topo-sino').onclick = () => toast('Nenhuma notificação nova por aqui ainda.');
+  if (comBusca) {
+    const inp = document.getElementById('topo-busca');
+    inp.onkeydown = (e) => { if (e.key === 'Enter' && inp.value.trim()) irPara(() => renderListaProdutos({ busca: inp.value.trim(), nome: 'Resultados para "' + inp.value.trim() + '"' })); };
+  }
+}
+
+// ---------------- INÍCIO ----------------
+async function renderInicio(){
+  topoAba('Início', true);
+  const el = document.getElementById('conteudo');
+  el.innerHTML = `
+    <div class="grid-cat pequeno" id="in-categorias-rapidas"></div>
+    <div style="display:flex; align-items:baseline; justify-content:space-between; margin:18px 0 10px;">
+      <h3 style="margin:0; font-size:16px;">Ofertas perto de você</h3>
+      <a href="javascript:void(0)" id="in-ver-todos" style="font-size:13px; font-weight:700;">Ver todos</a>
+    </div>
+    <div id="in-resultados"><div class="muted">Carregando...</div></div>`;
+  document.getElementById('in-categorias-rapidas').innerHTML = CATEGORIAS_GRID.slice(0,4).map(c => `
+    <div class="cat-item" data-grupo="${c.grupo}"><span class="cat-icone">${c.icone}</span>${esc(c.nome)}</div>`).join('');
+  document.querySelectorAll('#in-categorias-rapidas .cat-item').forEach(item => {
+    item.onclick = () => irPara(() => renderListaProdutos({ grupo: item.dataset.grupo, nome: CATEGORIAS_GRID.find(c=>c.grupo===item.dataset.grupo).nome }));
+  });
+  document.getElementById('in-ver-todos').onclick = () => irPara(() => renderListaProdutos({ nome: 'Todos os anúncios' }));
+  const { data } = await api('/anuncios?bairro_id=' + encodeURIComponent(STATE.bairroId));
+  const box = document.getElementById('in-resultados');
+  if (!data.ok || !data.anuncios.length) { box.innerHTML = '<div class="empty"><span class="emoji-vazio">📭</span>Nenhum anúncio na sua região ainda.<br>Seja o primeiro a anunciar!</div>'; return; }
+  box.innerHTML = data.anuncios.slice(0,12).map(cartaoProduto).join('');
+}
+
+// ---------------- CATEGORIAS ----------------
+function renderCategorias(){
+  topoAba('Categorias', false);
+  document.getElementById('conteudo').innerHTML = `
+    <h2 style="margin:4px 0 2px;">Categorias</h2>
+    <p class="muted" style="margin-top:0;">Escolha o que você procura</p>
+    <div class="grid-cat">${CATEGORIAS_GRID.map(c => `
+      <div class="cat-item" data-grupo="${c.grupo}"><span class="cat-icone">${c.icone}</span>${esc(c.nome)}</div>`).join('')}</div>`;
+  document.querySelectorAll('.grid-cat .cat-item').forEach(item => {
+    item.onclick = () => irPara(() => renderListaProdutos({ grupo: item.dataset.grupo, nome: CATEGORIAS_GRID.find(c=>c.grupo===item.dataset.grupo).nome }));
+  });
+  marcarAbaTab('categorias');
+}
+function marcarAbaTab(tab){ document.querySelectorAll('#tabbar button').forEach(b => b.classList.toggle('ativo', b.dataset.tab === tab)); }
+
+function cartaoProduto(a){
+  const fotos = safeJsonParse(a.fotos, []);
+  const capa = fotos[0] || null;
+  const favoritado = favoritos().includes(a.id);
+  return `
+  <div class="card produto-card" onclick="abrirAnuncio('${a.id}')">
+    ${capa ? `<img class="produto-foto" src="${esc(capa)}" alt="">` : `<div class="produto-foto produto-foto-vazia">${ICONE_TIPO[a.tipo_peca_id]||'📦'}</div>`}
+    <div class="produto-info">
+      <div class="produto-local">📍 ${esc(a.bairro_nome||'')} ${a.distancia_km!=null?'· '+distanciaLabel(a.distancia_km):''}</div>
+      <div class="produto-titulo">${esc(a.titulo)}</div>
+      <div style="display:flex; align-items:center; gap:6px; margin-bottom:3px;">
+        <span class="chip cinza" style="margin:0;">${esc(CONDICOES[a.condicao]||'Usado')}</span>
+      </div>
+      <div class="preco">${centavosParaReais(a.preco_centavos)}</div>
+    </div>
+    <button onclick="event.stopPropagation(); marcarFavoritoUI(this,'${a.id}')" style="background:none;border:none;font-size:17px;align-self:flex-start;cursor:pointer;">${favoritado?'❤️':'🤍'}</button>
+  </div>`;
+}
+window.marcarFavoritoUI = function(btn, id){ btn.textContent = alternarFavorito(id) ? '❤️' : '🤍'; };
+
+// ---------------- LISTA DE PRODUTOS ----------------
+let filtroAtual = {};
+async function renderListaProdutos(filtro){
+  filtroAtual = Object.assign({ condicao:'' }, filtro);
+  topoComVoltar(filtroAtual.nome || 'Resultados', voltar, `<button class="icone" id="lp-filtros">⚙️</button>`);
+  const el = document.getElementById('conteudo');
+  el.innerHTML = `
+    <div style="display:flex; align-items:center; gap:10px; margin-bottom:12px;">
+      <span style="font-size:26px;">${ICONE_TIPO[filtroAtual.grupo] || (CATEGORIAS_GRID.find(c=>c.grupo===filtroAtual.grupo)||{}).icone || '🔍'}</span>
+      <div><div style="font-weight:800; font-size:17px;">${esc(filtroAtual.nome||'')}</div><div class="muted" id="lp-contagem">carregando...</div></div>
+    </div>
+    <div class="filtro-chips" id="lp-condicoes">
+      ${['','novo','usado','sucata','com_defeito'].map(c => `<button data-c="${c}" class="${c===''?'ativo':''}">${c===''?'Todos':(c==='novo'?'Novos':c==='usado'?'Usados':c==='sucata'?'Sucata':'Com defeito')}</button>`).join('')}
+    </div>
+    <div id="lp-resultados"></div>`;
+  document.getElementById('lp-filtros').onclick = abrirFiltrosBusca;
+  document.querySelectorAll('#lp-condicoes button').forEach(b => b.onclick = () => {
+    document.querySelectorAll('#lp-condicoes button').forEach(x=>x.classList.remove('ativo'));
+    b.classList.add('ativo'); filtroAtual.condicao = b.dataset.c; buscarEListar();
+  });
+  buscarEListar();
+}
+function abrirFiltrosBusca(){
+  abrirModal(`
+    <button class="fechar-folha" onclick="fecharModal()">✕</button>
+    <h3>Filtros</h3>
+    <label style="margin-top:0;">Marca</label>
+    <select id="fl-marca"><option value="">Todas</option>${STATE.marcas.map(m=>`<option value="${m.id}" ${filtroAtual.marca_id===m.id?'selected':''}>${esc(m.nome)}</option>`).join('')}</select>
+    <button class="btn" id="fl-aplicar">Aplicar filtros</button>`);
+  document.getElementById('fl-aplicar').onclick = () => {
+    filtroAtual.marca_id = document.getElementById('fl-marca').value;
+    fecharModal(); buscarEListar();
+  };
+}
+async function buscarEListar(){
+  let path = '/anuncios?bairro_id=' + encodeURIComponent(STATE.bairroId);
+  if (filtroAtual.grupo) path += '&grupo=' + filtroAtual.grupo;
+  if (filtroAtual.condicao) path += '&condicao=' + filtroAtual.condicao;
+  if (filtroAtual.marca_id) path += '&marca_id=' + filtroAtual.marca_id;
+  if (filtroAtual.busca) path += '&busca=' + encodeURIComponent(filtroAtual.busca);
+  const { data } = await api(path);
+  const box = document.getElementById('lp-resultados');
+  const contagem = document.getElementById('lp-contagem');
+  if (!data.ok) { box.innerHTML = '<div class="empty">Erro ao buscar.</div>'; return; }
+  if (contagem) contagem.textContent = data.anuncios.length + ' anúncio(s) na sua região';
+  box.innerHTML = data.anuncios.length ? data.anuncios.map(cartaoProduto).join('') : '<div class="empty"><span class="emoji-vazio">📭</span>Nenhum anúncio encontrado.</div>';
+}
+
+// ---------------- DETALHE DO PRODUTO ----------------
+let anuncioAberto = null;
+window.abrirAnuncio = async function(id){
+  const { data } = await api('/anuncios/' + id + '?bairro_id=' + encodeURIComponent(STATE.bairroId));
+  if (!data.ok) return toast('Anúncio não encontrado.', 'erro');
+  irPara(() => telaDetalheAnuncio(data.anuncio));
+};
+function telaDetalheAnuncio(a){
+  anuncioAberto = a;
+  const souVendedor = STATE.usuario && a.vendedor_id === STATE.usuario.id;
+  const fotos = safeJsonParse(a.fotos, []);
+  const favoritado = favoritos().includes(a.id);
+  topoComVoltar(a.tipo_peca_nome, voltar, `
+    <button class="icone" onclick="marcarFavoritoUI(this,'${a.id}')">${favoritado?'❤️':'🤍'}</button>
+    <button class="icone" onclick="navigator.share ? navigator.share({title:'${esc(a.titulo)}'}).catch(()=>{}) : toast('Copie o link da página pra compartilhar.')">📤</button>`);
+  document.getElementById('conteudo').innerHTML = `
+    ${fotos.length ? `
+      <div style="display:flex; gap:8px; overflow-x:auto; margin-bottom:8px; border-radius:14px;">${fotos.map(f=>`<img src="${esc(f)}" style="width:100%; max-width:340px; height:230px; object-fit:cover; border-radius:14px; flex-shrink:0;">`).join('')}</div>
+    ` : `<div style="height:200px; border-radius:14px; background:var(--verde-claro); display:flex; align-items:center; justify-content:center; font-size:60px; margin-bottom:8px;">${ICONE_TIPO[a.tipo_peca_id]||'📦'}</div>`}
+    <div class="card">
+      <h2 style="margin:0 0 4px; font-size:19px;">${esc(a.titulo)}</h2>
+      <div class="muted" style="margin-bottom:6px;">${esc(CONDICOES[a.condicao]||'Usado')}</div>
+      <div class="preco" style="font-size:22px;">${centavosParaReais(a.preco_centavos)}</div>
+      <div class="linha2" style="margin-top:14px;">
+        <div class="card" style="margin:0; padding:10px;"><span class="muted">Marca</span><br><b>${esc(a.marca_nome)}</b></div>
+        <div class="card" style="margin:0; padding:10px;"><span class="muted">Modelo</span><br><b>${esc(a.modelo_nome)}</b></div>
+      </div>
+      <h4>Descrição</h4>
+      <p class="muted">${esc(a.descricao || 'Sem descrição.')}</p>
+    </div>
+    <div class="card" style="cursor:pointer;" onclick="abrirPerfilVendedor('${a.vendedor_id}')">
+      <div style="display:flex; align-items:center; gap:12px;">
+        <div class="avatar">${iniciais(a.vendedor_nome)}</div>
+        <div style="flex:1;">
+          <b>${esc(a.vendedor_nome)}</b>
+          ${a.vendedor_verificado ? '<div class="selo-verificado" style="margin-top:3px;">✅ Verificado</div>' : ''}
+          <div class="muted">Membro desde ${dataPorExtenso(a.vendedor_desde)}</div>
+        </div>
+        <span>›</span>
+      </div>
+    </div>
+    <div class="card">
+      <div class="mapa-fake">📍 ${esc(a.bairro_nome)}${a.distancia_km!=null?' · '+distanciaLabel(a.distancia_km):''}</div>
+    </div>
+    ${souVendedor ? '<p class="muted" style="text-align:center;">Este é o seu anúncio.</p>' : `
+      <button class="btn" onclick="iniciarConversa('${a.id}')">💬 Conversar com o vendedor</button>
+      <button class="btn secundario" onclick="abrirDenunciar('${a.id}')">🚩 Denunciar anúncio</button>`}`;
+}
+function abrirDenunciar(id){
+  abrirModal(`
+    <button class="fechar-folha" onclick="fecharModal()">✕</button>
+    <h3>Denunciar anúncio</h3>
+    <label style="margin-top:0;">Motivo</label>
+    <select id="dn-motivo">
+      <option value="sem_estoque">Vendedor sem estoque / não responde</option>
+      <option value="fora_do_tema">Anúncio não é peça de celular</option>
+      <option value="golpe">Suspeita de golpe</option>
+      <option value="outro">Outro motivo</option>
+    </select>
+    <label>Detalhes (opcional)</label><textarea id="dn-detalhes" rows="3"></textarea>
+    <button class="btn perigo" id="dn-enviar">Enviar denúncia</button>`);
+  document.getElementById('dn-enviar').onclick = async () => {
+    const { data } = await api('/anuncios/' + id + '/denunciar', { method:'POST', body:{ motivo: document.getElementById('dn-motivo').value, detalhes: document.getElementById('dn-detalhes').value } });
+    fecharModal();
+    toast(data.ok ? 'Denúncia enviada, obrigado.' : 'Erro ao denunciar.', data.ok ? 'sucesso' : 'erro');
+  };
+}
+
+// ---------------- ANUNCIAR ----------------
+let fotosSelecionadas = [];
+let condicaoSelecionada = 'usado';
+async function renderAnunciar(){
+  fotosSelecionadas = []; condicaoSelecionada = 'usado';
+  topoAba('Anunciar peça', false);
+  marcarAbaTab('anunciar');
+  const el = document.getElementById('conteudo');
+  el.innerHTML = `
+    <div class="card"><b>1. Fotos</b> <span class="muted">— adicione até 5 (opcional)</span>
+      <div class="foto-preview" id="an-fotos-preview">
+        <label class="foto-add">📷<br>Adicionar<input id="an-foto-input" type="file" accept="image/*" multiple hidden></label>
+      </div>
+    </div>
+    <div class="card">
+      <b>2. Título</b><input id="an-titulo" placeholder="ex: Placa Samsung A10 original" style="margin-top:8px;">
+    </div>
+    <div class="card">
+      <b>3. Categoria</b>
+      <label style="margin-top:8px;">Tipo</label><select id="an-tipo"><option value="">Selecione</option>${STATE.tiposPeca.map(t=>`<option value="${t.id}">${esc(t.nome)}</option>`).join('')}</select>
+      <label>Marca</label><select id="an-marca"><option value="">Selecione</option>${STATE.marcas.map(m=>`<option value="${m.id}">${esc(m.nome)}</option>`).join('')}</select>
+      <label>Modelo</label><select id="an-modelo" disabled><option value="">Escolha a marca primeiro</option></select>
+    </div>
+    <div class="card">
+      <b>4. Condição</b>
+      <div class="filtro-chips" id="an-condicoes" style="margin-top:10px;">
+        ${Object.entries(CONDICOES).map(([k,v]) => `<button data-c="${k}" class="${k==='usado'?'ativo':''}">${v}</button>`).join('')}
+      </div>
+    </div>
+    <div class="card">
+      <b>5. Preço</b><input id="an-preco" type="number" step="0.01" placeholder="0,00" style="margin-top:8px;">
+    </div>
+    <div class="card">
+      <b>6. Descrição</b><textarea id="an-descricao" rows="3" placeholder="Estado da peça, testada, etc." style="margin-top:8px;"></textarea>
+    </div>
+    <div class="card">
+      <b>7. Localização</b><div class="muted" style="margin-top:6px;">📍 ${esc(STATE.usuario.bairro_nome || nomeBairroAtual())} (seu bairro cadastrado)</div>
+    </div>
+    <div class="card" style="background:var(--verde-claro); border:none;">
+      <p class="muted" style="margin:0 0 6px;">Saldo: <b id="an-saldo">carregando...</b> crédito(s). Cada anúncio custa 1 crédito (R$5) e fica no ar por 30 dias.</p>
+    </div>
+    <button class="btn" id="an-publicar">Publicar anúncio (1 crédito)</button>`;
+  document.getElementById('an-tipo').onchange = () => {};
+  document.getElementById('an-marca').onchange = async (e) => {
+    const sel = document.getElementById('an-modelo');
+    if (!e.target.value) { sel.disabled = true; sel.innerHTML = '<option value="">Escolha a marca primeiro</option>'; return; }
+    const { data } = await api('/categorias/modelos?marca_id=' + e.target.value);
+    sel.disabled = false;
+    sel.innerHTML = '<option value="">Selecione</option>' + (data.modelos||[]).map(m=>`<option value="${m.id}">${esc(m.nome)}</option>`).join('');
+  };
+  document.querySelectorAll('#an-condicoes button').forEach(b => b.onclick = () => {
+    document.querySelectorAll('#an-condicoes button').forEach(x=>x.classList.remove('ativo'));
+    b.classList.add('ativo'); condicaoSelecionada = b.dataset.c;
+  });
+  document.getElementById('an-foto-input').onchange = (e) => {
+    for (const file of e.target.files) {
+      if (fotosSelecionadas.length >= 5) { toast('Máximo 5 fotos.', 'erro'); break; }
+      fotosSelecionadas.push({ file, previewUrl: URL.createObjectURL(file) });
+    }
+    redesenharFotos();
+  };
+  document.getElementById('an-publicar').onclick = publicarAnuncio;
+  const { data } = await api('/creditos/saldo');
+  if (data.ok) document.getElementById('an-saldo').textContent = data.saldo_creditos;
+}
+function redesenharFotos(){
+  const box = document.getElementById('an-fotos-preview');
+  box.innerHTML = fotosSelecionadas.map((f,i) => `<div class="miniatura"><img src="${f.previewUrl}"><button class="remover" onclick="removerFoto(${i})">✕</button></div>`).join('')
+    + (fotosSelecionadas.length < 5 ? `<label class="foto-add">📷<br>Adicionar<input id="an-foto-input" type="file" accept="image/*" multiple hidden></label>` : '');
+  const inp = document.getElementById('an-foto-input');
+  if (inp) inp.onchange = (e) => {
+    for (const file of e.target.files) {
+      if (fotosSelecionadas.length >= 5) { toast('Máximo 5 fotos.', 'erro'); break; }
+      fotosSelecionadas.push({ file, previewUrl: URL.createObjectURL(file) });
+    }
+    redesenharFotos();
+  };
+}
+window.removerFoto = function(i){ fotosSelecionadas.splice(i,1); redesenharFotos(); };
+async function publicarAnuncio(){
+  const marca_id = document.getElementById('an-marca').value;
+  const modelo_id = document.getElementById('an-modelo').value;
+  const tipo_peca_id = document.getElementById('an-tipo').value;
+  const titulo = document.getElementById('an-titulo').value.trim();
+  const descricao = document.getElementById('an-descricao').value.trim();
+  const precoReais = parseFloat(document.getElementById('an-preco').value);
+  if (!marca_id || !modelo_id || !tipo_peca_id || !titulo || !precoReais) return toast('Preencha marca, modelo, tipo, título e preço.', 'erro');
+  const btn = document.getElementById('an-publicar');
+  btn.disabled = true; btn.textContent = 'Enviando fotos...';
+  const fotosUrls = [];
+  for (const f of fotosSelecionadas) {
+    const resp = await fetch(API + '/upload-foto', { method:'POST', headers:{ 'Authorization':'Bearer '+localStorage.getItem(LS_TOKEN), 'X-File-Name':f.file.name, 'Content-Type':f.file.type }, body:f.file });
+    const d = await resp.json();
+    if (d.ok) fotosUrls.push(API + d.url);
+  }
+  btn.textContent = 'Publicando...';
+  const { data } = await api('/anuncios', { method:'POST', body:{ marca_id, modelo_id, tipo_peca_id, titulo, descricao, preco_centavos: Math.round(precoReais*100), fotos: fotosUrls, bairro_id: STATE.usuario.bairro_id, condicao: condicaoSelecionada } });
+  btn.disabled = false; btn.textContent = 'Publicar anúncio (1 crédito)';
+  if (!data.ok) {
+    if (data.erro === 'sem_creditos') { toast('Você não tem créditos.', 'erro'); return irPara(renderComprarCreditos); }
+    if (data.erro === 'fora_do_tema') return toast('Este anúncio só aceita peças de celular.', 'erro');
+    return toast('Erro ao publicar.', 'erro');
+  }
+  toast('Anúncio publicado!', 'sucesso');
+  setTab('perfil'); irPara(renderMeusAnuncios);
+}
+
+// ---------------- CHAT ----------------
+window.iniciarConversa = async function(anuncioId){
+  const { data } = await api('/conversas', { method:'POST', body:{ anuncio_id: anuncioId } });
+  if (!data.ok) return toast('Erro ao iniciar conversa.', 'erro');
+  irPara(() => abrirChat(data.conversa.id));
+};
+async function renderConversas(){
+  topoAba('Chat', false); marcarAbaTab('chat');
+  const el = document.getElementById('conteudo');
+  const { data } = await api('/conversas');
+  if (!data.ok || !data.conversas.length) { el.innerHTML = '<div class="empty"><span class="emoji-vazio">💬</span>Nenhuma conversa ainda.<br>Fale com um vendedor pra começar.</div>'; return; }
+  el.innerHTML = data.conversas.map(c => `
+    <div class="card" style="display:flex; gap:12px; cursor:pointer;" onclick="abrirChatDireto('${c.id}')">
+      <div class="avatar">${iniciais(c.anuncio_titulo)}</div>
+      <div style="flex:1; min-width:0;">
+        <div style="font-weight:700;">${esc(c.anuncio_titulo)}</div>
+        <div class="muted" style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${esc(c.ultima_mensagem || 'Sem mensagens ainda.')}</div>
+      </div>
+    </div>`).join('');
+}
+window.abrirChatDireto = function(id){ irPara(() => abrirChat(id)); };
+async function abrirChat(conversaId){
+  const { data: minhas } = await api('/conversas');
+  const conversa = (minhas.conversas||[]).find(c => c.id === conversaId);
+  const souComprador = conversa && STATE.usuario.id === conversa.comprador_id;
+  topoComVoltar(conversa ? conversa.anuncio_titulo : 'Conversa', voltar, souComprador ? `<button class="icone" id="ch-avaliar">⭐</button>` : '');
+  document.getElementById('conteudo').innerHTML = `
+    <div id="chat-msgs"></div>
+    <div class="respostas-rapidas">
+      <button data-t="Ainda está disponível?">Ainda está disponível?</button>
+      <button data-t="Qual o menor valor?">Qual o menor valor?</button>
+      <button data-t="Pode entregar?">Pode entregar?</button>
+    </div>
+    <div style="display:flex; gap:8px; position:sticky; bottom:0; padding-top:4px;">
+      <input id="chat-texto" placeholder="Digite sem passar telefone/WhatsApp...">
+      <button class="btn pequeno" id="chat-enviar" style="margin-top:0;">➤</button>
+    </div>`;
+  document.querySelectorAll('.respostas-rapidas button').forEach(b => b.onclick = () => { document.getElementById('chat-texto').value = b.dataset.t; });
+  if (souComprador) document.getElementById('ch-avaliar').onclick = () => abrirAvaliarModal(conversaId);
+  const carregar = async () => {
+    const { data } = await api('/conversas/' + conversaId + '/mensagens');
+    document.getElementById('chat-msgs').innerHTML = (data.mensagens||[]).map(m => `<div class="msg ${m.remetente_id===STATE.usuario.id?'minha':'outra'} ${m.bloqueada?'bloqueada':''}">${esc(m.texto)}</div>`).join('');
+  };
+  document.getElementById('chat-enviar').onclick = async () => {
+    const input = document.getElementById('chat-texto');
+    const texto = input.value.trim();
+    if (!texto) return;
+    const { data } = await api('/conversas/' + conversaId + '/mensagens', { method:'POST', body:{ texto } });
+    if (data.bloqueada) toast('Não é permitido compartilhar telefone/WhatsApp pelo chat.', 'erro');
+    input.value = ''; carregar();
+  };
+  carregar();
+}
+function abrirAvaliarModal(conversaId){
+  let nota = 5;
+  abrirModal(`
+    <button class="fechar-folha" onclick="fecharModal()">✕</button>
+    <h3>Avaliar vendedor</h3>
+    <div style="text-align:center; font-size:32px; margin:14px 0;" id="av-estrelas">${'★'.repeat(5)}</div>
+    <textarea id="av-comentario" rows="3" placeholder="Como foi sua experiência? (opcional)"></textarea>
+    <button class="btn" id="av-enviar">Enviar avaliação</button>`);
+  const estrelasEl = document.getElementById('av-estrelas');
+  estrelasEl.querySelectorAll ? null : null;
+  estrelasEl.innerHTML = [1,2,3,4,5].map(n => `<span data-n="${n}" style="cursor:pointer;color:#f59e0b;">★</span>`).join('');
+  estrelasEl.querySelectorAll('span').forEach(s => s.onclick = () => {
+    nota = Number(s.dataset.n);
+    estrelasEl.querySelectorAll('span').forEach(x => x.style.opacity = Number(x.dataset.n) <= nota ? '1' : '.3');
+  });
+  document.getElementById('av-enviar').onclick = async () => {
+    const { data } = await api('/conversas/' + conversaId + '/avaliar', { method:'POST', body:{ nota, comentario: document.getElementById('av-comentario').value } });
+    fecharModal();
+    if (!data.ok) return toast(data.erro === 'ja_avaliado' ? 'Você já avaliou este vendedor por aqui.' : 'Erro ao avaliar.', 'erro');
+    toast('Avaliação enviada, obrigado!', 'sucesso');
+  };
+}
+
+// ---------------- PERFIL (conta) ----------------
+async function renderPerfilConta(){
+  topoAba('Perfil', false); marcarAbaTab('perfil');
+  const { data: saldoData } = await api('/creditos/saldo');
+  const { data: perfilPub } = await api('/usuarios/' + STATE.usuario.id);
+  const u = STATE.usuario;
+  const p = perfilPub.ok ? perfilPub.usuario : {};
+  document.getElementById('conteudo').innerHTML = `
+    <div class="card" style="text-align:center;">
+      <div class="avatar" style="margin:0 auto 10px; width:64px; height:64px; font-size:22px;">${iniciais(u.nome)}</div>
+      <b style="font-size:17px;">${esc(u.nome)}</b>
+      ${u.verificado ? '<div class="selo-verificado" style="margin:6px auto;">✅ Verificado</div>' : ''}
+      <div class="muted">Membro desde ${dataPorExtenso(u.criado_em)}</div>
+      <div class="muted">📍 ${esc(u.bairro_nome || nomeBairroAtual())}</div>
+      <div class="estat-grid">
+        <div class="estat-item"><b>${p.anuncios_ativos ?? 0}</b><span>Anúncios ativos</span></div>
+        <div class="estat-item"><b>${u.vendas_confirmadas_total}</b><span>Itens vendidos</span></div>
+        <div class="estat-item"><b>${p.media_avaliacoes ?? '—'}</b><span>Avaliação média</span></div>
+        <div class="estat-item"><b>${saldoData.saldo_creditos ?? 0}</b><span>Créditos</span></div>
+      </div>
+    </div>
+    <div class="card" style="padding:6px 15px;">
+      <div class="menu-item" id="mi-dados"><span class="icone-menu">👤</span><div class="texto-menu"><b>Meus dados</b><span class="muted">Nome, e-mail e telefone</span></div><span class="seta">›</span></div>
+      <div class="menu-item" id="mi-seguranca"><span class="icone-menu">🔒</span><div class="texto-menu"><b>Segurança</b><span class="muted">Trocar senha</span></div><span class="seta">›</span></div>
+      <div class="menu-item" id="mi-anuncios"><span class="icone-menu">📦</span><div class="texto-menu"><b>Meus anúncios</b><span class="muted">Gerenciar anúncios ativos</span></div><span class="seta">›</span></div>
+      <div class="menu-item" id="mi-vendedor"><span class="icone-menu">🏪</span><div class="texto-menu"><b>Perfil de vendedor</b><span class="muted">Como os compradores te veem</span></div><span class="seta">›</span></div>
+      <div class="menu-item" id="mi-creditos"><span class="icone-menu">💳</span><div class="texto-menu"><b>Comprar créditos</b><span class="muted">1 crédito = R$5 = 1 anúncio</span></div><span class="seta">›</span></div>
+      <div class="menu-item" id="mi-config"><span class="icone-menu">⚙️</span><div class="texto-menu"><b>Configurações</b><span class="muted">Tema, ajuda e conta</span></div><span class="seta">›</span></div>
+    </div>
+    <button class="btn secundario" id="pf-sair">Sair da conta</button>`;
+  document.getElementById('mi-dados').onclick = () => irPara(renderMeusDados);
+  document.getElementById('mi-seguranca').onclick = () => irPara(renderSeguranca);
+  document.getElementById('mi-anuncios').onclick = () => irPara(renderMeusAnuncios);
+  document.getElementById('mi-vendedor').onclick = () => abrirPerfilVendedor(STATE.usuario.id);
+  document.getElementById('mi-creditos').onclick = () => irPara(renderComprarCreditos);
+  document.getElementById('mi-config').onclick = () => irPara(renderConfiguracoes);
+  document.getElementById('pf-sair').onclick = async () => { await api('/auth/logout', { method:'POST' }); localStorage.removeItem(LS_TOKEN); location.reload(); };
+}
+
+async function renderMeusDados(){
+  topoComVoltar('Meus dados', voltar);
+  const u = STATE.usuario;
+  document.getElementById('conteudo').innerHTML = `
+    <div class="card">
+      <label style="margin-top:0;">Nome</label><input id="md-nome" value="${esc(u.nome)}">
+      <label>E-mail (não pode alterar)</label><input value="${esc(u.email)}" disabled>
+      <label>Telefone</label><input id="md-telefone" value="${esc(u.telefone||'')}" placeholder="(21) 9....">
+      <button class="btn" id="md-salvar">Salvar alterações</button>
+    </div>`;
+  document.getElementById('md-salvar').onclick = async () => {
+    const { data } = await api('/auth/me', { method:'PATCH', body:{ nome: document.getElementById('md-nome').value.trim(), telefone: document.getElementById('md-telefone').value.trim() } });
+    if (!data.ok) return toast('Erro ao salvar.', 'erro');
+    STATE.usuario = data.usuario;
+    toast('Dados atualizados!', 'sucesso');
+    voltar();
+  };
+}
+async function renderSeguranca(){
+  topoComVoltar('Segurança', voltar);
+  document.getElementById('conteudo').innerHTML = `
+    <div class="card">
+      <label style="margin-top:0;">Senha atual</label><input id="sg-atual" type="password">
+      <label>Nova senha (mínimo 6 caracteres)</label><input id="sg-nova" type="password">
+      <button class="btn" id="sg-salvar">Trocar senha</button>
+    </div>
+    <div class="card" style="border-color:var(--erro);">
+      <b style="color:var(--erro);">Excluir conta</b>
+      <p class="muted">Seus anúncios são removidos e o acesso é encerrado. Não tem volta.</p>
+      <button class="btn perigo" id="sg-excluir">Excluir minha conta</button>
+    </div>`;
+  document.getElementById('sg-salvar').onclick = async () => {
+    const senha_atual = document.getElementById('sg-atual').value;
+    const nova_senha = document.getElementById('sg-nova').value;
+    if (!senha_atual || !nova_senha) return toast('Preencha os dois campos.', 'erro');
+    const { data } = await api('/auth/trocar-senha', { method:'POST', body:{ senha_atual, nova_senha } });
+    if (!data.ok) return toast(data.erro === 'senha_atual_incorreta' ? 'Senha atual incorreta.' : (data.erro === 'senha_muito_curta' ? 'Senha muito curta.' : 'Erro ao trocar senha.'), 'erro');
+    toast('Senha alterada!', 'sucesso'); voltar();
+  };
+  document.getElementById('sg-excluir').onclick = () => {
+    abrirModal(`
+      <button class="fechar-folha" onclick="fecharModal()">✕</button>
+      <h3>Excluir conta?</h3>
+      <p class="muted">Essa ação não pode ser desfeita. Seus anúncios ativos serão removidos.</p>
+      <button class="btn perigo" id="sg-confirmar-excluir">Sim, excluir minha conta</button>
+      <button class="btn secundario" onclick="fecharModal()">Cancelar</button>`);
+    document.getElementById('sg-confirmar-excluir').onclick = async () => {
+      await api('/auth/me', { method:'DELETE' });
+      localStorage.removeItem(LS_TOKEN);
+      location.reload();
+    };
+  };
+}
+
+function statusLabel(s){ return { ativo:'Ativo', pausado_manual:'Pausado', expirado:'Expirado', removido_admin:'Removido' }[s] || s; }
+let abaMeusAnuncios = 'todos';
+async function renderMeusAnuncios(){
+  topoComVoltar('Meus anúncios', voltar);
+  const el = document.getElementById('conteudo');
+  el.innerHTML = `<div class="abas-perfil" id="ma-abas">
+      <button data-a="todos" class="ativo">Todos</button>
+      <button data-a="ativo">Ativos</button>
+      <button data-a="pausado_manual">Pausados</button>
+      <button data-a="expirado">Expirados</button>
+    </div>
+    <div id="ma-lista"><div class="muted">Carregando...</div></div>`;
+  document.querySelectorAll('#ma-abas button').forEach(b => b.onclick = () => {
+    document.querySelectorAll('#ma-abas button').forEach(x=>x.classList.remove('ativo')); b.classList.add('ativo');
+    abaMeusAnuncios = b.dataset.a; desenharMeusAnuncios();
+  });
+  abaMeusAnuncios = 'todos';
+  await desenharMeusAnuncios();
+}
+let cacheMeusAnuncios = [];
+async function desenharMeusAnuncios(){
+  const { data } = await api('/anuncios/meus');
+  cacheMeusAnuncios = data.ok ? data.anuncios : [];
+  const lista = abaMeusAnuncios === 'todos' ? cacheMeusAnuncios : cacheMeusAnuncios.filter(a => a.status === abaMeusAnuncios);
+  const box = document.getElementById('ma-lista');
+  if (!lista.length) { box.innerHTML = '<div class="empty"><span class="emoji-vazio">📦</span>Nada por aqui ainda.</div>'; return; }
+  box.innerHTML = lista.map(a => `
+    <div class="card">
+      <div style="display:flex; justify-content:space-between; gap:8px;">
+        <div style="font-weight:700;">${esc(a.titulo)}</div>
+        <span class="chip cinza">${statusLabel(a.status)}</span>
+      </div>
+      <div class="preco">${centavosParaReais(a.preco_centavos)}</div>
+      <p class="muted">Expira em ${new Date(a.expira_em).toLocaleDateString('pt-BR')}</p>
+      ${a.status === 'ativo' ? `<div class="linha2">
+          <button class="btn pequeno" onclick="marcarVendido('${a.id}')">Marcar venda</button>
+          <button class="btn pequeno secundario" onclick="pausarAnuncio('${a.id}')">Pausar</button>
+        </div>` : ''}
+      ${a.status === 'expirado' ? `<button class="btn pequeno" onclick="renovarAnuncio('${a.id}')">Renovar (1 crédito)</button>` : ''}
+    </div>`).join('');
+}
+window.marcarVendido = async function(id){
+  const { data } = await api('/anuncios/' + id + '/vender', { method:'POST' });
+  if (!data.ok) return toast('Erro.', 'erro');
+  toast(data.ganhou_credito_bonus ? 'Venda registrada! Você ganhou 1 crédito de bônus 🎉' : 'Venda registrada!', 'sucesso');
+  desenharMeusAnuncios();
+};
+window.pausarAnuncio = async function(id){ await api('/anuncios/' + id + '/pausar', { method:'POST' }); toast('Anúncio pausado.', 'sucesso'); desenharMeusAnuncios(); };
+window.renovarAnuncio = async function(id){
+  const { data } = await api('/anuncios/' + id + '/renovar', { method:'POST' });
+  if (!data.ok) return toast(data.erro === 'sem_creditos' ? 'Sem créditos suficientes.' : 'Erro.', 'erro');
+  toast('Anúncio renovado por mais 30 dias!', 'sucesso'); desenharMeusAnuncios();
+};
+
+// ---------------- PERFIL PÚBLICO DO VENDEDOR ----------------
+window.abrirPerfilVendedor = function(usuarioId){ irPara(() => renderPerfilVendedor(usuarioId)); };
+async function renderPerfilVendedor(usuarioId, aba){
+  aba = aba || 'anuncios';
+  const { data } = await api('/usuarios/' + usuarioId);
+  if (!data.ok) { topoComVoltar('Vendedor', voltar); document.getElementById('conteudo').innerHTML = '<div class="empty">Vendedor não encontrado.</div>'; return; }
+  const u = data.usuario;
+  topoComVoltar('Perfil do vendedor', voltar);
+  document.getElementById('conteudo').innerHTML = `
+    <div class="card" style="text-align:center;">
+      <div class="avatar" style="margin:0 auto 10px; width:64px; height:64px; font-size:22px;">${iniciais(u.nome)}</div>
+      <b style="font-size:17px;">${esc(u.nome)}</b>
+      ${u.verificado ? '<div class="selo-verificado" style="margin:6px auto;">✅ Vendedor verificado</div>' : ''}
+      <div class="muted">Membro desde ${dataPorExtenso(u.criado_em)}</div>
+      <div class="estat-grid">
+        <div class="estat-item"><b>${u.anuncios_ativos}</b><span>Anúncios ativos</span></div>
+        <div class="estat-item"><b>${u.vendas_confirmadas_total}</b><span>Itens vendidos</span></div>
+        <div class="estat-item"><b>${u.media_avaliacoes ?? '—'}</b><span>Avaliação média</span></div>
+        <div class="estat-item"><b>${u.total_avaliacoes}</b><span>Avaliações</span></div>
+      </div>
+      ${usuarioId !== STATE.usuario.id ? `<button class="btn" onclick="iniciarConversaComVendedor('${usuarioId}')">💬 Conversar</button>` : ''}
+    </div>
+    <div class="abas-perfil" id="pv-abas">
+      <button data-a="anuncios" class="${aba==='anuncios'?'ativo':''}">Anúncios (${u.anuncios_ativos})</button>
+      <button data-a="avaliacoes" class="${aba==='avaliacoes'?'ativo':''}">Avaliações (${u.total_avaliacoes})</button>
+    </div>
+    <div id="pv-conteudo"></div>`;
+  document.querySelectorAll('#pv-abas button').forEach(b => b.onclick = () => renderPerfilVendedor(usuarioId, b.dataset.a));
+  const box = document.getElementById('pv-conteudo');
+  if (aba === 'anuncios') {
+    const { data: an } = await api('/usuarios/' + usuarioId + '/anuncios');
+    box.innerHTML = (an.ok && an.anuncios.length) ? an.anuncios.map(cartaoProduto).join('') : '<div class="empty">Nenhum anúncio ativo.</div>';
+  } else {
+    const { data: av } = await api('/usuarios/' + usuarioId + '/avaliacoes');
+    if (!av.ok) { box.innerHTML = '<div class="empty">Erro ao carregar.</div>'; return; }
+    const total = Object.values(av.distribuicao).reduce((a,b)=>a+b,0) || 1;
+    box.innerHTML = `
+      <div class="card">
+        ${[5,4,3,2,1].map(n => `<div class="barra-nota"><span>${n}★</span><div class="fundo"><div class="preenchida" style="width:${(av.distribuicao[n]/total*100)}%"></div></div><span>${av.distribuicao[n]}</span></div>`).join('')}
+      </div>
+      ${av.avaliacoes.length ? av.avaliacoes.map(r => `
+        <div class="card">
+          <div style="display:flex; justify-content:space-between;"><b>${esc(r.avaliador_nome)}</b><span class="estrelas">${'★'.repeat(r.nota)}${'☆'.repeat(5-r.nota)}</span></div>
+          ${r.comentario ? `<p class="muted">"${esc(r.comentario)}"</p>` : ''}
+        </div>`).join('') : '<div class="empty">Nenhuma avaliação ainda.</div>'}`;
+  }
+}
+window.iniciarConversaComVendedor = function(){ toast('Abra a conversa a partir de um anúncio desse vendedor.'); };
+
+// ---------------- COMPRAR CRÉDITOS ----------------
+async function renderComprarCreditos(){
+  topoComVoltar('Comprar créditos', voltar);
+  const { data: saldoData } = await api('/creditos/saldo');
+  document.getElementById('conteudo').innerHTML = `
+    <div class="card" style="text-align:center;">
+      <div class="muted">Saldo atual</div>
+      <div style="font-size:34px; font-weight:800; color:var(--verde-forte);">${saldoData.saldo_creditos ?? 0}</div>
+      <p class="muted">1 crédito = R$5 = 1 anúncio ativo por 30 dias. Dentro dos 30 dias você pode vender quantas vezes quiser do mesmo anúncio sem pagar de novo.</p>
+    </div>
+    <div class="card">
+      <label style="margin-top:0;">Quantidade de créditos</label>
+      <input id="cc-qtd" type="number" min="1" value="5">
+      <button class="btn" id="cc-comprar">Gerar Pix</button>
+      <div id="cc-pix-area"></div>
+    </div>`;
+  document.getElementById('cc-comprar').onclick = comprarCreditos;
+}
+async function comprarCreditos(){
+  const qtd = parseInt(document.getElementById('cc-qtd').value, 10);
+  if (!qtd || qtd < 1) return toast('Quantidade inválida.', 'erro');
+  const { data } = await api('/creditos/comprar', { method:'POST', body:{ quantidade: qtd } });
+  const area = document.getElementById('cc-pix-area');
+  if (!data.ok) {
+    area.innerHTML = `<div class="pix-caixa" style="background:var(--alerta-bg); color:var(--alerta);">${data.erro === 'pagamento_nao_configurado' ? 'O pagamento por Pix ainda não foi ativado pelo administrador.' : 'Erro ao gerar cobrança.'}</div>`;
+    return;
+  }
+  area.innerHTML = `
+    <div class="pix-caixa">
+      <b>Pague ${centavosParaReais(data.valor_centavos)} pelo Pix</b>
+      <p class="muted">Os créditos entram automaticamente na confirmação.</p>
+      ${data.qr_code_base64 ? `<img src="data:image/png;base64,${data.qr_code_base64}">` : ''}
+      <label>Pix copia e cola</label>
+      <textarea rows="3" readonly>${esc(data.pix_copia_cola || '')}</textarea>
+    </div>`;
+}
+
+// ---------------- CONFIGURAÇÕES ----------------
+async function renderConfiguracoes(){
+  topoComVoltar('Configurações', voltar);
+  const temaAtual = localStorage.getItem(LS_TEMA) || 'claro';
+  document.getElementById('conteudo').innerHTML = `
+    <div class="card">
+      <b style="display:block; margin-bottom:8px;">Conta</b>
+      <div class="menu-item" id="cf-dados"><span class="icone-menu">👤</span><div class="texto-menu"><b>Editar meus dados</b></div><span class="seta">›</span></div>
+      <div class="menu-item" id="cf-seguranca"><span class="icone-menu">🔒</span><div class="texto-menu"><b>Segurança / senha</b></div><span class="seta">›</span></div>
+    </div>
+    <div class="card">
+      <b style="display:block; margin-bottom:8px;">Preferências</b>
+      <label style="margin-top:0;">Tema do aplicativo</label>
+      <div class="filtro-chips" id="cf-tema">
+        ${['claro','escuro','automatico'].map(t => `<button data-t="${t}" class="${t===temaAtual?'ativo':''}">${t==='claro'?'Claro':t==='escuro'?'Escuro':'Automático'}</button>`).join('')}
+      </div>
+      <p class="muted">Idioma: Português (Brasil)</p>
+    </div>
+    <div class="card">
+      <b style="display:block; margin-bottom:8px;">Ajuda</b>
+      <div class="menu-item" id="cf-ajuda"><span class="icone-menu">❓</span><div class="texto-menu"><b>Central de ajuda</b><span class="muted">Como funciona o Sucatell</span></div><span class="seta">›</span></div>
+    </div>`;
+  document.getElementById('cf-dados').onclick = () => irPara(renderMeusDados);
+  document.getElementById('cf-seguranca').onclick = () => irPara(renderSeguranca);
+  document.getElementById('cf-ajuda').onclick = () => abrirModal(`
+    <button class="fechar-folha" onclick="fecharModal()">✕</button>
+    <h3>Como funciona o Sucatell</h3>
+    <p class="muted">Cada anúncio custa 1 crédito (R$5) e fica ativo por 30 dias, podendo vender quantas unidades quiser nesse período. A cada 20 vendas confirmadas você ganha 1 crédito de bônus. A busca mostra sempre a sua região, e o chat bloqueia telefone/WhatsApp pra manter a negociação seguindo pelo app.</p>
+    <p class="muted">Dúvidas? Fale com o vendedor pelo chat interno ou use "Denunciar" em qualquer anúncio suspeito.</p>`);
+  document.querySelectorAll('#cf-tema button').forEach(b => b.onclick = () => {
+    localStorage.setItem(LS_TEMA, b.dataset.t); aplicarTema();
+    document.querySelectorAll('#cf-tema button').forEach(x=>x.classList.remove('ativo')); b.classList.add('ativo');
+  });
+}
+
+// ---------------- categorias globais + boot ----------------
+async function carregarCategorias(){
+  const [m, tp] = await Promise.all([api('/categorias/marcas'), api('/categorias/tipos-peca')]);
+  STATE.marcas = m.data.marcas || [];
+  STATE.tiposPeca = tp.data.tipos_peca || [];
+}
+function setupPWA(){ try { if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{}); } catch(e){} }
+async function boot(){
+  setupPWA();
+  const token = localStorage.getItem(LS_TOKEN);
+  if (!token) { renderAuth('login'); return; }
+  const { data } = await api('/auth/me');
+  if (!data.ok) { localStorage.removeItem(LS_TOKEN); renderAuth('login'); return; }
+  STATE.usuario = data.usuario;
+  STATE.bairroId = data.usuario.bairro_id;
+  document.getElementById('auth-root').innerHTML = '';
+  document.getElementById('app-root').classList.add('pronto');
+  await carregarCategorias();
+  document.querySelectorAll('#tabbar button').forEach(b => b.onclick = () => setTab(b.dataset.tab));
+  setTab('inicio');
+}
+boot();
+</script>
+</body>
+</html>
