@@ -211,19 +211,27 @@ export default {
     // atualizado automaticamente pelos workflows de build a cada nova
     // versao; o link em si nunca muda, entao pode ser compartilhado com
     // clientes ou usado direto no navegador do celular/computador.
-    if (pathname.startsWith('/download/') && request.method === 'GET') {
+    if (pathname.startsWith('/download/') && (request.method === 'GET' || request.method === 'HEAD')) {
       const fileName = pathname.replace('/download/', '');
-      const obj = await env.DOWNLOADS.get(fileName);
+      // Navegadores e gerenciadores de download (principalmente no Android)
+      // costumam mandar um HEAD antes do GET, so pra checar tamanho/tipo do
+      // arquivo antes de baixar de verdade -- se o HEAD desse 404, o
+      // download inteiro falhava mesmo com o arquivo existindo (bug real,
+      // encontrado testando o link de verdade).
+      const obj = request.method === 'HEAD'
+        ? await env.DOWNLOADS.head(fileName)
+        : await env.DOWNLOADS.get(fileName);
       if (!obj) return new Response('Arquivo não encontrado.', { status: 404 });
       const headers = new Headers();
       obj.writeHttpMetadata(headers);
       headers.set('Content-Disposition', `attachment; filename="${fileName}"`);
+      headers.set('Content-Length', String(obj.size));
       // no-store: impede qualquer cache (navegador, proxy) de reter uma
       // copia antiga do arquivo depois que um novo build e publicado no
       // mesmo link fixo -- ja causou confusao real (usuario baixou de novo
       // e recebeu, aparentemente, o .aab anterior).
       headers.set('Cache-Control', 'no-store, no-cache, must-revalidate');
-      return new Response(obj.body, { headers });
+      return new Response(request.method === 'HEAD' ? null : obj.body, { headers });
     }
 
     // POST /sync/push — um dispositivo manda as alteracoes locais (desde a
