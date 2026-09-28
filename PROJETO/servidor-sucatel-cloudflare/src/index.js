@@ -795,6 +795,24 @@ export default {
       return json({ ok: true, usuarios: usuarios.n, anuncios_ativos: anunciosAtivos.n, vendas_totais: vendas.n, denuncias_pendentes: denunciasPendentes.n });
     }
 
+    // Redefinição de emergência da senha de uma conta admin, pra quando o
+    // próprio admin fica travado sem conseguir entrar (sem isso não tem
+    // como recuperar, já que não existe envio de e-mail configurado ainda).
+    // Só funciona em contas com is_admin=1 e exige um segredo à parte
+    // (ADMIN_RESET_TOKEN) que só quem tem acesso ao deploy consegue usar.
+    if (pathname === '/admin/emergencia/redefinir-senha' && request.method === 'POST') {
+      if (!env.ADMIN_RESET_TOKEN || request.headers.get('X-Admin-Reset-Token') !== env.ADMIN_RESET_TOKEN) {
+        return json({ ok: false, erro: 'nao_autorizado' }, 401);
+      }
+      const { email, novaSenha } = await request.json().catch(() => ({}));
+      if (!email || !novaSenha || novaSenha.length < 6) return json({ ok: false, erro: 'dados_invalidos' }, 400);
+      const usuario = await env.DB.prepare('SELECT id FROM users WHERE email = ? AND is_admin = 1').bind(email.trim().toLowerCase()).first();
+      if (!usuario) return json({ ok: false, erro: 'admin_nao_encontrado' }, 404);
+      const hash = await hashSenha(novaSenha, env);
+      await env.DB.prepare('UPDATE users SET senha_hash = ? WHERE id = ?').bind(hash, usuario.id).run();
+      return json({ ok: true });
+    }
+
     return json({ ok: false, erro: 'rota_nao_encontrada' }, 404);
   },
 };
