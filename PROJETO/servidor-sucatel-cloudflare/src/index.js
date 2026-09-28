@@ -279,10 +279,16 @@ export default {
     if (pathname === '/auth/me' && request.method === 'DELETE') {
       const sess = await autenticar(request, env);
       if (!sess) return json({ ok: false, erro: 'nao_autenticado' }, 401);
+      // Anonimiza em vez de apagar a linha: conversas, mensagens e
+      // avaliações de outras pessoas continuam referenciando esse usuário
+      // (chave estrangeira), então um DELETE literal quebraria isso. O
+      // e-mail some (libera pra um novo cadastro) e o login fica impossível.
+      const senhaInutilizavel = await hashSenha(tokenAleatorio(), env);
       await env.DB.batch([
         env.DB.prepare('UPDATE sessoes SET revogada_em = ? WHERE user_id = ?').bind(nowIso(), sess.id),
         env.DB.prepare("UPDATE anuncios SET status = 'removido_admin' WHERE vendedor_id = ?").bind(sess.id),
-        env.DB.prepare('DELETE FROM users WHERE id = ?').bind(sess.id),
+        env.DB.prepare("UPDATE users SET nome = 'Conta excluída', email = ?, telefone = NULL, senha_hash = ? WHERE id = ?")
+          .bind(`excluido-${sess.id}@sucatel.invalid`, senhaInutilizavel, sess.id),
       ]);
       return json({ ok: true });
     }
