@@ -15,6 +15,9 @@ CREDITO_VALOR_CENTAVOS = "500"
 ANUNCIO_DURACAO_DIAS = "30"
 # Vendas confirmadas necessárias pra ganhar 1 crédito grátis de bônus.
 VENDAS_PARA_BONUS = "20"
+# Raio (km) da "região" ao redor do bairro do usuário na busca — mostra o
+# entorno real, nunca uma cidade distante (calculado com coordenadas reais).
+RAIO_BUSCA_KM = "10"
 # Pagamentos (Asaas). Testes: sandbox. Produção: https://api.asaas.com/v3
 ASAAS_BASE_URL = "https://sandbox.asaas.com/api/v3"
 

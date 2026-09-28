@@ -98,7 +98,7 @@ function usuarioPublico(u) {
     id: u.id, nome: u.nome, email: u.email, telefone: u.telefone,
     bairro_id: u.bairro_id, saldo_creditos: u.saldo_creditos,
     vendas_confirmadas_total: u.vendas_confirmadas_total, reputacao: u.reputacao,
-    is_admin: !!u.is_admin,
+    is_admin: !!u.is_admin, verificado: !!u.verificado, criado_em: u.criado_em,
   };
 }
 
@@ -122,6 +122,34 @@ async function expirarAnunciosVencidos(env) {
   await env.DB.prepare(
     "UPDATE anuncios SET status = 'expirado' WHERE status = 'ativo' AND expira_em <= ?"
   ).bind(nowIso()).run();
+}
+
+const CONDICOES_VALIDAS = ['novo', 'usado', 'com_defeito', 'sucata'];
+
+// Distância real entre dois pontos (fórmula de Haversine), em km.
+function distanciaKm(lat1, lng1, lat2, lng2) {
+  const R = 6371;
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLng = (lng2 - lng1) * Math.PI / 180;
+  const a = Math.sin(dLat / 2) ** 2 + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLng / 2) ** 2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
+// Bairros dentro do raio da região do usuário (mesmo espírito de "por
+// bairro/região" pedido: mostra o entorno real, nunca uma cidade distante).
+// Sem coordenada cadastrada, cai de volta pro bairro exato (nunca quebra).
+async function bairrosDaRegiao(env, bairroId, raioKm) {
+  const origem = await env.DB.prepare('SELECT id, lat, lng FROM bairros WHERE id = ?').bind(bairroId).first();
+  if (!origem || origem.lat == null || origem.lng == null) return { ids: [bairroId], distancias: { [bairroId]: 0 } };
+  const { results } = await env.DB.prepare('SELECT id, lat, lng FROM bairros WHERE lat IS NOT NULL AND lng IS NOT NULL').all();
+  const ids = [];
+  const distancias = {};
+  for (const b of results) {
+    const d = distanciaKm(origem.lat, origem.lng, b.lat, b.lng);
+    if (d <= raioKm) { ids.push(b.id); distancias[b.id] = Math.round(d * 10) / 10; }
+  }
+  if (!ids.includes(bairroId)) { ids.push(bairroId); distancias[bairroId] = 0; }
+  return { ids, distancias };
 }
 
 export default {
@@ -300,10 +328,11 @@ export default {
     if (pathname === '/anuncios' && request.method === 'POST') {
       const sess = await autenticar(request, env);
       if (!sess) return json({ ok: false, erro: 'nao_autenticado' }, 401);
-      const { marca_id, modelo_id, tipo_peca_id, titulo, descricao, preco_centavos, fotos, bairro_id } = await request.json();
+      const { marca_id, modelo_id, tipo_peca_id, titulo, descricao, preco_centavos, fotos, bairro_id, condicao } = await request.json();
       if (!marca_id || !modelo_id || !tipo_peca_id || !titulo || !preco_centavos || !bairro_id) {
         return json({ ok: false, erro: 'campos_obrigatorios' }, 400);
       }
+      const condicaoFinal = CONDICOES_VALIDAS.includes(condicao) ? condicao : 'usado';
       if (contemPalavraForaDoTema(titulo) || contemPalavraForaDoTema(descricao)) {
         return json({ ok: false, erro: 'fora_do_tema', mensagem: 'Este anúncio só aceita peças de celular.' }, 400);
       }
@@ -313,9 +342,9 @@ export default {
       const duracaoDias = Number(env.ANUNCIO_DURACAO_DIAS || 30);
       await env.DB.batch([
         env.DB.prepare(
-          `INSERT INTO anuncios (id, vendedor_id, marca_id, modelo_id, tipo_peca_id, titulo, descricao, preco_centavos, fotos, bairro_id, status, expira_em)
-           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'ativo', ?)`
-        ).bind(id, sess.id, marca_id, modelo_id, tipo_peca_id, titulo.trim(), descricao || '', preco_centavos, JSON.stringify(fotos || []), bairro_id, addDiasIso(duracaoDias)),
+          `INSERT INTO anuncios (id, vendedor_id, marca_id, modelo_id, tipo_peca_id, titulo, descricao, preco_centavos, fotos, bairro_id, condicao, status, expira_em)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'ativo', ?)`
+        ).bind(id, sess.id, marca_id, modelo_id, tipo_peca_id, titulo.trim(), descricao || '', preco_centavos, JSON.stringify(fotos || []), bairro_id, condicaoFinal, addDiasIso(duracaoDias)),
         env.DB.prepare('UPDATE users SET saldo_creditos = saldo_creditos - 1 WHERE id = ?').bind(sess.id),
       ]);
       const anuncio = await env.DB.prepare('SELECT * FROM anuncios WHERE id = ?').bind(id).first();
@@ -328,37 +357,55 @@ export default {
       const marcaId = url.searchParams.get('marca_id');
       const modeloId = url.searchParams.get('modelo_id');
       const tipoPecaId = url.searchParams.get('tipo_peca_id');
+      const grupo = url.searchParams.get('grupo');
+      const condicao = url.searchParams.get('condicao');
       const busca = url.searchParams.get('busca');
       if (!bairroId) return json({ ok: false, erro: 'bairro_id_obrigatorio' }, 400);
-      let sql = `SELECT a.*, u.nome AS vendedor_nome, u.reputacao AS vendedor_reputacao,
-                        m.nome AS marca_nome, mo.nome AS modelo_nome, tp.nome AS tipo_peca_nome
+      const raioKm = Number(env.RAIO_BUSCA_KM || 10);
+      const { ids: bairrosRegiao, distancias } = await bairrosDaRegiao(env, bairroId, raioKm);
+
+      let sql = `SELECT a.*, u.nome AS vendedor_nome, u.reputacao AS vendedor_reputacao, u.verificado AS vendedor_verificado,
+                        m.nome AS marca_nome, mo.nome AS modelo_nome, tp.nome AS tipo_peca_nome, b.nome AS bairro_nome
                  FROM anuncios a
                  JOIN users u ON u.id = a.vendedor_id
                  JOIN marcas m ON m.id = a.marca_id
                  JOIN modelos mo ON mo.id = a.modelo_id
                  JOIN tipos_peca tp ON tp.id = a.tipo_peca_id
-                 WHERE a.status = 'ativo' AND a.bairro_id = ?`;
-      const params = [bairroId];
+                 JOIN bairros b ON b.id = a.bairro_id
+                 WHERE a.status = 'ativo' AND a.bairro_id IN (${bairrosRegiao.map(() => '?').join(',')})`;
+      const params = [...bairrosRegiao];
       if (marcaId) { sql += ' AND a.marca_id = ?'; params.push(marcaId); }
       if (modeloId) { sql += ' AND a.modelo_id = ?'; params.push(modeloId); }
       if (tipoPecaId) { sql += ' AND a.tipo_peca_id = ?'; params.push(tipoPecaId); }
+      if (grupo) { sql += ' AND a.tipo_peca_id IN (SELECT id FROM tipos_peca WHERE grupo = ?)'; params.push(grupo); }
+      if (condicao) { sql += ' AND a.condicao = ?'; params.push(condicao); }
       if (busca) { sql += ' AND (a.titulo LIKE ? OR a.descricao LIKE ?)'; params.push(`%${busca}%`, `%${busca}%`); }
       sql += ' ORDER BY a.criado_em DESC LIMIT 100';
       const { results } = await env.DB.prepare(sql).bind(...params).all();
-      return json({ ok: true, anuncios: results });
+      const anuncios = results.map((a) => ({ ...a, distancia_km: distancias[a.bairro_id] ?? null }))
+        .sort((x, y) => (x.distancia_km ?? 99) - (y.distancia_km ?? 99));
+      return json({ ok: true, anuncios });
     }
 
     const matchAnuncioId = pathname.match(/^\/anuncios\/([^/]+)$/);
     if (matchAnuncioId && request.method === 'GET') {
+      const bairroVisitante = url.searchParams.get('bairro_id');
       const anuncio = await env.DB.prepare(
         `SELECT a.*, u.nome AS vendedor_nome, u.telefone AS vendedor_telefone, u.reputacao AS vendedor_reputacao,
-                m.nome AS marca_nome, mo.nome AS modelo_nome, tp.nome AS tipo_peca_nome
+                u.verificado AS vendedor_verificado, u.criado_em AS vendedor_desde,
+                m.nome AS marca_nome, mo.nome AS modelo_nome, tp.nome AS tipo_peca_nome, b.nome AS bairro_nome, b.lat AS bairro_lat, b.lng AS bairro_lng
          FROM anuncios a JOIN users u ON u.id = a.vendedor_id
          JOIN marcas m ON m.id = a.marca_id JOIN modelos mo ON mo.id = a.modelo_id JOIN tipos_peca tp ON tp.id = a.tipo_peca_id
+         JOIN bairros b ON b.id = a.bairro_id
          WHERE a.id = ?`
       ).bind(matchAnuncioId[1]).first();
       if (!anuncio) return json({ ok: false, erro: 'nao_encontrado' }, 404);
-      return json({ ok: true, anuncio });
+      let distanciaKmAtual = null;
+      if (bairroVisitante && anuncio.bairro_lat != null) {
+        const origem = await env.DB.prepare('SELECT lat, lng FROM bairros WHERE id = ?').bind(bairroVisitante).first();
+        if (origem && origem.lat != null) distanciaKmAtual = Math.round(distanciaKm(origem.lat, origem.lng, anuncio.bairro_lat, anuncio.bairro_lng) * 10) / 10;
+      }
+      return json({ ok: true, anuncio: { ...anuncio, distancia_km: distanciaKmAtual } });
     }
 
     const matchVender = pathname.match(/^\/anuncios\/([^/]+)\/vender$/);
@@ -431,6 +478,65 @@ export default {
          WHERE a.vendedor_id = ? ORDER BY a.criado_em DESC`
       ).bind(sess.id).all();
       return json({ ok: true, anuncios: results });
+    }
+
+    // ---- perfil público do vendedor ----
+    const matchUsuarioPublico = pathname.match(/^\/usuarios\/([^/]+)$/);
+    if (matchUsuarioPublico && request.method === 'GET') {
+      const u = await env.DB.prepare('SELECT id, nome, criado_em, reputacao, vendas_confirmadas_total, verificado FROM users WHERE id = ?').bind(matchUsuarioPublico[1]).first();
+      if (!u) return json({ ok: false, erro: 'nao_encontrado' }, 404);
+      const [anunciosAtivos, av] = await Promise.all([
+        env.DB.prepare("SELECT COUNT(*) AS n FROM anuncios WHERE vendedor_id = ? AND status = 'ativo'").bind(u.id).first(),
+        env.DB.prepare('SELECT COUNT(*) AS n, AVG(nota) AS media FROM avaliacoes WHERE vendedor_id = ?').bind(u.id).first(),
+      ]);
+      return json({
+        ok: true,
+        usuario: {
+          id: u.id, nome: u.nome, criado_em: u.criado_em, reputacao: u.reputacao,
+          vendas_confirmadas_total: u.vendas_confirmadas_total, verificado: !!u.verificado,
+          anuncios_ativos: anunciosAtivos.n, total_avaliacoes: av.n, media_avaliacoes: av.media ? Math.round(av.media * 10) / 10 : null,
+        },
+      });
+    }
+    const matchUsuarioAnuncios = pathname.match(/^\/usuarios\/([^/]+)\/anuncios$/);
+    if (matchUsuarioAnuncios && request.method === 'GET') {
+      const { results } = await env.DB.prepare(
+        `SELECT a.*, m.nome AS marca_nome, mo.nome AS modelo_nome, tp.nome AS tipo_peca_nome
+         FROM anuncios a JOIN marcas m ON m.id = a.marca_id JOIN modelos mo ON mo.id = a.modelo_id JOIN tipos_peca tp ON tp.id = a.tipo_peca_id
+         WHERE a.vendedor_id = ? AND a.status = 'ativo' ORDER BY a.criado_em DESC LIMIT 100`
+      ).bind(matchUsuarioAnuncios[1]).all();
+      return json({ ok: true, anuncios: results });
+    }
+    const matchUsuarioAvaliacoes = pathname.match(/^\/usuarios\/([^/]+)\/avaliacoes$/);
+    if (matchUsuarioAvaliacoes && request.method === 'GET') {
+      const [{ results }, distribuicaoRaw] = await Promise.all([
+        env.DB.prepare(
+          `SELECT av.*, u.nome AS avaliador_nome FROM avaliacoes av JOIN users u ON u.id = av.avaliador_id
+           WHERE av.vendedor_id = ? ORDER BY av.criado_em DESC LIMIT 100`
+        ).bind(matchUsuarioAvaliacoes[1]).all(),
+        env.DB.prepare('SELECT nota, COUNT(*) AS n FROM avaliacoes WHERE vendedor_id = ? GROUP BY nota').bind(matchUsuarioAvaliacoes[1]).all(),
+      ]);
+      const distribuicao = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+      for (const r of distribuicaoRaw.results) distribuicao[r.nota] = r.n;
+      return json({ ok: true, avaliacoes: results, distribuicao });
+    }
+
+    // ---- avaliação (só quem conversou de fato pode avaliar, 1x por conversa) ----
+    const matchAvaliar = pathname.match(/^\/conversas\/([^/]+)\/avaliar$/);
+    if (matchAvaliar && request.method === 'POST') {
+      const sess = await autenticar(request, env);
+      if (!sess) return json({ ok: false, erro: 'nao_autenticado' }, 401);
+      const conversa = await env.DB.prepare('SELECT * FROM conversas WHERE id = ?').bind(matchAvaliar[1]).first();
+      if (!conversa || conversa.comprador_id !== sess.id) return json({ ok: false, erro: 'nao_encontrada' }, 404);
+      const { nota, comentario } = await request.json();
+      const notaNum = Number(nota);
+      if (!Number.isInteger(notaNum) || notaNum < 1 || notaNum > 5) return json({ ok: false, erro: 'nota_invalida' }, 400);
+      const jaExiste = await env.DB.prepare('SELECT id FROM avaliacoes WHERE conversa_id = ?').bind(conversa.id).first();
+      if (jaExiste) return json({ ok: false, erro: 'ja_avaliado' }, 409);
+      await env.DB.prepare(
+        'INSERT INTO avaliacoes (id, conversa_id, vendedor_id, avaliador_id, nota, comentario) VALUES (?, ?, ?, ?, ?, ?)'
+      ).bind(uid(), conversa.id, conversa.vendedor_id, sess.id, notaNum, (comentario || '').trim()).run();
+      return json({ ok: true }, 201);
     }
 
     // ---- upload de foto (R2) ----
@@ -530,6 +636,20 @@ export default {
         if (penalidade_reputacao) await env.DB.prepare('UPDATE users SET reputacao = MAX(0, reputacao - ?) WHERE id = ?').bind(penalidade_reputacao, anuncio.vendedor_id).run();
       }
       return json({ ok: true });
+    }
+    const matchVerificarUsuario = pathname.match(/^\/admin\/usuarios\/([^/]+)\/verificar$/);
+    if (matchVerificarUsuario && request.method === 'POST') {
+      const sess = await autenticar(request, env);
+      if (!sess || !sess.is_admin) return json({ ok: false, erro: 'nao_autorizado' }, 401);
+      const { verificado } = await request.json();
+      await env.DB.prepare('UPDATE users SET verificado = ? WHERE id = ?').bind(verificado ? 1 : 0, matchVerificarUsuario[1]).run();
+      return json({ ok: true });
+    }
+    if (pathname === '/admin/usuarios' && request.method === 'GET') {
+      const sess = await autenticar(request, env);
+      if (!sess || !sess.is_admin) return json({ ok: false, erro: 'nao_autorizado' }, 401);
+      const { results } = await env.DB.prepare('SELECT id, nome, email, verificado, reputacao, criado_em FROM users ORDER BY criado_em DESC LIMIT 200').all();
+      return json({ ok: true, usuarios: results });
     }
     if (pathname === '/admin/stats' && request.method === 'GET') {
       const sess = await autenticar(request, env);
