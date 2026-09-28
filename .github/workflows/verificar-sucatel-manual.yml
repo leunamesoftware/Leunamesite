@@ -55,22 +55,32 @@ jobs:
               print('OK')
           PY
 
+          buscar_com_retry() {
+            local url="$1" arquivo="$2" caminho="$3" tentativas=0 valor
+            while [ "$tentativas" -lt 6 ]; do
+              tentativas=$((tentativas+1))
+              if curl -sS --fail "$url" -o "$arquivo" && valor=$(python3 sucatel_check.py extrair "$arquivo" "$caminho" 2>/dev/null); then
+                echo "$valor"
+                return 0
+              fi
+              echo "tentativa $tentativas falhou para $url, tentando de novo..." >&2
+              sleep 2
+            done
+            echo "FALHA definitiva apos $tentativas tentativas: $url" >&2
+            cat "$arquivo" >&2 || true
+            return 1
+          }
+
           echo "== health =="
           curl -sS --fail "$BASE/health"; echo
 
-          curl -sS --fail "$BASE/localizacao/estados" -o estados.json
-          ESTADO_ID=$(python3 sucatel_check.py extrair estados.json estados.0.id)
-          curl -sS --fail "$BASE/localizacao/cidades?estado_id=$ESTADO_ID" -o cidades.json
-          CIDADE_ID=$(python3 sucatel_check.py extrair cidades.json cidades.0.id)
-          curl -sS --fail "$BASE/localizacao/bairros?cidade_id=$CIDADE_ID" -o bairros.json
-          BAIRRO_ID=$(python3 sucatel_check.py extrair bairros.json bairros.0.id)
+          ESTADO_ID=$(buscar_com_retry "$BASE/localizacao/estados" estados.json estados.0.id)
+          CIDADE_ID=$(buscar_com_retry "$BASE/localizacao/cidades?estado_id=$ESTADO_ID" cidades.json cidades.0.id)
+          BAIRRO_ID=$(buscar_com_retry "$BASE/localizacao/bairros?cidade_id=$CIDADE_ID" bairros.json bairros.0.id)
 
-          curl -sS --fail "$BASE/categorias/marcas" -o marcas.json
-          MARCA_ID=$(python3 sucatel_check.py extrair marcas.json marcas.0.id)
-          curl -sS --fail "$BASE/categorias/modelos?marca_id=$MARCA_ID" -o modelos.json
-          MODELO_ID=$(python3 sucatel_check.py extrair modelos.json modelos.0.id)
-          curl -sS --fail "$BASE/categorias/tipos-peca" -o tipos.json
-          TIPO_ID=$(python3 sucatel_check.py extrair tipos.json tipos_peca.0.id)
+          MARCA_ID=$(buscar_com_retry "$BASE/categorias/marcas" marcas.json marcas.0.id)
+          MODELO_ID=$(buscar_com_retry "$BASE/categorias/modelos?marca_id=$MARCA_ID" modelos.json modelos.0.id)
+          TIPO_ID=$(buscar_com_retry "$BASE/categorias/tipos-peca" tipos.json tipos_peca.0.id)
           echo "bairro=$BAIRRO_ID marca=$MARCA_ID modelo=$MODELO_ID tipo=$TIPO_ID"
 
           EMAIL_V="teste-vendedor-$(date +%s)@sucatel-teste.com"
