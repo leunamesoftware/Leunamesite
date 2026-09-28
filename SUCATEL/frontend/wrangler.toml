@@ -1,0 +1,10 @@
+name = "sucatel-app"
+compatibility_date = "2026-09-28"
+
+# Publica o app Sucatel (site estático) como um Worker de "static assets"
+# na Cloudflare -- mesmo padrão do ConstruGestão/LeuName Gestão/LeuCloud.
+# Login/anúncios/chat reais acontecem no backend separado
+# (PROJETO/servidor-sucatel-cloudflare) -- este Worker só serve os
+# arquivos do app (HTML/CSS/JS/ícones/manifest).
+[assets]
+directory = "./"

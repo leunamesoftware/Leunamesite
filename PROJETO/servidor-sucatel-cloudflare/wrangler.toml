@@ -1,0 +1,36 @@
+name = "sucatel-api"
+main = "src/index.js"
+compatibility_date = "2026-09-01"
+
+[observability]
+enabled = true
+
+[vars]
+# Origens liberadas para o app web/painel admin. Em produção usar o domínio real.
+ALLOWED_ORIGINS = "*"
+TOKEN_TTL_HOURS = "720"
+# Valor de cada crédito (1 crédito = 1 anúncio por 30 dias), em centavos.
+CREDITO_VALOR_CENTAVOS = "500"
+# Duração de um anúncio ativo, em dias.
+ANUNCIO_DURACAO_DIAS = "30"
+# Vendas confirmadas necessárias pra ganhar 1 crédito grátis de bônus.
+VENDAS_PARA_BONUS = "20"
+# Pagamentos (Asaas). Testes: sandbox. Produção: https://api.asaas.com/v3
+ASAAS_BASE_URL = "https://sandbox.asaas.com/api/v3"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "sucatel"
+database_id = "a401ee60-e1c0-449e-a114-fec8936f0855"
+migrations_dir = "migrations"
+
+# Fotos dos anúncios. Bucket público-por-link (nunca listável).
+[[r2_buckets]]
+binding = "FOTOS"
+bucket_name = "sucatel-fotos"
+
+# Segredos obrigatórios (não ficam no código):
+#   npx wrangler secret put JWT_SECRET
+#   npx wrangler secret put PASSWORD_PEPPER
+#   npx wrangler secret put ASAAS_API_KEY
+#   npx wrangler secret put ASAAS_WEBHOOK_TOKEN

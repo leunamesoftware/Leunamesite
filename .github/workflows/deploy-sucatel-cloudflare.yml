@@ -1,0 +1,34 @@
+name: Deploy Sucatel App (Cloudflare)
+
+# Publica o app Sucatel (SUCATEL/frontend/) como um Worker de "static
+# assets" na Cloudflare -- mesmo padrão do LeuCloud/ConstruGestão.
+on:
+  workflow_dispatch:
+  push:
+    branches: [claude/leuname-github-setup-qwkedw]
+    paths:
+      - 'SUCATEL/frontend/**'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Baixar código do repositório
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Publicar o app (static assets)
+        working-directory: SUCATEL/frontend
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+        run: npx wrangler@latest deploy
+
+      - name: Esperar propagar
+        run: sleep 15
+
+      - name: Testar o site no ar
+        run: curl -sS --fail -o /dev/null -w "%{http_code}\n" https://sucatel-app.emanuelantunes2024.workers.dev/

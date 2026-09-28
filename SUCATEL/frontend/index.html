@@ -1,0 +1,516 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sucatel</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0d3b1f">
+<style>
+:root{
+  --bg:#0d3b1f; --bg2:#134a29; --card:#155c32; --card2:#1a6b3a; --borda:#2f8a54;
+  --texto:#ffffff; --fraco:#c9f2d8; --verde:#4ade80; --verde-forte:#22c55e; --alerta:#f59e0b; --erro:#ef4444;
+  --safe-t:env(safe-area-inset-top,0px); --safe-b:env(safe-area-inset-bottom,0px);
+}
+*{box-sizing:border-box;}
+body{margin:0; background:var(--bg); color:var(--texto); font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif; -webkit-font-smoothing:antialiased;}
+input,select,textarea,button{font-family:inherit; font-size:15px;}
+input,select,textarea{
+  width:100%; padding:11px 12px; border-radius:10px; background:var(--card); border:1px solid var(--borda); color:var(--texto);
+}
+input::placeholder,textarea::placeholder{color:var(--fraco); opacity:.7;}
+label{display:block; font-size:13px; color:var(--fraco); margin-bottom:5px; margin-top:12px;}
+.btn{
+  display:flex; align-items:center; justify-content:center; gap:6px; width:100%; padding:13px; border-radius:12px;
+  border:none; background:var(--verde-forte); color:#06210f; font-weight:700; cursor:pointer; margin-top:16px;
+}
+.btn.secundario{background:var(--card2); color:var(--texto); border:1px solid var(--borda);}
+.btn.pequeno{width:auto; padding:8px 14px; margin-top:0; font-size:13px;}
+.btn:disabled{opacity:.5;}
+.app-root{display:none; flex-direction:column; height:100vh; padding-top:var(--safe-t);}
+.app-root.pronto{display:flex;}
+.auth-screen{min-height:100vh; padding:24px 20px calc(24px + var(--safe-b)); padding-top:calc(24px + var(--safe-t)); display:flex; align-items:center; justify-content:center;}
+.auth-card{width:100%; max-width:380px;}
+.marca{display:flex; align-items:center; gap:10px; justify-content:center; margin-bottom:22px;}
+.marca img{width:44px; height:44px; border-radius:11px;}
+.marca h1{font-size:20px; margin:0;}
+.topbar{display:flex; align-items:center; gap:10px; padding:12px 16px; border-bottom:1px solid var(--borda); background:var(--bg2); flex-shrink:0;}
+.topbar h2{font-size:16px; margin:0; flex:1;}
+.topbar button{background:none; border:none; color:var(--texto); font-size:20px; cursor:pointer;}
+.conteudo{flex:1; overflow-y:auto; padding:16px; padding-bottom:calc(80px + var(--safe-b));}
+.tabbar{
+  display:flex; border-top:1px solid var(--borda); background:var(--bg2); flex-shrink:0; padding-bottom:var(--safe-b); position:fixed; bottom:0; left:0; right:0;
+}
+.tabbar button{flex:1; background:none; border:none; color:var(--fraco); padding:10px 0 8px; display:flex; flex-direction:column; align-items:center; gap:3px; font-size:11px; cursor:pointer;}
+.tabbar button.ativo{color:var(--verde);}
+.card{background:var(--card); border:1px solid var(--borda); border-radius:12px; padding:14px; margin-bottom:12px;}
+.chip{display:inline-block; background:var(--card2); border:1px solid var(--borda); border-radius:20px; padding:4px 11px; font-size:12px; color:var(--fraco); margin:2px 4px 2px 0;}
+.preco{font-weight:800; color:var(--verde); font-size:16px;}
+.muted{color:var(--fraco); font-size:13px;}
+.toast{position:fixed; left:16px; right:16px; bottom:calc(90px + var(--safe-b)); background:#111; color:#fff; padding:12px 16px; border-radius:10px; text-align:center; z-index:999; box-shadow:0 6px 20px rgba(0,0,0,.4);}
+.toast.erro{background:var(--erro);}
+.toast.sucesso{background:var(--verde-forte); color:#06210f;}
+.grid2{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
+.foto-preview{display:flex; gap:8px; flex-wrap:wrap; margin-top:8px;}
+.foto-preview img{width:64px; height:64px; object-fit:cover; border-radius:8px; border:1px solid var(--borda);}
+.msg{max-width:78%; padding:9px 12px; border-radius:14px; margin-bottom:8px; font-size:14px; line-height:1.4;}
+.msg.minha{background:var(--verde-forte); color:#06210f; margin-left:auto; border-bottom-right-radius:3px;}
+.msg.outra{background:var(--card2); border-bottom-left-radius:3px;}
+.msg.bloqueada{opacity:.7; font-style:italic;}
+.empty{text-align:center; padding:40px 20px; color:var(--fraco);}
+.anuncio-card{display:flex; gap:12px; padding:10px;}
+.anuncio-foto{width:76px; height:76px; border-radius:10px; object-fit:cover; flex-shrink:0; background:var(--card2);}
+.anuncio-foto-vazia{display:flex; align-items:center; justify-content:center; text-align:center; font-size:11px; color:var(--fraco); padding:4px;}
+.anuncio-info{flex:1; min-width:0;}
+.cat-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-bottom:14px;}
+.cat-item{display:flex; flex-direction:column; align-items:center; gap:5px; background:var(--card); border:1px solid var(--borda); border-radius:12px; padding:10px 4px; cursor:pointer; font-size:11px; text-align:center; color:var(--fraco);}
+.cat-item.ativo{border-color:var(--verde); color:var(--texto); background:var(--card2);}
+.cat-item .cat-icone{font-size:22px;}
+a{color:var(--verde);}
+</style>
+</head>
+<body>
+<div id="auth-root"></div>
+<div id="app-root" class="app-root">
+  <div class="topbar"><h2 id="topbar-titulo">Sucatel</h2></div>
+  <div id="conteudo" class="conteudo"></div>
+  <div class="tabbar">
+    <button data-tab="buscar">🔍<span>Buscar</span></button>
+    <button data-tab="anunciar">➕<span>Anunciar</span></button>
+    <button data-tab="meus">📦<span>Meus anúncios</span></button>
+    <button data-tab="conversas">💬<span>Conversas</span></button>
+    <button data-tab="perfil">👤<span>Perfil</span></button>
+  </div>
+</div>
+
+<script>
+const API = (function(){
+  const hosts = ['https://sucatel-api.emanuelantunes2024.workers.dev'];
+  return hosts[0];
+})();
+const LS_TOKEN = 'sucatel_token';
+let STATE = { usuario: null, bairroId: null, aba: 'buscar', marcas: [], tiposPeca: [] };
+
+function toast(msg, tipo){
+  const el = document.createElement('div');
+  el.className = 'toast' + (tipo ? ' ' + tipo : '');
+  el.textContent = msg;
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 3200);
+}
+function esc(s){ return (s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function safeJsonParse(s, fallback){ try { return JSON.parse(s); } catch(e) { return fallback; } }
+function centavosParaReais(c){ return 'R$ ' + (c/100).toFixed(2).replace('.', ','); }
+
+async function api(path, opts={}){
+  const token = localStorage.getItem(LS_TOKEN);
+  const headers = Object.assign({}, opts.headers || {});
+  if (token) headers['Authorization'] = 'Bearer ' + token;
+  if (opts.body && !(opts.body instanceof ArrayBuffer) && typeof opts.body !== 'string') {
+    headers['Content-Type'] = 'application/json';
+    opts.body = JSON.stringify(opts.body);
+  }
+  const resp = await fetch(API + path, Object.assign({}, opts, { headers }));
+  let data;
+  try { data = await resp.json(); } catch(e) { data = { ok:false, erro:'resposta_invalida' }; }
+  return { status: resp.status, data };
+}
+
+// ---------------- AUTH ----------------
+function renderAuth(tela){
+  const root = document.getElementById('auth-root');
+  document.getElementById('app-root').classList.remove('pronto');
+  if (tela === 'cadastro') return renderCadastro();
+  root.innerHTML = `
+  <div class="auth-screen"><div class="auth-card">
+    <div class="marca"><img src="icon-192.png" onerror="this.style.display='none'"><h1>Sucatel</h1></div>
+    <p class="muted" style="text-align:center;margin-bottom:18px;">Compra e venda de peças de celular usadas, por região.</p>
+    <label>E-mail</label><input id="lg-email" type="email" placeholder="seu@email.com">
+    <label>Senha</label><input id="lg-senha" type="password" placeholder="Sua senha">
+    <button class="btn" id="lg-entrar">Entrar</button>
+    <button class="btn secundario" id="lg-ir-cadastro">Criar conta grátis</button>
+  </div></div>`;
+  document.getElementById('lg-entrar').onclick = fazerLogin;
+  document.getElementById('lg-ir-cadastro').onclick = () => renderAuth('cadastro');
+}
+
+async function fazerLogin(){
+  const email = document.getElementById('lg-email').value.trim();
+  const senha = document.getElementById('lg-senha').value;
+  if (!email || !senha) return toast('Preencha e-mail e senha.', 'erro');
+  const { data } = await api('/auth/login', { method:'POST', body:{ email, senha } });
+  if (!data.ok) return toast(data.erro === 'credenciais_invalidas' ? 'E-mail ou senha errados.' : 'Erro ao entrar.', 'erro');
+  localStorage.setItem(LS_TOKEN, data.token);
+  STATE.usuario = data.usuario;
+  STATE.bairroId = data.usuario.bairro_id;
+  await boot();
+}
+
+async function renderCadastro(){
+  const root = document.getElementById('auth-root');
+  const { data: estadosData } = await api('/localizacao/estados');
+  root.innerHTML = `
+  <div class="auth-screen"><div class="auth-card">
+    <div class="marca"><img src="icon-192.png" onerror="this.style.display='none'"><h1>Sucatel</h1></div>
+    <label>Nome</label><input id="cd-nome" placeholder="Seu nome">
+    <label>E-mail</label><input id="cd-email" type="email" placeholder="seu@email.com">
+    <label>Telefone (opcional, não aparece pra outros usuários)</label><input id="cd-telefone" placeholder="(21) 9....">
+    <label>Senha (mínimo 6 caracteres)</label><input id="cd-senha" type="password" placeholder="Crie uma senha">
+    <label>Estado</label><select id="cd-estado"><option value="">Selecione</option>${(estadosData.estados||[]).map(e=>`<option value="${e.id}">${esc(e.nome)}</option>`).join('')}</select>
+    <label>Cidade</label><select id="cd-cidade" disabled><option value="">Escolha o estado primeiro</option></select>
+    <label>Bairro/Região</label><select id="cd-bairro" disabled><option value="">Escolha a cidade primeiro</option></select>
+    <button class="btn" id="cd-criar">Criar conta</button>
+    <button class="btn secundario" id="cd-voltar">Já tenho conta</button>
+  </div></div>`;
+  document.getElementById('cd-voltar').onclick = () => renderAuth('login');
+  document.getElementById('cd-estado').onchange = async (e) => {
+    const cidadeSel = document.getElementById('cd-cidade');
+    const bairroSel = document.getElementById('cd-bairro');
+    if (!e.target.value) { cidadeSel.disabled = true; cidadeSel.innerHTML = '<option value="">Escolha o estado primeiro</option>'; return; }
+    const { data } = await api('/localizacao/cidades?estado_id=' + e.target.value);
+    cidadeSel.disabled = false;
+    cidadeSel.innerHTML = '<option value="">Selecione</option>' + (data.cidades||[]).map(c=>`<option value="${c.id}">${esc(c.nome)}</option>`).join('');
+    bairroSel.disabled = true; bairroSel.innerHTML = '<option value="">Escolha a cidade primeiro</option>';
+  };
+  document.getElementById('cd-cidade').onchange = async (e) => {
+    const bairroSel = document.getElementById('cd-bairro');
+    if (!e.target.value) { bairroSel.disabled = true; bairroSel.innerHTML = '<option value="">Escolha a cidade primeiro</option>'; return; }
+    const { data } = await api('/localizacao/bairros?cidade_id=' + e.target.value);
+    bairroSel.disabled = false;
+    bairroSel.innerHTML = '<option value="">Selecione</option>' + (data.bairros||[]).map(b=>`<option value="${b.id}">${esc(b.nome)}</option>`).join('');
+  };
+  document.getElementById('cd-criar').onclick = fazerCadastro;
+}
+
+async function fazerCadastro(){
+  const nome = document.getElementById('cd-nome').value.trim();
+  const email = document.getElementById('cd-email').value.trim();
+  const telefone = document.getElementById('cd-telefone').value.trim();
+  const senha = document.getElementById('cd-senha').value;
+  const bairro_id = document.getElementById('cd-bairro').value;
+  if (!nome || !email || !senha || !bairro_id) return toast('Preencha todos os campos e escolha seu bairro.', 'erro');
+  if (senha.length < 6) return toast('A senha precisa ter pelo menos 6 caracteres.', 'erro');
+  const { data } = await api('/auth/cadastro', { method:'POST', body:{ nome, email, senha, telefone, bairro_id } });
+  if (!data.ok) return toast(data.erro === 'email_ja_cadastrado' ? 'Esse e-mail já tem conta.' : 'Erro ao cadastrar.', 'erro');
+  localStorage.setItem(LS_TOKEN, data.token);
+  STATE.usuario = data.usuario;
+  STATE.bairroId = data.usuario.bairro_id;
+  toast('Conta criada!', 'sucesso');
+  await boot();
+}
+
+// ---------------- APP ----------------
+async function carregarCategorias(){
+  const [m, tp] = await Promise.all([api('/categorias/marcas'), api('/categorias/tipos-peca')]);
+  STATE.marcas = m.data.marcas || [];
+  STATE.tiposPeca = tp.data.tipos_peca || [];
+}
+
+function setTab(tab){
+  STATE.aba = tab;
+  document.querySelectorAll('.tabbar button').forEach(b => b.classList.toggle('ativo', b.dataset.tab === tab));
+  const renders = { buscar: renderBuscar, anunciar: renderAnunciar, meus: renderMeusAnuncios, conversas: renderConversas, perfil: renderPerfil };
+  document.getElementById('topbar-titulo').textContent = { buscar:'Buscar peças', anunciar:'Anunciar peça', meus:'Meus anúncios', conversas:'Conversas', perfil:'Perfil' }[tab];
+  renders[tab]();
+}
+
+const ICONE_TIPO_PECA = { tela:'📱', placa:'🔌', bateria:'🔋', carcaca:'🛠️', camera:'📷', 'alto-falante':'🔊', 'conector-carga':'🔌', 'vidro-traseiro':'🪟', flex:'➰', outro:'🧩' };
+let filtroTipoAtivo = '';
+async function renderBuscar(){
+  const el = document.getElementById('conteudo');
+  el.innerHTML = `
+    <p class="muted" style="margin-top:0;">📍 Mostrando anúncios do seu bairro</p>
+    <div class="cat-grid" id="bs-categorias">
+      ${STATE.tiposPeca.map(t => `<div class="cat-item ${filtroTipoAtivo===t.id?'ativo':''}" data-tipo="${t.id}"><span class="cat-icone">${ICONE_TIPO_PECA[t.id]||'📦'}</span>${esc(t.nome)}</div>`).join('')}
+    </div>
+    <div class="card">
+      <label style="margin-top:0;">Marca</label>
+      <select id="bs-marca"><option value="">Todas</option>${STATE.marcas.map(m=>`<option value="${m.id}">${esc(m.nome)}</option>`).join('')}</select>
+      <label>Buscar por palavra</label>
+      <input id="bs-texto" placeholder="ex: A10, tela, placa...">
+      <button class="btn" id="bs-ir">Buscar</button>
+    </div>
+    <div id="bs-resultados"></div>`;
+  document.getElementById('bs-ir').onclick = buscarAnuncios;
+  document.querySelectorAll('#bs-categorias .cat-item').forEach(item => {
+    item.onclick = () => {
+      filtroTipoAtivo = filtroTipoAtivo === item.dataset.tipo ? '' : item.dataset.tipo;
+      renderBuscar();
+    };
+  });
+  buscarAnuncios();
+}
+
+async function buscarAnuncios(){
+  const marca = document.getElementById('bs-marca')?.value || '';
+  const tipo = filtroTipoAtivo;
+  const texto = document.getElementById('bs-texto')?.value || '';
+  let path = '/anuncios?bairro_id=' + encodeURIComponent(STATE.bairroId);
+  if (marca) path += '&marca_id=' + marca;
+  if (tipo) path += '&tipo_peca_id=' + tipo;
+  if (texto) path += '&busca=' + encodeURIComponent(texto);
+  const { data } = await api(path);
+  const box = document.getElementById('bs-resultados');
+  if (!data.ok || !data.anuncios.length) { box.innerHTML = '<div class="empty">Nenhum anúncio no seu bairro ainda.<br>Seja o primeiro a anunciar!</div>'; return; }
+  box.innerHTML = data.anuncios.map(a => {
+    const fotos = safeJsonParse(a.fotos, []);
+    const capa = fotos[0] || null;
+    return `
+    <div class="card anuncio-card" onclick="abrirAnuncio('${a.id}')" style="cursor:pointer;">
+      ${capa ? `<img class="anuncio-foto" src="${esc(capa)}" alt="">` : `<div class="anuncio-foto anuncio-foto-vazia">${esc(a.tipo_peca_nome)}</div>`}
+      <div class="anuncio-info">
+        <div class="chip">${esc(a.marca_nome)}</div><div class="chip">${esc(a.modelo_nome)}</div>
+        <div style="font-weight:700;margin-top:4px;">${esc(a.titulo)}</div>
+        <div class="preco">${centavosParaReais(a.preco_centavos)}</div>
+        <div class="muted">${esc(a.vendedor_nome)} · reputação ${a.vendedor_reputacao}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+let anuncioAberto = null;
+window.abrirAnuncio = async function(id){
+  const { data } = await api('/anuncios/' + id);
+  if (!data.ok) return toast('Anúncio não encontrado.', 'erro');
+  anuncioAberto = data.anuncio;
+  const a = data.anuncio;
+  const souVendedor = STATE.usuario && a.vendedor_id === STATE.usuario.id;
+  document.getElementById('topbar-titulo').textContent = 'Anúncio';
+  const fotos = safeJsonParse(a.fotos, []);
+  document.getElementById('conteudo').innerHTML = `
+    ${fotos.length ? `<div style="display:flex;gap:8px;overflow-x:auto;margin-bottom:12px;">${fotos.map(f=>`<img src="${esc(f)}" style="width:100%;max-width:320px;height:200px;object-fit:cover;border-radius:12px;flex-shrink:0;">`).join('')}</div>` : ''}
+    <div class="card">
+      <div class="chip">${esc(a.marca_nome)}</div><div class="chip">${esc(a.modelo_nome)}</div><div class="chip">${esc(a.tipo_peca_nome)}</div>
+      <h3 style="margin:8px 0 4px;">${esc(a.titulo)}</h3>
+      <div class="preco" style="font-size:20px;">${centavosParaReais(a.preco_centavos)}</div>
+      <p class="muted" style="margin-top:8px;">${esc(a.descricao || 'Sem descrição.')}</p>
+      <p class="muted">Vendedor: ${esc(a.vendedor_nome)} · reputação ${a.vendedor_reputacao}</p>
+      ${souVendedor ? '' : `<button class="btn" onclick="iniciarConversa('${a.id}')">Conversar com o vendedor</button>
+      <button class="btn secundario" onclick="denunciarAnuncio('${a.id}')">Denunciar anúncio</button>`}
+    </div>`;
+};
+
+window.denunciarAnuncio = async function(id){
+  const motivo = prompt('Motivo (sem_estoque / fora_do_tema / golpe / outro):', 'sem_estoque');
+  if (!motivo) return;
+  const { data } = await api('/anuncios/' + id + '/denunciar', { method:'POST', body:{ motivo } });
+  toast(data.ok ? 'Denúncia enviada, obrigado.' : 'Erro ao denunciar.', data.ok ? 'sucesso' : 'erro');
+};
+
+// ---- anunciar ----
+let fotosSelecionadas = [];
+async function renderAnunciar(){
+  fotosSelecionadas = [];
+  const el = document.getElementById('conteudo');
+  el.innerHTML = `
+    <div class="card">
+      <p class="muted">Seu saldo: <strong id="an-saldo">carregando...</strong> crédito(s). Cada anúncio custa 1 crédito e fica no ar por 30 dias.</p>
+      <label style="margin-top:0;">Marca</label>
+      <select id="an-marca"><option value="">Selecione</option>${STATE.marcas.map(m=>`<option value="${m.id}">${esc(m.nome)}</option>`).join('')}</select>
+      <label>Modelo</label>
+      <select id="an-modelo" disabled><option value="">Escolha a marca primeiro</option></select>
+      <label>Tipo de peça</label>
+      <select id="an-tipo"><option value="">Selecione</option>${STATE.tiposPeca.map(t=>`<option value="${t.id}">${esc(t.nome)}</option>`).join('')}</select>
+      <label>Título</label><input id="an-titulo" placeholder="ex: Placa Samsung A10 original">
+      <label>Descrição</label><textarea id="an-descricao" rows="3" placeholder="Estado da peça, testada, etc."></textarea>
+      <label>Preço (R$)</label><input id="an-preco" type="number" step="0.01" placeholder="0,00">
+      <label>Fotos (só peça de celular)</label>
+      <input id="an-foto-input" type="file" accept="image/*" multiple>
+      <div class="foto-preview" id="an-fotos-preview"></div>
+      <button class="btn" id="an-publicar">Publicar anúncio (1 crédito)</button>
+    </div>`;
+  document.getElementById('an-marca').onchange = async (e) => {
+    const sel = document.getElementById('an-modelo');
+    if (!e.target.value) { sel.disabled = true; sel.innerHTML = '<option value="">Escolha a marca primeiro</option>'; return; }
+    const { data } = await api('/categorias/modelos?marca_id=' + e.target.value);
+    sel.disabled = false;
+    sel.innerHTML = '<option value="">Selecione</option>' + (data.modelos||[]).map(m=>`<option value="${m.id}">${esc(m.nome)}</option>`).join('');
+  };
+  document.getElementById('an-foto-input').onchange = async (e) => {
+    for (const file of e.target.files) {
+      if (fotosSelecionadas.length >= 5) { toast('Máximo 5 fotos.', 'erro'); break; }
+      const url = URL.createObjectURL(file);
+      fotosSelecionadas.push({ file, previewUrl: url });
+    }
+    document.getElementById('an-fotos-preview').innerHTML = fotosSelecionadas.map(f => `<img src="${f.previewUrl}">`).join('');
+  };
+  document.getElementById('an-publicar').onclick = publicarAnuncio;
+  const { data } = await api('/creditos/saldo');
+  if (data.ok) document.getElementById('an-saldo').textContent = data.saldo_creditos;
+}
+
+async function publicarAnuncio(){
+  const marca_id = document.getElementById('an-marca').value;
+  const modelo_id = document.getElementById('an-modelo').value;
+  const tipo_peca_id = document.getElementById('an-tipo').value;
+  const titulo = document.getElementById('an-titulo').value.trim();
+  const descricao = document.getElementById('an-descricao').value.trim();
+  const precoReais = parseFloat(document.getElementById('an-preco').value);
+  if (!marca_id || !modelo_id || !tipo_peca_id || !titulo || !precoReais) return toast('Preencha marca, modelo, tipo, título e preço.', 'erro');
+  const btn = document.getElementById('an-publicar');
+  btn.disabled = true; btn.textContent = 'Enviando fotos...';
+  const fotosUrls = [];
+  for (const f of fotosSelecionadas) {
+    const resp = await fetch(API + '/upload-foto', {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer ' + localStorage.getItem(LS_TOKEN), 'X-File-Name': f.file.name, 'Content-Type': f.file.type },
+      body: f.file,
+    });
+    const d = await resp.json();
+    if (d.ok) fotosUrls.push(API + d.url);
+  }
+  btn.textContent = 'Publicando...';
+  const { data } = await api('/anuncios', { method:'POST', body:{ marca_id, modelo_id, tipo_peca_id, titulo, descricao, preco_centavos: Math.round(precoReais*100), fotos: fotosUrls, bairro_id: STATE.bairroId } });
+  btn.disabled = false; btn.textContent = 'Publicar anúncio (1 crédito)';
+  if (!data.ok) {
+    if (data.erro === 'sem_creditos') return toast('Você não tem créditos. Vá em Perfil > Comprar créditos.', 'erro');
+    if (data.erro === 'fora_do_tema') return toast('Este anúncio só aceita peças de celular.', 'erro');
+    return toast('Erro ao publicar.', 'erro');
+  }
+  toast('Anúncio publicado!', 'sucesso');
+  setTab('meus');
+}
+
+async function renderMeusAnuncios(){
+  const el = document.getElementById('conteudo');
+  el.innerHTML = '<div class="muted">Carregando...</div>';
+  const { data } = await api('/anuncios/meus');
+  if (!data.ok || !data.anuncios.length) { el.innerHTML = '<div class="empty">Você ainda não tem anúncios.</div>'; return; }
+  el.innerHTML = data.anuncios.map(a => `
+    <div class="card">
+      <div class="chip">${esc(a.marca_nome)}</div><div class="chip">${esc(a.modelo_nome)}</div>
+      <div style="font-weight:700;">${esc(a.titulo)}</div>
+      <div class="preco">${centavosParaReais(a.preco_centavos)}</div>
+      <p class="muted">Status: ${statusLabel(a.status)} · expira ${new Date(a.expira_em).toLocaleDateString('pt-BR')}</p>
+      ${a.status === 'ativo' ? `
+        <div class="grid2">
+          <button class="btn pequeno" onclick="marcarVendido('${a.id}')">Marcar venda</button>
+          <button class="btn pequeno secundario" onclick="pausarAnuncio('${a.id}')">Pausar</button>
+        </div>` : ''}
+      ${a.status === 'expirado' ? `<button class="btn pequeno" onclick="renovarAnuncio('${a.id}')">Renovar (1 crédito)</button>` : ''}
+    </div>`).join('');
+}
+function statusLabel(s){ return { ativo:'Ativo', pausado_manual:'Pausado', expirado:'Expirado', removido_admin:'Removido' }[s] || s; }
+window.marcarVendido = async function(id){
+  const { data } = await api('/anuncios/' + id + '/vender', { method:'POST' });
+  if (!data.ok) return toast('Erro.', 'erro');
+  toast(data.ganhou_credito_bonus ? 'Venda registrada! Você ganhou 1 crédito de bônus 🎉' : 'Venda registrada!', 'sucesso');
+  renderMeusAnuncios();
+};
+window.pausarAnuncio = async function(id){
+  await api('/anuncios/' + id + '/pausar', { method:'POST' });
+  toast('Anúncio pausado.', 'sucesso');
+  renderMeusAnuncios();
+};
+window.renovarAnuncio = async function(id){
+  const { data } = await api('/anuncios/' + id + '/renovar', { method:'POST' });
+  if (!data.ok) return toast(data.erro === 'sem_creditos' ? 'Sem créditos suficientes.' : 'Erro.', 'erro');
+  toast('Anúncio renovado por mais 30 dias!', 'sucesso');
+  renderMeusAnuncios();
+};
+
+// ---- conversas / chat ----
+window.iniciarConversa = async function(anuncioId){
+  const { data } = await api('/conversas', { method:'POST', body:{ anuncio_id: anuncioId } });
+  if (!data.ok) return toast('Erro ao iniciar conversa.', 'erro');
+  abrirChat(data.conversa.id);
+};
+async function renderConversas(){
+  const el = document.getElementById('conteudo');
+  const { data } = await api('/conversas');
+  if (!data.ok || !data.conversas.length) { el.innerHTML = '<div class="empty">Nenhuma conversa ainda.</div>'; return; }
+  el.innerHTML = data.conversas.map(c => `
+    <div class="card" style="cursor:pointer;" onclick="abrirChat('${c.id}')">
+      <div style="font-weight:700;">${esc(c.anuncio_titulo)}</div>
+      <div class="muted">${esc(c.ultima_mensagem || 'Sem mensagens ainda.')}</div>
+    </div>`).join('');
+}
+window.abrirChat = async function(conversaId){
+  document.getElementById('topbar-titulo').textContent = 'Conversa';
+  document.getElementById('conteudo').innerHTML = `
+    <div id="chat-msgs"></div>
+    <div style="display:flex; gap:8px; position:sticky; bottom:0; padding-top:8px;">
+      <input id="chat-texto" placeholder="Digite sem passar telefone/WhatsApp...">
+      <button class="btn pequeno" id="chat-enviar" style="margin-top:0;">Enviar</button>
+    </div>`;
+  const carregar = async () => {
+    const { data } = await api('/conversas/' + conversaId + '/mensagens');
+    const box = document.getElementById('chat-msgs');
+    box.innerHTML = (data.mensagens||[]).map(m => `<div class="msg ${m.remetente_id === STATE.usuario.id ? 'minha' : 'outra'} ${m.bloqueada ? 'bloqueada' : ''}">${esc(m.texto)}</div>`).join('');
+  };
+  document.getElementById('chat-enviar').onclick = async () => {
+    const input = document.getElementById('chat-texto');
+    const texto = input.value.trim();
+    if (!texto) return;
+    const { data } = await api('/conversas/' + conversaId + '/mensagens', { method:'POST', body:{ texto } });
+    if (data.bloqueada) toast('Não é permitido compartilhar telefone/WhatsApp pelo chat.', 'erro');
+    input.value = '';
+    carregar();
+  };
+  carregar();
+};
+
+// ---- perfil / créditos ----
+async function renderPerfil(){
+  const { data: saldoData } = await api('/creditos/saldo');
+  const el = document.getElementById('conteudo');
+  el.innerHTML = `
+    <div class="card">
+      <div style="font-weight:700; font-size:16px;">${esc(STATE.usuario.nome)}</div>
+      <div class="muted">${esc(STATE.usuario.email)}</div>
+      <p class="muted">Reputação: ${STATE.usuario.reputacao} · Vendas confirmadas: ${saldoData.vendas_confirmadas_total ?? 0}</p>
+    </div>
+    <div class="card">
+      <div style="font-size:14px; color:var(--fraco);">Saldo de créditos</div>
+      <div style="font-size:28px; font-weight:800; color:var(--verde);">${saldoData.saldo_creditos ?? 0}</div>
+      <p class="muted">1 crédito = R$5 = 1 anúncio por 30 dias.</p>
+      <label style="margin-top:0;">Quantidade de créditos</label>
+      <input id="pf-qtd-creditos" type="number" min="1" value="5">
+      <button class="btn" id="pf-comprar">Comprar créditos (Pix)</button>
+      <div id="pf-pix-area"></div>
+    </div>
+    <button class="btn secundario" id="pf-sair">Sair da conta</button>`;
+  document.getElementById('pf-comprar').onclick = comprarCreditos;
+  document.getElementById('pf-sair').onclick = async () => { await api('/auth/logout', { method:'POST' }); localStorage.removeItem(LS_TOKEN); location.reload(); };
+}
+async function comprarCreditos(){
+  const qtd = parseInt(document.getElementById('pf-qtd-creditos').value, 10);
+  if (!qtd || qtd < 1) return toast('Quantidade inválida.', 'erro');
+  const { data } = await api('/creditos/comprar', { method:'POST', body:{ quantidade: qtd } });
+  const area = document.getElementById('pf-pix-area');
+  if (!data.ok) {
+    area.innerHTML = data.erro === 'pagamento_nao_configurado'
+      ? '<p class="muted">O pagamento por Pix ainda não foi ativado pelo administrador. Fale com o suporte.</p>'
+      : '<p class="muted">Erro ao gerar cobrança.</p>';
+    return;
+  }
+  area.innerHTML = `
+    <p class="muted">Pague o Pix abaixo. Os créditos entram automaticamente assim que o pagamento for confirmado.</p>
+    ${data.qr_code_base64 ? `<img src="data:image/png;base64,${data.qr_code_base64}" style="width:100%;max-width:240px;border-radius:8px;">` : ''}
+    <label>Pix copia e cola</label>
+    <textarea rows="3" readonly>${esc(data.pix_copia_cola || '')}</textarea>`;
+}
+
+function setupPWA(){
+  try {
+    if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
+  } catch(e) { console.warn('PWA indisponível neste ambiente.', e); }
+}
+async function boot(){
+  setupPWA();
+  const token = localStorage.getItem(LS_TOKEN);
+  if (!token) { renderAuth('login'); return; }
+  const { data } = await api('/auth/me');
+  if (!data.ok) { localStorage.removeItem(LS_TOKEN); renderAuth('login'); return; }
+  STATE.usuario = data.usuario;
+  STATE.bairroId = data.usuario.bairro_id;
+  document.getElementById('auth-root').innerHTML = '';
+  document.getElementById('app-root').classList.add('pronto');
+  await carregarCategorias();
+  document.querySelectorAll('.tabbar button').forEach(b => b.onclick = () => setTab(b.dataset.tab));
+  setTab('buscar');
+}
+boot();
+</script>
+</body>
+</html>

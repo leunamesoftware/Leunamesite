@@ -1,0 +1,69 @@
+name: Deploy Servidor do Sucatel (Cloudflare)
+
+# Publica/atualiza o Worker "sucatel-api" na Cloudflare: sobe o código,
+# liga o banco D1 (sucatel) e o bucket R2 (sucatel-fotos). Gera os
+# segredos PASSWORD_PEPPER e JWT_SECRET na primeira vez (nunca ficam
+# salvos no repositório). ASAAS_API_KEY/ASAAS_WEBHOOK_TOKEN precisam ser
+# configurados manualmente depois, quando a conta Asaas existir -- até
+# lá, o sistema de créditos responde "pagamento não configurado" em vez
+# de fingir que processou.
+#
+# Requer o segredo CF_API_TOKEN no repositório (já usado pelos outros
+# servidores Cloudflare do projeto).
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Baixar código do repositório
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Aplicar as migrações no banco D1
+        working-directory: PROJETO/servidor-sucatel-cloudflare
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+        run: npx wrangler@latest d1 migrations apply sucatel --remote
+
+      - name: Publicar o Worker (código + banco D1 + bucket R2)
+        working-directory: PROJETO/servidor-sucatel-cloudflare
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+        run: npx wrangler@latest deploy
+
+      - name: Gerar segredos PASSWORD_PEPPER e JWT_SECRET (só se ainda não existirem)
+        working-directory: PROJETO/servidor-sucatel-cloudflare
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+        run: |
+          EXISTENTES="$(npx wrangler@latest secret list)"
+          if echo "$EXISTENTES" | grep -q '"name": *"PASSWORD_PEPPER"'; then
+            echo "PASSWORD_PEPPER já existe -- não mexe."
+          else
+            openssl rand -hex 32 | tr -d '\n' | npx wrangler@latest secret put PASSWORD_PEPPER
+          fi
+          if echo "$EXISTENTES" | grep -q '"name": *"JWT_SECRET"'; then
+            echo "JWT_SECRET já existe -- não mexe."
+          else
+            openssl rand -hex 32 | tr -d '\n' | npx wrangler@latest secret put JWT_SECRET
+          fi
+
+      - name: Esperar propagar
+        run: sleep 15
+
+      - name: Testar o servidor no ar
+        run: |
+          URL="https://sucatel-api.emanuelantunes2024.workers.dev/health"
+          for i in 1 2 3 4 5; do
+            if curl -sS --fail "$URL"; then exit 0; fi
+            echo "Tentativa $i falhou, esperando mais um pouco..."
+            sleep 15
+          done
+          echo "Não respondeu depois de várias tentativas."
+          exit 1
