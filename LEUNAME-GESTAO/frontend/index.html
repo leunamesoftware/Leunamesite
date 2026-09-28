@@ -2745,6 +2745,9 @@ const LICENSE_REVOKED_MOTIVO_LS_KEY='leuname_licenca_revogada_motivo';
 async function checkLicenseRevoked(){
   const chave=lsGet(LICENSE_LS_KEY);
   if(!chave) return false;
+  // Chave de teste: gerada localmente, nunca cadastrada no servidor -- a
+  // trava de "chave nao cadastrada" abaixo e so pra chaves compradas.
+  if(isTrialKey(chave)) return false;
   let resp;
   try{ resp=await fetch(SYNC_API_BASE+'/licencas/verificar?chave='+encodeURIComponent(chave)); }
   catch(e){ return false; }
