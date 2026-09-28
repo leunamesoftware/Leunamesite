@@ -2,59 +2,137 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Sucatell Admin</title>
 <link rel="manifest" href="admin-manifest.webmanifest">
 <link rel="icon" href="icon-192.png">
 <meta name="theme-color" content="#0d3b1f">
 <style>
-:root{ --bg:#0d3b1f; --card:#155c32; --card2:#1a6b3a; --borda:#2f8a54; --texto:#fff; --fraco:#c9f2d8; --verde:#4ade80; --verde-forte:#22c55e; --erro:#ef4444; --alerta:#f59e0b; }
+:root{
+  --verde-escuro:#0d3b1f; --verde:#178a43; --verde-forte:#16a34a; --verde-claro:#e7f5ea;
+  --bg:#f4f7f4; --card:#ffffff; --borda:#e3e9e3; --texto:#152018; --fraco:#68796d;
+  --erro:#dc2626; --erro-bg:#fee2e2; --alerta:#b45309; --alerta-bg:#fef3c7; --azul:#2563eb; --azul-bg:#dbeafe;
+  --safe-t:env(safe-area-inset-top,0px); --safe-b:env(safe-area-inset-bottom,0px);
+}
 *{box-sizing:border-box;}
-body{margin:0; background:var(--bg); color:var(--texto); font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;}
-.wrap{max-width:760px; margin:0 auto; padding:20px;}
-h1{font-size:20px;}
-input{width:100%; padding:11px; border-radius:10px; background:var(--card); border:1px solid var(--borda); color:var(--texto); margin-bottom:10px;}
+body{margin:0; background:var(--bg); color:var(--texto); font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif; -webkit-font-smoothing:antialiased;}
+input,button{font-family:inherit; font-size:15px;}
+input{width:100%; padding:12px 13px; border-radius:10px; background:#fff; border:1.5px solid var(--borda); color:var(--texto); margin-bottom:12px;}
+input:focus{outline:2px solid var(--verde); outline-offset:-1px;}
+input::placeholder{color:var(--fraco); opacity:.85;}
+label{display:block; font-size:13px; font-weight:600; color:var(--fraco); margin-bottom:6px;}
 .campo-senha{position:relative;}
 .campo-senha input{padding-right:42px;}
-.campo-senha .olho{position:absolute; right:2px; top:2px; bottom:2px; background:none; border:none; padding:0 10px; cursor:pointer; font-size:17px; color:var(--fraco); display:flex; align-items:center;}
-button{padding:10px 16px; border-radius:10px; border:none; background:var(--verde-forte); color:#06210f; font-weight:700; cursor:pointer;}
-button.secundario{background:var(--card2); color:var(--texto); border:1px solid var(--borda);}
-button.perigo{background:var(--erro); color:#fff;}
-.card{background:var(--card); border:1px solid var(--borda); border-radius:12px; padding:14px; margin-bottom:12px;}
-.stats{display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-bottom:18px;}
-.stat{background:var(--card2); border:1px solid var(--borda); border-radius:10px; padding:12px; text-align:center;}
-.stat b{display:block; font-size:22px; color:var(--verde);}
+.campo-senha .olho{position:absolute; right:2px; top:2px; bottom:14px; background:none; border:none; padding:0 10px; cursor:pointer; font-size:18px; color:var(--fraco); display:flex; align-items:center;}
+button{padding:11px 16px; border-radius:10px; border:none; background:var(--verde-forte); color:#fff; font-weight:700; cursor:pointer;}
+button.secundario{background:#fff; color:var(--texto); border:1.5px solid var(--borda);}
+button.perigo{background:#fff; color:var(--erro); border:1.5px solid var(--erro);}
+button.pequeno{padding:8px 13px; font-size:13px;}
+button:active{transform:translateY(1px);}
+
+/* ---- login ---- */
+#login-view{min-height:100vh; display:flex; align-items:center; justify-content:center; padding:24px;}
+.login-card{width:100%; max-width:380px;}
+.marca-login{text-align:center; font-size:26px; font-weight:800; margin-bottom:4px;}
+.marca-login .adm{color:var(--verde-forte);}
+.sub-login{text-align:center; color:var(--fraco); font-size:14px; margin-bottom:26px;}
+.login-box{background:var(--card); border:1px solid var(--borda); border-radius:16px; padding:22px; box-shadow:0 8px 24px rgba(13,59,31,.06);}
+.btn-entrar{width:100%; padding:14px; border-radius:12px; margin-top:4px; font-size:15px;}
+.erro-login{color:var(--erro); font-size:13px; margin-top:10px; min-height:16px;}
+
+/* ---- shell do painel ---- */
+#app-view{display:none; min-height:100vh; flex-direction:column;}
+.topbar{background:var(--verde-escuro); color:#fff; padding:calc(14px + var(--safe-t)) 18px 14px; display:flex; align-items:center; justify-content:space-between;}
+.marca-topo{font-size:18px; font-weight:800;}
+.marca-topo .adm{color:#86efac; font-weight:700; font-size:13px; vertical-align:middle; margin-left:6px; background:rgba(255,255,255,.12); padding:3px 8px; border-radius:999px;}
+.sair{background:rgba(255,255,255,.14); color:#fff; padding:8px 14px; font-size:13px;}
+.tabs{display:flex; gap:4px; background:#0a2e18; padding:0 12px;}
+.tab{flex:1; background:none; color:#bfe3cc; border-radius:0; padding:12px 6px; font-size:13px; font-weight:700; border-bottom:3px solid transparent; position:relative;}
+.tab.ativo{color:#fff; border-bottom-color:var(--verde-forte);}
+.badge-num{position:absolute; top:6px; right:14px; background:var(--erro); color:#fff; font-size:10px; font-weight:800; min-width:16px; height:16px; border-radius:999px; display:flex; align-items:center; justify-content:center; padding:0 3px;}
+main.wrap{flex:1; max-width:760px; width:100%; margin:0 auto; padding:20px 18px calc(30px + var(--safe-b));}
+.view[hidden]{display:none;}
+h2.titulo-view{font-size:17px; margin:0 0 14px;}
+
+/* ---- stats ---- */
+.stats{display:grid; grid-template-columns:repeat(2,1fr); gap:10px; margin-bottom:6px;}
+@media (min-width:480px){ .stats{grid-template-columns:repeat(4,1fr);} }
+.stat{background:var(--card); border:1px solid var(--borda); border-radius:14px; padding:16px 10px; text-align:center;}
+.stat .ic{font-size:20px;}
+.stat b{display:block; font-size:24px; margin-top:4px;}
 .stat span{font-size:11px; color:var(--fraco);}
+
+/* ---- cards ---- */
+.card{background:var(--card); border:1px solid var(--borda); border-radius:14px; padding:14px; margin-bottom:10px;}
 .muted{color:var(--fraco); font-size:13px;}
-.row{display:flex; gap:8px; margin-top:8px;}
-#login-box{max-width:360px; margin:60px auto;}
+.vazio{color:var(--fraco); font-size:14px; text-align:center; padding:30px 10px;}
+.row{display:flex; gap:8px; margin-top:10px; flex-wrap:wrap;}
+
+/* ---- usuário ---- */
+.usuario-linha{display:flex; gap:12px; align-items:flex-start;}
+.avatar{width:42px; height:42px; border-radius:50%; background:var(--verde-claro); color:var(--verde-escuro); font-weight:800; font-size:15px; display:flex; align-items:center; justify-content:center; flex-shrink:0;}
+.usuario-nome{font-weight:700; font-size:15px; display:flex; align-items:center; gap:6px; flex-wrap:wrap;}
+.pill{font-size:11px; font-weight:700; padding:2px 8px; border-radius:999px;}
+.pill.verificado{background:var(--verde-claro); color:var(--verde-escuro);}
+.pill.admin{background:var(--alerta-bg); color:var(--alerta);}
+.pill.bloqueado{background:var(--erro-bg); color:var(--erro);}
+
+/* ---- denúncia ---- */
+.denuncia-titulo{font-weight:700; font-size:15px;}
+.denuncia-citacao{background:var(--bg); border-radius:8px; padding:8px 10px; margin-top:6px; font-size:13px; font-style:italic; color:var(--fraco);}
 </style>
 </head>
 <body>
-<div class="wrap">
-  <div id="login-box">
-    <h1>Sucatell — Painel Admin</h1>
-    <input id="lg-email" type="email" placeholder="E-mail admin">
-    <div class="campo-senha">
-      <input id="lg-senha" type="password" placeholder="Senha" autocomplete="off">
-      <button type="button" class="olho" id="lg-olho" aria-label="Mostrar ou esconder a senha">👁️</button>
+
+<div id="login-view">
+  <div class="login-card">
+    <div class="marca-login">Sucat<span class="adm">ell</span></div>
+    <div class="sub-login">Painel de administrador</div>
+    <div class="login-box">
+      <label>E-mail admin</label>
+      <input id="lg-email" type="email" placeholder="seu@email.com">
+      <label>Senha</label>
+      <div class="campo-senha">
+        <input id="lg-senha" type="password" placeholder="Sua senha" autocomplete="off">
+        <button type="button" class="olho" id="lg-olho" aria-label="Mostrar ou esconder a senha">👁️</button>
+      </div>
+      <button id="lg-entrar" class="btn-entrar">Entrar</button>
+      <div class="erro-login" id="lg-erro"></div>
     </div>
-    <button id="lg-entrar" style="width:100%;">Entrar</button>
-    <p class="muted" id="lg-erro"></p>
-  </div>
-  <div id="painel" style="display:none;">
-    <h1>Sucatell — Painel Admin</h1>
-    <div class="stats" id="stats"></div>
-    <h3>Denúncias pendentes</h3>
-    <div id="denuncias"></div>
-    <h3>Usuários</h3>
-    <div id="usuarios"></div>
   </div>
 </div>
+
+<div id="app-view">
+  <div class="topbar">
+    <div class="marca-topo">Sucat<b>ell</b><span class="adm">ADMIN</span></div>
+    <button class="sair" id="btn-sair">Sair</button>
+  </div>
+  <nav class="tabs">
+    <button class="tab ativo" data-tab="dashboard">📊 Painel</button>
+    <button class="tab" data-tab="usuarios">👥 Usuários</button>
+    <button class="tab" data-tab="denuncias">🚩 Denúncias<span class="badge-num" id="badge-denuncias" hidden>0</span></button>
+  </nav>
+  <main class="wrap">
+    <section class="view" id="view-dashboard">
+      <h2 class="titulo-view">Visão geral</h2>
+      <div class="stats" id="stats"></div>
+    </section>
+    <section class="view" id="view-usuarios" hidden>
+      <h2 class="titulo-view">Usuários</h2>
+      <div id="usuarios"></div>
+    </section>
+    <section class="view" id="view-denuncias" hidden>
+      <h2 class="titulo-view">Denúncias pendentes</h2>
+      <div id="denuncias"></div>
+    </section>
+  </main>
+</div>
+
 <script>
 const API = 'https://sucatel-api.emanuelantunes2024.workers.dev';
 const LS_TOKEN = 'sucatel_admin_token';
-function esc(s){ return (s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function esc(s){ return (s||'').toString().replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function iniciais(nome){ return (nome||'?').trim().split(/\s+/).slice(0,2).map(p=>p[0]).join('').toUpperCase(); }
 async function api(path, opts={}){
   const token = localStorage.getItem(LS_TOKEN);
   const headers = Object.assign({}, opts.headers||{});
@@ -63,6 +141,7 @@ async function api(path, opts={}){
   const resp = await fetch(API + path, Object.assign({}, opts, { headers }));
   return await resp.json();
 }
+
 document.getElementById('lg-olho').onclick = () => {
   const el = document.getElementById('lg-senha');
   const mostrando = el.type === 'text';
@@ -70,35 +149,60 @@ document.getElementById('lg-olho').onclick = () => {
   document.getElementById('lg-olho').textContent = mostrando ? '👁️' : '🙈';
 };
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('admin-sw.js').catch(() => {});
+
 document.getElementById('lg-entrar').onclick = async () => {
   const email = document.getElementById('lg-email').value.trim();
   const senha = document.getElementById('lg-senha').value;
+  const erroEl = document.getElementById('lg-erro');
+  erroEl.textContent = '';
+  if (!email || !senha) { erroEl.textContent = 'Preencha e-mail e senha.'; return; }
   const data = await api('/auth/login', { method:'POST', body:{ email, senha } });
-  if (!data.ok) { document.getElementById('lg-erro').textContent = 'Login inválido.'; return; }
-  if (!data.usuario.is_admin) { document.getElementById('lg-erro').textContent = 'Essa conta não é admin.'; return; }
+  if (!data.ok) {
+    erroEl.textContent = data.erro === 'conta_bloqueada' ? 'Essa conta foi bloqueada.' : 'E-mail ou senha errados.';
+    return;
+  }
+  if (!data.usuario.is_admin) { erroEl.textContent = 'Essa conta não é admin.'; return; }
   localStorage.setItem(LS_TOKEN, data.token);
   boot();
 };
+document.getElementById('btn-sair').onclick = async () => {
+  await api('/auth/logout', { method:'POST' }).catch(() => {});
+  localStorage.removeItem(LS_TOKEN);
+  document.getElementById('app-view').style.display = 'none';
+  document.getElementById('login-view').style.display = 'flex';
+};
+
+document.querySelectorAll('.tab').forEach(btn => {
+  btn.onclick = () => {
+    document.querySelectorAll('.tab').forEach(b => b.classList.toggle('ativo', b === btn));
+    document.querySelectorAll('.view').forEach(v => v.hidden = (v.id !== 'view-' + btn.dataset.tab));
+  };
+});
+
 async function carregarStats(){
   const data = await api('/admin/stats');
   if (!data.ok) return;
   document.getElementById('stats').innerHTML = `
-    <div class="stat"><b>${data.usuarios}</b><span>usuários</span></div>
-    <div class="stat"><b>${data.anuncios_ativos}</b><span>anúncios ativos</span></div>
-    <div class="stat"><b>${data.vendas_totais}</b><span>vendas registradas</span></div>
-    <div class="stat"><b>${data.denuncias_pendentes}</b><span>denúncias pendentes</span></div>`;
+    <div class="stat"><div class="ic">👥</div><b>${data.usuarios}</b><span>usuários</span></div>
+    <div class="stat"><div class="ic">📦</div><b>${data.anuncios_ativos}</b><span>anúncios ativos</span></div>
+    <div class="stat"><div class="ic">✅</div><b>${data.vendas_totais}</b><span>vendas registradas</span></div>
+    <div class="stat"><div class="ic">🚩</div><b>${data.denuncias_pendentes}</b><span>denúncias pendentes</span></div>`;
+  const badge = document.getElementById('badge-denuncias');
+  if (data.denuncias_pendentes > 0) { badge.hidden = false; badge.textContent = data.denuncias_pendentes; }
+  else badge.hidden = true;
 }
+
 async function carregarDenuncias(){
   const data = await api('/admin/denuncias');
   const box = document.getElementById('denuncias');
-  if (!data.ok || !data.denuncias.length) { box.innerHTML = '<p class="muted">Nenhuma denúncia pendente.</p>'; return; }
+  if (!data.ok || !data.denuncias.length) { box.innerHTML = '<p class="vazio">Nenhuma denúncia pendente. 🎉</p>'; return; }
   box.innerHTML = data.denuncias.map(d => `
     <div class="card">
-      <div><strong>${esc(d.anuncio_titulo)}</strong></div>
+      <div class="denuncia-titulo">${esc(d.anuncio_titulo)}</div>
       <div class="muted">Motivo: ${esc(d.motivo)} · Denunciado por: ${esc(d.denunciante_nome)}</div>
-      ${d.detalhes ? `<div class="muted">"${esc(d.detalhes)}"</div>` : ''}
+      ${d.detalhes ? `<div class="denuncia-citacao">"${esc(d.detalhes)}"</div>` : ''}
       <div class="row">
-        <button onclick="resolver('${d.id}', true)">Procedente + remover anúncio</button>
+        <button class="perigo" onclick="resolver('${d.id}', true)">Procedente + remover anúncio</button>
         <button class="secundario" onclick="resolver('${d.id}', false)">Improcedente</button>
       </div>
     </div>`).join('');
@@ -110,20 +214,30 @@ window.resolver = async function(id, procedente){
   carregarDenuncias();
   carregarStats();
 };
+
 async function carregarUsuarios(){
   const data = await api('/admin/usuarios');
   const box = document.getElementById('usuarios');
-  if (!data.ok || !data.usuarios.length) { box.innerHTML = '<p class="muted">Nenhum usuário ainda.</p>'; return; }
+  if (!data.ok || !data.usuarios.length) { box.innerHTML = '<p class="vazio">Nenhum usuário ainda.</p>'; return; }
   box.innerHTML = data.usuarios.map(u => `
     <div class="card">
-      <div><strong>${esc(u.nome)}</strong> ${u.verificado ? '✅' : ''} ${u.is_admin ? '⭐ admin' : ''} ${u.bloqueado ? '🚫 bloqueado' : ''}</div>
-      <div class="muted">${esc(u.email)}${u.telefone ? ' · ' + esc(u.telefone) : ''} · reputação ${u.reputacao}</div>
-      <div class="row" style="flex-wrap:wrap;">
-        <button onclick="alternarVerificado('${u.id}', ${u.verificado ? 'false' : 'true'})">${u.verificado ? 'Remover verificação' : 'Marcar como verificado'}</button>
-        <button class="secundario" onclick="editarUsuario('${u.id}', '${esc(u.nome).replace(/'/g,"\\'")}', '${esc(u.telefone||'').replace(/'/g,"\\'")}')">Editar</button>
+      <div class="usuario-linha">
+        <div class="avatar">${iniciais(u.nome)}</div>
+        <div style="flex:1; min-width:0;">
+          <div class="usuario-nome">${esc(u.nome)}
+            ${u.verificado ? '<span class="pill verificado">✓ verificado</span>' : ''}
+            ${u.is_admin ? '<span class="pill admin">★ admin</span>' : ''}
+            ${u.bloqueado ? '<span class="pill bloqueado">bloqueado</span>' : ''}
+          </div>
+          <div class="muted">${esc(u.email)}${u.telefone ? ' · ' + esc(u.telefone) : ''} · reputação ${u.reputacao}</div>
+        </div>
+      </div>
+      <div class="row">
+        <button class="secundario pequeno" onclick="alternarVerificado('${u.id}', ${u.verificado ? 'false' : 'true'})">${u.verificado ? 'Remover verificação' : '✓ Verificar'}</button>
+        <button class="secundario pequeno" onclick="editarUsuario('${u.id}', '${esc(u.nome).replace(/'/g,"\\'")}', '${esc(u.telefone||'').replace(/'/g,"\\'")}')">✎ Editar</button>
         ${u.is_admin ? '' : `
-        <button class="secundario" onclick="alternarBloqueio('${u.id}', ${u.bloqueado ? 'false' : 'true'})">${u.bloqueado ? 'Desbloquear' : 'Bloquear'}</button>
-        <button class="perigo" onclick="excluirUsuario('${u.id}', '${esc(u.nome).replace(/'/g,"\\'")}')">Excluir</button>`}
+        <button class="secundario pequeno" onclick="alternarBloqueio('${u.id}', ${u.bloqueado ? 'false' : 'true'})">${u.bloqueado ? '🔓 Desbloquear' : '🔒 Bloquear'}</button>
+        <button class="perigo pequeno" onclick="excluirUsuario('${u.id}', '${esc(u.nome).replace(/'/g,"\\'")}')">🗑 Excluir</button>`}
       </div>
     </div>`).join('');
 }
@@ -154,13 +268,14 @@ window.excluirUsuario = async function(id, nome){
   carregarUsuarios();
   carregarStats();
 };
+
 async function boot(){
   const token = localStorage.getItem(LS_TOKEN);
   if (!token) return;
   const me = await api('/auth/me');
   if (!me.ok || !me.usuario.is_admin) { localStorage.removeItem(LS_TOKEN); return; }
-  document.getElementById('login-box').style.display = 'none';
-  document.getElementById('painel').style.display = 'block';
+  document.getElementById('login-view').style.display = 'none';
+  document.getElementById('app-view').style.display = 'flex';
   carregarStats();
   carregarDenuncias();
   carregarUsuarios();
