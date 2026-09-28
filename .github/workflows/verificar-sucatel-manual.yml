@@ -32,6 +32,11 @@ jobs:
           echo "== estados.json cru =="
           cat estados.json
           echo
+          echo "== diagnostico extra =="
+          ls -la estados.json
+          which python3
+          python3 -c "import os; print('cwd=', os.getcwd())"
+          python3 -c "print(repr(open('estados.json','rb').read()))"
           ESTADO_ID=$(python3 -c "import json;print(json.load(open('estados.json'))['estados'][0]['id'])")
           curl -sS --fail "$BASE/localizacao/cidades?estado_id=$ESTADO_ID" > cidades.json
           CIDADE_ID=$(python3 -c "import json;print(json.load(open('cidades.json'))['cidades'][0]['id'])")
