@@ -8,6 +8,7 @@
     "allowMixedContent": false
   },
   "server": {
+    "url": "https://sucatell.leunamesoftware.com.br",
     "androidScheme": "https"
   }
 }
