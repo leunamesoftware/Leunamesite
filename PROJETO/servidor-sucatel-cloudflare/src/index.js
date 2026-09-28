@@ -93,10 +93,15 @@ async function autenticar(request, env) {
   return row || null;
 }
 
-function usuarioPublico(u) {
+async function usuarioPublico(u, env) {
+  let bairro_nome = null;
+  if (u.bairro_id) {
+    const b = await env.DB.prepare('SELECT nome FROM bairros WHERE id = ?').bind(u.bairro_id).first();
+    bairro_nome = b ? b.nome : null;
+  }
   return {
     id: u.id, nome: u.nome, email: u.email, telefone: u.telefone,
-    bairro_id: u.bairro_id, saldo_creditos: u.saldo_creditos,
+    bairro_id: u.bairro_id, bairro_nome, saldo_creditos: u.saldo_creditos,
     vendas_confirmadas_total: u.vendas_confirmadas_total, reputacao: u.reputacao,
     is_admin: !!u.is_admin, verificado: !!u.verificado, criado_em: u.criado_em,
   };
@@ -215,7 +220,7 @@ export default {
       await env.DB.prepare(
         'INSERT INTO sessoes (id, session_token_hash, user_id, expira_em) VALUES (?, ?, ?, ?)'
       ).bind(uid(), await sha256Hex(token), id, addDiasIso(30)).run();
-      return json({ ok: true, token, usuario: usuarioPublico(user) }, 201);
+      return json({ ok: true, token, usuario: await usuarioPublico(user, env) }, 201);
     }
 
     if (pathname === '/auth/login' && request.method === 'POST') {
@@ -231,7 +236,7 @@ export default {
       await env.DB.prepare(
         'INSERT INTO sessoes (id, session_token_hash, user_id, expira_em) VALUES (?, ?, ?, ?)'
       ).bind(uid(), await sha256Hex(token), user.id, addDiasIso(30)).run();
-      return json({ ok: true, token, usuario: usuarioPublico(user) });
+      return json({ ok: true, token, usuario: await usuarioPublico(user, env) });
     }
 
     if (pathname === '/auth/logout' && request.method === 'POST') {
@@ -244,7 +249,7 @@ export default {
     if (pathname === '/auth/me' && request.method === 'GET') {
       const sess = await autenticar(request, env);
       if (!sess) return json({ ok: false, erro: 'nao_autenticado' }, 401);
-      return json({ ok: true, usuario: usuarioPublico(sess) });
+      return json({ ok: true, usuario: await usuarioPublico(sess, env) });
     }
 
     if (pathname === '/auth/me' && request.method === 'PATCH') {
@@ -255,7 +260,7 @@ export default {
       await env.DB.prepare('UPDATE users SET nome = ?, telefone = ?, bairro_id = ? WHERE id = ?')
         .bind(nome ? nome.trim() : sess.nome, telefone !== undefined ? (telefone || null) : sess.telefone, bairro_id || sess.bairro_id, sess.id).run();
       const atualizado = await env.DB.prepare('SELECT * FROM users WHERE id = ?').bind(sess.id).first();
-      return json({ ok: true, usuario: usuarioPublico(atualizado) });
+      return json({ ok: true, usuario: await usuarioPublico(atualizado, env) });
     }
 
     if (pathname === '/auth/trocar-senha' && request.method === 'POST') {
