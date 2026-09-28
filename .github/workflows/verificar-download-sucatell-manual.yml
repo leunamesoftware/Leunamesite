@@ -1,0 +1,16 @@
+name: Verificar link de download do Sucatell (temporário)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  verificar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Testar o link de download
+        run: |
+          echo "--- HEAD na URL do link fixo ---"
+          curl -sSI "https://api.leunamesoftware.com/download/sucatell.apk" || true
+          echo
+          echo "--- GET com -o /dev/null (mede tamanho real baixado) ---"
+          curl -sS -o /dev/null -w "http_code=%{http_code} size_download=%{size_download} content_type=%{content_type}\n" "https://api.leunamesoftware.com/download/sucatell.apk" || true
