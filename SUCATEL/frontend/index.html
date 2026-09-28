@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Sucatel</title>
+<title>Sucatell</title>
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#0d3b1f">
 <style>
@@ -72,7 +72,7 @@ a{color:var(--verde);}
 <body>
 <div id="auth-root"></div>
 <div id="app-root" class="app-root">
-  <div class="topbar"><h2 id="topbar-titulo">Sucatel</h2></div>
+  <div class="topbar"><h2 id="topbar-titulo">Sucatell</h2></div>
   <div id="conteudo" class="conteudo"></div>
   <div class="tabbar">
     <button data-tab="buscar">🔍<span>Buscar</span></button>
@@ -123,7 +123,7 @@ function renderAuth(tela){
   if (tela === 'cadastro') return renderCadastro();
   root.innerHTML = `
   <div class="auth-screen"><div class="auth-card">
-    <div class="marca"><img src="icon-192.png" onerror="this.style.display='none'"><h1>Sucatel</h1></div>
+    <div class="marca"><img src="icon-192.png" onerror="this.style.display='none'"><h1>Sucatell</h1></div>
     <p class="muted" style="text-align:center;margin-bottom:18px;">Compra e venda de peças de celular usadas, por região.</p>
     <label>E-mail</label><input id="lg-email" type="email" placeholder="seu@email.com">
     <label>Senha</label><input id="lg-senha" type="password" placeholder="Sua senha">
@@ -151,7 +151,7 @@ async function renderCadastro(){
   const { data: estadosData } = await api('/localizacao/estados');
   root.innerHTML = `
   <div class="auth-screen"><div class="auth-card">
-    <div class="marca"><img src="icon-192.png" onerror="this.style.display='none'"><h1>Sucatel</h1></div>
+    <div class="marca"><img src="icon-192.png" onerror="this.style.display='none'"><h1>Sucatell</h1></div>
     <label>Nome</label><input id="cd-nome" placeholder="Seu nome">
     <label>E-mail</label><input id="cd-email" type="email" placeholder="seu@email.com">
     <label>Telefone (opcional, não aparece pra outros usuários)</label><input id="cd-telefone" placeholder="(21) 9....">

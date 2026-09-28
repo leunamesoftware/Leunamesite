@@ -1,6 +1,6 @@
 {
-  "name": "Sucatel",
-  "short_name": "Sucatel",
+  "name": "Sucatell",
+  "short_name": "Sucatell",
   "description": "Compra e venda de peças de celular usadas, por bairro.",
   "start_url": "/",
   "display": "standalone",
