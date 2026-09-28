@@ -715,11 +715,21 @@ export default {
       if (!sess) return json({ ok: false, erro: 'nao_autenticado' }, 401);
       const { results } = await env.DB.prepare(
         `SELECT c.*, a.titulo AS anuncio_titulo,
-                (SELECT texto FROM mensagens WHERE conversa_id = c.id ORDER BY criado_em DESC LIMIT 1) AS ultima_mensagem
+                (SELECT texto FROM mensagens WHERE conversa_id = c.id ORDER BY criado_em DESC LIMIT 1) AS ultima_mensagem,
+                (SELECT COUNT(*) FROM mensagens WHERE conversa_id = c.id AND lida = 0 AND remetente_id != ?) AS nao_lidas
          FROM conversas c JOIN anuncios a ON a.id = c.anuncio_id
          WHERE c.comprador_id = ? OR c.vendedor_id = ? ORDER BY c.criado_em DESC`
-      ).bind(sess.id, sess.id).all();
+      ).bind(sess.id, sess.id, sess.id).all();
       return json({ ok: true, conversas: results });
+    }
+    if (pathname === '/conversas/contagem-nao-lidas' && request.method === 'GET') {
+      const sess = await autenticar(request, env);
+      if (!sess) return json({ ok: false, erro: 'nao_autenticado' }, 401);
+      const row = await env.DB.prepare(
+        `SELECT COUNT(*) AS n FROM mensagens m JOIN conversas c ON c.id = m.conversa_id
+         WHERE (c.comprador_id = ? OR c.vendedor_id = ?) AND m.lida = 0 AND m.remetente_id != ?`
+      ).bind(sess.id, sess.id, sess.id).first();
+      return json({ ok: true, nao_lidas: row?.n || 0 });
     }
     const matchConversaMsgs = pathname.match(/^\/conversas\/([^/]+)\/mensagens$/);
     if (matchConversaMsgs && request.method === 'GET') {
@@ -728,6 +738,7 @@ export default {
       const conversa = await env.DB.prepare('SELECT * FROM conversas WHERE id = ?').bind(matchConversaMsgs[1]).first();
       if (!conversa || (conversa.comprador_id !== sess.id && conversa.vendedor_id !== sess.id)) return json({ ok: false, erro: 'nao_encontrada' }, 404);
       const { results } = await env.DB.prepare('SELECT * FROM mensagens WHERE conversa_id = ? ORDER BY criado_em ASC LIMIT 200').bind(conversa.id).all();
+      await env.DB.prepare('UPDATE mensagens SET lida = 1 WHERE conversa_id = ? AND remetente_id != ? AND lida = 0').bind(conversa.id, sess.id).run();
       return json({ ok: true, mensagens: results });
     }
     if (matchConversaMsgs && request.method === 'POST') {

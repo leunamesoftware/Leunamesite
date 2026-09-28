@@ -46,8 +46,11 @@ a{color:var(--verde);}
 .topo-linha{display:flex; align-items:center; gap:10px;}
 .topo h2{font-size:17px; margin:0; flex:1; font-weight:700;}
 .topo button.icone{background:rgba(255,255,255,.12); border:none; color:#fff; font-size:18px; width:38px; height:38px; border-radius:10px; cursor:pointer; flex-shrink:0; display:flex; align-items:center; justify-content:center;}
-.marca-topo{flex:1; font-size:19px; font-weight:800; white-space:nowrap;}
+.marca-topo-linha{flex:1; display:flex; align-items:center; gap:9px; min-width:0;}
+.marca-topo-linha img{width:32px; height:32px; border-radius:8px; flex-shrink:0;}
+.marca-topo{font-size:18px; font-weight:800; white-space:nowrap; line-height:1.15;}
 .marca-topo b{color:var(--verde-forte);}
+.marca-topo-tagline{font-size:9.5px; font-weight:600; color:#bfe3cc; white-space:nowrap;}
 .pill-local{display:flex; align-items:center; gap:6px; background:rgba(255,255,255,.14); border:1px solid rgba(255,255,255,.25); border-radius:20px; padding:7px 12px; font-size:13px; color:#fff; cursor:pointer; max-width:180px;}
 .pill-local span{overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
 .busca-barra{margin-top:10px; position:relative;}
@@ -58,6 +61,7 @@ a{color:var(--verde);}
 .tabbar button{flex:1; background:none; border:none; color:var(--fraco); padding:6px 0; display:flex; flex-direction:column; align-items:center; gap:3px; font-size:11px; cursor:pointer;}
 .tabbar button.ativo{color:var(--verde-forte); font-weight:700;}
 .tabbar .icone-tab{font-size:19px;}
+.badge-tab{position:absolute; top:-6px; right:-9px; background:var(--erro); color:#fff; font-size:10px; font-weight:800; min-width:16px; height:16px; border-radius:999px; display:flex; align-items:center; justify-content:center; padding:0 3px;}
 .tabbar .tab-anunciar{flex:0 0 56px;}
 .tabbar .tab-anunciar .icone-tab{width:52px; height:52px; margin-top:-26px; background:var(--verde-forte); color:#fff; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:26px; box-shadow:0 4px 14px rgba(0,0,0,.25);}
 .card{background:var(--card); border:1px solid var(--borda); border-radius:14px; padding:15px; margin-bottom:12px;}
@@ -80,6 +84,7 @@ a{color:var(--verde);}
 .msg.minha{background:var(--verde-forte); color:#fff; margin-left:auto; border-bottom-right-radius:4px;}
 .msg.outra{background:var(--card); border:1px solid var(--borda); border-bottom-left-radius:4px;}
 .msg.bloqueada{opacity:.7; font-style:italic;}
+.recibo-leitura{display:inline-block; margin-left:6px; font-size:11px; opacity:.85;}
 .respostas-rapidas{display:flex; gap:8px; overflow-x:auto; margin-bottom:10px;}
 .respostas-rapidas button{flex-shrink:0; background:var(--verde-claro); color:var(--verde); border:none; border-radius:16px; padding:8px 13px; font-size:12.5px; font-weight:600; cursor:pointer;}
 .empty{text-align:center; padding:50px 20px; color:var(--fraco);}
@@ -94,6 +99,15 @@ a{color:var(--verde);}
 .grid-cat.pequeno{grid-template-columns:repeat(4,1fr);}
 .cat-item{display:flex; flex-direction:column; align-items:center; gap:6px; background:var(--card); border:1px solid var(--borda); border-radius:14px; padding:14px 4px; cursor:pointer; font-size:11.5px; font-weight:600; text-align:center; color:var(--texto);}
 .cat-item .cat-icone{font-size:26px;}
+.cat-scroll{display:flex; gap:12px; overflow-x:auto; padding-bottom:4px; margin-bottom:4px;}
+.cat-chip{flex-shrink:0; display:flex; flex-direction:column; align-items:center; gap:6px; width:62px; cursor:pointer;}
+.cat-chip .cat-icone-box{width:56px; height:56px; border-radius:16px; background:var(--verde-claro); display:flex; align-items:center; justify-content:center; font-size:25px;}
+.cat-chip span{font-size:11px; font-weight:600; text-align:center; color:var(--texto); line-height:1.2;}
+.grid-cat-grande{display:grid; grid-template-columns:1fr 1fr; gap:12px;}
+.cat-card-grande{background:var(--card); border:1px solid var(--borda); border-radius:16px; overflow:hidden; cursor:pointer;}
+.cat-card-grande .topo-icone-grande{height:86px; background:var(--verde-claro); display:flex; align-items:center; justify-content:center; font-size:42px;}
+.cat-card-grande .rodape-cat{display:flex; align-items:center; justify-content:space-between; padding:11px 13px; font-weight:700; font-size:13.5px; gap:6px;}
+.cat-card-grande .rodape-cat .seta{color:var(--fraco); font-weight:400; flex-shrink:0;}
 .mapa-fake{background:var(--verde-claro); border-radius:12px; height:90px; display:flex; align-items:center; justify-content:center; gap:8px; color:var(--verde); font-weight:600; font-size:13px;}
 .mapa-real{height:160px; border-radius:12px; overflow:hidden; z-index:0;}
 .mapa-real .leaflet-control-attribution{font-size:9px;}
@@ -135,7 +149,7 @@ a{color:var(--verde);}
     <button data-tab="inicio"><span class="icone-tab">🏠</span><span>Início</span></button>
     <button data-tab="categorias"><span class="icone-tab">▦</span><span>Categorias</span></button>
     <button data-tab="anunciar" class="tab-anunciar"><span class="icone-tab">➕</span></button>
-    <button data-tab="chat"><span class="icone-tab">💬</span><span>Chat</span></button>
+    <button data-tab="chat"><span class="icone-tab" style="position:relative;">💬<span id="badge-chat" class="badge-tab" hidden>0</span></span><span>Chat</span></button>
     <button data-tab="perfil"><span class="icone-tab">👤</span><span>Perfil</span></button>
   </nav>
 </div>
@@ -533,7 +547,13 @@ function nomeBairroAtual(){
 function topoAba(titulo, comBusca){
   setTopo(`
     <div class="topo-linha">
-      <div class="marca-topo">Sucat<b>ell</b></div>
+      <div class="marca-topo-linha">
+        <img src="icon-192.png" alt="">
+        <div>
+          <div class="marca-topo">Sucat<b>ell</b></div>
+          <div class="marca-topo-tagline">Compra • Venda • Reaproveita</div>
+        </div>
+      </div>
       <button class="pill-local" id="topo-pill-local">📍 <span>${esc(nomeBairroAtual())}</span> ▾</button>
       <button class="icone" id="topo-sino" title="Notificações">🔔</button>
     </div>
@@ -552,22 +572,35 @@ async function renderInicio(){
   topoAba('Início', true);
   const el = document.getElementById('conteudo');
   el.innerHTML = `
-    <div class="grid-cat pequeno" id="in-categorias-rapidas"></div>
-    <div style="display:flex; align-items:baseline; justify-content:space-between; margin:18px 0 10px;">
+    <div class="cat-scroll" id="in-categorias-rapidas"></div>
+    <div class="filtro-chips" id="in-condicoes">
+      ${['','novo','usado','sucata','com_defeito'].map(c => `<button data-c="${c}" class="${c===''?'ativo':''}">${c===''?'Todos':(c==='novo'?'Novos':c==='usado'?'Usados':c==='sucata'?'Sucata':'Com defeito')}</button>`).join('')}
+    </div>
+    <div style="display:flex; align-items:baseline; justify-content:space-between; margin:14px 0 10px;">
       <h3 style="margin:0; font-size:16px;">Ofertas perto de você</h3>
       <a href="javascript:void(0)" id="in-ver-todos" style="font-size:13px; font-weight:700;">Ver todos</a>
     </div>
     <div id="in-resultados"><div class="muted">Carregando...</div></div>`;
-  document.getElementById('in-categorias-rapidas').innerHTML = CATEGORIAS_GRID.slice(0,4).map(c => `
-    <div class="cat-item" data-grupo="${c.grupo}"><span class="cat-icone">${c.icone}</span>${esc(c.nome)}</div>`).join('');
-  document.querySelectorAll('#in-categorias-rapidas .cat-item').forEach(item => {
+  document.getElementById('in-categorias-rapidas').innerHTML = CATEGORIAS_GRID.map(c => `
+    <div class="cat-chip" data-grupo="${c.grupo}"><div class="cat-icone-box">${c.icone}</div><span>${esc(c.nome)}</span></div>`).join('');
+  document.querySelectorAll('#in-categorias-rapidas .cat-chip').forEach(item => {
     item.onclick = () => irPara(() => renderListaProdutos({ grupo: item.dataset.grupo, nome: CATEGORIAS_GRID.find(c=>c.grupo===item.dataset.grupo).nome }));
   });
   document.getElementById('in-ver-todos').onclick = () => irPara(() => renderListaProdutos({ nome: 'Todos os anúncios' }));
-  const { data } = await api('/anuncios?bairro_id=' + encodeURIComponent(STATE.bairroId));
-  const box = document.getElementById('in-resultados');
-  if (!data.ok || !data.anuncios.length) { box.innerHTML = '<div class="empty"><span class="emoji-vazio">📭</span>Nenhum anúncio na sua região ainda.<br>Seja o primeiro a anunciar!</div>'; return; }
-  box.innerHTML = data.anuncios.slice(0,12).map(cartaoProduto).join('');
+  let condicaoInicio = '';
+  document.querySelectorAll('#in-condicoes button').forEach(b => b.onclick = () => {
+    document.querySelectorAll('#in-condicoes button').forEach(x=>x.classList.remove('ativo'));
+    b.classList.add('ativo'); condicaoInicio = b.dataset.c; carregarOfertasInicio();
+  });
+  async function carregarOfertasInicio(){
+    let path = '/anuncios?bairro_id=' + encodeURIComponent(STATE.bairroId);
+    if (condicaoInicio) path += '&condicao=' + condicaoInicio;
+    const { data } = await api(path);
+    const box = document.getElementById('in-resultados');
+    if (!data.ok || !data.anuncios.length) { box.innerHTML = '<div class="empty"><span class="emoji-vazio">📭</span>Nenhum anúncio na sua região ainda.<br>Seja o primeiro a anunciar!</div>'; return; }
+    box.innerHTML = data.anuncios.slice(0,12).map(cartaoProduto).join('');
+  }
+  carregarOfertasInicio();
 }
 
 // ---------------- CATEGORIAS ----------------
@@ -576,9 +609,12 @@ function renderCategorias(){
   document.getElementById('conteudo').innerHTML = `
     <h2 style="margin:4px 0 2px;">Categorias</h2>
     <p class="muted" style="margin-top:0;">Escolha o que você procura</p>
-    <div class="grid-cat">${CATEGORIAS_GRID.map(c => `
-      <div class="cat-item" data-grupo="${c.grupo}"><span class="cat-icone">${c.icone}</span>${esc(c.nome)}</div>`).join('')}</div>`;
-  document.querySelectorAll('.grid-cat .cat-item').forEach(item => {
+    <div class="grid-cat-grande">${CATEGORIAS_GRID.map(c => `
+      <div class="cat-card-grande" data-grupo="${c.grupo}">
+        <div class="topo-icone-grande">${c.icone}</div>
+        <div class="rodape-cat">${esc(c.nome)} <span class="seta">›</span></div>
+      </div>`).join('')}</div>`;
+  document.querySelectorAll('.grid-cat-grande .cat-card-grande').forEach(item => {
     item.onclick = () => irPara(() => renderListaProdutos({ grupo: item.dataset.grupo, nome: CATEGORIAS_GRID.find(c=>c.grupo===item.dataset.grupo).nome }));
   });
   marcarAbaTab('categorias');
@@ -609,12 +645,13 @@ window.marcarFavoritoUI = function(btn, id){ btn.textContent = alternarFavorito(
 let filtroAtual = {};
 async function renderListaProdutos(filtro){
   filtroAtual = Object.assign({ condicao:'' }, filtro);
-  topoComVoltar(filtroAtual.nome || 'Resultados', voltar, `<button class="icone" id="lp-filtros">⚙️</button>`);
+  topoComVoltar(filtroAtual.nome || 'Resultados', voltar);
   const el = document.getElementById('conteudo');
   el.innerHTML = `
     <div style="display:flex; align-items:center; gap:10px; margin-bottom:12px;">
       <span style="font-size:26px;">${ICONE_TIPO[filtroAtual.grupo] || (CATEGORIAS_GRID.find(c=>c.grupo===filtroAtual.grupo)||{}).icone || '🔍'}</span>
-      <div><div style="font-weight:800; font-size:17px;">${esc(filtroAtual.nome||'')}</div><div class="muted" id="lp-contagem">carregando...</div></div>
+      <div style="flex:1;"><div style="font-weight:800; font-size:17px;">${esc(filtroAtual.nome||'')}</div><div class="muted" id="lp-contagem">carregando...</div></div>
+      <button class="btn pequeno" id="lp-filtros" style="margin-top:0;">⚙️ Filtros</button>
     </div>
     <div class="filtro-chips" id="lp-ordenar">
       ${[['perto','Perto de você'],['recentes','Mais recentes'],['preco','Menor preço']].map(([v,l]) => `<button data-o="${v}" class="${v==='perto'?'ativo':''}">${l}</button>`).join('')}
@@ -860,13 +897,14 @@ window.iniciarConversa = async function(anuncioId){
 async function renderConversas(){
   topoAba('Chat', false); marcarAbaTab('chat');
   const el = document.getElementById('conteudo');
+  atualizarBadgeChat();
   const { data } = await api('/conversas');
   if (!data.ok || !data.conversas.length) { el.innerHTML = '<div class="empty"><span class="emoji-vazio">💬</span>Nenhuma conversa ainda.<br>Fale com um vendedor pra começar.</div>'; return; }
   el.innerHTML = data.conversas.map(c => `
     <div class="card" style="display:flex; gap:12px; cursor:pointer;" onclick="abrirChatDireto('${c.id}')">
       <div class="avatar">${iniciais(c.anuncio_titulo)}</div>
       <div style="flex:1; min-width:0;">
-        <div style="font-weight:700;">${esc(c.anuncio_titulo)}</div>
+        <div style="font-weight:700; display:flex; align-items:center; gap:6px;">${esc(c.anuncio_titulo)} ${c.nao_lidas > 0 ? `<span class="badge-tab" style="position:static;">${c.nao_lidas}</span>` : ''}</div>
         <div class="muted" style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${esc(c.ultima_mensagem || 'Sem mensagens ainda.')}</div>
       </div>
     </div>`).join('');
@@ -892,7 +930,11 @@ async function abrirChat(conversaId){
   if (souComprador) document.getElementById('ch-avaliar').onclick = () => abrirAvaliarModal(conversaId);
   const carregar = async () => {
     const { data } = await api('/conversas/' + conversaId + '/mensagens');
-    document.getElementById('chat-msgs').innerHTML = (data.mensagens||[]).map(m => `<div class="msg ${m.remetente_id===STATE.usuario.id?'minha':'outra'} ${m.bloqueada?'bloqueada':''}">${esc(m.texto)}</div>`).join('');
+    document.getElementById('chat-msgs').innerHTML = (data.mensagens||[]).map(m => {
+      const minha = m.remetente_id === STATE.usuario.id;
+      return `<div class="msg ${minha?'minha':'outra'} ${m.bloqueada?'bloqueada':''}">${esc(m.texto)}${minha ? `<span class="recibo-leitura">${m.lida ? '✓✓' : '✓'}</span>` : ''}</div>`;
+    }).join('');
+    atualizarBadgeChat();
   };
   document.getElementById('chat-enviar').onclick = async () => {
     const input = document.getElementById('chat-texto');
@@ -903,6 +945,13 @@ async function abrirChat(conversaId){
     input.value = ''; carregar();
   };
   carregar();
+}
+async function atualizarBadgeChat(){
+  const { data } = await api('/conversas/contagem-nao-lidas');
+  const badge = document.getElementById('badge-chat');
+  if (!badge) return;
+  if (data.ok && data.nao_lidas > 0) { badge.hidden = false; badge.textContent = data.nao_lidas > 9 ? '9+' : data.nao_lidas; }
+  else badge.hidden = true;
 }
 function abrirAvaliarModal(conversaId){
   let nota = 5;
@@ -1239,6 +1288,7 @@ async function boot(){
   await carregarCategorias();
   document.querySelectorAll('#tabbar button').forEach(b => b.onclick = () => setTab(b.dataset.tab));
   setTab('inicio');
+  atualizarBadgeChat();
 }
 boot();
 </script>
