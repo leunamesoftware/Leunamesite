@@ -143,6 +143,39 @@ let STATE = { usuario:null, bairroId:null, aba:'inicio', marcas:[], tiposPeca:[]
 
 // ---------------- helpers ----------------
 function esc(s){ return (s||'').toString().replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function opcoesComNovoBairro(bairros){
+  return '<option value="">Selecione</option>' + (bairros||[]).map(b=>`<option value="${b.id}">${esc(b.nome)}</option>`).join('') + '<option value="__novo__">+ Não encontrei meu bairro</option>';
+}
+function tratarSelectBairro(selectEl, obterCidadeId, aoMudar){
+  let caixaNovo = selectEl.nextElementSibling && selectEl.nextElementSibling.classList && selectEl.nextElementSibling.classList.contains('caixa-novo-bairro')
+    ? selectEl.nextElementSibling : null;
+  if (!caixaNovo) {
+    caixaNovo = document.createElement('div');
+    caixaNovo.className = 'caixa-novo-bairro';
+    caixaNovo.hidden = true;
+    caixaNovo.style.marginTop = '8px';
+    caixaNovo.innerHTML = `<input class="nb-input" placeholder="ex: Vila Santa Alice"><button class="btn pequeno nb-salvar" style="margin-top:8px; width:100%;">Salvar bairro novo</button>`;
+    selectEl.insertAdjacentElement('afterend', caixaNovo);
+    caixaNovo.querySelector('.nb-salvar').onclick = async () => {
+      const nome = caixaNovo.querySelector('.nb-input').value.trim();
+      if (!nome) return toast('Digite o nome do bairro.', 'erro');
+      const cidadeId = obterCidadeId();
+      const { data } = await api('/localizacao/bairros', { method:'POST', body:{ cidade_id: cidadeId, nome } });
+      if (!data.ok) return toast('Erro ao adicionar bairro.', 'erro');
+      const opt = document.createElement('option');
+      opt.value = data.bairro.id; opt.textContent = data.bairro.nome;
+      selectEl.insertBefore(opt, selectEl.lastElementChild);
+      selectEl.value = data.bairro.id;
+      caixaNovo.hidden = true;
+      toast('Bairro adicionado!', 'sucesso');
+      aoMudar();
+    };
+  }
+  selectEl.onchange = () => {
+    caixaNovo.hidden = selectEl.value !== '__novo__';
+    aoMudar();
+  };
+}
 function safeJsonParse(s, fallback){ try { return JSON.parse(s); } catch(e) { return fallback; } }
 function centavosParaReais(c){ return 'R$ ' + (c/100).toFixed(2).replace('.', ','); }
 function iniciais(nome){ return (nome||'?').trim().split(/\s+/).slice(0,2).map(p=>p[0]).join('').toUpperCase(); }
@@ -221,7 +254,9 @@ function topoComVoltar(titulo, aoVoltar, direita){
 
 // ---------------- tema ----------------
 function aplicarTema(){
-  const t = localStorage.getItem(LS_TEMA) || 'automatico';
+  // Padrão é sempre claro (o visual aprovado) -- só fica escuro/automático
+  // se a pessoa escolher isso de propósito em Configurações.
+  const t = localStorage.getItem(LS_TEMA) || 'claro';
   if (t === 'automatico') document.documentElement.removeAttribute('data-tema');
   else document.documentElement.setAttribute('data-tema', t);
 }
@@ -301,7 +336,8 @@ async function renderCadastro(){
     if (!e.target.value) { bairroSel.disabled = true; bairroSel.innerHTML = '<option value="">Escolha a cidade primeiro</option>'; return; }
     const { data } = await api('/localizacao/bairros?cidade_id=' + e.target.value);
     bairroSel.disabled = false;
-    bairroSel.innerHTML = '<option value="">Selecione</option>' + (data.bairros||[]).map(b=>`<option value="${b.id}">${esc(b.nome)}</option>`).join('');
+    bairroSel.innerHTML = opcoesComNovoBairro(data.bairros);
+    tratarSelectBairro(bairroSel, () => document.getElementById('cd-cidade').value, () => {});
   };
   document.getElementById('cd-criar').onclick = fazerCadastro;
 }
@@ -311,7 +347,7 @@ async function fazerCadastro(){
   const telefone = document.getElementById('cd-telefone').value.trim();
   const senha = document.getElementById('cd-senha').value;
   const bairro_id = document.getElementById('cd-bairro').value;
-  if (!nome || !email || !senha || !bairro_id) return toast('Preencha todos os campos e escolha seu bairro.', 'erro');
+  if (!nome || !email || !senha || !bairro_id || bairro_id === '__novo__') return toast('Preencha todos os campos e escolha seu bairro.', 'erro');
   if (senha.length < 6) return toast('A senha precisa ter pelo menos 6 caracteres.', 'erro');
   const { data } = await api('/auth/cadastro', { method:'POST', body:{ nome, email, senha, telefone, bairro_id } });
   if (!data.ok) return toast(data.erro === 'email_ja_cadastrado' ? 'Esse e-mail já tem conta.' : 'Erro ao cadastrar.', 'erro');
@@ -363,9 +399,12 @@ async function carregarSeletorBairro(){
     if (!e.target.value) { bairroSel.disabled = true; return; }
     const { data } = await api('/localizacao/bairros?cidade_id=' + e.target.value);
     bairroSel.disabled = false;
-    bairroSel.innerHTML = '<option value="">Selecione</option>' + (data.bairros||[]).map(b=>`<option value="${b.id}">${esc(b.nome)}</option>`).join('');
+    bairroSel.innerHTML = opcoesComNovoBairro(data.bairros);
+    tratarSelectBairro(bairroSel, () => document.getElementById('sb-cidade').value, () => {
+      const v = bairroSel.value;
+      document.getElementById('sb-confirmar').disabled = !v || v === '__novo__';
+    });
   };
-  document.getElementById('sb-bairro').onchange = (e) => { document.getElementById('sb-confirmar').disabled = !e.target.value; };
   document.getElementById('sb-confirmar').onclick = async () => {
     const bairroId = document.getElementById('sb-bairro').value;
     const nomeBairro = document.getElementById('sb-bairro').selectedOptions[0].textContent;
@@ -992,7 +1031,7 @@ async function comprarCreditos(){
 // ---------------- CONFIGURAÇÕES ----------------
 async function renderConfiguracoes(){
   topoComVoltar('Configurações', voltar);
-  const temaAtual = localStorage.getItem(LS_TEMA) || 'automatico';
+  const temaAtual = localStorage.getItem(LS_TEMA) || 'claro';
   document.getElementById('conteudo').innerHTML = `
     <div class="card">
       <b style="display:block; margin-bottom:8px;">Conta</b>

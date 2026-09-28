@@ -21,6 +21,10 @@ function json(data, status = 200) {
   });
 }
 function uid() { return crypto.randomUUID(); }
+function slugify(texto) {
+  return texto.toString().normalize('NFD').replace(/[̀-ͯ]/g, '')
+    .toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/(^-+|-+$)/g, '');
+}
 function nowIso() { return new Date().toISOString(); }
 function addDiasIso(dias) { return new Date(Date.now() + dias * 86400000).toISOString(); }
 
@@ -181,6 +185,27 @@ export default {
       if (!cidadeId) return json({ ok: false, erro: 'cidade_id_obrigatorio' }, 400);
       const { results } = await env.DB.prepare('SELECT * FROM bairros WHERE cidade_id = ? ORDER BY nome').bind(cidadeId).all();
       return json({ ok: true, bairros: results });
+    }
+    // Deixa a pessoa cadastrar o bairro dela quando não está na lista --
+    // nossa lista inicial cobre só alguns bairros de exemplo, o Brasil real
+    // tem milhares. O bairro novo entra sem coordenada (distância cai pro
+    // modo "só esse bairro exato" até alguém revisar/ajustar depois).
+    if (pathname === '/localizacao/bairros' && request.method === 'POST') {
+      const ip = request.headers.get('CF-Connecting-IP') || 'sem-ip';
+      if (await limiteExcedido(env, ip, 'criar_bairro', 20)) return json({ ok: false, erro: 'muitas_tentativas' }, 429);
+      const { cidade_id, nome } = await request.json();
+      if (!cidade_id || !nome || !nome.trim()) return json({ ok: false, erro: 'campos_obrigatorios' }, 400);
+      const cidade = await env.DB.prepare('SELECT id FROM cidades WHERE id = ?').bind(cidade_id).first();
+      if (!cidade) return json({ ok: false, erro: 'cidade_invalida' }, 400);
+      const nomeFinal = nome.trim().slice(0, 80);
+      await registrarTentativa(env, ip, 'criar_bairro', true);
+      const existente = await env.DB.prepare('SELECT * FROM bairros WHERE cidade_id = ? AND LOWER(nome) = LOWER(?)').bind(cidade_id, nomeFinal).first();
+      if (existente) return json({ ok: true, bairro: existente });
+      let id = slugify(nomeFinal) || uid();
+      if (await env.DB.prepare('SELECT id FROM bairros WHERE id = ?').bind(id).first()) id = id + '-' + uid().slice(0, 6);
+      await env.DB.prepare('INSERT INTO bairros (id, cidade_id, nome) VALUES (?, ?, ?)').bind(id, cidade_id, nomeFinal).run();
+      const bairro = await env.DB.prepare('SELECT * FROM bairros WHERE id = ?').bind(id).first();
+      return json({ ok: true, bairro }, 201);
     }
 
     // ---- categorias (marca > modelo > tipo de peça) ----
