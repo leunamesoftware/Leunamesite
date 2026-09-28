@@ -704,7 +704,7 @@ async function renderAnunciar(){
   };
   document.getElementById('an-publicar').onclick = publicarAnuncio;
   const { data } = await api('/creditos/saldo');
-  if (data.ok) document.getElementById('an-saldo').textContent = data.saldo_creditos;
+  if (data.ok) document.getElementById('an-saldo').textContent = STATE.usuario.is_admin ? 'Ilimitado' : data.saldo_creditos;
 }
 function redesenharFotos(){
   const box = document.getElementById('an-fotos-preview');
@@ -844,7 +844,7 @@ async function renderPerfilConta(){
         <div class="estat-item"><b>${p.anuncios_ativos ?? 0}</b><span>Anúncios ativos</span></div>
         <div class="estat-item"><b>${u.vendas_confirmadas_total}</b><span>Itens vendidos</span></div>
         <div class="estat-item"><b>${p.media_avaliacoes ?? '—'}</b><span>Avaliação média</span></div>
-        <div class="estat-item"><b>${saldoData.saldo_creditos ?? 0}</b><span>Créditos</span></div>
+        <div class="estat-item"><b>${u.is_admin ? '∞' : (saldoData.saldo_creditos ?? 0)}</b><span>Créditos</span></div>
       </div>
     </div>
     <div class="card" style="padding:6px 15px;">
@@ -1042,8 +1042,8 @@ async function renderComprarCreditos(){
   document.getElementById('conteudo').innerHTML = `
     <div class="card" style="text-align:center;">
       <div class="muted">Saldo atual</div>
-      <div style="font-size:34px; font-weight:800; color:var(--verde-forte);">${saldoData.saldo_creditos ?? 0}</div>
-      <p class="muted">1 crédito = R$5 = 1 anúncio ativo por 30 dias. Dentro dos 30 dias você pode vender quantas vezes quiser do mesmo anúncio sem pagar de novo.</p>
+      <div style="font-size:34px; font-weight:800; color:var(--verde-forte);">${STATE.usuario.is_admin ? '∞' : (saldoData.saldo_creditos ?? 0)}</div>
+      <p class="muted">${STATE.usuario.is_admin ? 'Sua conta é admin: créditos ilimitados, nunca precisa comprar.' : '1 crédito = R$5 = 1 anúncio ativo por 30 dias. Dentro dos 30 dias você pode vender quantas vezes quiser do mesmo anúncio sem pagar de novo.'}</p>
     </div>
     <div class="card">
       <label style="margin-top:0;">Quantidade de créditos</label>

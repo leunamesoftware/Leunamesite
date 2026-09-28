@@ -433,17 +433,19 @@ export default {
       if (contemPalavraForaDoTema(titulo) || contemPalavraForaDoTema(descricao)) {
         return json({ ok: false, erro: 'fora_do_tema', mensagem: 'Este anúncio só aceita peças de celular.' }, 400);
       }
-      if (sess.saldo_creditos < 1) return json({ ok: false, erro: 'sem_creditos', mensagem: 'Você não tem créditos. Compre créditos para anunciar.' }, 402);
+      if (sess.saldo_creditos < 1 && !sess.is_admin) return json({ ok: false, erro: 'sem_creditos', mensagem: 'Você não tem créditos. Compre créditos para anunciar.' }, 402);
 
       const id = uid();
       const duracaoDias = Number(env.ANUNCIO_DURACAO_DIAS || 30);
-      await env.DB.batch([
+      const operacoes = [
         env.DB.prepare(
           `INSERT INTO anuncios (id, vendedor_id, marca_id, modelo_id, tipo_peca_id, titulo, descricao, preco_centavos, fotos, bairro_id, condicao, status, expira_em)
            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'ativo', ?)`
         ).bind(id, sess.id, marca_id, modelo_id, tipo_peca_id, titulo.trim(), descricao || '', preco_centavos, JSON.stringify(fotos || []), bairro_id, condicaoFinal, addDiasIso(duracaoDias)),
-        env.DB.prepare('UPDATE users SET saldo_creditos = saldo_creditos - 1 WHERE id = ?').bind(sess.id),
-      ]);
+      ];
+      // Conta admin (dona da plataforma) nunca fica sem crédito.
+      if (!sess.is_admin) operacoes.push(env.DB.prepare('UPDATE users SET saldo_creditos = saldo_creditos - 1 WHERE id = ?').bind(sess.id));
+      await env.DB.batch(operacoes);
       const anuncio = await env.DB.prepare('SELECT * FROM anuncios WHERE id = ?').bind(id).first();
       return json({ ok: true, anuncio }, 201);
     }
@@ -540,16 +542,17 @@ export default {
       if (!sess) return json({ ok: false, erro: 'nao_autenticado' }, 401);
       const anterior = await env.DB.prepare('SELECT * FROM anuncios WHERE id = ?').bind(matchRenovar[1]).first();
       if (!anterior || anterior.vendedor_id !== sess.id) return json({ ok: false, erro: 'nao_encontrado' }, 404);
-      if (sess.saldo_creditos < 1) return json({ ok: false, erro: 'sem_creditos' }, 402);
+      if (sess.saldo_creditos < 1 && !sess.is_admin) return json({ ok: false, erro: 'sem_creditos' }, 402);
       const duracaoDias = Number(env.ANUNCIO_DURACAO_DIAS || 30);
       const id = uid();
-      await env.DB.batch([
+      const operacoesRenovar = [
         env.DB.prepare(
           `INSERT INTO anuncios (id, vendedor_id, marca_id, modelo_id, tipo_peca_id, titulo, descricao, preco_centavos, fotos, bairro_id, status, expira_em, renovado_de)
            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'ativo', ?, ?)`
         ).bind(id, sess.id, anterior.marca_id, anterior.modelo_id, anterior.tipo_peca_id, anterior.titulo, anterior.descricao, anterior.preco_centavos, anterior.fotos, anterior.bairro_id, addDiasIso(duracaoDias), anterior.id),
-        env.DB.prepare('UPDATE users SET saldo_creditos = saldo_creditos - 1 WHERE id = ?').bind(sess.id),
-      ]);
+      ];
+      if (!sess.is_admin) operacoesRenovar.push(env.DB.prepare('UPDATE users SET saldo_creditos = saldo_creditos - 1 WHERE id = ?').bind(sess.id));
+      await env.DB.batch(operacoesRenovar);
       const novo = await env.DB.prepare('SELECT * FROM anuncios WHERE id = ?').bind(id).first();
       return json({ ok: true, anuncio: novo }, 201);
     }
