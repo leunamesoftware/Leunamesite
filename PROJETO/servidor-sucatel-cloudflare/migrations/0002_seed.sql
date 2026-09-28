@@ -63,4 +63,6 @@ INSERT OR IGNORE INTO bairros (id, cidade_id, nome) VALUES
  ('centro-nova-iguacu', 'nova-iguacu', 'Centro (Nova Iguaçu)'),
  ('jacarepagua', 'rio-de-janeiro', 'Jacarepaguá'),
  ('campo-grande', 'rio-de-janeiro', 'Campo Grande'),
- ('centro-meriti', 'sao-joao-de-meriti', 'Centro (São João de Meriti)');
+ ('centro-meriti', 'sao-joao-de-meriti', 'Centro (São João de Meriti)'),
+ ('centro-belford-roxo', 'belford-roxo', 'Centro (Belford Roxo)'),
+ ('lote-xv', 'belford-roxo', 'Lote XV');
