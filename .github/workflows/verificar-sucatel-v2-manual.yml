@@ -40,7 +40,13 @@ jobs:
           elif comando == 'verificar':
               dados = carregar(sys.argv[2])
               atual = navegar(dados, sys.argv[3])
-              esperado = {'__true__': True, '__false__': False}.get(sys.argv[4], sys.argv[4])
+              bruto = sys.argv[4]
+              if bruto in ('__true__', '__false__'):
+                  esperado = bruto == '__true__'
+              elif bruto.lstrip('-').isdigit():
+                  esperado = int(bruto)
+              else:
+                  esperado = bruto
               if atual != esperado:
                   print('FALHA: campo', sys.argv[3], 'esperado', repr(esperado), 'obtido', repr(atual))
                   print('dados completos:', dados)
@@ -103,7 +109,7 @@ jobs:
           curl -sS --fail -X POST "$BASE/anuncios" -H "Authorization: Bearer $TOKEN_V" -H 'Content-Type: application/json' \
             -d "{\"marca_id\":\"$MARCA_ID\",\"modelo_id\":\"$MODELO_ID\",\"tipo_peca_id\":\"celular\",\"titulo\":\"Celular sucata teste automatizado\",\"preco_centavos\":5000,\"bairro_id\":\"xerem\",\"condicao\":\"sucata\"}" -o anuncio.json
           ANUNCIO_ID=$(python3 check.py extrair anuncio.json anuncio.id)
-          python3 check.py verificar anuncio.json condicao sucata
+          python3 check.py verificar anuncio.json anuncio.condicao sucata
           echo "OK: anuncio criado com condicao sucata, id=$ANUNCIO_ID"
 
           echo "== 2) busca por regiao: santa-cruz-da-serra (perto de Xerem) deve ver o anuncio, com distancia =="
