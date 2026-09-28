@@ -2723,6 +2723,18 @@ function trialExpirado(){
   if(!inicio) return false;
   return (Date.now()-inicio) > TRIAL_DIAS*86400000;
 }
+/* Instalação nova, sem nenhuma chave ainda: libera os 17 dias de teste na hora,
+   sem pedir nada -- pensado pra quem instala pelo teste fechado da Play Store
+   (testadores desconhecidos, inclusive de outros países, que não teriam como
+   receber uma chave manualmente). Quem já comprou licença continua podendo
+   ativá-la a qualquer momento em Configurações → Licença. */
+async function ativarTrialAutomatico(){
+  const alfabeto='0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  const g2=Array.from({length:4},()=>alfabeto[Math.floor(Math.random()*alfabeto.length)]).join('');
+  const checksum=await licenseChecksum('TRIA',g2);
+  lsSet(LICENSE_LS_KEY,`LEU-TRIA-${g2}-${checksum}`);
+  lsSet(TRIAL_INICIO_LS_KEY,String(Date.now()));
+}
 const LICENSE_REVOKED_LS_KEY='leuname_licenca_revogada';
 const LICENSE_REVOKED_MOTIVO_LS_KEY='leuname_licenca_revogada_motivo';
 /* Consulta o servidor de licencas para saber se a chave foi revogada (ex:
@@ -3048,7 +3060,7 @@ async function boot(){
   try{ await openDB(); }catch(e){ console.error('Falha ao abrir banco local',e); }
   try{ await syncMigrateExisting(); }catch(e){ console.error('Falha ao preparar sincronizacao',e); }
   setupPWA();
-  if(!(await isLicenseActivated())){ renderLicenseGate(); return; }
+  if(!(await isLicenseActivated())){ await ativarTrialAutomatico(); }
   if(trialExpirado()){ renderTrialExpirado(); return; }
   if(lsGet(LICENSE_REVOKED_LS_KEY)==='1'){
     renderLicenseRevoked();
