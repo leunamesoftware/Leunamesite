@@ -38,6 +38,8 @@ button.perigo{background:var(--erro); color:#fff;}
     <div class="stats" id="stats"></div>
     <h3>Denúncias pendentes</h3>
     <div id="denuncias"></div>
+    <h3>Usuários</h3>
+    <div id="usuarios"></div>
   </div>
 </div>
 <script>
@@ -92,6 +94,23 @@ window.resolver = async function(id, procedente){
   carregarDenuncias();
   carregarStats();
 };
+async function carregarUsuarios(){
+  const data = await api('/admin/usuarios');
+  const box = document.getElementById('usuarios');
+  if (!data.ok || !data.usuarios.length) { box.innerHTML = '<p class="muted">Nenhum usuário ainda.</p>'; return; }
+  box.innerHTML = data.usuarios.map(u => `
+    <div class="card">
+      <div><strong>${esc(u.nome)}</strong> ${u.verificado ? '✅' : ''}</div>
+      <div class="muted">${esc(u.email)} · reputação ${u.reputacao}</div>
+      <div class="row">
+        <button onclick="alternarVerificado('${u.id}', ${u.verificado ? 'false' : 'true'})">${u.verificado ? 'Remover verificação' : 'Marcar como verificado'}</button>
+      </div>
+    </div>`).join('');
+}
+window.alternarVerificado = async function(id, verificado){
+  await api('/admin/usuarios/' + id + '/verificar', { method:'POST', body:{ verificado } });
+  carregarUsuarios();
+};
 async function boot(){
   const token = localStorage.getItem(LS_TOKEN);
   if (!token) return;
@@ -101,6 +120,7 @@ async function boot(){
   document.getElementById('painel').style.display = 'block';
   carregarStats();
   carregarDenuncias();
+  carregarUsuarios();
 }
 boot();
 </script>
