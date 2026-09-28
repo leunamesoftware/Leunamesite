@@ -813,7 +813,12 @@ export default {
     if (pathname === '/admin/usuarios' && request.method === 'GET') {
       const sess = await autenticar(request, env);
       if (!sess || !sess.is_admin) return json({ ok: false, erro: 'nao_autorizado' }, 401);
-      const { results } = await env.DB.prepare('SELECT id, nome, email, telefone, verificado, bloqueado, is_admin, reputacao, criado_em FROM users ORDER BY criado_em DESC LIMIT 200').all();
+      // Contas já excluídas (anonimizadas, email vira @sucatel.invalid) não
+      // aparecem mais aqui -- não tem nada pra fazer com elas, só polui a lista.
+      const { results } = await env.DB.prepare(
+        `SELECT id, nome, email, telefone, verificado, bloqueado, is_admin, reputacao, criado_em FROM users
+         WHERE email NOT LIKE '%@sucatel.invalid' ORDER BY criado_em DESC LIMIT 200`
+      ).all();
       return json({ ok: true, usuarios: results.map(u => ({ ...u, verificado: !!u.verificado, bloqueado: !!u.bloqueado, is_admin: !!u.is_admin })) });
     }
     const matchEditarUsuarioAdmin = pathname.match(/^\/admin\/usuarios\/([^/]+)$/);
@@ -863,7 +868,7 @@ export default {
       const sess = await autenticar(request, env);
       if (!sess || !sess.is_admin) return json({ ok: false, erro: 'nao_autorizado' }, 401);
       const [usuarios, anunciosAtivos, vendas, denunciasPendentes] = await Promise.all([
-        env.DB.prepare('SELECT COUNT(*) AS n FROM users').first(),
+        env.DB.prepare("SELECT COUNT(*) AS n FROM users WHERE email NOT LIKE '%@sucatel.invalid'").first(),
         env.DB.prepare("SELECT COUNT(*) AS n FROM anuncios WHERE status = 'ativo'").first(),
         env.DB.prepare('SELECT COUNT(*) AS n FROM vendas').first(),
         env.DB.prepare("SELECT COUNT(*) AS n FROM denuncias WHERE status = 'pendente'").first(),
