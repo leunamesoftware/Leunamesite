@@ -22,65 +22,80 @@ jobs:
           set -e
           BASE="https://sucatel-api.emanuelantunes2024.workers.dev"
 
+          cat > sucatel_check.py <<'PY'
+          import json, sys
+
+          def carregar(caminho):
+              return json.load(open(caminho))
+
+          def navegar(dados, caminho):
+              atual = dados
+              for parte in caminho.split('.'):
+                  atual = atual[int(parte)] if isinstance(atual, list) else atual[parte]
+              return atual
+
+          comando = sys.argv[1]
+          if comando == 'extrair':
+              print(navegar(carregar(sys.argv[2]), sys.argv[3]))
+          elif comando == 'verificar':
+              dados = carregar(sys.argv[2])
+              atual = navegar(dados, sys.argv[3])
+              esperado = {'__true__': True, '__false__': False}.get(sys.argv[4], sys.argv[4])
+              if atual != esperado:
+                  print('FALHA: campo', sys.argv[3], 'esperado', repr(esperado), 'obtido', repr(atual))
+                  print('dados completos:', dados)
+                  sys.exit(1)
+              print('OK')
+          elif comando == 'contem_id':
+              dados = carregar(sys.argv[2])
+              ids = [item['id'] for item in dados[sys.argv[3]]]
+              if sys.argv[4] not in ids:
+                  print('FALHA: id', sys.argv[4], 'nao encontrado em', ids)
+                  sys.exit(1)
+              print('OK')
+          PY
+
           echo "== health =="
           curl -sS --fail "$BASE/health"; echo
 
-          curl -sS -i "$BASE/localizacao/estados" | tee estados_raw.txt
-          echo "== conteudo cru salvo acima =="
-          pwd
           curl -sS --fail "$BASE/localizacao/estados" -o estados.json
-          echo "== estados.json cru =="
-          cat estados.json
-          echo
-          echo "== diagnostico unificado (um so processo python) =="
-          ESTADO_ID=$(python3 - <<'PY'
-          import json, os
-          raw = open('estados.json','rb').read()
-          print('LEN=', len(raw), file=__import__('sys').stderr)
-          print('RAW=', raw, file=__import__('sys').stderr)
-          data = json.loads(raw)
-          print('KEYS=', list(data.keys()), file=__import__('sys').stderr)
-          print('ESTADOS_VALUE=', data.get('estados'), file=__import__('sys').stderr)
-          print(data['estados'][0]['id'])
-          PY
-          )
-          echo "ESTADO_ID=$ESTADO_ID"
-          curl -sS --fail "$BASE/localizacao/cidades?estado_id=$ESTADO_ID" > cidades.json
-          CIDADE_ID=$(python3 -c "import json;print(json.load(open('cidades.json'))['cidades'][0]['id'])")
-          curl -sS --fail "$BASE/localizacao/bairros?cidade_id=$CIDADE_ID" > bairros.json
-          BAIRRO_ID=$(python3 -c "import json;print(json.load(open('bairros.json'))['bairros'][0]['id'])")
+          ESTADO_ID=$(python3 sucatel_check.py extrair estados.json estados.0.id)
+          curl -sS --fail "$BASE/localizacao/cidades?estado_id=$ESTADO_ID" -o cidades.json
+          CIDADE_ID=$(python3 sucatel_check.py extrair cidades.json cidades.0.id)
+          curl -sS --fail "$BASE/localizacao/bairros?cidade_id=$CIDADE_ID" -o bairros.json
+          BAIRRO_ID=$(python3 sucatel_check.py extrair bairros.json bairros.0.id)
 
-          curl -sS --fail "$BASE/categorias/marcas" > marcas.json
-          MARCA_ID=$(python3 -c "import json;print(json.load(open('marcas.json'))['marcas'][0]['id'])")
-          curl -sS --fail "$BASE/categorias/modelos?marca_id=$MARCA_ID" > modelos.json
-          MODELO_ID=$(python3 -c "import json;print(json.load(open('modelos.json'))['modelos'][0]['id'])")
-          curl -sS --fail "$BASE/categorias/tipos-peca" > tipos.json
-          TIPO_ID=$(python3 -c "import json;print(json.load(open('tipos.json'))['tipos_peca'][0]['id'])")
+          curl -sS --fail "$BASE/categorias/marcas" -o marcas.json
+          MARCA_ID=$(python3 sucatel_check.py extrair marcas.json marcas.0.id)
+          curl -sS --fail "$BASE/categorias/modelos?marca_id=$MARCA_ID" -o modelos.json
+          MODELO_ID=$(python3 sucatel_check.py extrair modelos.json modelos.0.id)
+          curl -sS --fail "$BASE/categorias/tipos-peca" -o tipos.json
+          TIPO_ID=$(python3 sucatel_check.py extrair tipos.json tipos_peca.0.id)
           echo "bairro=$BAIRRO_ID marca=$MARCA_ID modelo=$MODELO_ID tipo=$TIPO_ID"
 
           EMAIL_V="teste-vendedor-$(date +%s)@sucatel-teste.com"
           curl -sS --fail -X POST "$BASE/auth/cadastro" -H 'Content-Type: application/json' \
-            -d "{\"nome\":\"Vendedor Teste\",\"email\":\"$EMAIL_V\",\"senha\":\"senha123456\",\"bairro_id\":\"$BAIRRO_ID\"}" > cadastro_v.json
-          TOKEN_V=$(python3 -c "import json;print(json.load(open('cadastro_v.json'))['token'])")
-          VENDEDOR_ID=$(python3 -c "import json;print(json.load(open('cadastro_v.json'))['usuario']['id'])")
+            -d "{\"nome\":\"Vendedor Teste\",\"email\":\"$EMAIL_V\",\"senha\":\"senha123456\",\"bairro_id\":\"$BAIRRO_ID\"}" -o cadastro_v.json
+          TOKEN_V=$(python3 sucatel_check.py extrair cadastro_v.json token)
+          VENDEDOR_ID=$(python3 sucatel_check.py extrair cadastro_v.json usuario.id)
 
           EMAIL_C="teste-comprador-$(date +%s)@sucatel-teste.com"
           curl -sS --fail -X POST "$BASE/auth/cadastro" -H 'Content-Type: application/json' \
-            -d "{\"nome\":\"Comprador Teste\",\"email\":\"$EMAIL_C\",\"senha\":\"senha123456\",\"bairro_id\":\"$BAIRRO_ID\"}" > cadastro_c.json
-          TOKEN_C=$(python3 -c "import json;print(json.load(open('cadastro_c.json'))['token'])")
-          COMPRADOR_ID=$(python3 -c "import json;print(json.load(open('cadastro_c.json'))['usuario']['id'])")
+            -d "{\"nome\":\"Comprador Teste\",\"email\":\"$EMAIL_C\",\"senha\":\"senha123456\",\"bairro_id\":\"$BAIRRO_ID\"}" -o cadastro_c.json
+          TOKEN_C=$(python3 sucatel_check.py extrair cadastro_c.json token)
+          COMPRADOR_ID=$(python3 sucatel_check.py extrair cadastro_c.json usuario.id)
           echo "vendedor=$VENDEDOR_ID comprador=$COMPRADOR_ID"
 
           echo "== 1) anunciar fora do tema deve bloquear (sem gastar credito) =="
           curl -sS -X POST "$BASE/anuncios" -H "Authorization: Bearer $TOKEN_V" -H 'Content-Type: application/json' \
-            -d "{\"marca_id\":\"$MARCA_ID\",\"modelo_id\":\"$MODELO_ID\",\"tipo_peca_id\":\"$TIPO_ID\",\"titulo\":\"Vendo uma cama de casal\",\"preco_centavos\":10000,\"bairro_id\":\"$BAIRRO_ID\"}" > fora_tema.json
-          python3 -c "import json;d=json.load(open('fora_tema.json'));assert d.get('erro')=='fora_do_tema', d"
+            -d "{\"marca_id\":\"$MARCA_ID\",\"modelo_id\":\"$MODELO_ID\",\"tipo_peca_id\":\"$TIPO_ID\",\"titulo\":\"Vendo uma cama de casal\",\"preco_centavos\":10000,\"bairro_id\":\"$BAIRRO_ID\"}" -o fora_tema.json
+          python3 sucatel_check.py verificar fora_tema.json erro fora_do_tema
           echo "OK: bloqueado corretamente"
 
           echo "== 2) anunciar sem credito deve bloquear =="
           curl -sS -X POST "$BASE/anuncios" -H "Authorization: Bearer $TOKEN_V" -H 'Content-Type: application/json' \
-            -d "{\"marca_id\":\"$MARCA_ID\",\"modelo_id\":\"$MODELO_ID\",\"tipo_peca_id\":\"$TIPO_ID\",\"titulo\":\"Placa teste automatizado\",\"preco_centavos\":10000,\"bairro_id\":\"$BAIRRO_ID\"}" > sem_credito.json
-          python3 -c "import json;d=json.load(open('sem_credito.json'));assert d.get('erro')=='sem_creditos', d"
+            -d "{\"marca_id\":\"$MARCA_ID\",\"modelo_id\":\"$MODELO_ID\",\"tipo_peca_id\":\"$TIPO_ID\",\"titulo\":\"Placa teste automatizado\",\"preco_centavos\":10000,\"bairro_id\":\"$BAIRRO_ID\"}" -o sem_credito.json
+          python3 sucatel_check.py verificar sem_credito.json erro sem_creditos
           echo "OK: bloqueado corretamente"
 
           echo "== 3) dar 2 creditos ao vendedor direto no banco (simula pagamento confirmado) =="
@@ -88,41 +103,35 @@ jobs:
 
           echo "== 4) anunciar com credito deve funcionar =="
           curl -sS --fail -X POST "$BASE/anuncios" -H "Authorization: Bearer $TOKEN_V" -H 'Content-Type: application/json' \
-            -d "{\"marca_id\":\"$MARCA_ID\",\"modelo_id\":\"$MODELO_ID\",\"tipo_peca_id\":\"$TIPO_ID\",\"titulo\":\"Placa teste automatizado\",\"descricao\":\"anuncio de teste\",\"preco_centavos\":10000,\"bairro_id\":\"$BAIRRO_ID\"}" > anuncio.json
-          ANUNCIO_ID=$(python3 -c "import json;print(json.load(open('anuncio.json'))['anuncio']['id'])")
+            -d "{\"marca_id\":\"$MARCA_ID\",\"modelo_id\":\"$MODELO_ID\",\"tipo_peca_id\":\"$TIPO_ID\",\"titulo\":\"Placa teste automatizado\",\"descricao\":\"anuncio de teste\",\"preco_centavos\":10000,\"bairro_id\":\"$BAIRRO_ID\"}" -o anuncio.json
+          ANUNCIO_ID=$(python3 sucatel_check.py extrair anuncio.json anuncio.id)
           echo "anuncio criado: $ANUNCIO_ID"
 
           echo "== 5) o anuncio aparece na busca do bairro =="
-          curl -sS --fail "$BASE/anuncios?bairro_id=$BAIRRO_ID" > busca.json
-          ANUNCIO_ID="$ANUNCIO_ID" python3 - <<'PY'
-          import json, os
-          d = json.load(open('busca.json'))
-          ids = [a['id'] for a in d['anuncios']]
-          assert os.environ['ANUNCIO_ID'] in ids, ids
-          print('OK: anuncio aparece na busca')
-          PY
+          curl -sS --fail "$BASE/anuncios?bairro_id=$BAIRRO_ID" -o busca.json
+          python3 sucatel_check.py contem_id busca.json anuncios "$ANUNCIO_ID"
 
           echo "== 6) marcar uma venda =="
-          curl -sS --fail -X POST "$BASE/anuncios/$ANUNCIO_ID/vender" -H "Authorization: Bearer $TOKEN_V" > venda.json
+          curl -sS --fail -X POST "$BASE/anuncios/$ANUNCIO_ID/vender" -H "Authorization: Bearer $TOKEN_V" -o venda.json
           cat venda.json
 
           echo "== 7) comprador inicia conversa e manda mensagem com telefone (deve ser bloqueada) =="
           curl -sS --fail -X POST "$BASE/conversas" -H "Authorization: Bearer $TOKEN_C" -H 'Content-Type: application/json' \
-            -d "{\"anuncio_id\":\"$ANUNCIO_ID\"}" > conversa.json
-          CONVERSA_ID=$(python3 -c "import json;print(json.load(open('conversa.json'))['conversa']['id'])")
+            -d "{\"anuncio_id\":\"$ANUNCIO_ID\"}" -o conversa.json
+          CONVERSA_ID=$(python3 sucatel_check.py extrair conversa.json conversa.id)
           curl -sS --fail -X POST "$BASE/conversas/$CONVERSA_ID/mensagens" -H "Authorization: Bearer $TOKEN_C" -H 'Content-Type: application/json' \
-            -d '{"texto":"Meu whatsapp é 21999998888, me chama"}' > msg_bloqueada.json
-          python3 -c "import json;d=json.load(open('msg_bloqueada.json'));assert d['bloqueada']==True, d"
+            -d '{"texto":"Meu whatsapp é 21999998888, me chama"}' -o msg_bloqueada.json
+          python3 sucatel_check.py verificar msg_bloqueada.json bloqueada __true__
           echo "OK: telefone/whatsapp bloqueado no chat"
 
           echo "== 8) mensagem normal deve passar =="
           curl -sS --fail -X POST "$BASE/conversas/$CONVERSA_ID/mensagens" -H "Authorization: Bearer $TOKEN_C" -H 'Content-Type: application/json' \
-            -d '{"texto":"Ainda tem essa peça disponível?"}' > msg_ok.json
-          python3 -c "import json;d=json.load(open('msg_ok.json'));assert d['bloqueada']==False, d"
+            -d '{"texto":"Ainda tem essa peça disponível?"}' -o msg_ok.json
+          python3 sucatel_check.py verificar msg_ok.json bloqueada __false__
           echo "OK: mensagem normal passou"
 
           echo "== 9) vendedor renova anuncio (gasta o 2o credito) =="
-          curl -sS --fail -X POST "$BASE/anuncios/$ANUNCIO_ID/renovar" -H "Authorization: Bearer $TOKEN_V" > renovado.json
+          curl -sS --fail -X POST "$BASE/anuncios/$ANUNCIO_ID/renovar" -H "Authorization: Bearer $TOKEN_V" -o renovado.json
           cat renovado.json
 
           echo "TUDO OK" > "$GITHUB_WORKSPACE/RESULTADO_OK.txt"
