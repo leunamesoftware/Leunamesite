@@ -57,6 +57,14 @@ jobs:
         working-directory: ANDROID/projeto-instalador-sucatell
         run: npx cap sync android
 
+      - name: Numerar a versão do app (cada build fica maior que a anterior)
+        working-directory: ANDROID/projeto-instalador-sucatell
+        shell: bash
+        run: |
+          CODIGO=$(( $(date +%s) / 60 ))
+          sed -i -E "s/versionCode [0-9]+/versionCode $CODIGO/; s/versionName \"[^\"]*\"/versionName \"1.2.${{ github.run_number }}\"/" android/app/build.gradle
+          grep -E "versionCode|versionName" android/app/build.gradle
+
       - name: Aplicar o ícone oficial do Sucatell
         working-directory: ANDROID/projeto-instalador-sucatell
         shell: bash

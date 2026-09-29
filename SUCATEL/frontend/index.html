@@ -6,8 +6,8 @@
 <title>Sucatell</title>
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#0d3b1f">
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<link rel="stylesheet" href="vendor/leaflet/leaflet.css">
+<script src="vendor/leaflet/leaflet.js" defer></script>
 <style>
 :root{
   --verde-escuro:#0d3b1f; --verde:#178a43; --verde-forte:#16a34a; --verde-claro:#e7f5ea;
@@ -34,6 +34,7 @@ body{margin:0; background:var(--bg); color:var(--texto); font-family:-apple-syst
 #intro-splash .intro-barra{position:absolute; left:0; top:0; width:40%; height:100%; background:#4ade80; border-radius:4px; animation:intro-barra-desliza 1.1s ease-in-out infinite;}
 @keyframes intro-barra-desliza{ 0%{ transform:translateX(-100%); } 100%{ transform:translateX(350%); } }
 #intro-splash.saindo{opacity:0; pointer-events:none;}
+#intro-splash .intro-versao{position:absolute; bottom:calc(28px + env(safe-area-inset-bottom,0px)); color:rgba(255,255,255,.45); font-size:11px;}
 input,select,textarea,button{font-family:inherit; font-size:15px;}
 input,select,textarea{width:100%; padding:12px 13px; border-radius:10px; background:var(--card); border:1.5px solid var(--borda); color:var(--texto);}
 input:focus,select:focus,textarea:focus{outline:2px solid var(--verde); outline-offset:-1px;}
@@ -162,7 +163,30 @@ a{color:var(--verde);}
   <div class="intro-nome">Sucat<span class="verde">ell</span></div>
   <div class="intro-sub">Compra • Venda • Reaproveita</div>
   <div class="intro-barra-wrap"><div class="intro-barra"></div></div>
+  <div class="intro-versao">versão 1.2</div>
 </div>
+<script>
+// Roda separado do código principal, de propósito: mesmo que o resto
+// quebre (erro de JS, internet caindo no meio), a tela de abertura nunca
+// prende o app pra sempre -- e se foi erro, mostra o erro real na tela
+// (pra dar pra mandar print e saber exatamente o que aconteceu).
+(function(){
+  var erros = [];
+  window.addEventListener('error', function(e){ erros.push((e.message || 'erro') + (e.filename ? ' @ ' + e.filename.split('/').pop() + ':' + e.lineno : '')); });
+  window.addEventListener('unhandledrejection', function(e){ erros.push('promessa: ' + ((e.reason && e.reason.message) || e.reason)); });
+  function telaProblema(titulo, detalhe){
+    var s = document.getElementById('intro-splash');
+    if (!s) return;
+    s.innerHTML = '<div style="color:#fff;text-align:center;padding:24px;max-width:360px;">'
+      + '<div style="font-size:42px;">⚠️</div><div style="font-size:18px;font-weight:800;margin:8px 0;">' + titulo + '</div>'
+      + (detalhe ? '<p style="font-size:13px;opacity:.85;margin:0 0 8px;">Tire um print desta tela e mande pro suporte.</p><pre style="white-space:pre-wrap;word-break:break-word;font-size:11px;background:rgba(0,0,0,.3);padding:10px;border-radius:8px;text-align:left;max-height:40vh;overflow:auto;">' + String(detalhe).replace(/</g, '&lt;') + '</pre>' : '<p style="font-size:14px;opacity:.85;">Confira sua internet e tente de novo.</p>')
+      + '<button onclick="location.reload()" style="margin-top:12px;padding:13px 22px;border:none;border-radius:12px;background:#4ade80;color:#0d3b1f;font-weight:800;font-size:15px;">Tentar de novo</button>'
+      + '<div style="font-size:11px;opacity:.55;margin-top:14px;">versão 1.2</div></div>';
+  }
+  setTimeout(function(){ if (document.getElementById('intro-splash') && erros.length) telaProblema('O app não conseguiu abrir', erros.join('\n')); }, 7000);
+  setTimeout(function(){ if (document.getElementById('intro-splash') && !document.querySelector('#intro-splash button')) telaProblema('Está demorando pra abrir', erros.join('\n')); }, 20000);
+})();
+</script>
 <div id="auth-root"></div>
 <div id="app-root" class="app-root">
   <div class="topo" id="topo"></div>
@@ -1368,9 +1392,6 @@ function esconderSplashIntro(){
   splash.classList.add('saindo');
   setTimeout(() => splash.remove(), 400);
 }
-// Trava de segurança: a tela de abertura nunca pode prender o app, mesmo
-// se a internet cair ou alguma chamada der erro no meio do caminho.
-setTimeout(esconderSplashIntro, 8000);
 async function boot(){
   try {
     setupPWA();
