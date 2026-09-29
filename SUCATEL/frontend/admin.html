@@ -187,14 +187,21 @@ tr:last-child td{border-bottom:none;}
   .card{padding:14px;}
   .busca-topo{display:none;}
   .site-moldura, .site-moldura.computador{border-width:1px; border-color:var(--borda); border-radius:14px; height:calc(100vh - 230px); max-height:none;}
-  /* Categorias no celular: cada uma vira um bloquinho em vez de tabela larga */
-  #cat-tipos table, #cat-tipos tbody, #cat-tipos tr, #cat-tipos td{display:block;}
-  #cat-tipos tr:first-child{display:none;}
-  #cat-tipos tr{padding:10px 0; border-bottom:1px solid var(--borda);}
-  #cat-tipos td{border:none; padding:3px 0;}
-  #cat-tipos td:nth-child(2), #cat-tipos td:nth-child(3), #cat-tipos td:nth-child(4), #cat-tipos td:nth-child(5){display:inline-block; margin-right:10px; font-size:12.5px;}
-  #cat-tipos td:nth-child(3)::after{content:' anúncios'; color:var(--fraco);}
-  #cat-tipos .acoes{margin-top:6px;}
+}
+/* Tabelas no celular: cada linha vira um cartão. A primeira coluna (quem
+   ou o quê) ocupa a largura toda; as outras ficam em duas colunas com o
+   nome do campo em cima; botões ocupam a largura toda embaixo. Os nomes
+   dos campos vêm do cabeçalho da tabela (rotularTabelas, no script). */
+@media (max-width:640px){
+  .tabela-wrap{overflow-x:visible;}
+  .tabela-wrap table, .tabela-wrap tbody{display:block;}
+  .tabela-wrap tr:first-child{display:none;}
+  .tabela-wrap tr{display:grid; grid-template-columns:1fr 1fr; gap:10px 14px; padding:14px 0; border-bottom:1px solid var(--borda);}
+  .tabela-wrap tr:last-child{border-bottom:none;}
+  .tabela-wrap td{display:block; padding:0; border:none; min-width:0; overflow-wrap:anywhere;}
+  .tabela-wrap td:first-child, .tabela-wrap td:not([data-label]), .tabela-wrap td:has(button), .tabela-wrap td:has(input){grid-column:1 / -1;}
+  .tabela-wrap td[data-label]::before{content:attr(data-label); display:block; font-size:11px; font-weight:700; letter-spacing:.4px; text-transform:uppercase; color:var(--fraco); margin-bottom:2px;}
+  .tabela-wrap td .acoes{flex-wrap:wrap;}
 }
 </style>
 </head>
@@ -576,6 +583,24 @@ const MENU = [
 document.getElementById('menu-lateral').innerHTML = MENU.map(m => m.grupo
   ? `<div class="grupo">${m.grupo}</div>`
   : `<button class="item-menu" data-view="${m.id}">${ic(m.id)}${m.rot}${m.badge ? `<span class="num" id="menu-num-${m.badge}" hidden>0</span>` : ''}</button>`).join('');
+// Dá a cada célula o nome da coluna (data-label), pro layout de cartão
+// das tabelas no celular. Roda sozinho sempre que uma tabela é desenhada.
+function rotularTabelas(){
+  document.querySelectorAll('.tabela-wrap table').forEach(t => {
+    const cab = t.querySelector('tr');
+    if (!cab || !cab.querySelector('th')) return;
+    const nomes = [...cab.children].map(th => th.textContent.trim());
+    t.querySelectorAll('tr').forEach((tr, i) => {
+      if (i === 0) return;
+      [...tr.children].forEach((td, c) => {
+        if (c > 0 && nomes[c] && nomes[c] !== 'Ações') td.dataset.label = nomes[c];
+      });
+    });
+  });
+}
+let rotularPendente = null;
+new MutationObserver(() => { clearTimeout(rotularPendente); rotularPendente = setTimeout(rotularTabelas, 30); })
+  .observe(document.querySelector('.conteudo'), { childList: true, subtree: true });
 const CARREGADORES = {};
 let viewAtual = null;
 // Cada tela aberta entra no histórico do navegador: a setinha "Voltar" no
