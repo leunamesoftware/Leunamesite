@@ -1,17 +1,18 @@
-import type { Alerta, MotivoAlerta, Situacao } from '../../../../compartilhado/contratos.js';
+import type { Alerta, MotivoAlerta, Natureza, Situacao } from '../../../../compartilhado/contratos.js';
 import type { Banco } from '../../infra/banco/tipos.js';
 
 interface LinhaAlerta {
-  id: string; item_id: string; item_titulo: string; motivo: MotivoAlerta; situacao: Situacao;
+  id: string; item_id: string; item_titulo: string; item_natureza: Natureza; item_data_vencimento: string | null;
+  motivo: MotivoAlerta; situacao: Situacao;
   mensagem: string; criado_em: string; lido_em: string | null; resolvido_em: string | null;
 }
 
 const paraAlerta = (l: LinhaAlerta): Alerta => ({
-  id: l.id, itemId: l.item_id, itemTitulo: l.item_titulo, motivo: l.motivo, situacao: l.situacao,
+  id: l.id, itemId: l.item_id, itemTitulo: l.item_titulo, itemNatureza: l.item_natureza, itemDataVencimento: l.item_data_vencimento, motivo: l.motivo, situacao: l.situacao,
   mensagem: l.mensagem, criadoEm: l.criado_em, lidoEm: l.lido_em, resolvidoEm: l.resolvido_em,
 });
 
-const SELECT = `SELECT a.id, a.item_id, i.titulo AS item_titulo, a.motivo, a.situacao, a.mensagem,
+const SELECT = `SELECT a.id, a.item_id, i.titulo AS item_titulo, i.natureza AS item_natureza, i.data_vencimento AS item_data_vencimento, a.motivo, a.situacao, a.mensagem,
   a.criado_em, a.lido_em, a.resolvido_em FROM alertas a JOIN itens i ON i.id = a.item_id`;
 
 export const repositorioAlertas = {

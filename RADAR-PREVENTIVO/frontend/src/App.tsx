@@ -10,6 +10,7 @@ import { TelaDocumentos } from './telas/documentos/TelaDocumentos';
 import { TelaCadastrarItem } from './telas/itens/TelaCadastrarItem';
 import { TelaEditarItem } from './telas/itens/TelaEditarItem';
 import { TelaDetalheItem } from './telas/itens/TelaDetalheItem';
+import { TelaAlertas } from './telas/alertas/TelaAlertas';
 import { TelaPendente } from './telas/pendente/TelaPendente';
 import { rotas } from './rotas';
 
@@ -36,7 +37,7 @@ export function App() {
           <Route path={rotas.novoItem} element={<Interna><TelaCadastrarItem /></Interna>} />
           <Route path="/itens/:id/editar" element={<Interna><TelaEditarItem /></Interna>} />
           <Route path="/itens/:id" element={<Interna><TelaDetalheItem /></Interna>} />
-          <Route path={rotas.alertas} element={<RotaProtegida><TelaPendente titulo="Alertas" /></RotaProtegida>} />
+          <Route path={rotas.alertas} element={<Interna><TelaAlertas /></Interna>} />
           <Route path={rotas.conta} element={<RotaProtegida><TelaPendente titulo="Conta" /></RotaProtegida>} />
           <Route path="*" element={<Navigate to={rotas.abertura} replace />} />
         </Routes>

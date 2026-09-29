@@ -168,6 +168,9 @@ export interface Alerta {
   id: string;
   itemId: string;
   itemTitulo: string;
+  itemNatureza: Natureza;
+  /** Vencimento atual do item (AAAA-MM-DD), para mostrar junto do alerta. */
+  itemDataVencimento: string | null;
   motivo: MotivoAlerta;
   situacao: Situacao;
   mensagem: string;
