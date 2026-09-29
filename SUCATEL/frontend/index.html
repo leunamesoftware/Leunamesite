@@ -295,6 +295,22 @@ const CATEGORIAS_GRID = [
   { grupo:'tablet', nome:'Tablets', icone:'📓', foto:'img/categorias/tablet.jpg' },
   { grupo:'outro', nome:'Outros', icone:'📦', foto:'img/categorias/outro.jpg' },
 ];
+// Categorias da tela inicial: as fixas (com foto) + as que o admin criar
+// no painel. Uma categoria fixa some se o admin ocultar tudo que há nela.
+function categoriasGrid(){
+  const tipos = (typeof STATE !== 'undefined' && STATE.tiposPeca) || [];
+  if (!tipos.length) return CATEGORIAS_GRID;
+  const grupos = new Set(tipos.map(t => t.grupo || t.id));
+  const fixas = CATEGORIAS_GRID.filter(c => grupos.has(c.grupo));
+  const novas = tipos.filter(t => (t.grupo || t.id) === t.id && !CATEGORIAS_GRID.some(c => c.grupo === t.id))
+    .map(t => ({ grupo: t.id, nome: t.nome, icone: t.icone || '📦' }));
+  const outro = fixas.filter(c => c.grupo === 'outro');
+  return fixas.filter(c => c.grupo !== 'outro').concat(novas, outro);
+}
+function iconeTipo(id){
+  const t = ((typeof STATE !== 'undefined' && STATE.tiposPeca) || []).find(x => x.id === id);
+  return ICONE_TIPO[id] || (t && t.icone) || '📦';
+}
 function tempoRelativo(iso){
   if(!iso) return '';
   const d = new Date(iso.includes('T') ? iso : iso.replace(' ','T')+'Z');
@@ -644,10 +660,10 @@ async function renderInicio(){
       <a href="javascript:void(0)" id="in-ver-todos" style="font-size:13px; font-weight:700;">Ver todos</a>
     </div>
     <div id="in-resultados"><div class="muted">Carregando...</div></div>`;
-  document.getElementById('in-categorias-rapidas').innerHTML = CATEGORIAS_GRID.map(c => `
+  document.getElementById('in-categorias-rapidas').innerHTML = categoriasGrid().map(c => `
     <div class="cat-chip" data-grupo="${c.grupo}"><div class="cat-icone-box">${c.icone}</div><span>${esc(c.nome)}</span></div>`).join('');
   document.querySelectorAll('#in-categorias-rapidas .cat-chip').forEach(item => {
-    item.onclick = () => irPara(() => renderListaProdutos({ grupo: item.dataset.grupo, nome: CATEGORIAS_GRID.find(c=>c.grupo===item.dataset.grupo).nome }));
+    item.onclick = () => irPara(() => renderListaProdutos({ grupo: item.dataset.grupo, nome: categoriasGrid().find(c=>c.grupo===item.dataset.grupo).nome }));
   });
   document.getElementById('in-ver-todos').onclick = () => irPara(() => renderListaProdutos({ nome: 'Todos os anúncios' }));
   api('/configuracoes/publicas').then(({ data }) => {
@@ -678,13 +694,13 @@ function renderCategorias(){
   document.getElementById('conteudo').innerHTML = `
     <h2 style="margin:4px 0 2px;">Categorias</h2>
     <p class="muted" style="margin-top:0;">Escolha o que você procura</p>
-    <div class="grid-cat-grande">${CATEGORIAS_GRID.map(c => `
+    <div class="grid-cat-grande">${categoriasGrid().map(c => `
       <div class="cat-card-grande" data-grupo="${c.grupo}">
         <div class="topo-icone-grande" ${c.foto ? `style="background-image:url('${c.foto}');"` : ''}>${c.foto ? '' : c.icone}</div>
         <div class="rodape-cat">${esc(c.nome)} <span class="seta">›</span></div>
       </div>`).join('')}</div>`;
   document.querySelectorAll('.grid-cat-grande .cat-card-grande').forEach(item => {
-    item.onclick = () => irPara(() => renderListaProdutos({ grupo: item.dataset.grupo, nome: CATEGORIAS_GRID.find(c=>c.grupo===item.dataset.grupo).nome }));
+    item.onclick = () => irPara(() => renderListaProdutos({ grupo: item.dataset.grupo, nome: categoriasGrid().find(c=>c.grupo===item.dataset.grupo).nome }));
   });
   marcarAbaTab('categorias');
 }
@@ -696,7 +712,7 @@ function cartaoProduto(a){
   const favoritado = favoritos().includes(a.id);
   return `
   <div class="card produto-card" onclick="abrirAnuncio('${a.id}')">
-    ${capa ? `<img class="produto-foto" src="${esc(capa)}" alt="">` : `<div class="produto-foto produto-foto-vazia">${ICONE_TIPO[a.tipo_peca_id]||'📦'}</div>`}
+    ${capa ? `<img class="produto-foto" src="${esc(capa)}" alt="">` : `<div class="produto-foto produto-foto-vazia">${iconeTipo(a.tipo_peca_id)}</div>`}
     <div class="produto-info">
       <div class="produto-local">📍 ${esc(a.bairro_nome||'')} ${a.distancia_km!=null?'· '+distanciaLabel(a.distancia_km):''} · ${tempoRelativo(a.criado_em)}</div>
       <div class="produto-titulo">${esc(a.titulo)}</div>
@@ -718,7 +734,7 @@ async function renderListaProdutos(filtro){
   const el = document.getElementById('conteudo');
   el.innerHTML = `
     <div style="display:flex; align-items:center; gap:10px; margin-bottom:12px;">
-      <span style="font-size:26px;">${ICONE_TIPO[filtroAtual.grupo] || (CATEGORIAS_GRID.find(c=>c.grupo===filtroAtual.grupo)||{}).icone || '🔍'}</span>
+      <span style="font-size:26px;">${ICONE_TIPO[filtroAtual.grupo] || (categoriasGrid().find(c=>c.grupo===filtroAtual.grupo)||{}).icone || '🔍'}</span>
       <div style="flex:1;"><div style="font-weight:800; font-size:17px;">${esc(filtroAtual.nome||'')}</div><div class="muted" id="lp-contagem">carregando...</div></div>
       <button class="btn pequeno" id="lp-filtros" style="margin-top:0;">⚙️ Filtros</button>
     </div>
@@ -792,7 +808,7 @@ function telaDetalheAnuncio(a){
         ${fotos.length > 1 ? `<div class="galeria-contador" id="galeria-contador">1/${fotos.length}</div>` : ''}
       </div>
       ${fotos.length > 1 ? `<div class="galeria-miniaturas" id="galeria-miniaturas">${fotos.map((f,i)=>`<img src="${esc(f)}" data-i="${i}" class="${i===0?'ativa':''}">`).join('')}</div>` : ''}
-    ` : `<div style="height:200px; border-radius:14px; background:var(--verde-claro); display:flex; align-items:center; justify-content:center; font-size:60px; margin-bottom:8px;">${ICONE_TIPO[a.tipo_peca_id]||'📦'}</div>`}
+    ` : `<div style="height:200px; border-radius:14px; background:var(--verde-claro); display:flex; align-items:center; justify-content:center; font-size:60px; margin-bottom:8px;">${iconeTipo(a.tipo_peca_id)}</div>`}
     <div class="card">
       <h2 style="margin:0 0 4px; font-size:19px;">${esc(a.titulo)}</h2>
       <div class="muted" style="margin-bottom:6px;">📍 ${esc(a.bairro_nome)} · ${tempoRelativo(a.criado_em)}</div>

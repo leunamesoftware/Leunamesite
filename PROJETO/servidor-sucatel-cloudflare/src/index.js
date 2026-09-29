@@ -273,7 +273,7 @@ export default {
       return json({ ok: true, modelos: results });
     }
     if (pathname === '/categorias/tipos-peca' && request.method === 'GET') {
-      const { results } = await env.DB.prepare('SELECT * FROM tipos_peca ORDER BY ordem').all();
+      const { results } = await env.DB.prepare('SELECT * FROM tipos_peca WHERE COALESCE(ativo, 1) = 1 ORDER BY ordem').all();
       return json({ ok: true, tipos_peca: results });
     }
     // A lista inicial de marcas/modelos é pequena -- sem isso, quem tem um
@@ -1090,6 +1090,58 @@ export default {
       const matchAvaliacaoAdmin = pathname.match(/^\/admin\/avaliacoes\/([^/]+)$/);
       if (matchAvaliacaoAdmin && request.method === 'DELETE') {
         await env.DB.prepare('DELETE FROM avaliacoes WHERE id = ?').bind(matchAvaliacaoAdmin[1]).run();
+        return json({ ok: true });
+      }
+
+      // Categorias (tipos_peca). "grupo" é o botão que aparece na tela
+      // inicial da loja: uma categoria nova vira o próprio grupo; ou entra
+      // dentro de um grupo que já existe (ex: um tipo novo de peça em "Peças").
+      if (pathname === '/admin/categorias' && request.method === 'GET') {
+        const { results } = await env.DB.prepare(
+          `SELECT t.*, (SELECT COUNT(*) FROM anuncios a WHERE a.tipo_peca_id = t.id) AS total_anuncios
+           FROM tipos_peca t ORDER BY t.ordem, t.nome`
+        ).all();
+        return json({ ok: true, categorias: results });
+      }
+      if (pathname === '/admin/categorias' && request.method === 'POST') {
+        const { nome, icone, grupo } = await request.json().catch(() => ({}));
+        if (!nome || !nome.trim()) return json({ ok: false, erro: 'campos_obrigatorios' }, 400);
+        const nomeFinal = nome.trim().slice(0, 60);
+        const existente = await env.DB.prepare('SELECT id FROM tipos_peca WHERE LOWER(nome) = LOWER(?)').bind(nomeFinal).first();
+        if (existente) return json({ ok: false, erro: 'ja_existe' }, 409);
+        let id = slugify(nomeFinal) || uid();
+        if (await env.DB.prepare('SELECT id FROM tipos_peca WHERE id = ?').bind(id).first()) id = id + '-' + uid().slice(0, 6);
+        let grupoFinal = id;
+        if (grupo) {
+          const g = await env.DB.prepare('SELECT grupo FROM tipos_peca WHERE grupo = ? LIMIT 1').bind(grupo).first();
+          if (!g) return json({ ok: false, erro: 'grupo_invalido' }, 400);
+          grupoFinal = grupo;
+        }
+        const ordem = await env.DB.prepare('SELECT COALESCE(MAX(ordem), 0) + 10 AS o FROM tipos_peca').first();
+        await env.DB.prepare('INSERT INTO tipos_peca (id, nome, ordem, grupo, icone, ativo) VALUES (?, ?, ?, ?, ?, 1)')
+          .bind(id, nomeFinal, ordem.o, grupoFinal, (icone || '').trim().slice(0, 8) || null).run();
+        return json({ ok: true, categoria: await env.DB.prepare('SELECT * FROM tipos_peca WHERE id = ?').bind(id).first() }, 201);
+      }
+      const matchCategoriaAdmin = pathname.match(/^\/admin\/categorias\/([^/]+)$/);
+      if (matchCategoriaAdmin && request.method === 'PATCH') {
+        const cat = await env.DB.prepare('SELECT * FROM tipos_peca WHERE id = ?').bind(matchCategoriaAdmin[1]).first();
+        if (!cat) return json({ ok: false, erro: 'nao_encontrada' }, 404);
+        const { nome, icone, ativo } = await request.json().catch(() => ({}));
+        if (nome !== undefined && !String(nome).trim()) return json({ ok: false, erro: 'nome_invalido' }, 400);
+        await env.DB.prepare('UPDATE tipos_peca SET nome = ?, icone = ?, ativo = ? WHERE id = ?').bind(
+          nome !== undefined ? String(nome).trim().slice(0, 60) : cat.nome,
+          icone !== undefined ? (String(icone).trim().slice(0, 8) || null) : cat.icone,
+          ativo !== undefined ? (ativo ? 1 : 0) : cat.ativo,
+          cat.id
+        ).run();
+        return json({ ok: true, categoria: await env.DB.prepare('SELECT * FROM tipos_peca WHERE id = ?').bind(cat.id).first() });
+      }
+      // Apagar de vez só se nenhum anúncio usa (senão os anúncios antigos
+      // ficariam sem categoria) -- nesse caso o painel oferece "ocultar".
+      if (matchCategoriaAdmin && request.method === 'DELETE') {
+        const usados = await env.DB.prepare('SELECT COUNT(*) AS n FROM anuncios WHERE tipo_peca_id = ?').bind(matchCategoriaAdmin[1]).first();
+        if (usados.n > 0) return json({ ok: false, erro: 'categoria_em_uso', total_anuncios: usados.n }, 409);
+        await env.DB.prepare('DELETE FROM tipos_peca WHERE id = ?').bind(matchCategoriaAdmin[1]).run();
         return json({ ok: true });
       }
     }
