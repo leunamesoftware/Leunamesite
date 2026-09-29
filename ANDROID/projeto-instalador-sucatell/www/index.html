@@ -211,7 +211,7 @@ let STATE = { usuario:null, bairroId:null, aba:'inicio', marcas:[], tiposPeca:[]
 // ---------------- helpers ----------------
 function esc(s){ return (s||'').toString().replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 function campoSenha(id, placeholder){
-  return `<div class="campo-senha"><input id="${id}" type="password" placeholder="${esc(placeholder||'')}" autocomplete="off"><button type="button" class="olho" onclick="alternarSenha('${id}')" aria-label="Mostrar ou esconder a senha">👁️</button></div>`;
+  return `<div class="campo-senha"><input id="${id}" type="password" placeholder="${esc(placeholder||'')}" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"><button type="button" class="olho" onclick="alternarSenha('${id}')" aria-label="Mostrar ou esconder a senha">👁️</button></div>`;
 }
 window.alternarSenha = function(id){
   const el = document.getElementById(id);
@@ -386,7 +386,7 @@ function renderAuth(tela){
     <div style="max-width:380px; margin:0 auto;">
       <div style="text-align:center; font-size:24px; font-weight:800; margin-bottom:18px;">Sucat<span style="color:var(--verde-forte);">ell</span></div>
       ${heroMarca()}
-      <label style="margin-top:0;">E-mail</label><input id="lg-email" type="email" placeholder="seu@email.com">
+      <label style="margin-top:0;">E-mail</label><input id="lg-email" type="email" placeholder="seu@email.com" autocapitalize="off" autocorrect="off" spellcheck="false">
       <label>Senha</label>${campoSenha('lg-senha', 'Sua senha')}
       <button class="btn" id="lg-entrar">Entrar</button>
       <button class="btn secundario" id="lg-ir-cadastro">Criar conta grátis</button>
@@ -414,7 +414,7 @@ async function renderCadastro(){
     <div style="max-width:380px; margin:0 auto;">
       <div style="text-align:center; font-size:22px; font-weight:800; margin-bottom:18px;">Criar conta no Sucat<span style="color:var(--verde-forte);">ell</span></div>
       <label style="margin-top:0;">Nome</label><input id="cd-nome" placeholder="Seu nome">
-      <label>E-mail</label><input id="cd-email" type="email" placeholder="seu@email.com">
+      <label>E-mail</label><input id="cd-email" type="email" placeholder="seu@email.com" autocapitalize="off" autocorrect="off" spellcheck="false">
       <label>Telefone (opcional, não aparece pra outros usuários)</label><input id="cd-telefone" placeholder="(21) 9....">
       <label>Senha (mínimo 6 caracteres)</label>${campoSenha('cd-senha', 'Crie uma senha')}
       <label>Estado</label><select id="cd-estado"><option value="">Selecione</option>${(estadosData.estados||[]).map(e=>`<option value="${e.id}">${esc(e.nome)}</option>`).join('')}</select>
