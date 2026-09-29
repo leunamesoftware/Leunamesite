@@ -1,0 +1,31 @@
+.criar-conta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: max(12px, calc(2 * var(--u)));
+  width: 100%;
+}
+
+.criar-conta__campos {
+  display: flex;
+  flex-direction: column;
+  gap: max(10px, calc(1.2 * var(--u)));
+  width: 100%;
+}
+
+.criar-conta__criar {
+  margin-top: max(8px, calc(1.8 * var(--u)));
+  min-height: max(54px, calc(10 * var(--u)));
+  --botao-tamanho: max(1.2rem, calc(3.4 * var(--u)));
+  --botao-peso: 700;
+}
+
+.criar-conta__ou {
+  margin-block: max(2px, calc(0.6 * var(--u)));
+}
+
+.criar-conta__voltar {
+  width: 92%;
+  min-height: max(52px, calc(8.4 * var(--u)));
+  --botao-tamanho: max(1.05rem, calc(2.9 * var(--u)));
+}

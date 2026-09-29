@@ -1,0 +1,16 @@
+.separador-ou {
+  display: flex;
+  align-items: center;
+  gap: 1.4em;
+  width: 88%;
+  color: #a5b4cf;
+  font-size: max(1rem, var(--separador-fonte, 1rem));
+}
+
+.separador-ou::before,
+.separador-ou::after {
+  content: '';
+  flex: 1;
+  height: 1.5px;
+  background: rgba(150, 170, 205, 0.45);
+}

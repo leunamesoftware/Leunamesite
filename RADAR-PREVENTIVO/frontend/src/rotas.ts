@@ -2,4 +2,6 @@
 export const rotas = {
   abertura: '/',
   entrar: '/entrar',
+  criarConta: '/criar-conta',
+  radar: '/radar',
 } as const;

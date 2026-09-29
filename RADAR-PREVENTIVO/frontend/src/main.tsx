@@ -4,6 +4,8 @@ import '@fontsource/lexend-zetta/latin-700.css';
 import '@fontsource/lexend-zetta/latin-800.css';
 import '@fontsource/nunito-sans/latin-400.css';
 import '@fontsource/nunito-sans/latin-600.css';
+import '@fontsource/nunito-sans/latin-700.css';
+import '@fontsource/nunito-sans/latin-800.css';
 import './estilos/tokens.css';
 import './estilos/global.css';
 import { App } from './App';

@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { SimboloRadar } from '../../componentes/marca/SimboloRadar';
+import { NomeRadar } from '../../componentes/marca/NomeRadar';
 import { AneisRadar } from '../../componentes/fundo/AneisRadar';
 import { GloboConectado } from '../../componentes/fundo/GloboConectado';
 import { BotaoPrincipal } from '../../componentes/botoes/BotaoPrincipal';
@@ -18,14 +19,7 @@ export function Abertura() {
           <SimboloRadar className="abertura__simbolo" rotulo="" />
         </div>
 
-        <h1 className="abertura__nome" aria-label="Radar Preventivo">
-          <span className="abertura__nome-radar" aria-hidden="true">
-            RADAR
-          </span>
-          <span className="abertura__nome-preventivo" aria-hidden="true">
-            PREVENTIVO
-          </span>
-        </h1>
+        <NomeRadar como="h1" className="abertura__nome" />
 
         <span className="abertura__divisor" aria-hidden="true" />
 
@@ -38,7 +32,7 @@ export function Abertura() {
 
       <div className="abertura__globo">
         <GloboConectado className="abertura__globo-tela" />
-        <BotaoPrincipal comSeta className="abertura__comecar" onClick={() => navegar(rotas.entrar)}>
+        <BotaoPrincipal seta="junto" className="abertura__comecar" onClick={() => navegar(rotas.entrar)}>
           Começar
         </BotaoPrincipal>
       </div>

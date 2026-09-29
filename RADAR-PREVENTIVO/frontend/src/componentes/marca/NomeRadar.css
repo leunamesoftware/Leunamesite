@@ -1,0 +1,29 @@
+.nome-radar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0;
+  font-family: var(--fonte-marca);
+  font-weight: 800;
+  line-height: 1;
+}
+
+.nome-radar__radar {
+  letter-spacing: 0.1em;
+  margin-right: -0.1em;
+  color: var(--texto-forte);
+  text-shadow: 0 0 0.25em rgba(80, 170, 255, 0.35);
+}
+
+.nome-radar__preventivo {
+  margin-top: 0.14em;
+  font-size: 0.447em;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  margin-right: -0.2em;
+  background: linear-gradient(180deg, #5fe0ff 0%, var(--ciano) 55%, #0fa6f0 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 0 0.3em rgba(30, 200, 255, 0.45));
+}

@@ -1,28 +1,31 @@
 import type { ButtonHTMLAttributes, ReactNode } from 'react';
+import { IconeSeta } from '../icones/Icones';
 import './BotaoPrincipal.css';
 
 type Props = ButtonHTMLAttributes<HTMLButtonElement> & {
   children: ReactNode;
-  /** Mostra a seta "→" depois do texto. */
-  comSeta?: boolean;
+  /** 'cheio' = azul luminoso; 'contorno' = borda ciano sobre o fundo escuro. */
+  variante?: 'cheio' | 'contorno';
+  /** Seta "→" logo depois do texto ou encostada na borda direita; ou seta "←" antes do texto. */
+  seta?: 'junto' | 'borda' | 'voltar' | false;
 };
 
-export function BotaoPrincipal({ children, comSeta = false, className = '', type = 'button', ...resto }: Props) {
+export function BotaoPrincipal({
+  children,
+  variante = 'cheio',
+  seta = false,
+  className = '',
+  type = 'button',
+  ...resto
+}: Props) {
+  const classes = ['botao-principal', `botao-principal--${variante}`, seta === 'borda' ? 'botao-principal--seta-borda' : '', className]
+    .filter(Boolean)
+    .join(' ');
   return (
-    <button type={type} className={`botao-principal ${className}`.trim()} {...resto}>
-      <span>{children}</span>
-      {comSeta && (
-        <svg className="botao-principal__seta" viewBox="0 0 24 24" aria-hidden="true">
-          <path
-            d="M4 12h15M13 5.5 19.5 12 13 18.5"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2.2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
-      )}
+    <button type={type} className={classes} {...resto}>
+      {seta === 'voltar' && <IconeSeta className="botao-principal__seta botao-principal__seta--voltar" />}
+      <span className="botao-principal__texto">{children}</span>
+      {(seta === 'junto' || seta === 'borda') && <IconeSeta className="botao-principal__seta" />}
     </button>
   );
 }

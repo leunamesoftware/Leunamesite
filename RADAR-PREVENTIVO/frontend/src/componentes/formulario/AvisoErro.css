@@ -1,0 +1,24 @@
+.aviso-erro {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid rgba(255, 107, 122, 0.45);
+  border-radius: 14px;
+  background: rgba(80, 12, 30, 0.45);
+  color: var(--erro-texto);
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+
+.aviso-erro[hidden] {
+  display: none;
+}
+
+.aviso-erro__icone {
+  flex: none;
+  width: 20px;
+  height: 20px;
+  margin-top: 1px;
+}

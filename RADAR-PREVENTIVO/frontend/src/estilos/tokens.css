@@ -18,6 +18,8 @@
   --texto-suave: #9fb4d3;
 
   --foco: #7fe3ff;
+  --erro: #ff6b7a;
+  --erro-texto: #ffb3bb;
 
   --botao-fundo: linear-gradient(180deg, #4cc9ff 0%, #1ea4ff 45%, #0b7bf2 100%);
   --botao-borda: rgba(170, 230, 255, 0.55);

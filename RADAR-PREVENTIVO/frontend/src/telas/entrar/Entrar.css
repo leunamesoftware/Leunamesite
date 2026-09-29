@@ -1,0 +1,19 @@
+.entrar {
+  display: flex;
+  flex-direction: column;
+  gap: max(12px, calc(2 * var(--u)));
+  width: 100%;
+}
+
+.entrar__entrar {
+  margin-top: max(10px, calc(3 * var(--u)));
+  min-height: max(54px, calc(10 * var(--u)));
+  --botao-tamanho: max(1.2rem, calc(3.9 * var(--u)));
+  --botao-peso: 700;
+}
+
+.entrar__criar {
+  margin-top: max(2px, calc(0.5 * var(--u)));
+  min-height: max(52px, calc(9.6 * var(--u)));
+  --botao-tamanho: max(1.1rem, calc(3.2 * var(--u)));
+}

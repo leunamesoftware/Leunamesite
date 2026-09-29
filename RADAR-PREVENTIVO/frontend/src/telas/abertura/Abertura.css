@@ -62,34 +62,8 @@
 }
 
 .abertura__nome {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin: calc(-19 * var(--u)) 0 0;
-  font-family: var(--fonte-marca);
-  font-weight: 800;
-  line-height: 1;
-}
-
-.abertura__nome-radar {
+  margin-top: calc(-19 * var(--u));
   font-size: calc(9.4 * var(--u));
-  letter-spacing: 0.1em;
-  margin-right: -0.1em;
-  color: var(--texto-forte);
-  text-shadow: 0 0 calc(2.4 * var(--u)) rgba(80, 170, 255, 0.35);
-}
-
-.abertura__nome-preventivo {
-  margin-top: calc(0.6 * var(--u));
-  font-size: calc(4.2 * var(--u));
-  font-weight: 700;
-  letter-spacing: 0.2em;
-  margin-right: -0.2em;
-  background: linear-gradient(180deg, #5fe0ff 0%, var(--ciano) 55%, #0fa6f0 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  filter: drop-shadow(0 0 calc(1.2 * var(--u)) rgba(30, 200, 255, 0.45));
 }
 
 .abertura__divisor {
