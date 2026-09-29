@@ -1,0 +1,12 @@
+name: Diagnóstico rota meus anúncios (temporário)
+on:
+  push:
+    paths:
+      - '.github/workflows/diagnostico-rota-meus.yml'
+jobs:
+  testar:
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          curl -sS https://sucatel-api.emanuelantunes2024.workers.dev/anuncios/meus; echo
+          curl -sS https://sucatel-api.emanuelantunes2024.workers.dev/anuncios/86e939a2-0d50-498f-b006-992d57b3acb0 | head -c 120; echo
