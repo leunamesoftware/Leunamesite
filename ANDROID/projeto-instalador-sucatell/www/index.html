@@ -356,7 +356,10 @@ function abrirModal(html){
 function fecharModal(){ document.getElementById('modal-root').innerHTML = ''; }
 window.fecharModal = fecharModal;
 
-function favoritos(){ return safeJsonParse(localStorage.getItem(LS_FAVORITOS), []); }
+// Sem favoritos salvos, localStorage devolve null e JSON.parse(null) dá
+// null (não erro) -- sem o "|| []" a lista de produtos quebrava inteira
+// pra quem nunca favoritou nada.
+function favoritos(){ const f = safeJsonParse(localStorage.getItem(LS_FAVORITOS), []); return Array.isArray(f) ? f : []; }
 function alternarFavorito(id){
   let f = favoritos();
   f = f.includes(id) ? f.filter(x => x !== id) : [...f, id];
@@ -411,6 +414,18 @@ function heroMarca(){
     </div>
   </div>`;
 }
+// Visitante tentou algo que precisa de conta: abre o entrar/criar conta,
+// com opção de voltar pra loja sem perder o que estava vendo.
+function pedirLogin(motivo){
+  STATE.motivoLogin = motivo || '';
+  renderAuth('login');
+}
+function voltarParaLoja(){
+  document.getElementById('auth-root').innerHTML = '';
+  document.getElementById('app-root').classList.add('pronto');
+  const anterior = STATE.pilha[STATE.pilha.length - 1];
+  if (anterior) anterior(); else setTab(STATE.aba && !ABAS_COM_CONTA[STATE.aba] ? STATE.aba : 'inicio', true);
+}
 function renderAuth(tela){
   const root = document.getElementById('auth-root');
   document.getElementById('app-root').classList.remove('pronto');
@@ -418,8 +433,9 @@ function renderAuth(tela){
   root.innerHTML = `
   <div style="min-height:100vh; padding:calc(24px + var(--safe-t)) 20px calc(24px + var(--safe-b)); background:var(--bg);">
     <div style="max-width:380px; margin:0 auto;">
+      ${STATE.lojaAberta ? '<button class="btn secundario" id="lg-voltar-loja" style="margin:0 0 14px;">← Voltar pra loja</button>' : ''}
       <div style="text-align:center; font-size:24px; font-weight:800; margin-bottom:18px;">Sucat<span style="color:var(--verde-forte);">ell</span></div>
-      ${heroMarca()}
+      ${STATE.motivoLogin ? `<div class="card" style="text-align:center; background:var(--verde-claro); border:none; margin-bottom:14px;"><b>Entre ou crie sua conta grátis</b><br><span class="muted">pra ${esc(STATE.motivoLogin)}.</span></div>` : heroMarca()}
       <label style="margin-top:0;">E-mail</label><input id="lg-email" type="email" placeholder="seu@email.com" autocapitalize="off" autocorrect="off" spellcheck="false">
       <label>Senha</label>${campoSenha('lg-senha', 'Sua senha')}
       <button class="btn" id="lg-entrar">Entrar</button>
@@ -428,6 +444,8 @@ function renderAuth(tela){
     </div>
   </div>`;
   document.getElementById('lg-entrar').onclick = fazerLogin;
+  const voltarLoja = document.getElementById('lg-voltar-loja');
+  if (voltarLoja) voltarLoja.onclick = voltarParaLoja;
   document.getElementById('lg-ir-cadastro').onclick = () => renderAuth('cadastro');
   document.getElementById('lg-esqueci').onclick = abrirEsqueciSenha;
   document.getElementById('lg-senha').onkeydown = (e) => { if (e.key === 'Enter') fazerLogin(); };
@@ -454,6 +472,7 @@ async function fazerLogin(){
   localStorage.setItem(LS_TOKEN, data.token);
   STATE.usuario = data.usuario;
   STATE.bairroId = data.usuario.bairro_id;
+  STATE.motivoLogin = '';
   await boot();
 }
 async function renderCadastro(){
@@ -472,9 +491,12 @@ async function renderCadastro(){
       <label>Bairro/Região</label><select id="cd-bairro" disabled><option value="">Escolha a cidade primeiro</option></select>
       <button class="btn" id="cd-criar">Criar conta</button>
       <button class="btn secundario" id="cd-voltar">Já tenho conta</button>
+      ${STATE.lojaAberta ? '<button class="btn secundario" id="cd-voltar-loja">← Voltar pra loja</button>' : ''}
     </div>
   </div>`;
   document.getElementById('cd-voltar').onclick = () => renderAuth('login');
+  const cdVoltarLoja = document.getElementById('cd-voltar-loja');
+  if (cdVoltarLoja) cdVoltarLoja.onclick = voltarParaLoja;
   document.getElementById('cd-estado').onchange = async (e) => {
     const cidadeSel = document.getElementById('cd-cidade'); const bairroSel = document.getElementById('cd-bairro');
     if (!e.target.value) { cidadeSel.disabled = true; cidadeSel.innerHTML = '<option value="">Escolha o estado primeiro</option>'; return; }
@@ -528,7 +550,9 @@ function voltar(){
   const anterior = STATE.pilha[STATE.pilha.length - 1];
   if (anterior) anterior(); else setTab(STATE.aba, true);
 }
+const ABAS_COM_CONTA = { anunciar:'anunciar seus produtos', chat:'conversar com vendedores', perfil:'ver seu perfil e seus anúncios' };
 function setTab(tab, semEmpilhar){
+  if (!STATE.usuario && ABAS_COM_CONTA[tab]) return pedirLogin(ABAS_COM_CONTA[tab]);
   STATE.aba = tab; STATE.pilha = [];
   document.querySelectorAll('#tabbar button').forEach(b => b.classList.toggle('ativo', b.dataset.tab === tab));
   ({ inicio:renderInicio, categorias:renderCategorias, anunciar:renderAnunciar, chat:renderConversas, perfil:renderPerfilConta })[tab]();
@@ -659,12 +683,15 @@ function topoAba(titulo, comBusca){
         </div>
       </div>
       <button class="pill-local" id="topo-pill-local">📍 <span>${esc(nomeBairroAtual())}</span> ▾</button>
-      <button class="icone" id="topo-sino" title="Notificações">🔔</button>
+      ${STATE.usuario ? '<button class="icone" id="topo-sino" title="Notificações">🔔</button>' : '<button class="pill-local" id="topo-entrar" style="background:#4ade80; color:#0d3b1f; font-weight:800;">Entrar</button>'}
     </div>
     ${comBusca ? `<div class="busca-barra"><span class="lupa">🔍</span><input id="topo-busca" placeholder="Buscar celulares, peças, marcas..."></div>` : ''}
   `);
   document.getElementById('topo-pill-local').onclick = abrirSeletorBairro;
-  document.getElementById('topo-sino').onclick = () => toast('Nenhuma notificação nova por aqui ainda.');
+  const sino = document.getElementById('topo-sino');
+  if (sino) sino.onclick = () => toast('Nenhuma notificação nova por aqui ainda.');
+  const entrar = document.getElementById('topo-entrar');
+  if (entrar) entrar.onclick = () => pedirLogin('');
   if (comBusca) {
     const inp = document.getElementById('topo-busca');
     inp.onkeydown = (e) => { if (e.key === 'Enter' && inp.value.trim()) irPara(() => renderListaProdutos({ busca: inp.value.trim(), nome: 'Resultados para "' + inp.value.trim() + '"' })); };
@@ -682,7 +709,7 @@ async function renderInicio(){
     </div>
     <img id="in-banner" src="img/banner-inicio.jpg" alt="Celulares e peças perto de você" style="width:100%; border-radius:16px; margin:6px 0 14px; display:block;">
     <div style="display:flex; align-items:baseline; justify-content:space-between; margin:14px 0 10px;">
-      <h3 style="margin:0; font-size:16px;">Ofertas perto de você</h3>
+      <h3 style="margin:0; font-size:16px;">${STATE.bairroId === 'todos' ? 'Ofertas de todos os bairros' : 'Ofertas perto de você'}</h3>
       <a href="javascript:void(0)" id="in-ver-todos" style="font-size:13px; font-weight:700;">Ver todos</a>
     </div>
     <div id="in-resultados"><div class="muted">Carregando...</div></div>`;
@@ -708,7 +735,12 @@ async function renderInicio(){
     if (condicaoInicio) path += '&condicao=' + condicaoInicio;
     const { data } = await api(path);
     const box = document.getElementById('in-resultados');
-    if (!data.ok || !data.anuncios.length) { box.innerHTML = '<div class="empty"><span class="emoji-vazio">📭</span>Nenhum anúncio na sua região ainda.<br>Seja o primeiro a anunciar!</div>'; return; }
+    if (!data.ok || !data.anuncios.length) {
+      box.innerHTML = STATE.bairroId === 'todos'
+        ? '<div class="empty"><span class="emoji-vazio">📭</span>Nenhum anúncio ainda.<br>Seja o primeiro a anunciar!</div>'
+        : '<div class="empty"><span class="emoji-vazio">📭</span>Nenhum anúncio na sua região ainda.<br><button class="btn secundario" style="margin-top:12px;" onclick="verTodosBairros()">🌎 Ver anúncios de todos os bairros</button></div>';
+      return;
+    }
     box.innerHTML = data.anuncios.slice(0,12).map(cartaoProduto).join('');
   }
   carregarOfertasInicio();
@@ -892,6 +924,7 @@ function telaDetalheAnuncio(a){
   }
 }
 function abrirDenunciar(id){
+  if (!STATE.usuario) return pedirLogin('denunciar um anúncio');
   abrirModal(`
     <button class="fechar-folha" onclick="fecharModal()">✕</button>
     <h3>Denunciar anúncio</h3>
@@ -1094,6 +1127,7 @@ async function publicarAnuncio(){
 
 // ---------------- CHAT ----------------
 window.iniciarConversa = async function(anuncioId){
+  if (!STATE.usuario) return pedirLogin('conversar com o vendedor');
   const { data } = await api('/conversas', { method:'POST', body:{ anuncio_id: anuncioId } });
   if (!data.ok) return toast('Erro ao iniciar conversa.', 'erro');
   irPara(() => abrirChat(data.conversa.id));
@@ -1401,7 +1435,7 @@ async function renderPerfilVendedor(usuarioId, aba){
         <div class="estat-item"><b>${u.media_avaliacoes ?? '—'}</b><span>Avaliação média</span></div>
         <div class="estat-item"><b>${u.total_avaliacoes}</b><span>Avaliações</span></div>
       </div>
-      ${usuarioId !== STATE.usuario.id ? `<button class="btn" onclick="iniciarConversaComVendedor('${usuarioId}')">💬 Conversar</button>` : ''}
+      ${usuarioId !== STATE.usuario?.id ? `<button class="btn" onclick="iniciarConversaComVendedor('${usuarioId}')">💬 Conversar</button>` : ''}
     </div>
     <div class="abas-perfil" id="pv-abas">
       <button data-a="anuncios" class="${aba==='anuncios'?'ativo':''}">À venda (${u.anuncios_ativos})</button>
@@ -1560,21 +1594,27 @@ async function avisarBonusNovo(){
 async function boot(){
   try {
     setupPWA();
+    // Igual Shopee: a loja abre direto nos produtos, mesmo sem conta.
+    // Entrar só é pedido pra conversar, anunciar ou ver o perfil.
     const token = localStorage.getItem(LS_TOKEN);
-    if (!token) { renderAuth('login'); return; }
-    const { data } = await api('/auth/me');
-    if (!data.ok) { localStorage.removeItem(LS_TOKEN); renderAuth('login'); return; }
-    STATE.usuario = data.usuario;
-    STATE.bairroId = data.usuario.bairro_id;
+    let logado = null;
+    if (token) {
+      const { data } = await api('/auth/me');
+      if (data.ok) logado = data.usuario;
+      else if (data.erro !== 'sem_conexao') localStorage.removeItem(LS_TOKEN);
+    }
+    STATE.usuario = logado;
+    const salvo = safeJsonParse(localStorage.getItem('sucatel_bairro_visualizacao'), null);
+    STATE.bairroId = logado ? logado.bairro_id : ((salvo && salvo.id) || 'todos');
     document.getElementById('auth-root').innerHTML = '';
     document.getElementById('app-root').classList.add('pronto');
     await carregarCategorias();
     document.querySelectorAll('#tabbar button').forEach(b => b.onclick = () => setTab(b.dataset.tab));
+    STATE.lojaAberta = true;
     setTab('inicio');
-    atualizarBadgeChat();
-    avisarBonusNovo();
+    if (STATE.usuario) { atualizarBadgeChat(); avisarBonusNovo(); }
   } catch (e) {
-    if (!STATE.usuario) renderAuth('login');
+    if (!document.getElementById('app-root').classList.contains('pronto')) renderAuth('login');
   } finally {
     esconderSplashIntro();
   }
