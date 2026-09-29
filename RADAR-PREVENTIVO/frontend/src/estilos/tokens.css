@@ -19,6 +19,17 @@
 
   --foco: #7fe3ff;
   --erro: #ff6b7a;
+
+  /* Cores das situações (vencido, urgente, atenção, em dia, informação, pendência) */
+  --vermelho: #ff4d5e;
+  --laranja: #ff8a1f;
+  --amarelo: #ffc21a;
+  --verde: #22d36b;
+  --azul-item: #3d8bff;
+  --roxo: #9b6bff;
+
+  --cartao-fundo: linear-gradient(180deg, rgba(15, 34, 80, 0.78) 0%, rgba(8, 20, 52, 0.78) 100%);
+  --cartao-borda: rgba(64, 112, 200, 0.38);
   --erro-texto: #ffb3bb;
 
   --botao-fundo: linear-gradient(180deg, #4cc9ff 0%, #1ea4ff 45%, #0b7bf2 100%);

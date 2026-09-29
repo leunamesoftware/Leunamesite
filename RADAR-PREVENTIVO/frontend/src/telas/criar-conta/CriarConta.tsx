@@ -8,7 +8,7 @@ import { BotaoPrincipal } from '../../componentes/botoes/BotaoPrincipal';
 import { IconeCadeado, IconeEnvelope, IconePessoa } from '../../componentes/icones/Icones';
 import { cadastrar } from '../../servicos/autenticacao';
 import { ErroApi } from '../../servicos/api';
-import { salvarSessao } from '../../estado/sessao';
+import { useSessao } from '../../estado/SessaoContexto';
 import { rotas } from '../../rotas';
 import './CriarConta.css';
 
@@ -17,6 +17,7 @@ type Erros = { nome?: string; email?: string; senha?: string; confirmacao?: stri
 // Interface 2 — Criar conta. Recriada a partir da referência visual oficial.
 export function CriarConta() {
   const navegar = useNavigate();
+  const { iniciar } = useSessao();
   const [nome, setNome] = useState('');
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
@@ -42,7 +43,7 @@ export function CriarConta() {
     try {
       // A referência não tem campo de tipo de conta; a conta nasce como "pessoa".
       const sessao = await cadastrar({ nome: nome.trim(), email: email.trim(), senha, tipoConta: 'pessoa' });
-      salvarSessao(sessao);
+      iniciar(sessao);
       navegar(rotas.radar, { replace: true });
     } catch (erro) {
       if (erro instanceof ErroApi && Object.keys(erro.campos).length > 0) {

@@ -1,0 +1,52 @@
+.botao-icone {
+  position: relative;
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 48px;
+  height: 48px;
+  padding: 0;
+  color: #cfe0ff;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.botao-icone svg {
+  width: 28px;
+  height: 28px;
+}
+
+.botao-icone--moldura {
+  width: 54px;
+  height: 54px;
+  border: 1.5px solid rgba(64, 112, 200, 0.45);
+  border-radius: 16px;
+  background: rgba(8, 20, 52, 0.7);
+}
+
+.botao-icone--simples {
+  border: 0;
+  border-radius: 12px;
+  background: transparent;
+}
+
+.botao-icone:hover {
+  color: var(--texto-forte);
+}
+
+.botao-icone[aria-pressed='true'],
+.botao-icone[aria-expanded='true'] {
+  border-color: var(--ciano);
+  color: var(--ciano);
+}
+
+.botao-icone:focus-visible {
+  outline: 3px solid var(--foco);
+  outline-offset: 2px;
+}
+
+.botao-icone .contador {
+  position: absolute;
+  top: 2px;
+  right: 0;
+}

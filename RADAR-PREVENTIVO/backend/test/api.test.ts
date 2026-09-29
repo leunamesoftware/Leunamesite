@@ -131,8 +131,8 @@ describe('itens: receber → analisar → identificar → orientar', () => {
     await criarItem(token, { titulo: 'Sem data' });
     const r = (await chamar<ResumoRadar>('GET', '/api/radar', { token })).json.dados;
     expect(r.contagem).toMatchObject({ vencido: 1, urgente: 1, atencao: 1, em_dia: 1, sem_prazo: 1, vence_hoje: 0 });
-    expect(r.atencaoAgora.map((i) => i.titulo)).toEqual(['Vencido', 'Urgente']);
-    expect(r.proximos.map((i) => i.titulo)).toEqual(['Atenção', 'Em dia']);
+    expect(r.atencaoAgora.map((i) => i.titulo)).toEqual(['Vencido', 'Urgente', 'Atenção']);
+    expect(r.proximos.map((i) => i.titulo)).toEqual(['Em dia']);
     expect(r.pendencias.map((i) => i.titulo)).toEqual(['Sem data']);
     expect(r.alertasNaoLidos).toBe(3); // vencido, urgente e atenção já nascem com alerta
   });

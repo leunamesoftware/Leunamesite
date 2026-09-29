@@ -1,0 +1,143 @@
+/* Contadores */
+.cartao-contador {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 8px;
+  min-width: 0;
+  padding: 12px 10px 10px 12px;
+  border: 1.5px solid color-mix(in srgb, var(--tom) 75%, transparent);
+  border-radius: 18px;
+  background: linear-gradient(160deg, var(--tom-fundo) 0%, rgba(6, 16, 42, 0.8) 70%);
+  box-shadow: 0 0 18px -6px var(--tom);
+  color: inherit;
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.cartao-contador:hover {
+  background: linear-gradient(160deg, color-mix(in srgb, var(--tom) 24%, transparent) 0%, rgba(6, 16, 42, 0.8) 75%);
+}
+
+.cartao-contador:focus-visible {
+  outline: 3px solid var(--foco);
+  outline-offset: 2px;
+}
+
+.cartao-contador__topo,
+.cartao-contador__rodape {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+}
+
+.cartao-contador__valor {
+  color: var(--tom);
+  font: 800 clamp(1.7rem, 8vw, 2.6rem) / 1 var(--fonte-texto);
+  font-variant-numeric: tabular-nums;
+  text-shadow: 0 0 14px color-mix(in srgb, var(--tom) 45%, transparent);
+}
+
+.cartao-contador__icone {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: clamp(28px, 8.5vw, 42px);
+  height: clamp(28px, 8.5vw, 42px);
+  border-radius: 50%;
+  background: var(--tom);
+  color: #fff;
+  box-shadow: 0 0 14px color-mix(in srgb, var(--tom) 60%, transparent);
+}
+
+.tom-amarelo .cartao-contador__icone {
+  color: #2a1d00;
+}
+
+.cartao-contador__icone svg {
+  width: 62%;
+  height: 62%;
+}
+
+.cartao-contador__nome {
+  min-width: 0;
+  color: var(--tom-claro);
+  font-size: clamp(0.76rem, 3.1vw, 1rem);
+  font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+}
+
+.cartao-contador__seta {
+  width: 18px;
+  height: 18px;
+  flex: none;
+  color: var(--tom-claro);
+}
+
+/* Seções */
+.secao-radar {
+  position: relative;
+  padding: 14px 14px 8px 18px;
+  border: 1.5px solid var(--cartao-borda);
+  border-radius: 22px;
+  background: var(--cartao-fundo);
+  box-shadow: 0 8px 30px rgba(0, 8, 30, 0.35);
+}
+
+/* Brilho colorido no canto superior esquerdo, como na referência. */
+.secao-radar::before {
+  content: '';
+  position: absolute;
+  inset: -1.5px;
+  border-radius: inherit;
+  border-top: 2.5px solid var(--tom);
+  border-left: 3px solid var(--tom);
+  -webkit-mask-image: radial-gradient(circle at 0 0, #000 0, #000 70px, transparent 160px);
+  mask-image: radial-gradient(circle at 0 0, #000 0, #000 70px, transparent 160px);
+  filter: drop-shadow(0 0 6px var(--tom));
+  pointer-events: none;
+}
+
+.secao-radar__topo {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  padding-right: 4px;
+}
+
+.secao-radar__titulo {
+  margin: 0;
+  color: var(--texto-forte);
+  font: 600 clamp(1.05rem, 4.2vw, 1.3rem) / 1.25 var(--fonte-texto);
+}
+
+.secao-radar__ver-todos {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  flex: none;
+  color: #3fb4ff;
+  font-size: clamp(0.9rem, 3.6vw, 1rem);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.secao-radar__ver-todos svg {
+  width: 18px;
+  height: 18px;
+}
+
+.secao-radar__ver-todos:focus-visible {
+  outline: 3px solid var(--foco);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+.secao-radar__lista {
+  display: flex;
+  flex-direction: column;
+  margin-top: 4px;
+}

@@ -182,9 +182,9 @@ export interface ResumoRadar {
   contagem: Record<Situacao, number>;
   totalAtivos: number;
   totalResolvidos: number;
-  /** Vencidos, vence hoje e urgentes — o que pede ação agora. */
+  /** Vencidos, vence hoje, urgentes e em atenção — do mais grave ao menos grave. */
   atencaoAgora: ItemResumo[];
-  /** Próximos vencimentos (ativos, ordenados pela data). */
+  /** Próximos vencimentos ainda em dia (ativos, ordenados pela data, até 5). */
   proximos: ItemResumo[];
   /** Itens com alguma pendência de cadastro. */
   pendencias: ItemResumo[];

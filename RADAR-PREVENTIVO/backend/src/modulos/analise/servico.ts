@@ -39,10 +39,10 @@ export async function resumoRadar(deps: Dependencias, usuarioId: string): Promis
   for (const item of ativos) if (item.analise) contagem[item.analise.situacao]++;
   const situacao = (i: ItemResumo) => i.analise?.situacao ?? 'sem_prazo';
   const atencaoAgora = ativos
-    .filter((i) => GRAVIDADE[situacao(i)] >= GRAVIDADE.urgente)
+    .filter((i) => GRAVIDADE[situacao(i)] >= GRAVIDADE.atencao)
     .sort((a, b) => GRAVIDADE[situacao(b)] - GRAVIDADE[situacao(a)] || (a.dataVencimento ?? '').localeCompare(b.dataVencimento ?? ''));
   const proximos = ativos
-    .filter((i) => i.dataVencimento && GRAVIDADE[situacao(i)] < GRAVIDADE.urgente)
+    .filter((i) => i.dataVencimento && situacao(i) === 'em_dia')
     .slice(0, 5);
   const pendencias = ativos.filter((i) => (i.analise?.pendencias.length ?? 0) > 0);
   return {

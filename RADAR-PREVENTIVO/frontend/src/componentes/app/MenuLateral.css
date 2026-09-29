@@ -1,0 +1,137 @@
+.menu-lateral {
+  position: fixed;
+  z-index: 40;
+  inset: 0;
+  background: rgba(1, 5, 15, 0.6);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+  animation: menu-lateral-fundo 160ms ease;
+}
+
+.menu-lateral__painel {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  width: min(84vw, 320px);
+  height: 100%;
+  padding: calc(env(safe-area-inset-top, 0px) + 20px) 16px calc(env(safe-area-inset-bottom, 0px) + 20px);
+  border-right: 1.5px solid rgba(64, 112, 200, 0.4);
+  background: linear-gradient(180deg, #0b1f52 0%, #050f2c 100%);
+  box-shadow: 10px 0 40px rgba(0, 0, 0, 0.5);
+  overflow-y: auto;
+  animation: menu-lateral-entrar 180ms ease;
+}
+
+.menu-lateral__topo {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(100, 140, 210, 0.25);
+}
+
+.menu-lateral__nome {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--texto-forte);
+  overflow-wrap: anywhere;
+}
+
+.menu-lateral__email {
+  margin: 2px 0 0;
+  font-size: 0.9rem;
+  color: var(--texto-suave);
+  overflow-wrap: anywhere;
+}
+
+.menu-lateral__fechar {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: 12px;
+  background: transparent;
+  color: #cfe0ff;
+  cursor: pointer;
+}
+
+.menu-lateral__fechar svg {
+  width: 24px;
+  height: 24px;
+}
+
+.menu-lateral__lista {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.menu-lateral__link {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: 14px 12px;
+  border: 0;
+  border-radius: 14px;
+  background: transparent;
+  color: var(--texto);
+  font: 600 1.05rem / 1.2 var(--fonte-texto);
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.menu-lateral__link svg {
+  width: 24px;
+  height: 24px;
+  flex: none;
+  color: #9fb8e6;
+}
+
+.menu-lateral__link:hover,
+.menu-lateral__link.active {
+  background: rgba(30, 70, 150, 0.45);
+  color: var(--texto-forte);
+}
+
+.menu-lateral__link.active svg {
+  color: var(--ciano);
+}
+
+.menu-lateral__link:focus-visible,
+.menu-lateral__fechar:focus-visible {
+  outline: 3px solid var(--foco);
+  outline-offset: -3px;
+}
+
+.menu-lateral__sair {
+  margin-top: auto;
+  color: var(--erro-texto);
+}
+
+.menu-lateral__sair svg {
+  color: var(--erro-texto);
+}
+
+@keyframes menu-lateral-fundo {
+  from { opacity: 0; }
+}
+
+@keyframes menu-lateral-entrar {
+  from { transform: translateX(-24px); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .menu-lateral,
+  .menu-lateral__painel {
+    animation: none;
+  }
+}

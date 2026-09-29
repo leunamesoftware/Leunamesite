@@ -7,7 +7,7 @@ import { BotaoPrincipal } from '../../componentes/botoes/BotaoPrincipal';
 import { IconeCadeado, IconeEnvelope } from '../../componentes/icones/Icones';
 import { entrar } from '../../servicos/autenticacao';
 import { ErroApi } from '../../servicos/api';
-import { salvarSessao } from '../../estado/sessao';
+import { useSessao } from '../../estado/SessaoContexto';
 import { rotas } from '../../rotas';
 import './Entrar.css';
 
@@ -16,6 +16,7 @@ type Erros = { email?: string; senha?: string };
 // Interface 2 — Entrar. Recriada a partir da referência visual oficial.
 export function Entrar() {
   const navegar = useNavigate();
+  const { iniciar } = useSessao();
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
   const [erros, setErros] = useState<Erros>({});
@@ -34,7 +35,7 @@ export function Entrar() {
     setEnviando(true);
     try {
       const sessao = await entrar({ email: email.trim(), senha });
-      salvarSessao(sessao);
+      iniciar(sessao);
       navegar(rotas.radar, { replace: true });
     } catch (erro) {
       if (erro instanceof ErroApi && Object.keys(erro.campos).length > 0) {

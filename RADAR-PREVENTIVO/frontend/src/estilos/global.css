@@ -38,3 +38,11 @@ canvas {
   white-space: nowrap;
   border: 0;
 }
+
+/* Tons das situações: cada componente usa --tom e --tom-fundo. */
+.tom-vermelho { --tom: var(--vermelho); --tom-claro: #ff8a95; --tom-fundo: rgba(255, 77, 94, 0.14); }
+.tom-laranja { --tom: var(--laranja); --tom-claro: #ffae66; --tom-fundo: rgba(255, 138, 31, 0.14); }
+.tom-amarelo { --tom: var(--amarelo); --tom-claro: #ffd866; --tom-fundo: rgba(255, 194, 26, 0.13); }
+.tom-verde { --tom: var(--verde); --tom-claro: #6ee89c; --tom-fundo: rgba(34, 211, 107, 0.13); }
+.tom-azul { --tom: var(--azul-item); --tom-claro: #9cc2ff; --tom-fundo: rgba(61, 139, 255, 0.14); }
+.tom-roxo { --tom: var(--roxo); --tom-claro: #c2a6ff; --tom-fundo: rgba(155, 107, 255, 0.15); }

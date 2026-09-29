@@ -1,0 +1,81 @@
+.tela-radar {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.tela-radar__topo {
+  display: grid;
+  grid-template-columns: 48px 1fr 48px;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.tela-radar__menu {
+  color: #3fa9ff;
+}
+
+.tela-radar__menu svg {
+  width: 32px;
+  height: 32px;
+}
+
+.tela-radar__marca {
+  justify-self: center;
+  --marca-tamanho: clamp(24px, 7.4vw, 34px);
+}
+
+.tela-radar__ola {
+  margin-top: 4px;
+}
+
+.tela-radar__ola + .app-subtitulo {
+  margin-top: -10px;
+}
+
+.tela-radar__contadores {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: clamp(6px, 2vw, 12px);
+}
+
+@media (max-width: 340px) {
+  .tela-radar__contadores {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.tela-radar__cadastrar {
+  justify-content: space-between;
+  min-height: 60px;
+  margin-top: 4px;
+  --botao-tamanho: clamp(1.05rem, 4.4vw, 1.3rem);
+  --botao-peso: 700;
+}
+
+.tela-radar__cadastrar-texto {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  flex: 1;
+}
+
+.tela-radar__mais {
+  width: 1.3em;
+  height: 1.3em;
+  flex: none;
+}
+
+.tela-radar__cadastrar-seta {
+  width: 1.2em;
+  height: 1.2em;
+  flex: none;
+}
+
+.tela-radar__cadastrar .botao-principal__texto {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
