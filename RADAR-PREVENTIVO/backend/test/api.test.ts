@@ -264,7 +264,9 @@ describe('valores', () => {
     expect(pago.json.dados.valorPagoCentavos).toBe(10500);
     expect(pago.json.dados.valorCentavos).toBe(10000);
 
-    const f = (await chamar<{ financeiro: unknown }>('GET', '/api/radar', { token })).json.dados.financeiro;
+    const radar = (await chamar<{ financeiro: unknown; pagosRecentes: ItemDetalhe[] }>('GET', '/api/radar', { token })).json.dados;
+    expect(radar.pagosRecentes.map((i) => i.titulo)).toEqual(['Internet']);
+    const f = radar.financeiro;
     expect(f).toEqual({
       porData: [
         { data: '2026-10-12', quantidade: 2, totalCentavos: 23050 },

@@ -198,6 +198,8 @@ export interface ResumoRadar {
   proximos: ItemResumo[];
   /** Itens com alguma pendência de cadastro. */
   pendencias: ItemResumo[];
+  /** Últimos itens pagos (do mais recente), inclusive os pagos com atraso. Até 5. */
+  pagosRecentes: ItemResumo[];
   alertasNaoLidos: number;
   financeiro: ResumoFinanceiro;
 }

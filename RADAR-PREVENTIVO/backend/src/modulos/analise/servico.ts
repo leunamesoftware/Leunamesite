@@ -67,6 +67,7 @@ export async function resumoRadar(deps: Dependencias, usuarioId: string): Promis
     atencaoAgora,
     proximos,
     pendencias,
+    pagosRecentes: (await repositorioItens.listar(deps.banco, usuarioId, { estado: 'resolvido' })).slice(0, 5).map(paraResumo),
     alertasNaoLidos: await repositorioAlertas.contarNaoLidos(deps.banco, usuarioId),
     financeiro: await resumoFinanceiro(deps, usuarioId, ativos),
   };

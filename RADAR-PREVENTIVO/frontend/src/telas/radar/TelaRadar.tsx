@@ -109,6 +109,14 @@ export function TelaRadar() {
             )}
           </SecaoRadar>
 
+          <SecaoRadar titulo="Pagos recentemente" tom="verde" verTodos={resumo.pagosRecentes.length > 0 ? rotaPagos : undefined}>
+            {resumo.pagosRecentes.length === 0 ? (
+              <Vazio>Nenhuma conta paga ainda. Quando pagar, toque em "Marcar como pago" na conta.</Vazio>
+            ) : (
+              resumo.pagosRecentes.slice(0, LIMITE_POR_SECAO).map((item) => <LinhaItem key={item.id} item={item} />)
+            )}
+          </SecaoRadar>
+
           <SecaoRadar titulo="Contas a pagar" tom="verde">
             <ResumoContas financeiro={resumo.financeiro} />
           </SecaoRadar>
