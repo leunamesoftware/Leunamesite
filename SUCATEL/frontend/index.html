@@ -390,10 +390,26 @@ function renderAuth(tela){
       <label>Senha</label>${campoSenha('lg-senha', 'Sua senha')}
       <button class="btn" id="lg-entrar">Entrar</button>
       <button class="btn secundario" id="lg-ir-cadastro">Criar conta grátis</button>
+      <a href="javascript:void(0)" id="lg-esqueci" style="display:block; text-align:center; margin-top:16px; font-weight:700; font-size:14px;">Esqueci minha senha</a>
     </div>
   </div>`;
   document.getElementById('lg-entrar').onclick = fazerLogin;
   document.getElementById('lg-ir-cadastro').onclick = () => renderAuth('cadastro');
+  document.getElementById('lg-esqueci').onclick = abrirEsqueciSenha;
+  document.getElementById('lg-senha').onkeydown = (e) => { if (e.key === 'Enter') fazerLogin(); };
+}
+async function abrirEsqueciSenha(){
+  abrirModal(`<button class="fechar-folha" onclick="fecharModal()">✕</button><h3>Esqueci minha senha</h3><p class="muted">Carregando...</p>`);
+  const { data } = await api('/configuracoes/publicas');
+  const contato = ((data && data.ok && data.config.suporte_contato) || '').trim();
+  const digitos = contato.replace(/\D/g, '');
+  let botao = '';
+  if (contato.includes('@')) botao = `<a class="btn" href="mailto:${esc(contato)}?subject=${encodeURIComponent('Esqueci minha senha no Sucatell')}" style="text-decoration:none;">✉️ Mandar e-mail pro suporte</a>`;
+  else if (digitos.length >= 10) botao = `<a class="btn" href="https://wa.me/${digitos.length <= 11 ? '55' + digitos : digitos}?text=${encodeURIComponent('Olá! Esqueci minha senha no Sucatell. Meu e-mail de cadastro é: ')}" style="text-decoration:none;">💬 Falar com o suporte no WhatsApp</a>`;
+  abrirModal(`<button class="fechar-folha" onclick="fecharModal()">✕</button>
+    <h3>Esqueci minha senha</h3>
+    <p class="muted">Por segurança, a senha é redefinida pela nossa equipe. Fale com o suporte informando o e-mail da sua conta — a gente te passa uma senha nova, e depois você troca por uma sua em Perfil → Segurança.</p>
+    ${botao || '<p class="muted"><b>O contato do suporte ainda não foi configurado.</b></p>'}`);
 }
 async function fazerLogin(){
   const email = document.getElementById('lg-email').value.trim();

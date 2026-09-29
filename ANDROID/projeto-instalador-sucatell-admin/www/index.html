@@ -226,6 +226,7 @@ tr:last-child td{border-bottom:none;}
       </div>
       <button id="lg-entrar" class="btn-entrar">Entrar</button>
       <div class="erro-login" id="lg-erro"></div>
+      <a id="lg-esqueci" style="display:block; text-align:center; font-size:13.5px; font-weight:700; color:var(--verde); cursor:pointer; margin-top:6px;">Esqueci minha senha</a>
     </div>
   </div>
 </div>
@@ -394,6 +395,12 @@ tr:last-child td{border-bottom:none;}
           <input type="file" id="ap-banner-input" accept="image/*" hidden>
           <div class="acoes" style="margin-top:12px;"><button id="ap-banner-trocar">Trocar banner</button><button class="secundario" id="ap-banner-padrao">Usar o padrão</button></div>
           <p class="muted" id="ap-banner-status"></p>
+        </div>
+        <div class="card" style="max-width:720px; margin-top:14px;">
+          <h3>Contato do suporte</h3>
+          <p class="muted" style="margin-top:0;">Aparece pro cliente quando ele toca em "Esqueci minha senha". Pode ser um WhatsApp (só números, com DDD) ou um e-mail.</p>
+          <div class="filtros" style="margin:0;"><input id="ap-suporte" placeholder="ex: 21999998888 ou suporte@seudominio.com"><button id="ap-suporte-salvar">Salvar</button></div>
+          <p class="muted" id="ap-suporte-status"></p>
         </div>
       </section>
 
@@ -564,7 +571,8 @@ document.getElementById('lg-entrar').onclick = async () => {
   localStorage.setItem(LS_TOKEN, data.token);
   boot();
 };
-document.getElementById('lg-senha').onkeydown = (e) => { if (e.key === 'Enter') document.getElementById('lg-entrar').click(); };
+document.getElementById('lg-esqueci').onclick = () => alert('Pra redefinir a senha de um administrador: peça pra outro administrador entrar no painel e tocar em Usuários → "🔑 Nova senha" na sua conta. Se você for o único admin, fale com o suporte técnico da LeuName Softwares.');
+document.getElementById('lg-senha').onkeydown =(e) => { if (e.key === 'Enter') document.getElementById('lg-entrar').click(); };
 document.getElementById('btn-sair').onclick = async () => {
   await api('/auth/logout', { method:'POST' });
   localStorage.removeItem(LS_TOKEN);
@@ -693,6 +701,7 @@ function desenharUsuarios(){
         <button class="secundario pequeno" onclick="alternarVerificado('${u.id}', ${!u.verificado})">${u.verificado ? 'Tirar verificado' : '✓ Verificar'}</button>
         <button class="secundario pequeno" onclick="editarUsuario('${u.id}', '${jsStr(u.nome)}', '${jsStr(u.telefone||'')}')">Editar</button>
         ${souEu ? '' : `
+        <button class="secundario pequeno" onclick="gerarSenhaNova('${u.id}', '${jsStr(u.nome)}', '${jsStr(u.email)}')">🔑 Nova senha</button>
         <button class="secundario pequeno" onclick="alternarAdmin('${u.id}', ${!u.is_admin}, '${jsStr(u.nome)}')">${u.is_admin ? 'Tirar admin' : 'Tornar admin'}</button>
         <button class="secundario pequeno" onclick="alternarBloqueio('${u.id}', ${!u.bloqueado})">${u.bloqueado ? 'Desbloquear' : 'Bloquear'}</button>
         <button class="perigo pequeno" onclick="excluirUsuario('${u.id}', '${jsStr(u.nome)}')">Excluir</button>`}
@@ -709,6 +718,12 @@ window.editarUsuario = async (id, nomeAtual, telAtual) => {
   const telefone = prompt('Telefone (deixe em branco pra remover):', telAtual); if (telefone === null) return;
   const d = await api('/admin/usuarios/' + id, { method:'PATCH', body:{ nome, telefone } });
   toast(d.ok ? 'Salvo!' : 'Erro ao salvar.', d.ok ? 'sucesso' : 'erro'); recarregarUsuarios();
+};
+window.gerarSenhaNova = async (id, nome, email) => {
+  if (!confirm(`Gerar uma senha nova pra "${nome}"? A senha atual para de funcionar e a pessoa sai de todos os aparelhos.`)) return;
+  const d = await api('/admin/usuarios/' + id + '/senha', { method:'POST' });
+  if (!d.ok) return toast('Erro ao gerar senha.', 'erro');
+  prompt(`Senha nova de ${nome} (${email}) — copie e passe pra pessoa. Depois de entrar, ela pode trocar em Perfil → Segurança:`, d.senha_provisoria);
 };
 window.alternarAdmin = async (id, virarAdmin, nome) => {
   if (!confirm(virarAdmin ? `Tornar "${nome}" administrador? Ele vai ter acesso total a este painel.` : `Tirar o acesso de administrador de "${nome}"?`)) return;
@@ -1041,6 +1056,12 @@ document.getElementById('nv-publicar').onclick = async () => {
 CARREGADORES.aparencia = async () => {
   const d = await api('/configuracoes/publicas');
   document.getElementById('ap-banner-preview').src = (d.ok && d.config.banner_home_url) || BANNER_PADRAO;
+  document.getElementById('ap-suporte').value = (d.ok && d.config.suporte_contato) || '';
+};
+document.getElementById('ap-suporte-salvar').onclick = async () => {
+  const valor = document.getElementById('ap-suporte').value.trim();
+  const d = await api('/admin/configuracoes', { method:'POST', body:{ chave:'suporte_contato', valor } });
+  document.getElementById('ap-suporte-status').textContent = d.ok ? 'Salvo! Já aparece pro cliente.' : 'Erro ao salvar.';
 };
 document.getElementById('ap-banner-trocar').onclick = () => document.getElementById('ap-banner-input').click();
 document.getElementById('ap-banner-input').onchange = async (e) => {

@@ -804,7 +804,7 @@ export default {
     }
 
     // ---- configurações do app (banner da tela inicial, editável pelo admin) ----
-    const CONFIGS_PERMITIDAS = ['banner_home_url'];
+    const CONFIGS_PERMITIDAS = ['banner_home_url', 'suporte_contato'];
     if (pathname === '/configuracoes/publicas' && request.method === 'GET') {
       const { results } = await env.DB.prepare('SELECT chave, valor FROM configuracoes WHERE chave IN (' + CONFIGS_PERMITIDAS.map(()=>'?').join(',') + ')').bind(...CONFIGS_PERMITIDAS).all();
       const config = {};
@@ -1033,6 +1033,25 @@ export default {
           await env.DB.prepare('UPDATE anuncios SET status = ? WHERE id = ?').bind(status, anuncio.id).run();
         }
         return json({ ok: true });
+      }
+
+      // "Esqueci minha senha": ainda não tem envio de e-mail, então o
+      // cliente fala com o suporte e o admin gera uma senha provisória
+      // aqui (mostrada só pro admin, uma vez). Derruba as sessões antigas.
+      const matchSenhaUsuario = pathname.match(/^\/admin\/usuarios\/([^/]+)\/senha$/);
+      if (matchSenhaUsuario && request.method === 'POST') {
+        const alvo = await env.DB.prepare('SELECT id FROM users WHERE id = ?').bind(matchSenhaUsuario[1]).first();
+        if (!alvo) return json({ ok: false, erro: 'nao_encontrado' }, 404);
+        const alfabeto = 'abcdefghjkmnpqrstuvwxyz23456789';
+        const bytes = crypto.getRandomValues(new Uint8Array(8));
+        const senhaProvisoria = Array.from(bytes, (b) => alfabeto[b % alfabeto.length]).join('');
+        const hash = await hashSenha(senhaProvisoria, env);
+        await env.DB.batch([
+          env.DB.prepare('UPDATE users SET senha_hash = ? WHERE id = ?').bind(hash, alvo.id),
+          env.DB.prepare('UPDATE sessoes SET revogada_em = ? WHERE user_id = ? AND revogada_em IS NULL').bind(nowIso(), alvo.id),
+          env.DB.prepare("DELETE FROM auth_attempts WHERE identifier = (SELECT email FROM users WHERE id = ?) AND succeeded = 0").bind(alvo.id),
+        ]);
+        return json({ ok: true, senha_provisoria: senhaProvisoria });
       }
 
       if (pathname === '/admin/pagamentos' && request.method === 'GET') {
