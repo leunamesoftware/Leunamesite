@@ -5,13 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="theme-color" content="#020a1c" />
     <meta name="color-scheme" content="dark" />
-    <!-- Abertura: desde o primeiro instante, o fundo do app com o brilho azul e o símbolo
-         (igual à abertura do Android). Some sozinha quando o app termina de carregar. -->
+    <!-- Abertura: igual à do Android (mesmo azul, símbolo de 132px no centro), para as
+         telas de abertura parecerem uma só. Some sozinha quando o app termina de carregar. -->
     <style>
-      html,body{background:#020b22;margin:0}
-      .abertura-inicial{position:fixed;inset:0;display:grid;place-items:center;
-        background:radial-gradient(circle at 50% 50%,#0a348c 0,#051a4d 22vmin,#020b22 50vmin)}
-      .abertura-inicial img{width:42vmin;max-width:300px;filter:drop-shadow(0 0 3vmin rgba(60,170,255,.45))}
+      html,body{background:#041640;margin:0}
+      .abertura-inicial{position:fixed;inset:0;display:grid;place-items:center;background:#041640}
+      .abertura-inicial img{width:132px;height:auto;filter:drop-shadow(0 0 6px rgba(60,170,255,.45))}
     </style>
     <meta name="description" content="Radar Preventivo — Protege seu hoje. Evita problemas amanhã." />
     <link rel="icon" type="image/png" sizes="192x192" href="/icone-192.png" />

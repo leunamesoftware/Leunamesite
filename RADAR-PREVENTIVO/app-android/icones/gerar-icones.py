@@ -77,15 +77,4 @@ for nome, f in DENSIDADES.items():
 m = fundo_icone(512); m.alpha_composite(simbolo_em(512, 0.54))
 m.convert('RGB').save(f'{RAIZ}/frontend/public/icone-maskable-512.png', optimize=True)
 
-# Abertura do Android: quadrado 1080 com o brilho azul do app sumindo no fundo escuro e o símbolo no meio.
-n = 1080
-y, x = np.mgrid[0:n, 0:n] / (n - 1) - 0.5
-r = np.clip(np.sqrt(x * x + y * y) / 0.5, 0, 1)[..., None]
-brilho = np.array([10, 52, 140]); fundo = np.array(FUNDO_APP)
-t = r ** 1.2
-img = (brilho * (1 - t) + fundo * t).astype(np.uint8)
-abertura = Image.fromarray(img, 'RGB').convert('RGBA')
-abertura.alpha_composite(simbolo_em(n, 0.42))
-os.makedirs(f'{destino}/drawable-nodpi', exist_ok=True)
-abertura.convert('RGB').save(f'{destino}/drawable-nodpi/radar_abertura.png', optimize=True)
 print('ok')

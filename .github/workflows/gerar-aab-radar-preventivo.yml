@@ -67,7 +67,7 @@ jobs:
           done
           cp icones/ic_launcher_background.xml android/app/src/main/res/values/ic_launcher_background.xml
           # Ícone adaptável (fundo e símbolo em camadas) e a imagem da abertura.
-          for d in mipmap-anydpi-v26 drawable drawable-nodpi; do
+          for d in mipmap-anydpi-v26 drawable; do
             mkdir -p "android/app/src/main/res/$d"
             cp icones/$d/* "android/app/src/main/res/$d/"
           done
@@ -78,15 +78,15 @@ jobs:
           import pathlib, re
           res = pathlib.Path("android/app/src/main/res")
           (res / "values/radar_cores.xml").write_text(
-              '<?xml version="1.0" encoding="utf-8"?>\n<resources>\n    <color name="radar_fundo">#020B22</color>\n</resources>\n',
+              '<?xml version="1.0" encoding="utf-8"?>\n<resources>\n    <color name="radar_fundo">#041640</color>\n</resources>\n',
               encoding="utf-8")
           estilos = res / "values/styles.xml"
           t = estilos.read_text(encoding="utf-8")
-          # Abertura do sistema (Android 12+): fundo do app + ícone redondo oficial.
-          # Depois, até a página carregar: o fundo do app com o brilho azul e o símbolo.
+          # Abertura do sistema (Android 12+) e a tela até a página carregar são iguais:
+          # o azul do app com o símbolo (288dp de área, o símbolo ocupa 46% = ~132dp).
           novo = ('<item name="android:background">@drawable/radar_abertura_tela</item>\n'
                   '        <item name="windowSplashScreenBackground">@color/radar_fundo</item>\n'
-                  '        <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_launcher</item>')
+                  '        <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_launcher_foreground</item>')
           t, n = re.subn(r'<item name="android:background">@drawable/splash</item>', novo, t)
           assert n == 1, "tema de abertura do Capacitor não encontrado:\n" + t
           estilos.write_text(t, encoding="utf-8")

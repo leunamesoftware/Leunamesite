@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Tela de abertura: o fundo escuro do app com o brilho azul e o símbolo no centro. -->
+<!-- Tela enquanto o app carrega: IDÊNTICA à abertura do sistema (mesma cor e o mesmo símbolo,
+     do mesmo tamanho e no mesmo lugar) e à abertura do site. Parece uma tela só. -->
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:drawable="@color/radar_fundo" />
-    <item>
-        <bitmap android:gravity="center" android:src="@drawable/radar_abertura" />
-    </item>
+    <item android:width="288dp" android:height="288dp" android:gravity="center"
+        android:drawable="@mipmap/ic_launcher_foreground" />
 </layer-list>
