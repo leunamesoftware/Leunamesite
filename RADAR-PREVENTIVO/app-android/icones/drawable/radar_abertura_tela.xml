@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Tela de abertura: o fundo escuro do app com o brilho azul e o símbolo no centro. -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@color/radar_fundo" />
+    <item>
+        <bitmap android:gravity="center" android:src="@drawable/radar_abertura" />
+    </item>
+</layer-list>

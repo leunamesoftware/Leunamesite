@@ -5,8 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="theme-color" content="#020a1c" />
     <meta name="color-scheme" content="dark" />
-    <!-- Fundo escuro desde o primeiro instante: sem tela branca enquanto o app carrega. -->
-    <style>html,body{background:#01050f;margin:0}</style>
+    <!-- Abertura: desde o primeiro instante, o fundo do app com o brilho azul e o símbolo
+         (igual à abertura do Android). Some sozinha quando o app termina de carregar. -->
+    <style>
+      html,body{background:#020b22;margin:0}
+      .abertura-inicial{position:fixed;inset:0;display:grid;place-items:center;
+        background:radial-gradient(circle at 50% 50%,#0a348c 0,#051a4d 22vmin,#020b22 50vmin)}
+      .abertura-inicial img{width:42vmin;max-width:300px;filter:drop-shadow(0 0 3vmin rgba(60,170,255,.45))}
+    </style>
     <meta name="description" content="Radar Preventivo — Protege seu hoje. Evita problemas amanhã." />
     <link rel="icon" type="image/png" sizes="192x192" href="/icone-192.png" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
@@ -14,7 +20,7 @@
     <title>Radar Preventivo</title>
   </head>
   <body>
-    <div id="raiz"></div>
+    <div id="raiz"><div class="abertura-inicial"><img src="/simbolo.svg" alt="Radar Preventivo" /></div></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

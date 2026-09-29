@@ -66,20 +66,27 @@ jobs:
             cp icones/$d/*.png "android/app/src/main/res/$d/"
           done
           cp icones/ic_launcher_background.xml android/app/src/main/res/values/ic_launcher_background.xml
+          # Ícone adaptável (fundo e símbolo em camadas) e a imagem da abertura.
+          for d in mipmap-anydpi-v26 drawable drawable-nodpi; do
+            mkdir -p "android/app/src/main/res/$d"
+            cp icones/$d/* "android/app/src/main/res/$d/"
+          done
 
-      - name: Abertura (splash) escura, sem a tela branca padrão
+      - name: Abertura com o fundo do app (sem a tela branca padrão)
         run: |
           python3 - <<'PY'
           import pathlib, re
           res = pathlib.Path("android/app/src/main/res")
           (res / "values/radar_cores.xml").write_text(
-              '<?xml version="1.0" encoding="utf-8"?>\n<resources>\n    <color name="radar_fundo">#01050F</color>\n</resources>\n',
+              '<?xml version="1.0" encoding="utf-8"?>\n<resources>\n    <color name="radar_fundo">#020B22</color>\n</resources>\n',
               encoding="utf-8")
           estilos = res / "values/styles.xml"
           t = estilos.read_text(encoding="utf-8")
-          novo = ('<item name="android:background">@color/radar_fundo</item>\n'
+          # Abertura do sistema (Android 12+): fundo do app + ícone redondo oficial.
+          # Depois, até a página carregar: o fundo do app com o brilho azul e o símbolo.
+          novo = ('<item name="android:background">@drawable/radar_abertura_tela</item>\n'
                   '        <item name="windowSplashScreenBackground">@color/radar_fundo</item>\n'
-                  '        <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_launcher_foreground</item>')
+                  '        <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_launcher</item>')
           t, n = re.subn(r'<item name="android:background">@drawable/splash</item>', novo, t)
           assert n == 1, "tema de abertura do Capacitor não encontrado:\n" + t
           estilos.write_text(t, encoding="utf-8")
