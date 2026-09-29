@@ -6,8 +6,11 @@ name: Gerar AAB e APK do Radar Preventivo
 #
 # Chave de assinatura:
 # - Se o segredo RADAR_KEYSTORE_B64 existir, usa essa chave (atualizações).
-# - Se não existir, PARA com um aviso. Só gera uma chave nova se "chave_nova" for marcado
-#   ao rodar (a primeira chave já foi gerada; uma chave diferente impede atualizar o app).
+# - Se não existir, reaproveita a chave entregue no primeiro instalador (artefato da execução
+#   36627345065, disponível até 29/10/2026) e a entrega de novo junto com este.
+# - Sem nenhuma das duas, PARA com um aviso. Só gera uma chave nova se "chave_nova" for marcado
+#   ao rodar (uma chave diferente impede atualizar o app já instalado e o da Play Store).
+# O APK também é publicado no site: /baixar.html → /baixar/RadarPreventivo.apk.
 # PROVISÓRIO neste repositório até o repositório próprio do Radar existir.
 on:
   workflow_dispatch:
@@ -20,6 +23,9 @@ on:
 jobs:
   aab:
     runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
     defaults:
       run:
         shell: bash
@@ -86,6 +92,16 @@ jobs:
           chmod +x gradlew
           ./gradlew :app:processReleaseResources --no-daemon
 
+      - name: Recuperar a chave do primeiro instalador (se os segredos ainda não existem)
+        if: ${{ !inputs.chave_nova }}
+        continue-on-error: true
+        uses: actions/download-artifact@v4
+        with:
+          name: RadarPreventivo-Play-Store
+          run-id: 36627345065
+          github-token: ${{ github.token }}
+          path: RADAR-PREVENTIVO/app-android/chave-anterior
+
       - name: Preparar a chave de assinatura
         env:
           KEYSTORE_B64: ${{ secrets.RADAR_KEYSTORE_B64 }}
@@ -98,6 +114,15 @@ jobs:
             echo "KEY_PASSWORD=$KEY_PASSWORD_SALVA" >> "$GITHUB_ENV"
             echo "CHAVE_NOVA=nao" >> "$GITHUB_ENV"
             echo "Usando a chave já guardada nos segredos."
+          elif [ "${{ inputs.chave_nova }}" != "true" ] && [ -f chave-anterior/RadarPreventivo-chave-assinatura.keystore ]; then
+            SENHA="$(sed -n 's/^Senha do keystore: //p' chave-anterior/LEIA-ISSO-chave-de-assinatura.txt | tr -d '\r')"
+            echo "::add-mask::$SENHA"
+            test -n "$SENHA"
+            cp chave-anterior/RadarPreventivo-chave-assinatura.keystore android/app/release.keystore
+            echo "KEYSTORE_PASSWORD=$SENHA" >> "$GITHUB_ENV"
+            echo "KEY_PASSWORD=$SENHA" >> "$GITHUB_ENV"
+            echo "CHAVE_NOVA=reaproveitada" >> "$GITHUB_ENV"
+            echo "Usando a mesma chave do primeiro instalador (segredos ainda não cadastrados)."
           elif [ "${{ inputs.chave_nova }}" != "true" ]; then
             echo "::error::Faltam os segredos RADAR_KEYSTORE_B64, RADAR_KEYSTORE_PASSWORD e RADAR_KEY_PASSWORD. Cadastre-os com os dados do arquivo LEIA-ISSO-chave-de-assinatura.txt (Settings -> Secrets and variables -> Actions). Sem eles, o app gerado teria outra chave e não poderia atualizar o já instalado nem o da Play Store."
             exit 1
@@ -158,6 +183,11 @@ jobs:
           mkdir -p entrega
           cp android/app/build/outputs/bundle/release/app-release.aab entrega/RadarPreventivo.aab
           cp android/app/build/outputs/apk/release/app-release.apk entrega/RadarPreventivo-instalar-no-celular.apk
+          if [ "$CHAVE_NOVA" = "reaproveitada" ]; then
+            # Entrega a chave de novo, para ela não sumir quando o primeiro artefato expirar.
+            cp chave-anterior/RadarPreventivo-chave-assinatura.keystore chave-anterior/LEIA-ISSO-chave-de-assinatura.txt entrega/
+          fi
+          rm -rf chave-anterior
           if [ "$CHAVE_NOVA" = "sim" ]; then
             cp android/app/release.keystore entrega/RadarPreventivo-chave-assinatura.keystore
             {
@@ -181,6 +211,15 @@ jobs:
             } > entrega/LEIA-ISSO-chave-de-assinatura.txt
           fi
           ls -la entrega
+
+      - name: Publicar o APK no site (link de download)
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+        run: |
+          npx --yes wrangler@4 r2 object put radar-preventivo-downloads/RadarPreventivo.apk \
+            --file entrega/RadarPreventivo-instalar-no-celular.apk \
+            --content-type application/vnd.android.package-archive --remote
+          echo "Link: https://radar-preventivo.emanuelantunes2024.workers.dev/baixar.html"
 
       - name: Enviar para download (Artifact)
         uses: actions/upload-artifact@v4

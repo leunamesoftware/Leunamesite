@@ -8,7 +8,7 @@ só o que o app faz de verdade.
 | O quê | Arquivo |
 |---|---|
 | App para a Play (AAB) | GitHub → Actions → "Gerar AAB e APK do Radar Preventivo" → Artifacts → `RadarPreventivo-Play-Store` → `RadarPreventivo.aab` |
-| Instalar direto no celular (APK) | mesmo pacote → `RadarPreventivo-instalar-no-celular.apk` |
+| Instalar direto no celular (APK) | https://radar-preventivo.emanuelantunes2024.workers.dev/baixar.html (o gerador publica ali; também vem no pacote) |
 | Ícone (512×512) | `marca/icone-play-store-512.png` |
 | Imagem de destaque (1024×500) | `loja/imagem-destaque-1024x500.png` |
 | Capturas de tela do celular | `loja/capturas/1-abertura.png` até `6-cadastrar.png` (1080×1920) |

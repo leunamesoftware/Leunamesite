@@ -9,7 +9,7 @@ compatibility_date = "2026-09-01"
 directory = "frontend/dist"
 binding = "ASSETS"
 not_found_handling = "single-page-application"
-run_worker_first = ["/api/*"]
+run_worker_first = ["/api/*", "/baixar/*"]
 
 [[d1_databases]]
 binding = "BANCO"
@@ -20,6 +20,12 @@ migrations_dir = "backend/src/banco/migracoes"
 [[r2_buckets]]
 binding = "ANEXOS"
 bucket_name = "radar-preventivo-anexos"
+
+# Instalador Android (APK) para baixar pelo site: /baixar/RadarPreventivo.apk.
+# Bucket separado dos anexos; o gerador do APK (GitHub Actions) envia o arquivo para cá.
+[[r2_buckets]]
+binding = "DOWNLOADS"
+bucket_name = "radar-preventivo-downloads"
 
 # Rotina diária de análise e alertas: 09:00 UTC = 06:00 em Brasília.
 [triggers]

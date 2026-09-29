@@ -15,6 +15,7 @@ import { executarRotina } from './modulos/rotina/servico.js';
 interface Env {
   BANCO: D1Database;
   ANEXOS: R2Bucket;
+  DOWNLOADS: { get(chave: string): Promise<{ body: ReadableStream; size: number; uploaded: Date } | null> };
   ASSETS: { fetch(requisicao: Request): Promise<Response> };
   [variavel: string]: unknown;
 }
@@ -30,12 +31,29 @@ function dependencias(env: Env): Dependencias {
   };
 }
 
+/** Instalador Android para instalar direto no celular (sem passar pela Play Store). */
+async function baixarApk(env: Env): Promise<Response> {
+  const arquivo = await env.DOWNLOADS.get('RadarPreventivo.apk');
+  if (!arquivo) return new Response('O instalador ainda não foi publicado.', { status: 404 });
+  return new Response(arquivo.body, {
+    headers: {
+      'Content-Type': 'application/vnd.android.package-archive',
+      'Content-Disposition': 'attachment; filename="RadarPreventivo.apk"',
+      'Content-Length': String(arquivo.size),
+      'Cache-Control': 'no-cache',
+      'Last-Modified': arquivo.uploaded.toUTCString(),
+    },
+  });
+}
+
 export default {
   async fetch(requisicao: Request, env: Env): Promise<Response> {
     const url = new URL(requisicao.url);
     if (url.pathname.startsWith('/api/') || url.pathname === '/api') {
       return criarApp(dependencias(env)).fetch(requisicao);
     }
+    if (url.pathname === '/baixar/RadarPreventivo.apk') return baixarApk(env);
+    if (url.pathname.startsWith('/baixar/')) return new Response('Arquivo não encontrado.', { status: 404 });
     return env.ASSETS.fetch(requisicao);
   },
 
