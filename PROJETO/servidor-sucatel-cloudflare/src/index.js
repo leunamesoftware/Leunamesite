@@ -657,7 +657,9 @@ export default {
       return json({ ok: true, anuncios });
     }
 
-    const matchAnuncioId = pathname.match(/^\/anuncios\/([^/]+)$/);
+    // "/anuncios/meus" é outra rota (lá embaixo) -- sem essa exceção ela
+    // caía aqui como se "meus" fosse o id de um anúncio e voltava vazia.
+    const matchAnuncioId = pathname !== '/anuncios/meus' && pathname.match(/^\/anuncios\/([^/]+)$/);
     if (matchAnuncioId && request.method === 'GET') {
       const bairroVisitante = url.searchParams.get('bairro_id');
       const anuncio = await env.DB.prepare(
