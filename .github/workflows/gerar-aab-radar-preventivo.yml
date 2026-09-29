@@ -89,6 +89,11 @@ jobs:
                   '        <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_launcher_foreground</item>')
           t, n = re.subn(r'<item name="android:background">@drawable/splash</item>', novo, t)
           assert n == 1, "tema de abertura do Capacitor não encontrado:\n" + t
+          # Depois da abertura o Capacitor troca para o tema AppTheme.NoActionBar, cujo fundo
+          # padrão é cinza (tela vazia até a página carregar). O fundo dele vira a mesma abertura.
+          t, n = re.subn(r'(<style name="AppTheme\.NoActionBar"[^>]*>)',
+                         r'\1\n        <item name="android:windowBackground">@drawable/radar_abertura_tela</item>', t)
+          assert n == 1, "tema AppTheme.NoActionBar não encontrado:\n" + t
           estilos.write_text(t, encoding="utf-8")
           print(t)
           PY
