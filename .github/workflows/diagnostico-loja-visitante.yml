@@ -1,0 +1,36 @@
+name: Diagnóstico loja como visitante (temporário)
+
+on:
+  push:
+    paths:
+      - '.github/workflows/diagnostico-loja-visitante.yml'
+
+jobs:
+  testar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Abrir a loja de verdade sem login
+        run: |
+          npm i playwright@1.47.2 >/dev/null 2>&1
+          npx playwright install --with-deps chromium >/dev/null 2>&1
+          cat > t.js <<'JS'
+          const { chromium } = require('playwright');
+          (async () => {
+            const b = await chromium.launch();
+            for (const vp of [{ width: 410, height: 880 }, { width: 1280, height: 900 }]) {
+              const p = await b.newPage({ viewport: vp });
+              p.on('pageerror', e => console.log('PAGEERROR', e.message));
+              await p.goto('https://sucatell.leunamesoftware.com.br/', { waitUntil: 'networkidle' });
+              await p.waitForTimeout(5000);
+              console.log('== largura', vp.width);
+              console.log('LOGIN NA CARA:', await p.isVisible('#lg-entrar'));
+              console.log('MENU SITE:', await p.isVisible('.site-nav'), 'BARRA APP:', await p.isVisible('#tabbar'));
+              console.log('TITULO OFERTAS:', await p.textContent('#in-resultados').then(() => 'ok').catch(() => 'sem'));
+              const cards = await p.$$eval('#in-resultados .produto-card .produto-titulo', t => t.map(x => x.textContent));
+              console.log('PRODUTOS:', cards.length, JSON.stringify(cards.slice(0, 5)));
+              await p.close();
+            }
+            await b.close();
+          })();
+          JS
+          node t.js
