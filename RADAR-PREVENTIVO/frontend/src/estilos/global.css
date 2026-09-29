@@ -46,3 +46,47 @@ canvas {
 .tom-verde { --tom: var(--verde); --tom-claro: #6ee89c; --tom-fundo: rgba(34, 211, 107, 0.13); }
 .tom-azul { --tom: var(--azul-item); --tom-claro: #9cc2ff; --tom-fundo: rgba(61, 139, 255, 0.14); }
 .tom-roxo { --tom: var(--roxo); --tom-claro: #c2a6ff; --tom-fundo: rgba(155, 107, 255, 0.15); }
+
+/*
+ * Vence hoje ou amanhã e ainda não foi pago: pisca até ser pago.
+ * "Hoje" pisca mais rápido que "amanhã". Pulso de luz (menos de 2 por segundo), sem flash.
+ */
+@keyframes piscar-alerta {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 transparent;
+    background-color: transparent;
+  }
+  50% {
+    box-shadow: 0 0 22px 2px color-mix(in srgb, var(--tom) 65%, transparent), inset 0 0 22px -8px var(--tom);
+    background-color: color-mix(in srgb, var(--tom) 16%, transparent);
+  }
+}
+
+@keyframes piscar-pilula {
+  50% {
+    border-color: var(--tom-claro);
+    box-shadow: 0 0 14px 1px var(--tom);
+  }
+}
+
+.piscando {
+  animation: piscar-alerta 1.4s ease-in-out infinite;
+}
+
+.piscando .pilula {
+  animation: piscar-pilula 1.4s ease-in-out infinite;
+}
+
+.piscando--hoje,
+.piscando--hoje .pilula {
+  animation-duration: 0.9s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .piscando,
+  .piscando .pilula {
+    animation: none;
+    box-shadow: 0 0 18px 1px color-mix(in srgb, var(--tom) 60%, transparent);
+  }
+}

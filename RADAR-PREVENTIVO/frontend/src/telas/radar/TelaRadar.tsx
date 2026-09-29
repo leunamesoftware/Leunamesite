@@ -24,6 +24,7 @@ import {
   IconeTriangulo,
 } from '../../componentes/icones/Icones';
 import { rotaDocumentos, rotaPagos, rotas } from '../../rotas';
+import { venceLogo } from '../../utilitarios/situacao';
 import './TelaRadar.css';
 
 // Interface 3 — Radar (painel geral). Recriada a partir da referência visual oficial.
@@ -45,6 +46,7 @@ export function TelaRadar() {
 
   const c = resumo?.contagem;
   const pendentes = resumo?.pendencias.length ?? 0;
+  const algoVenceLogo = resumo?.atencaoAgora.some((i) => venceLogo(i) !== null) ?? false;
 
   return (
     <div className="tela-radar">
@@ -77,7 +79,7 @@ export function TelaRadar() {
         <>
           <div className="tela-radar__contadores">
             <CartaoContador valor={c.vencido} nome="Vencidos" tom="vermelho" icone={<IconeExclamacao />} para={rotaDocumentos('vencidos')} />
-            <CartaoContador valor={c.urgente + c.vence_hoje} nome="Urgentes" tom="laranja" icone={<IconeRelogio />} para={rotaDocumentos('urgentes')} />
+            <CartaoContador valor={c.urgente + c.vence_hoje} nome="Urgentes" tom="laranja" icone={<IconeRelogio />} para={rotaDocumentos('urgentes')} piscando={algoVenceLogo} />
             <CartaoContador valor={c.atencao + c.em_dia} nome="A vencer" tom="amarelo" icone={<IconeTriangulo />} para={rotaDocumentos('a_vencer')} />
             <CartaoContador valor={resumo.totalResolvidos} nome="Em dia" tom="verde" icone={<IconeCheck />} para={rotaPagos} />
           </div>

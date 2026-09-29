@@ -33,6 +33,8 @@ import {
   somarDiasData,
   TOM_DA_SITUACAO,
   type Tom,
+  classePiscar,
+  venceLogo,
   hojeLocal,
 } from '../../utilitarios/situacao';
 import { rotaEditarItem, rotas } from '../../rotas';
@@ -167,12 +169,12 @@ export function TelaDetalheItem() {
     <div className="detalhe">
       <CabecalhoVoltar texto="Voltar" direita={<MenuAcoes rotulo="Mais ações" acoes={acoesMenu} />} />
 
-      <section className={`detalhe__principal tom-${tom}`}>
+      <section className={`detalhe__principal tom-${tom} ${classePiscar(item)}`}>
         <IconeItem natureza={item.natureza} tom={tom} />
         <div className="detalhe__identificacao">
           <h1 className="detalhe__titulo">{item.titulo}</h1>
           <p className="detalhe__tipo">{item.tipo}</p>
-          <Pilula tom={tom}>{resolvido ? 'Em dia' : NOME_DA_SITUACAO[situacao]}</Pilula>
+          <Pilula tom={tom}>{resolvido ? 'Em dia' : venceLogo(item) === 'amanha' ? 'Vence amanhã' : NOME_DA_SITUACAO[situacao]}</Pilula>
         </div>
         {!resolvido && (
           <button type="button" className="detalhe__editar" onClick={() => navegar(rotaEditarItem(item.id))}>

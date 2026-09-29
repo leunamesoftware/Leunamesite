@@ -113,3 +113,21 @@ export function pagamentoSugerido(dataVencimento: string | null | undefined): st
   const hoje = hojeLocal();
   return dataVencimento && dataVencimento <= hoje ? dataVencimento : hoje;
 }
+
+/**
+ * Vence hoje ou amanhã e ainda não foi pago: o item fica piscando até ser pago.
+ * No dia seguinte ao vencimento ele vira "Vencido" e para de piscar.
+ */
+export function venceLogo(item: ItemResumo): 'hoje' | 'amanha' | null {
+  if (item.estado !== 'ativo') return null;
+  const s = situacaoDe(item);
+  if (s === 'vence_hoje') return 'hoje';
+  if (s !== 'vencido' && item.analise?.diasRestantes === 1) return 'amanha';
+  return null;
+}
+
+/** Classe CSS do pisca-pisca ('' quando não pisca). */
+export function classePiscar(item: ItemResumo): string {
+  const quando = venceLogo(item);
+  return quando ? `piscando piscando--${quando}` : '';
+}

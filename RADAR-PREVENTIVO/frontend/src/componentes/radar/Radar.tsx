@@ -11,15 +11,18 @@ export function CartaoContador({
   tom,
   icone,
   para,
+  piscando = false,
 }: {
   valor: number;
   nome: string;
   tom: Tom;
   icone: ReactNode;
   para: string;
+  /** Tem item vencendo hoje ou amanhã: o cartão pisca. */
+  piscando?: boolean;
 }) {
   return (
-    <Link to={para} className={`cartao-contador tom-${tom}`} aria-label={`${valor} ${nome}`}>
+    <Link to={para} className={`cartao-contador tom-${tom} ${piscando ? 'piscando' : ''}`} aria-label={`${valor} ${nome}`}>
       <span className="cartao-contador__topo">
         <span className="cartao-contador__valor">{valor}</span>
         <span className="cartao-contador__icone" aria-hidden="true">

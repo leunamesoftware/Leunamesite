@@ -29,10 +29,25 @@ export async function analisarItem(deps: Dependencias, banco: Banco, linha: Linh
   return { analise, alertasCriados };
 }
 
+/**
+ * Reanalisa os itens ativos do usuário cuja análise é de um dia anterior.
+ * Assim, virou a meia-noite, "vence amanhã" já passa a "vence hoje" e "vence hoje" a "vencido"
+ * na hora em que a pessoa abre o app, sem esperar a rotina diária.
+ */
+export async function atualizarAnalisesDoDia(deps: Dependencias, usuarioId: string): Promise<void> {
+  const hoje = hojeLocal(deps);
+  const linhas = await repositorioItens.listar(deps.banco, usuarioId, { estado: 'ativo' });
+  for (const linha of linhas) {
+    if (linha.a_em && dataLocal(new Date(linha.a_em), deps.config.fusoHorario) === hoje) continue;
+    await deps.banco.transacao((banco) => analisarItem(deps, banco, linha));
+  }
+}
+
 const SITUACOES: Situacao[] = ['sem_prazo', 'em_dia', 'atencao', 'urgente', 'vence_hoje', 'vencido'];
 
 /** Resumo do painel "Radar". "Atenção agora" = urgentes, vence hoje e vencidos; "Próximos" = os demais com data. */
 export async function resumoRadar(deps: Dependencias, usuarioId: string): Promise<ResumoRadar> {
+  await atualizarAnalisesDoDia(deps, usuarioId);
   const ativos = (await repositorioItens.listar(deps.banco, usuarioId, { estado: 'ativo' })).map(paraResumo);
   const resolvidos = await deps.banco.um<{ n: number }>(`SELECT COUNT(*) AS n FROM itens WHERE usuario_id = ? AND estado = 'resolvido'`, [usuarioId]);
   const contagem = Object.fromEntries(SITUACOES.map((s) => [s, 0])) as Record<Situacao, number>;

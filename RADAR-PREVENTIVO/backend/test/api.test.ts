@@ -225,6 +225,26 @@ describe('resolver não apaga o histórico', () => {
   });
 });
 
+describe('virada do dia sem esperar a rotina', () => {
+  it('amanhã → hoje → vencido assim que a pessoa abre o app', async () => {
+    const token = await novaConta();
+    const item = (await criarItem(token, { dataVencimento: '2026-10-02' })).json.dados;
+    expect(item.analise!.situacao).toBe('urgente');
+    expect(item.analise!.diasRestantes).toBe(1);
+
+    avancarDias(1); // sem executar a rotina
+    const hoje = await chamar<{ atencaoAgora: ItemDetalhe[]; contagem: Record<string, number> }>('GET', '/api/radar', { token });
+    expect(hoje.json.dados.contagem.vence_hoje).toBe(1);
+    expect(hoje.json.dados.atencaoAgora[0]!.analise!.situacao).toBe('vence_hoje');
+
+    avancarDias(1);
+    const detalhe = await chamar<ItemDetalhe>('GET', `/api/itens/${item.id}`, { token });
+    expect(detalhe.json.dados.analise!.situacao).toBe('vencido');
+    const alertas = await chamar<{ situacao: string }[]>('GET', '/api/alertas', { token });
+    expect(alertas.json.dados.map((a) => a.situacao)).toContain('vencido');
+  });
+});
+
 describe('data do pagamento', () => {
   it('pago em dia quando a data informada é até o vencimento; recusa data no futuro', async () => {
     const token = await novaConta();

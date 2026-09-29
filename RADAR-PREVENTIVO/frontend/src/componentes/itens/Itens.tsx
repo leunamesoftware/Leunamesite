@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import type { ItemResumo } from '@compartilhado/contratos';
 import { IconeCalendario, IconeChevron, IconeDocumento } from '../icones/Icones';
-import { dataBr, situacaoDe, textoPilula, textoPrazo, TOM_DA_SITUACAO, type Tom } from '../../utilitarios/situacao';
+import { classePiscar, dataBr, situacaoDe, textoPilula, textoPrazo, TOM_DA_SITUACAO, type Tom } from '../../utilitarios/situacao';
 import { rotaItem } from '../../rotas';
 import './Itens.css';
 
@@ -26,7 +26,7 @@ export function LinhaItem({ item, variante = 'situacao' }: { item: ItemResumo; v
   const tom = TOM_DA_SITUACAO[situacao];
   const dias = item.analise?.diasRestantes;
   return (
-    <Link to={rotaItem(item.id)} className={`linha-item tom-${tom}`}>
+    <Link to={rotaItem(item.id)} className={`linha-item tom-${tom} ${classePiscar(item)}`}>
       <IconeItem natureza={item.natureza} tom={tom} />
       <span className="linha-item__textos">
         <span className="linha-item__titulo">{item.titulo}</span>
@@ -35,7 +35,7 @@ export function LinhaItem({ item, variante = 'situacao' }: { item: ItemResumo; v
       {variante === 'dias' && dias != null ? (
         <Pilula neutra>{dias === 1 ? 'Amanhã' : `Em ${dias} dias`}</Pilula>
       ) : (
-        <Pilula tom={tom}>{situacao === 'vence_hoje' ? 'Vence hoje' : situacao === 'vencido' ? 'Vencido' : situacao === 'urgente' ? 'Urgente' : situacao === 'atencao' ? 'Atenção' : textoPilula(item)}</Pilula>
+        <Pilula tom={tom}>{situacao === 'vence_hoje' ? 'Vence hoje' : situacao === 'vencido' ? 'Vencido' : situacao === 'urgente' ? (dias === 1 ? 'Vence amanhã' : 'Urgente') : situacao === 'atencao' ? 'Atenção' : textoPilula(item)}</Pilula>
       )}
       <IconeChevron className="linha-item__seta" />
     </Link>
@@ -50,7 +50,7 @@ export function CartaoItem({ item }: { item: ItemResumo }) {
   const neutra = !resolvido && situacao === 'em_dia';
   const data = resolvido && item.resolvidoEm ? item.resolvidoEm.slice(0, 10) : item.dataVencimento;
   return (
-    <Link to={rotaItem(item.id)} className={`cartao-item tom-${tom}`}>
+    <Link to={rotaItem(item.id)} className={`cartao-item tom-${tom} ${classePiscar(item)}`}>
       <IconeItem natureza={item.natureza} tom={tom} />
       <span className="cartao-item__textos">
         <span className="cartao-item__titulo">{item.titulo}</span>

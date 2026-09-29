@@ -1,6 +1,7 @@
 import { Hono } from 'hono';
 import type { Ambiente, Dependencias } from '../../comum/ambiente.js';
 import { erros } from '../../comum/erros.js';
+import { atualizarAnalisesDoDia } from '../analise/servico.js';
 import { repositorioAlertas } from './repositorio.js';
 
 export function rotasAlertas(deps: Dependencias) {
@@ -9,9 +10,11 @@ export function rotasAlertas(deps: Dependencias) {
 
   r.get('/', async (c) => {
     const naoLidos = c.req.query('nao_lidos') === '1';
+    await atualizarAnalisesDoDia(deps, c.get('usuario').id);
     return c.json({ ok: true, dados: await repositorioAlertas.listar(deps.banco, c.get('usuario').id, { naoLidos }) });
   });
   r.get('/contagem', async (c) => {
+    await atualizarAnalisesDoDia(deps, c.get('usuario').id);
     return c.json({ ok: true, dados: { naoLidos: await repositorioAlertas.contarNaoLidos(deps.banco, c.get('usuario').id) } });
   });
   r.post('/lidos', async (c) => {

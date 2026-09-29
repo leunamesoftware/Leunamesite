@@ -6,7 +6,7 @@ import { novoId } from '../../comum/seguranca.js';
 import { dataValida } from '../../comum/tempo.js';
 import { validar } from '../../comum/validacao.js';
 import { repositorioAlertas } from '../alertas/repositorio.js';
-import { analisarItem, hojeLocal } from '../analise/servico.js';
+import { analisarItem, atualizarAnalisesDoDia, hojeLocal } from '../analise/servico.js';
 import { repositorioAnexos, paraAnexo } from '../anexos/repositorio.js';
 import { gerarOrientacao } from '../orientacao/gerador.js';
 import { analiseDaLinha, paraResumo, repositorioItens, type LinhaItem } from './repositorio.js';
@@ -45,6 +45,7 @@ async function linhaDoUsuario(deps: Dependencias, usuarioId: string, id: string)
 }
 
 export async function detalharItem(deps: Dependencias, usuarioId: string, id: string): Promise<ItemDetalhe> {
+  await atualizarAnalisesDoDia(deps, usuarioId);
   const l = await linhaDoUsuario(deps, usuarioId, id);
   const analise = analiseDaLinha(l);
   if (!analise) throw new ErroApp('erro_interno', 500, 'Item ainda sem análise.');
@@ -72,6 +73,7 @@ export async function listarItens(deps: Dependencias, usuarioId: string, consult
   const estado = (ESTADOS as readonly string[]).includes(consulta.estado ?? '') ? (consulta.estado as EstadoItem) : 'ativo';
   const situacao = (SITUACOES as readonly string[]).includes(consulta.situacao ?? '') ? (consulta.situacao as Situacao) : undefined;
   const busca = consulta.busca?.trim().slice(0, 100) || undefined;
+  if (estado === 'ativo') await atualizarAnalisesDoDia(deps, usuarioId);
   return (await repositorioItens.listar(deps.banco, usuarioId, { estado, situacao, busca })).map(paraResumo);
 }
 
