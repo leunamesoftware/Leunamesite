@@ -17,6 +17,7 @@ import {
   IconePasta,
   IconePessoa,
   IconeSair,
+  IconeLixeira,
   IconeSino,
 } from '../../componentes/icones/Icones';
 import { ErroApi } from '../../servicos/api';
@@ -26,7 +27,7 @@ import './TelaConta.css';
 // Interface 8 — Minha Conta. Recriada a partir da referência visual oficial,
 // só com o que a V1 tem de verdade: dados pessoais, senha, números reais e sair.
 
-type Painel = 'dados' | 'senha' | null;
+type Painel = 'dados' | 'senha' | 'excluir' | null;
 
 function iniciais(nome: string): string {
   const partes = nome.trim().split(/\s+/);
@@ -100,6 +101,28 @@ export function TelaConta() {
           aoAlternar={() => alternar('senha')}
         >
           <FormularioSenha aoConcluir={() => setPainel(null)} />
+        </Opcao>
+        <a className="tela-conta__opcao tela-conta__link tom-azul" href="/privacidade.html" target="_blank" rel="noopener">
+          <span className="tela-conta__opcao-botao">
+            <span className="icone-item tom-azul" aria-hidden="true">
+              <IconeDocumento />
+            </span>
+            <span className="tela-conta__opcao-textos">
+              <span className="tela-conta__opcao-titulo">Política de privacidade</span>
+              <span className="tela-conta__opcao-descricao">Como seus dados são tratados</span>
+            </span>
+            <IconeChevron className="tela-conta__opcao-seta" />
+          </span>
+        </a>
+        <Opcao
+          tom="vermelho"
+          icone={<IconeLixeira />}
+          titulo="Excluir conta"
+          descricao="Apaga de vez sua conta e todos os dados"
+          aberto={painel === 'excluir'}
+          aoAlternar={() => alternar('excluir')}
+        >
+          <FormularioExcluir />
         </Opcao>
       </div>
 
@@ -267,6 +290,63 @@ function FormularioSenha({ aoConcluir }: { aoConcluir: () => void }) {
       <BotaoPrincipal type="submit" disabled={enviando}>
         {enviando ? 'Trocando…' : 'Trocar senha'}
       </BotaoPrincipal>
+    </form>
+  );
+}
+
+function FormularioExcluir() {
+  const { api, sair } = useSessao();
+  const [senha, setSenha] = useState('');
+  const [erro, setErro] = useState<string | undefined>();
+  const [erroGeral, setErroGeral] = useState<string | null>(null);
+  const [confirmar, setConfirmar] = useState(false);
+  const [enviando, setEnviando] = useState(false);
+
+  function pedir(e: FormEvent) {
+    e.preventDefault();
+    if (!senha) {
+      setErro('Informe sua senha para confirmar.');
+      return;
+    }
+    setErro(undefined);
+    setConfirmar(true);
+  }
+
+  async function excluir() {
+    setEnviando(true);
+    setErroGeral(null);
+    try {
+      await api('/conta/excluir', { metodo: 'POST', corpo: { senha } });
+      await sair();
+    } catch (falha) {
+      setConfirmar(false);
+      setEnviando(false);
+      if (falha instanceof ErroApi && falha.campos.senha) setErro(falha.campos.senha);
+      else setErroGeral(falha instanceof ErroApi ? falha.message : 'Não foi possível excluir a conta.');
+    }
+  }
+
+  return (
+    <form className="tela-conta__formulario" onSubmit={pedir} noValidate>
+      <p className="tela-conta__fixo">
+        Isso apaga de vez seu cadastro, todos os documentos e prazos, alertas, histórico e arquivos anexados. Não dá para desfazer.
+      </p>
+      <CampoSenha id="excluir-senha" rotulo="Sua senha" icone={<IconeCadeado />} autoComplete="current-password" valor={senha} aoMudar={setSenha} erro={erro} />
+      <AvisoErro mensagem={erroGeral} />
+      <button type="submit" className="tela-conta__excluir">
+        <IconeLixeira />
+        Excluir minha conta
+      </button>
+      <ConfirmarDialogo
+        aberto={confirmar}
+        titulo="Excluir a conta de vez?"
+        texto="Todos os seus dados e arquivos serão apagados agora. Essa ação não tem volta."
+        textoConfirmar="Excluir de vez"
+        perigoso
+        ocupado={enviando}
+        aoConfirmar={() => void excluir()}
+        aoCancelar={() => setConfirmar(false)}
+      />
     </form>
   );
 }

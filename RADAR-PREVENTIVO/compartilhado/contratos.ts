@@ -47,6 +47,7 @@ export type CodigoErro =
   | 'credenciais_invalidas'
   | 'muitas_tentativas'
   | 'senha_atual_incorreta'
+  | 'senha_incorreta'
   | 'arquivo_invalido'
   | 'arquivo_grande_demais'
   | 'item_resolvido'

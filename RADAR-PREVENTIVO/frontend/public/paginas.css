@@ -1,0 +1,21 @@
+:root { color-scheme: dark; }
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  padding: 32px 16px 56px;
+  background: radial-gradient(ellipse 120% 70% at 50% 0%, #0a1f55 0%, #04102f 45%, #01050f 100%) fixed;
+  color: #e3edf9;
+  font: 400 1.02rem/1.6 system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+}
+main { max-width: 720px; margin: 0 auto; }
+.marca { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+.marca img { width: 56px; height: 56px; }
+.marca span { font-weight: 800; letter-spacing: 0.12em; color: #fff; }
+.marca small { display: block; color: #1ec8ff; letter-spacing: 0.25em; font-size: 0.7rem; }
+h1 { margin: 0 0 4px; color: #fff; font-size: clamp(1.6rem, 6vw, 2.2rem); line-height: 1.15; }
+h2 { margin: 28px 0 6px; color: #fff; font-size: 1.2rem; }
+p, li { color: #cfdcf2; }
+.atualizado { color: #93a6c8; font-size: 0.9rem; }
+a { color: #7fe3ff; }
+.cartao { margin-top: 16px; padding: 16px; border: 1.5px solid rgba(64, 112, 200, 0.4); border-radius: 18px; background: rgba(10, 26, 64, 0.7); }
+ol, ul { padding-left: 1.3em; }

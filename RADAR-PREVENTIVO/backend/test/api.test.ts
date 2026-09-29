@@ -79,6 +79,19 @@ describe('autenticação', () => {
     expect(u!.senha_hash).not.toContain('senhaforte1');
     expect(u!.senha_hash).toMatch(/^pbkdf2\$100000\$/);
   });
+  it('a rotina apaga tentativas de login e sessões encerradas com mais de 7 dias', async () => {
+    const token = await novaConta();
+    await chamar('POST', '/api/auth/entrar', { corpo: { email: 'maria@exemplo.com', senha: 'errada' } });
+    await chamar('POST', '/api/auth/sair', { token });
+    const contar = async (tabela: string) => (await deps.banco.um<{ n: number }>(`SELECT COUNT(*) AS n FROM ${tabela}`))?.n;
+    expect(await contar('tentativas_login')).toBeGreaterThan(0);
+    avancarDias(6); await executarRotina(deps);
+    expect(await contar('tentativas_login')).toBeGreaterThan(0); // ainda dentro dos 7 dias
+    avancarDias(2); await executarRotina(deps);
+    expect(await contar('tentativas_login')).toBe(0);
+    expect(await contar('sessoes')).toBe(0);
+  });
+
   it('trocar senha desconecta os outros aparelhos', async () => {
     const t1 = await novaConta();
     const t2 = (await chamar<SessaoCriada>('POST', '/api/auth/entrar', { corpo: { email: 'maria@exemplo.com', senha: 'senhaforte1' } })).json.dados.token;
@@ -232,6 +245,32 @@ describe('anexos privados', () => {
     expect(deps.armazenamento.total()).toBe(1);
     await chamar('DELETE', `/api/itens/${item.id}`, { token: a });
     expect(deps.armazenamento.total()).toBe(0);
+  });
+
+  it('excluir a conta apaga tudo (itens, alertas, arquivos, sessões) e exige a senha', async () => {
+    const a = await novaConta('a@exemplo.com');
+    const b = await novaConta('b@exemplo.com');
+    const item = (await criarItem(a, { dataVencimento: '2026-10-03' })).json.dados;
+    const form = new FormData(); form.append('arquivo', pdf());
+    await chamar('POST', `/api/itens/${item.id}/anexos`, { token: a, form });
+    await criarItem(b, { dataVencimento: '2026-10-03' });
+    expect(deps.armazenamento.total()).toBe(1);
+
+    const errada = await chamar('POST', '/api/conta/excluir', { token: a, corpo: { senha: 'errada' } });
+    expect(errada.json.erro).toBe('senha_incorreta');
+    expect((await chamar('GET', '/api/conta', { token: a })).status).toBe(200);
+
+    expect((await chamar('POST', '/api/conta/excluir', { token: a, corpo: { senha: 'senhaforte1' } })).status).toBe(200);
+    expect(deps.armazenamento.total()).toBe(0);
+    expect((await chamar('GET', '/api/conta', { token: a })).status).toBe(401);
+    for (const tabela of ['usuarios', 'itens', 'alertas', 'anexos', 'sessoes']) {
+      const r = await deps.banco.um<{ n: number }>(`SELECT COUNT(*) AS n FROM ${tabela} WHERE ${tabela === 'usuarios' ? "email = 'a@exemplo.com'" : "usuario_id NOT IN (SELECT id FROM usuarios)"}`);
+      expect(r?.n).toBe(0);
+    }
+    // A outra conta não é afetada.
+    expect((await chamar<unknown[]>('GET', '/api/itens', { token: b })).json.dados).toHaveLength(1);
+    const entrar = await chamar('POST', '/api/auth/entrar', { corpo: { email: 'a@exemplo.com', senha: 'senhaforte1' } });
+    expect(entrar.json.erro).toBe('credenciais_invalidas');
   });
 
   it('recusa arquivo que não é PDF/imagem (mesmo com extensão .pdf)', async () => {

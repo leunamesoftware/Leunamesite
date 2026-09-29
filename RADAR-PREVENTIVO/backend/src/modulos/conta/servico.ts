@@ -34,3 +34,29 @@ export async function trocarSenha(deps: Dependencias, usuarioId: string, tokenAt
     [await gerarHashSenha(d.novaSenha, deps.config.pimentaSenha), agora, usuarioId]);
   await repositorioAuth.encerrarOutrasSessoes(deps.banco, usuarioId, await sha256(tokenAtual), agora);
 }
+
+const esquemaExcluir = z.object({ senha: z.string({ required_error: 'Informe sua senha.' }).min(1, 'Informe sua senha.') });
+
+/**
+ * Exclui a conta de vez: arquivos anexados, itens, alertas, sessões e o cadastro.
+ * Pede a senha para confirmar. Não tem volta.
+ */
+export async function excluirConta(deps: Dependencias, usuarioId: string, entrada: unknown) {
+  const d = validar(esquemaExcluir, entrada);
+  const u = await repositorioAuth.usuarioPorId(deps.banco, usuarioId);
+  if (!u) throw erros.naoEncontrado('Usuário');
+  if (!(await conferirSenha(d.senha, u.senha_hash, deps.config.pimentaSenha))) {
+    throw new ErroApp('senha_incorreta', 400, 'A senha está incorreta.', { senha: 'A senha está incorreta.' });
+  }
+  const arquivos = await deps.banco.todos<{ chave_arquivo: string }>('SELECT chave_arquivo FROM anexos WHERE usuario_id = ?', [usuarioId]);
+  for (const a of arquivos) await deps.armazenamento.apagar(a.chave_arquivo);
+  // Apaga em ordem (filhos antes do pai), sem depender de exclusão em cascata do banco.
+  await deps.banco.executar('DELETE FROM entregas_alerta WHERE alerta_id IN (SELECT id FROM alertas WHERE usuario_id = ?)', [usuarioId]);
+  await deps.banco.executar('DELETE FROM alertas WHERE usuario_id = ?', [usuarioId]);
+  await deps.banco.executar('DELETE FROM analises WHERE item_id IN (SELECT id FROM itens WHERE usuario_id = ?)', [usuarioId]);
+  await deps.banco.executar('DELETE FROM anexos WHERE usuario_id = ?', [usuarioId]);
+  await deps.banco.executar('DELETE FROM itens WHERE usuario_id = ?', [usuarioId]);
+  await deps.banco.executar('DELETE FROM sessoes WHERE usuario_id = ?', [usuarioId]);
+  await deps.banco.executar('DELETE FROM tentativas_login WHERE identificador = ?', [u.email]);
+  await deps.banco.executar('DELETE FROM usuarios WHERE id = ?', [usuarioId]);
+}

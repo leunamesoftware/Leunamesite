@@ -311,3 +311,38 @@
     transition: none;
   }
 }
+
+.tela-conta__link {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+}
+
+.tela-conta__link:focus-visible {
+  outline: 3px solid var(--foco);
+  outline-offset: 2px;
+}
+
+.tela-conta__excluir {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 52px;
+  border: 2px solid var(--vermelho);
+  border-radius: 999px;
+  background: rgba(120, 10, 35, 0.5);
+  color: var(--texto-forte);
+  font: 700 1rem / 1 var(--fonte-texto);
+  cursor: pointer;
+}
+
+.tela-conta__excluir svg {
+  width: 22px;
+  height: 22px;
+}
+
+.tela-conta__excluir:focus-visible {
+  outline: 3px solid var(--foco);
+  outline-offset: 3px;
+}
