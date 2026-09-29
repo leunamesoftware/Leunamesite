@@ -13,6 +13,11 @@ import { App } from './App';
 const raiz = document.getElementById('raiz');
 if (!raiz) throw new Error('Elemento #raiz não encontrado.');
 
+// Guarda o app no celular para abrir na hora (só na versão publicada).
+if (import.meta.env.PROD && 'serviceWorker' in navigator) {
+  window.addEventListener('load', () => void navigator.serviceWorker.register('/sw.js').catch(() => undefined));
+}
+
 createRoot(raiz).render(
   <StrictMode>
     <App />
