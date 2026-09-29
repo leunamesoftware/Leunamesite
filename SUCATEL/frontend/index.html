@@ -847,8 +847,9 @@ async function renderAnunciar(){
     <div class="card">
       <b>3. Categoria</b>
       <label style="margin-top:8px;">Tipo</label><select id="an-tipo"><option value="">Selecione</option>${STATE.tiposPeca.map(t=>`<option value="${t.id}">${esc(t.nome)}</option>`).join('')}</select>
-      <label>Marca</label><select id="an-marca"><option value="">Selecione</option>${STATE.marcas.map(m=>`<option value="${m.id}">${esc(m.nome)}</option>`).join('')}</select>
+      <label>Marca</label><select id="an-marca">${opcoesComNovo(STATE.marcas, '+ Minha marca não está na lista')}</select>
       <label>Modelo</label><select id="an-modelo" disabled><option value="">Escolha a marca primeiro</option></select>
+      <p class="muted" style="margin:8px 0 0;">Lote ou acessório sem marca? Escolha "Genérico / Várias marcas".</p>
     </div>
     <div class="card">
       <b>4. Condição</b>
@@ -868,15 +869,27 @@ async function renderAnunciar(){
     <div class="card" style="background:var(--verde-claro); border:none;">
       <p class="muted" style="margin:0 0 6px;">Saldo: <b id="an-saldo">carregando...</b> crédito(s). Cada anúncio custa 1 crédito (R$5) e fica no ar por 30 dias.</p>
     </div>
-    <button class="btn" id="an-publicar">Publicar anúncio (1 crédito)</button>`;
-  document.getElementById('an-tipo').onchange = () => {};
-  document.getElementById('an-marca').onchange = async (e) => {
-    const sel = document.getElementById('an-modelo');
-    if (!e.target.value) { sel.disabled = true; sel.innerHTML = '<option value="">Escolha a marca primeiro</option>'; return; }
-    const { data } = await api('/categorias/modelos?marca_id=' + e.target.value);
-    sel.disabled = false;
-    sel.innerHTML = '<option value="">Selecione</option>' + (data.modelos||[]).map(m=>`<option value="${m.id}">${esc(m.nome)}</option>`).join('');
-  };
+    <button class="btn" id="an-publicar">${STATE.usuario.is_admin ? 'Publicar anúncio' : 'Publicar anúncio (1 crédito)'}</button>`;
+  const marcaSel = document.getElementById('an-marca');
+  const modeloSel = document.getElementById('an-modelo');
+  async function carregarModelosAnuncio(){
+    const marcaId = marcaSel.value;
+    if (!marcaId || marcaId === '__novo__') { modeloSel.disabled = true; modeloSel.innerHTML = '<option value="">Escolha a marca primeiro</option>'; return; }
+    const { data } = await api('/categorias/modelos?marca_id=' + encodeURIComponent(marcaId));
+    modeloSel.disabled = false;
+    modeloSel.innerHTML = opcoesComNovo(data.modelos, '+ Meu modelo não está na lista');
+    if ((data.modelos||[]).length === 1) modeloSel.value = data.modelos[0].id;
+    tratarSelectComNovo(modeloSel, {
+      obterPaiId: () => marcaSel.value, aoMudar: () => {},
+      endpoint: '/categorias/modelos', campoPai: 'marca_id', campoResposta: 'modelo',
+      placeholder: 'ex: Galaxy A15', mensagemSucesso: 'Modelo adicionado!',
+    });
+  }
+  tratarSelectComNovo(marcaSel, {
+    obterPaiId: () => null, aoMudar: carregarModelosAnuncio,
+    endpoint: '/categorias/marcas', campoPai: '_', campoResposta: 'marca',
+    placeholder: 'ex: Positivo', mensagemSucesso: 'Marca adicionada!',
+  });
   document.querySelectorAll('#an-condicoes button').forEach(b => b.onclick = () => {
     document.querySelectorAll('#an-condicoes button').forEach(x=>x.classList.remove('ativo'));
     b.classList.add('ativo'); condicaoSelecionada = b.dataset.c;
@@ -906,6 +919,32 @@ function redesenharFotos(){
   };
 }
 window.removerFoto = function(i){ fotosSelecionadas.splice(i,1); redesenharFotos(); };
+// Foto de celular hoje passa fácil de 5-10MB; reduz pra no máximo 1600px
+// e JPEG antes de enviar -- sobe muito mais rápido no 4G e nunca estoura
+// o limite de 8MB do servidor. Se o navegador não conseguir ler a imagem
+// (formato estranho), manda o arquivo original mesmo.
+async function comprimirFoto(file){
+  try {
+    const bitmap = await createImageBitmap(file);
+    const escala = Math.min(1, 1600 / Math.max(bitmap.width, bitmap.height));
+    const canvas = document.createElement('canvas');
+    canvas.width = Math.round(bitmap.width * escala);
+    canvas.height = Math.round(bitmap.height * escala);
+    canvas.getContext('2d').drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+    const blob = await new Promise(r => canvas.toBlob(r, 'image/jpeg', 0.82));
+    return blob || file;
+  } catch (e) { return file; }
+}
+async function enviarFoto(file){
+  const corpo = await comprimirFoto(file);
+  const resp = await fetch(API + '/upload-foto', {
+    method: 'POST',
+    headers: { 'Authorization': 'Bearer ' + localStorage.getItem(LS_TOKEN), 'X-File-Name': 'foto.jpg', 'Content-Type': corpo.type || 'image/jpeg' },
+    body: corpo,
+  });
+  const d = await resp.json();
+  return d.ok ? API + d.url : null;
+}
 async function publicarAnuncio(){
   const marca_id = document.getElementById('an-marca').value;
   const modelo_id = document.getElementById('an-modelo').value;
@@ -913,22 +952,25 @@ async function publicarAnuncio(){
   const titulo = document.getElementById('an-titulo').value.trim();
   const descricao = document.getElementById('an-descricao').value.trim();
   const precoReais = parseFloat(document.getElementById('an-preco').value);
-  if (!marca_id || !modelo_id || !tipo_peca_id || !titulo || !precoReais) return toast('Preencha marca, modelo, tipo, título e preço.', 'erro');
+  if (!marca_id || !modelo_id || !tipo_peca_id || !titulo || !precoReais || marca_id === '__novo__' || modelo_id === '__novo__') return toast('Preencha tipo, marca, modelo, título e preço.', 'erro');
   const btn = document.getElementById('an-publicar');
   btn.disabled = true; btn.textContent = 'Enviando fotos...';
   const fotosUrls = [];
+  let falhasFoto = 0;
   for (const f of fotosSelecionadas) {
-    const resp = await fetch(API + '/upload-foto', { method:'POST', headers:{ 'Authorization':'Bearer '+localStorage.getItem(LS_TOKEN), 'X-File-Name':f.file.name, 'Content-Type':f.file.type }, body:f.file });
-    const d = await resp.json();
-    if (d.ok) fotosUrls.push(API + d.url);
+    try {
+      const url = await enviarFoto(f.file);
+      if (url) fotosUrls.push(url); else falhasFoto++;
+    } catch (e) { falhasFoto++; }
   }
+  if (falhasFoto) toast(`${falhasFoto} foto(s) não subiram -- o anúncio vai sem elas.`, 'erro');
   btn.textContent = 'Publicando...';
   const { data } = await api('/anuncios', { method:'POST', body:{ marca_id, modelo_id, tipo_peca_id, titulo, descricao, preco_centavos: Math.round(precoReais*100), fotos: fotosUrls, bairro_id: STATE.usuario.bairro_id, condicao: condicaoSelecionada } });
-  btn.disabled = false; btn.textContent = 'Publicar anúncio (1 crédito)';
+  btn.disabled = false; btn.textContent = STATE.usuario.is_admin ? 'Publicar anúncio' : 'Publicar anúncio (1 crédito)';
   if (!data.ok) {
     if (data.erro === 'sem_creditos') { toast('Você não tem créditos.', 'erro'); return irPara(renderComprarCreditos); }
-    if (data.erro === 'fora_do_tema') return toast('Este anúncio só aceita peças de celular.', 'erro');
-    return toast('Erro ao publicar.', 'erro');
+    if (data.erro === 'fora_do_tema') return toast('Este anúncio só aceita celular, peças e acessórios.', 'erro');
+    return toast('Erro ao publicar' + (data.erro ? ' (' + data.erro + ')' : '') + '.', 'erro');
   }
   toast('Anúncio publicado!', 'sucesso');
   setTab('perfil'); irPara(renderMeusAnuncios);
@@ -1065,10 +1107,9 @@ async function renderPerfilConta(){
   document.getElementById('pf-foto-input').onchange = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
-    const resp = await fetch(API + '/upload-foto', { method:'POST', headers:{ 'Authorization':'Bearer '+localStorage.getItem(LS_TOKEN), 'X-File-Name':file.name, 'Content-Type':file.type }, body:file });
-    const d = await resp.json();
-    if (!d.ok) return toast('Erro ao enviar foto.', 'erro');
-    const { data } = await api('/auth/me', { method:'PATCH', body:{ foto_url: API + d.url } });
+    const fotoUrl = await enviarFoto(file).catch(() => null);
+    if (!fotoUrl) return toast('Erro ao enviar foto.', 'erro');
+    const { data } = await api('/auth/me', { method:'PATCH', body:{ foto_url: fotoUrl } });
     if (!data.ok) return toast('Erro ao salvar foto.', 'erro');
     STATE.usuario = data.usuario;
     toast('Foto atualizada!', 'sucesso');
@@ -1321,20 +1362,35 @@ async function carregarCategorias(){
   STATE.tiposPeca = tp.data.tipos_peca || [];
 }
 function setupPWA(){ try { if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{}); } catch(e){} }
+function esconderSplashIntro(){
+  const splash = document.getElementById('intro-splash');
+  if (!splash) return;
+  splash.classList.add('saindo');
+  setTimeout(() => splash.remove(), 400);
+}
+// Trava de segurança: a tela de abertura nunca pode prender o app, mesmo
+// se a internet cair ou alguma chamada der erro no meio do caminho.
+setTimeout(esconderSplashIntro, 8000);
 async function boot(){
-  setupPWA();
-  const token = localStorage.getItem(LS_TOKEN);
-  if (!token) { renderAuth('login'); return; }
-  const { data } = await api('/auth/me');
-  if (!data.ok) { localStorage.removeItem(LS_TOKEN); renderAuth('login'); return; }
-  STATE.usuario = data.usuario;
-  STATE.bairroId = data.usuario.bairro_id;
-  document.getElementById('auth-root').innerHTML = '';
-  document.getElementById('app-root').classList.add('pronto');
-  await carregarCategorias();
-  document.querySelectorAll('#tabbar button').forEach(b => b.onclick = () => setTab(b.dataset.tab));
-  setTab('inicio');
-  atualizarBadgeChat();
+  try {
+    setupPWA();
+    const token = localStorage.getItem(LS_TOKEN);
+    if (!token) { renderAuth('login'); return; }
+    const { data } = await api('/auth/me');
+    if (!data.ok) { localStorage.removeItem(LS_TOKEN); renderAuth('login'); return; }
+    STATE.usuario = data.usuario;
+    STATE.bairroId = data.usuario.bairro_id;
+    document.getElementById('auth-root').innerHTML = '';
+    document.getElementById('app-root').classList.add('pronto');
+    await carregarCategorias();
+    document.querySelectorAll('#tabbar button').forEach(b => b.onclick = () => setTab(b.dataset.tab));
+    setTab('inicio');
+    atualizarBadgeChat();
+  } catch (e) {
+    if (!STATE.usuario) renderAuth('login');
+  } finally {
+    esconderSplashIntro();
+  }
 }
 boot();
 </script>

@@ -123,10 +123,17 @@ function contemContatoExterno(texto) {
 }
 
 // Palavras fora do tema (peca de celular) -- bloqueio simples de titulo/descricao.
-const PALAVRAS_FORA_DO_TEMA = ['guarda-roupa', 'geladeira', 'sofa', 'sofá', 'cama', 'colchao', 'colchão', 'carro', 'moto ', 'roupa', 'tenis', 'tênis'];
+// Compara palavra inteira e sem acento: antes era "contém o pedaço", e
+// barrava anúncio legítimo ("Tela Moto G53" caía em "moto", "camara"
+// sem acento caía em "cama"). "moto" saiu da lista de vez por causa da
+// linha Moto G/E da Motorola.
+const PALAVRAS_FORA_DO_TEMA = ['guarda-roupa', 'geladeira', 'sofa', 'cama', 'colchao', 'carro', 'motocicleta', 'roupa', 'roupas', 'tenis'];
+function semAcento(texto) {
+  return (texto || '').toString().normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+}
 function contemPalavraForaDoTema(texto) {
-  const t = (texto || '').toLowerCase();
-  return PALAVRAS_FORA_DO_TEMA.some((p) => t.includes(p));
+  const palavras = semAcento(texto).split(/[^a-z0-9-]+/);
+  return PALAVRAS_FORA_DO_TEMA.some((p) => palavras.includes(p));
 }
 
 async function expirarAnunciosVencidos(env) {
@@ -268,6 +275,41 @@ export default {
     if (pathname === '/categorias/tipos-peca' && request.method === 'GET') {
       const { results } = await env.DB.prepare('SELECT * FROM tipos_peca ORDER BY ordem').all();
       return json({ ok: true, tipos_peca: results });
+    }
+    // A lista inicial de marcas/modelos é pequena -- sem isso, quem tem um
+    // aparelho fora da lista simplesmente não conseguia anunciar. Mesmo
+    // padrão do cadastro de bairro: cria na hora, sem duplicar.
+    if (pathname === '/categorias/marcas' && request.method === 'POST') {
+      const sess = await autenticar(request, env);
+      if (!sess) return json({ ok: false, erro: 'nao_autenticado' }, 401);
+      if (!sess.is_admin && await limiteExcedido(env, sess.id, 'criar_marca', 10)) return json({ ok: false, erro: 'muitas_tentativas' }, 429);
+      const { nome } = await request.json().catch(() => ({}));
+      if (!nome || !nome.trim()) return json({ ok: false, erro: 'campos_obrigatorios' }, 400);
+      const nomeFinal = nome.trim().slice(0, 60);
+      await registrarTentativa(env, sess.id, 'criar_marca', true);
+      const existente = await env.DB.prepare('SELECT * FROM marcas WHERE LOWER(nome) = LOWER(?)').bind(nomeFinal).first();
+      if (existente) return json({ ok: true, marca: existente });
+      let id = slugify(nomeFinal) || uid();
+      if (await env.DB.prepare('SELECT id FROM marcas WHERE id = ?').bind(id).first()) id = id + '-' + uid().slice(0, 6);
+      await env.DB.prepare('INSERT INTO marcas (id, nome, ordem) VALUES (?, ?, 500)').bind(id, nomeFinal).run();
+      return json({ ok: true, marca: await env.DB.prepare('SELECT * FROM marcas WHERE id = ?').bind(id).first() }, 201);
+    }
+    if (pathname === '/categorias/modelos' && request.method === 'POST') {
+      const sess = await autenticar(request, env);
+      if (!sess) return json({ ok: false, erro: 'nao_autenticado' }, 401);
+      if (!sess.is_admin && await limiteExcedido(env, sess.id, 'criar_modelo', 20)) return json({ ok: false, erro: 'muitas_tentativas' }, 429);
+      const { marca_id, nome } = await request.json().catch(() => ({}));
+      if (!marca_id || !nome || !nome.trim()) return json({ ok: false, erro: 'campos_obrigatorios' }, 400);
+      const marca = await env.DB.prepare('SELECT id FROM marcas WHERE id = ?').bind(marca_id).first();
+      if (!marca) return json({ ok: false, erro: 'marca_invalida' }, 400);
+      const nomeFinal = nome.trim().slice(0, 80);
+      await registrarTentativa(env, sess.id, 'criar_modelo', true);
+      const existente = await env.DB.prepare('SELECT * FROM modelos WHERE marca_id = ? AND LOWER(nome) = LOWER(?)').bind(marca_id, nomeFinal).first();
+      if (existente) return json({ ok: true, modelo: existente });
+      let id = slugify(marca_id + '-' + nomeFinal) || uid();
+      if (await env.DB.prepare('SELECT id FROM modelos WHERE id = ?').bind(id).first()) id = id + '-' + uid().slice(0, 6);
+      await env.DB.prepare('INSERT INTO modelos (id, marca_id, nome) VALUES (?, ?, ?)').bind(id, marca_id, nomeFinal).run();
+      return json({ ok: true, modelo: await env.DB.prepare('SELECT * FROM modelos WHERE id = ?').bind(id).first() }, 201);
     }
 
     // ---- auth ----
@@ -526,6 +568,12 @@ export default {
          WHERE a.id = ?`
       ).bind(matchAnuncioId[1]).first();
       if (!anuncio) return json({ ok: false, erro: 'nao_encontrado' }, 404);
+      // Conta visualização real (não conta o próprio vendedor olhando o
+      // anúncio dele) -- é o número que aparece no painel admin.
+      const visitante = await autenticar(request, env);
+      if (!visitante || visitante.id !== anuncio.vendedor_id) {
+        await env.DB.prepare('UPDATE anuncios SET visualizacoes = visualizacoes + 1 WHERE id = ?').bind(anuncio.id).run();
+      }
       let distanciaKmAtual = null;
       if (bairroVisitante && anuncio.bairro_lat != null) {
         const origem = await env.DB.prepare('SELECT lat, lng FROM bairros WHERE id = ?').bind(bairroVisitante).first();
@@ -816,8 +864,10 @@ export default {
       // Contas já excluídas (anonimizadas, email vira @sucatel.invalid) não
       // aparecem mais aqui -- não tem nada pra fazer com elas, só polui a lista.
       const { results } = await env.DB.prepare(
-        `SELECT id, nome, email, telefone, verificado, bloqueado, is_admin, reputacao, criado_em FROM users
-         WHERE email NOT LIKE '%@sucatel.invalid' ORDER BY criado_em DESC LIMIT 200`
+        `SELECT u.id, u.nome, u.email, u.telefone, u.verificado, u.bloqueado, u.is_admin, u.reputacao, u.criado_em, u.saldo_creditos,
+                b.nome AS bairro_nome, (SELECT COUNT(*) FROM anuncios a WHERE a.vendedor_id = u.id AND a.status = 'ativo') AS anuncios_ativos
+         FROM users u LEFT JOIN bairros b ON b.id = u.bairro_id
+         WHERE u.email NOT LIKE '%@sucatel.invalid' ORDER BY u.criado_em DESC LIMIT 300`
       ).all();
       return json({ ok: true, usuarios: results.map(u => ({ ...u, verificado: !!u.verificado, bloqueado: !!u.bloqueado, is_admin: !!u.is_admin })) });
     }
@@ -838,7 +888,7 @@ export default {
       const { bloqueado } = await request.json().catch(() => ({}));
       const alvo = await env.DB.prepare('SELECT is_admin FROM users WHERE id = ?').bind(matchBloquearUsuario[1]).first();
       if (!alvo) return json({ ok: false, erro: 'nao_encontrado' }, 404);
-      if (alvo.is_admin) return json({ ok: false, erro: 'nao_pode_bloquear_admin' }, 400);
+      if (matchBloquearUsuario[1] === sess.id) return json({ ok: false, erro: 'nao_pode_bloquear_a_si_mesmo' }, 400);
       await env.DB.batch([
         env.DB.prepare('UPDATE users SET bloqueado = ? WHERE id = ?').bind(bloqueado ? 1 : 0, matchBloquearUsuario[1]),
         env.DB.prepare('UPDATE sessoes SET revogada_em = ? WHERE user_id = ?').bind(nowIso(), matchBloquearUsuario[1]),
@@ -852,16 +902,29 @@ export default {
       const alvoId = matchExcluirUsuarioAdmin[1];
       const alvo = await env.DB.prepare('SELECT is_admin FROM users WHERE id = ?').bind(alvoId).first();
       if (!alvo) return json({ ok: false, erro: 'nao_encontrado' }, 404);
-      if (alvo.is_admin) return json({ ok: false, erro: 'nao_pode_excluir_admin' }, 400);
+      if (alvoId === sess.id) return json({ ok: false, erro: 'nao_pode_excluir_a_si_mesmo' }, 400);
       // Mesma lógica de "excluir minha conta" (anonimiza, não apaga a
       // linha, pra não quebrar referências de conversas/avaliações).
       const senhaInutilizavel = await hashSenha(tokenAleatorio(), env);
       await env.DB.batch([
         env.DB.prepare('UPDATE sessoes SET revogada_em = ? WHERE user_id = ?').bind(nowIso(), alvoId),
         env.DB.prepare("UPDATE anuncios SET status = 'removido_admin' WHERE vendedor_id = ?").bind(alvoId),
-        env.DB.prepare("UPDATE users SET nome = 'Conta removida pelo admin', email = ?, telefone = NULL, senha_hash = ?, bloqueado = 1 WHERE id = ?")
+        env.DB.prepare("UPDATE users SET nome = 'Conta removida pelo admin', email = ?, telefone = NULL, senha_hash = ?, bloqueado = 1, is_admin = 0 WHERE id = ?")
           .bind(`removido-${alvoId}@sucatel.invalid`, senhaInutilizavel, alvoId),
       ]);
+      return json({ ok: true });
+    }
+    // Promover/rebaixar administrador. Não deixa o admin tirar o próprio
+    // acesso (senão podia ficar sem nenhum admin e trancado fora do painel).
+    const matchPapelAdmin = pathname.match(/^\/admin\/usuarios\/([^/]+)\/admin$/);
+    if (matchPapelAdmin && request.method === 'POST') {
+      const sess = await autenticar(request, env);
+      if (!sess || !sess.is_admin) return json({ ok: false, erro: 'nao_autorizado' }, 401);
+      if (matchPapelAdmin[1] === sess.id) return json({ ok: false, erro: 'nao_pode_alterar_a_si_mesmo' }, 400);
+      const { is_admin } = await request.json().catch(() => ({}));
+      const alvo = await env.DB.prepare('SELECT id FROM users WHERE id = ?').bind(matchPapelAdmin[1]).first();
+      if (!alvo) return json({ ok: false, erro: 'nao_encontrado' }, 404);
+      await env.DB.prepare('UPDATE users SET is_admin = ? WHERE id = ?').bind(is_admin ? 1 : 0, alvo.id).run();
       return json({ ok: true });
     }
     if (pathname === '/admin/stats' && request.method === 'GET') {
@@ -874,6 +937,139 @@ export default {
         env.DB.prepare("SELECT COUNT(*) AS n FROM denuncias WHERE status = 'pendente'").first(),
       ]);
       return json({ ok: true, usuarios: usuarios.n, anuncios_ativos: anunciosAtivos.n, vendas_totais: vendas.n, denuncias_pendentes: denunciasPendentes.n });
+    }
+
+    // ---- painel admin completo (tudo com dado real do banco) ----
+    if (pathname.startsWith('/admin/') && pathname !== '/admin/emergencia/redefinir-senha') {
+      const sess = await autenticar(request, env);
+      if (!sess || !sess.is_admin) return json({ ok: false, erro: 'nao_autorizado' }, 401);
+
+      if (pathname === '/admin/dashboard' && request.method === 'GET') {
+        await expirarAnunciosVencidos(env);
+        const agora = Date.now();
+        const iso = (dias) => new Date(agora - dias * 86400000).toISOString().replace('T', ' ').slice(0, 19);
+        const USUARIO_REAL = "email NOT LIKE '%@sucatel.invalid'";
+        const [
+          usuarios, usu30, usuPrev, ativos, anu30, anuPrev, receita, rec30, recPrev, visu,
+          statusRows, receitaDias, anunciosRec, usuariosRec, pagamentosRec, denunciasRec, denPend,
+        ] = await Promise.all([
+          env.DB.prepare(`SELECT COUNT(*) AS n FROM users WHERE ${USUARIO_REAL}`).first(),
+          env.DB.prepare(`SELECT COUNT(*) AS n FROM users WHERE ${USUARIO_REAL} AND criado_em >= ?`).bind(iso(30)).first(),
+          env.DB.prepare(`SELECT COUNT(*) AS n FROM users WHERE ${USUARIO_REAL} AND criado_em >= ? AND criado_em < ?`).bind(iso(60), iso(30)).first(),
+          env.DB.prepare("SELECT COUNT(*) AS n FROM anuncios WHERE status = 'ativo'").first(),
+          env.DB.prepare('SELECT COUNT(*) AS n FROM anuncios WHERE criado_em >= ?').bind(iso(30)).first(),
+          env.DB.prepare('SELECT COUNT(*) AS n FROM anuncios WHERE criado_em >= ? AND criado_em < ?').bind(iso(60), iso(30)).first(),
+          env.DB.prepare("SELECT COALESCE(SUM(valor_centavos),0) AS n FROM pagamentos_creditos WHERE status = 'confirmado'").first(),
+          env.DB.prepare("SELECT COALESCE(SUM(valor_centavos),0) AS n FROM pagamentos_creditos WHERE status = 'confirmado' AND confirmado_em >= ?").bind(iso(30)).first(),
+          env.DB.prepare("SELECT COALESCE(SUM(valor_centavos),0) AS n FROM pagamentos_creditos WHERE status = 'confirmado' AND confirmado_em >= ? AND confirmado_em < ?").bind(iso(60), iso(30)).first(),
+          env.DB.prepare('SELECT COALESCE(SUM(visualizacoes),0) AS n FROM anuncios').first(),
+          env.DB.prepare('SELECT status, COUNT(*) AS n FROM anuncios GROUP BY status').all(),
+          env.DB.prepare("SELECT substr(confirmado_em,1,10) AS dia, SUM(valor_centavos) AS total FROM pagamentos_creditos WHERE status = 'confirmado' AND confirmado_em >= ? GROUP BY dia").bind(iso(30)).all(),
+          env.DB.prepare(`SELECT a.id, a.titulo, a.status, a.criado_em, a.preco_centavos, a.fotos, u.nome AS vendedor_nome
+                          FROM anuncios a JOIN users u ON u.id = a.vendedor_id ORDER BY a.criado_em DESC LIMIT 5`).all(),
+          env.DB.prepare(`SELECT u.id, u.nome, u.email, u.criado_em, u.bloqueado, b.nome AS bairro_nome
+                          FROM users u LEFT JOIN bairros b ON b.id = u.bairro_id WHERE ${USUARIO_REAL.replace('email', 'u.email')} ORDER BY u.criado_em DESC LIMIT 5`).all(),
+          env.DB.prepare(`SELECT p.id, p.quantidade_creditos, p.valor_centavos, p.status, p.criado_em, u.nome AS usuario_nome
+                          FROM pagamentos_creditos p JOIN users u ON u.id = p.user_id ORDER BY p.criado_em DESC LIMIT 5`).all(),
+          env.DB.prepare(`SELECT d.id, d.motivo, d.criado_em, a.titulo AS anuncio_titulo, a.fotos
+                          FROM denuncias d JOIN anuncios a ON a.id = d.anuncio_id WHERE d.status = 'pendente' ORDER BY d.criado_em DESC LIMIT 5`).all(),
+          env.DB.prepare("SELECT COUNT(*) AS n FROM denuncias WHERE status = 'pendente'").first(),
+        ]);
+        // Variação % real contra os 30 dias anteriores (null quando não dá
+        // pra comparar, em vez de inventar um número).
+        const variacao = (atual, anterior) => anterior > 0 ? Math.round(((atual - anterior) / anterior) * 100) : null;
+        const status = {};
+        for (const r of statusRows.results) status[r.status] = r.n;
+        const porDia = {};
+        for (const r of receitaDias.results) porDia[r.dia] = r.total;
+        const serie = [];
+        for (let i = 29; i >= 0; i--) {
+          const dia = new Date(agora - i * 86400000).toISOString().slice(0, 10);
+          serie.push({ dia, total_centavos: porDia[dia] || 0 });
+        }
+        return json({
+          ok: true,
+          totais: {
+            usuarios: usuarios.n, usuarios_variacao: variacao(usu30.n, usuPrev.n),
+            anuncios_ativos: ativos.n, anuncios_variacao: variacao(anu30.n, anuPrev.n),
+            receita_centavos: receita.n, receita_variacao: variacao(rec30.n, recPrev.n),
+            visualizacoes: visu.n, denuncias_pendentes: denPend.n,
+          },
+          status_anuncios: status,
+          receita_30_dias: serie,
+          recentes: {
+            anuncios: anunciosRec.results, usuarios: usuariosRec.results,
+            pagamentos: pagamentosRec.results, denuncias: denunciasRec.results,
+          },
+        });
+      }
+
+      if (pathname === '/admin/anuncios' && request.method === 'GET') {
+        await expirarAnunciosVencidos(env);
+        const status = url.searchParams.get('status');
+        const q = (url.searchParams.get('q') || '').trim();
+        const where = [];
+        const binds = [];
+        if (status) { where.push('a.status = ?'); binds.push(status); }
+        if (q) { where.push('(a.titulo LIKE ? OR u.nome LIKE ?)'); binds.push(`%${q}%`, `%${q}%`); }
+        const { results } = await env.DB.prepare(
+          `SELECT a.id, a.titulo, a.status, a.criado_em, a.expira_em, a.preco_centavos, a.fotos, a.visualizacoes, a.condicao,
+                  u.nome AS vendedor_nome, u.email AS vendedor_email, b.nome AS bairro_nome, tp.nome AS tipo_peca_nome
+           FROM anuncios a JOIN users u ON u.id = a.vendedor_id JOIN bairros b ON b.id = a.bairro_id JOIN tipos_peca tp ON tp.id = a.tipo_peca_id
+           ${where.length ? 'WHERE ' + where.join(' AND ') : ''} ORDER BY a.criado_em DESC LIMIT 300`
+        ).bind(...binds).all();
+        return json({ ok: true, anuncios: results });
+      }
+      const matchStatusAnuncioAdmin = pathname.match(/^\/admin\/anuncios\/([^/]+)\/status$/);
+      if (matchStatusAnuncioAdmin && request.method === 'POST') {
+        const { status } = await request.json().catch(() => ({}));
+        if (!['ativo', 'removido_admin'].includes(status)) return json({ ok: false, erro: 'status_invalido' }, 400);
+        const anuncio = await env.DB.prepare('SELECT id, expira_em FROM anuncios WHERE id = ?').bind(matchStatusAnuncioAdmin[1]).first();
+        if (!anuncio) return json({ ok: false, erro: 'nao_encontrado' }, 404);
+        // Reativar um anúncio vencido dá mais 30 dias (senão ele expira na hora de novo).
+        if (status === 'ativo' && anuncio.expira_em <= nowIso()) {
+          await env.DB.prepare("UPDATE anuncios SET status = 'ativo', expira_em = ? WHERE id = ?").bind(addDiasIso(Number(env.ANUNCIO_DURACAO_DIAS || 30)), anuncio.id).run();
+        } else {
+          await env.DB.prepare('UPDATE anuncios SET status = ? WHERE id = ?').bind(status, anuncio.id).run();
+        }
+        return json({ ok: true });
+      }
+
+      if (pathname === '/admin/pagamentos' && request.method === 'GET') {
+        const { results } = await env.DB.prepare(
+          `SELECT p.*, u.nome AS usuario_nome, u.email AS usuario_email FROM pagamentos_creditos p JOIN users u ON u.id = p.user_id
+           ORDER BY p.criado_em DESC LIMIT 300`
+        ).all();
+        return json({ ok: true, pagamentos: results });
+      }
+
+      // Dar/tirar crédito manualmente (cortesia, correção, promoção pra um
+      // cliente) -- fica registrado no saldo real da pessoa.
+      const matchCreditosUsuario = pathname.match(/^\/admin\/usuarios\/([^/]+)\/creditos$/);
+      if (matchCreditosUsuario && request.method === 'POST') {
+        const { quantidade } = await request.json().catch(() => ({}));
+        const qtd = Number(quantidade);
+        if (!Number.isInteger(qtd) || qtd === 0 || Math.abs(qtd) > 1000) return json({ ok: false, erro: 'quantidade_invalida' }, 400);
+        const alvo = await env.DB.prepare('SELECT id FROM users WHERE id = ?').bind(matchCreditosUsuario[1]).first();
+        if (!alvo) return json({ ok: false, erro: 'nao_encontrado' }, 404);
+        await env.DB.prepare('UPDATE users SET saldo_creditos = MAX(0, saldo_creditos + ?) WHERE id = ?').bind(qtd, alvo.id).run();
+        const atualizado = await env.DB.prepare('SELECT saldo_creditos FROM users WHERE id = ?').bind(alvo.id).first();
+        return json({ ok: true, saldo_creditos: atualizado.saldo_creditos });
+      }
+
+      if (pathname === '/admin/avaliacoes' && request.method === 'GET') {
+        const { results } = await env.DB.prepare(
+          `SELECT av.id, av.nota, av.comentario, av.criado_em, v.nome AS vendedor_nome, c.nome AS avaliador_nome
+           FROM avaliacoes av JOIN users v ON v.id = av.vendedor_id JOIN users c ON c.id = av.avaliador_id
+           ORDER BY av.criado_em DESC LIMIT 300`
+        ).all();
+        return json({ ok: true, avaliacoes: results });
+      }
+      const matchAvaliacaoAdmin = pathname.match(/^\/admin\/avaliacoes\/([^/]+)$/);
+      if (matchAvaliacaoAdmin && request.method === 'DELETE') {
+        await env.DB.prepare('DELETE FROM avaliacoes WHERE id = ?').bind(matchAvaliacaoAdmin[1]).run();
+        return json({ ok: true });
+      }
     }
 
     // Redefinição de emergência da senha de uma conta admin, pra quando o
