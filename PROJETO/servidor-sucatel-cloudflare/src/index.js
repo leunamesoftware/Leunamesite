@@ -1093,6 +1093,17 @@ export default {
         return json({ ok: true });
       }
 
+      // "Ver o site" dentro do painel: a loja aberta ali precisa de uma
+      // sessão própria -- se usasse a mesma do painel, tocar em "Sair" lá
+      // dentro derrubaria o painel junto.
+      if (pathname === '/admin/sessao-visualizacao' && request.method === 'POST') {
+        const token = tokenAleatorio();
+        await env.DB.prepare(
+          'INSERT INTO sessoes (id, session_token_hash, user_id, expira_em) VALUES (?, ?, ?, ?)'
+        ).bind(uid(), await sha256Hex(token), sess.id, addDiasIso(1)).run();
+        return json({ ok: true, token });
+      }
+
       // Categorias (tipos_peca). "grupo" é o botão que aparece na tela
       // inicial da loja: uma categoria nova vira o próprio grupo; ou entra
       // dentro de um grupo que já existe (ex: um tipo novo de peça em "Peças").

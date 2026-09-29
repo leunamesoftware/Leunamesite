@@ -88,6 +88,13 @@ svg.ic{width:20px; height:20px; fill:none; stroke:currentColor; stroke-width:2; 
 .perfil-topo .n{font-size:13.5px; font-weight:700; line-height:1.2;} .perfil-topo .p{font-size:11.5px; color:#a9cdb7;}
 .conteudo{padding:22px 22px calc(40px + var(--safe-b)); max-width:1320px; width:100%;}
 .view[hidden]{display:none!important;}
+.site-controles{display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-bottom:10px;}
+.seg{display:inline-flex; background:var(--cinza-bg); border-radius:12px; padding:3px;}
+.seg button{background:none; color:var(--fraco); padding:8px 12px; border-radius:10px; font-size:13px; font-weight:700; box-shadow:none;}
+.seg button.ativo{background:#fff; color:var(--verde-escuro); box-shadow:0 1px 4px rgba(0,0,0,.12);}
+.site-moldura{margin:0 auto; width:400px; max-width:100%; height:780px; max-height:calc(100vh - 150px); border:10px solid #1b1f1d; border-radius:34px; overflow:hidden; background:#fff; box-shadow:0 18px 40px rgba(0,0,0,.18);}
+.site-moldura.computador{width:100%; border-width:1px; border-color:var(--borda); border-radius:14px; height:calc(100vh - 190px);}
+.site-moldura iframe{width:100%; height:100%; border:0; display:block;}
 .cab-view{display:flex; align-items:flex-end; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-bottom:18px;}
 .cab-view h1{font-size:26px; margin:0; letter-spacing:-.3px;}
 .cab-view .sub{color:var(--fraco); font-size:14px; margin-top:2px;}
@@ -178,6 +185,7 @@ tr:last-child td{border-bottom:none;}
   .kpi{flex-direction:column; gap:8px;} .kpi .ic-box{width:40px; height:40px;} .kpi .val{font-size:20px;}
   .card{padding:14px;}
   .busca-topo{display:none;}
+  .site-moldura, .site-moldura.computador{border-width:1px; border-color:var(--borda); border-radius:14px; height:calc(100vh - 230px); max-height:none;}
   /* Categorias no celular: cada uma vira um bloquinho em vez de tabela larga */
   #cat-tipos table, #cat-tipos tbody, #cat-tipos tr, #cat-tipos td{display:block;}
   #cat-tipos tr:first-child{display:none;}
@@ -377,6 +385,27 @@ tr:last-child td{border-bottom:none;}
         <div class="card"><div class="tabela-wrap" id="ava-tabela"></div></div>
       </section>
 
+      <!-- VER O SITE -->
+      <section class="view" id="view-site" hidden>
+        <div class="cab-view">
+          <div><h1>Ver o site</h1><div class="sub">A loja exatamente como o cliente vê — dá pra navegar, abrir anúncio, conversar, tudo de verdade</div></div>
+        </div>
+        <div class="site-controles">
+          <div class="seg" id="site-modo">
+            <button data-modo="conta" class="ativo">Logado com minha conta</button>
+            <button data-modo="visitante">Quem ainda não tem cadastro</button>
+          </div>
+          <div class="seg" id="site-tamanho">
+            <button data-tam="celular" class="ativo">📱 Celular</button>
+            <button data-tam="computador">💻 Computador</button>
+          </div>
+          <button class="secundario pequeno" id="site-recarregar">↻ Recarregar</button>
+          <button class="secundario pequeno" id="site-navegador">Abrir em tela cheia</button>
+        </div>
+        <p class="muted" id="site-aviso" style="margin:0 0 12px; font-size:12.5px;"></p>
+        <div class="site-moldura" id="site-moldura"><iframe id="site-frame" title="Loja Sucatell" src="about:blank"></iframe></div>
+      </section>
+
       <!-- MINHA LOJA -->
       <section class="view" id="view-loja" hidden>
         <div class="cab-view">
@@ -502,6 +531,7 @@ const ICONES = {
   categorias:'<rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>',
   localidades:'<path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>',
   avaliacoes:'<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>',
+  site:'<rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/>',
   loja:'<path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/>',
   aparencia:'<rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/>',
   conta:'<path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/>',
@@ -533,6 +563,7 @@ const MENU = [
   { id:'localidades', rot:'Localidades' },
   { id:'avaliacoes', rot:'Avaliações' },
   { grupo:'MINHA ÁREA' },
+  { id:'site', rot:'Ver o site (como cliente)' },
   { id:'loja', rot:'Minha loja' },
   { id:'aparencia', rot:'Aparência do app' },
   { id:'conta', rot:'Minha conta' },
@@ -1132,7 +1163,42 @@ CARREGADORES.loja = async () => {
     </div>`;
   }).join('') : '<div class="vazio">Você ainda não tem anúncios. Publique o primeiro aqui do lado.</div>';
 };
-document.getElementById('loja-abrir-app').onclick = () => window.open(SITE_LOJA, '_blank');
+document.getElementById('loja-abrir-app').onclick = () => irPara('site');
+
+// ---------- VER O SITE ----------
+// A loja fica no mesmo endereço do painel, então roda aqui dentro num
+// quadro (iframe) -- também funciona no app do painel no celular, onde
+// "abrir em nova aba" não faz nada.
+const LS_TOKEN_LOJA = 'sucatel_token';
+let siteModo = 'conta';
+async function abrirSite(){
+  const frame = document.getElementById('site-frame');
+  const aviso = document.getElementById('site-aviso');
+  frame.src = 'about:blank';
+  try {
+    if (siteModo === 'visitante') {
+      localStorage.removeItem(LS_TOKEN_LOJA);
+      aviso.textContent = 'Assim vê quem baixou o app e ainda não tem conta: tela de entrar e de cadastro. Se cadastrar alguém aqui, é um cadastro de verdade.';
+    } else {
+      const d = await api('/admin/sessao-visualizacao', { method:'POST' });
+      if (!d.ok) { aviso.textContent = 'Não foi possível abrir com sua conta agora. Tente "Recarregar".'; return; }
+      localStorage.setItem(LS_TOKEN_LOJA, d.token);
+      aviso.textContent = 'Você está vendo a loja com a sua conta (' + (EU ? EU.email : '') + '). O que fizer aqui vale de verdade: anúncios, mensagens, favoritos.';
+    }
+  } catch (e) {}
+  frame.src = SITE_LOJA + '?painel=' + Date.now();
+}
+CARREGADORES.site = abrirSite;
+document.querySelectorAll('#site-modo button').forEach(b => b.onclick = () => {
+  document.querySelectorAll('#site-modo button').forEach(x => x.classList.toggle('ativo', x === b));
+  siteModo = b.dataset.modo; abrirSite();
+});
+document.querySelectorAll('#site-tamanho button').forEach(b => b.onclick = () => {
+  document.querySelectorAll('#site-tamanho button').forEach(x => x.classList.toggle('ativo', x === b));
+  document.getElementById('site-moldura').classList.toggle('computador', b.dataset.tam === 'computador');
+});
+document.getElementById('site-recarregar').onclick = abrirSite;
+document.getElementById('site-navegador').onclick = () => { location.href = SITE_LOJA; };
 document.getElementById('nv-publicar').onclick = async () => {
   const btn = document.getElementById('nv-publicar');
   const titulo = document.getElementById('nv-titulo').value.trim();
