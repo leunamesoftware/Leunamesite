@@ -6,11 +6,16 @@ name: Gerar AAB e APK do Radar Preventivo
 #
 # Chave de assinatura:
 # - Se o segredo RADAR_KEYSTORE_B64 existir, usa essa chave (atualizações).
-# - Se não existir (primeira vez), gera uma chave nova e entrega junto com o AAB,
-#   com as instruções para guardar. GUARDE A CHAVE: toda atualização futura precisa dela.
+# - Se não existir, PARA com um aviso. Só gera uma chave nova se "chave_nova" for marcado
+#   ao rodar (a primeira chave já foi gerada; uma chave diferente impede atualizar o app).
 # PROVISÓRIO neste repositório até o repositório próprio do Radar existir.
 on:
   workflow_dispatch:
+    inputs:
+      chave_nova:
+        description: 'Gerar uma chave de assinatura NOVA (só se ainda não existe nenhuma)'
+        type: boolean
+        default: false
 
 jobs:
   aab:
@@ -56,6 +61,31 @@ jobs:
           done
           cp icones/ic_launcher_background.xml android/app/src/main/res/values/ic_launcher_background.xml
 
+      - name: Abertura (splash) escura, sem a tela branca padrão
+        run: |
+          python3 - <<'PY'
+          import pathlib, re
+          res = pathlib.Path("android/app/src/main/res")
+          (res / "values/radar_cores.xml").write_text(
+              '<?xml version="1.0" encoding="utf-8"?>\n<resources>\n    <color name="radar_fundo">#01050F</color>\n</resources>\n',
+              encoding="utf-8")
+          estilos = res / "values/styles.xml"
+          t = estilos.read_text(encoding="utf-8")
+          novo = ('<item name="android:background">@color/radar_fundo</item>\n'
+                  '        <item name="windowSplashScreenBackground">@color/radar_fundo</item>\n'
+                  '        <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_launcher_foreground</item>')
+          t, n = re.subn(r'<item name="android:background">@drawable/splash</item>', novo, t)
+          assert n == 1, "tema de abertura do Capacitor não encontrado:\n" + t
+          estilos.write_text(t, encoding="utf-8")
+          print(t)
+          PY
+
+      - name: Conferir os recursos Android (antes de assinar)
+        working-directory: RADAR-PREVENTIVO/app-android/android
+        run: |
+          chmod +x gradlew
+          ./gradlew :app:processReleaseResources --no-daemon
+
       - name: Preparar a chave de assinatura
         env:
           KEYSTORE_B64: ${{ secrets.RADAR_KEYSTORE_B64 }}
@@ -68,6 +98,9 @@ jobs:
             echo "KEY_PASSWORD=$KEY_PASSWORD_SALVA" >> "$GITHUB_ENV"
             echo "CHAVE_NOVA=nao" >> "$GITHUB_ENV"
             echo "Usando a chave já guardada nos segredos."
+          elif [ "${{ inputs.chave_nova }}" != "true" ]; then
+            echo "::error::Faltam os segredos RADAR_KEYSTORE_B64, RADAR_KEYSTORE_PASSWORD e RADAR_KEY_PASSWORD. Cadastre-os com os dados do arquivo LEIA-ISSO-chave-de-assinatura.txt (Settings -> Secrets and variables -> Actions). Sem eles, o app gerado teria outra chave e não poderia atualizar o já instalado nem o da Play Store."
+            exit 1
           else
             # Formato PKCS12: a senha da chave é obrigatoriamente a mesma do arquivo.
             KEYSTORE_PASSWORD="$(openssl rand -base64 24 | tr -dc 'A-Za-z0-9' | cut -c1-24)"

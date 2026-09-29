@@ -1,6 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useSessao } from '../../estado/SessaoContexto';
+import { BannerInstalar } from './BannerInstalar';
 import { NavegacaoInferior } from './NavegacaoInferior';
 import './LayoutApp.css';
 
@@ -29,7 +30,10 @@ export function LayoutApp({ children }: { children: ReactNode }) {
   return (
     <ContagemAlertas.Provider value={{ naoLidos, atualizar }}>
       <div className="app">
-        <div className="app__conteudo">{children}</div>
+        <div className="app__conteudo">
+          <BannerInstalar />
+          {children}
+        </div>
         <NavegacaoInferior alertasNaoLidos={naoLidos} />
       </div>
     </ContagemAlertas.Provider>

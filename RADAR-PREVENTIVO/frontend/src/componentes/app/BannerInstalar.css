@@ -1,0 +1,60 @@
+.banner-instalar {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 10px 12px;
+  margin-bottom: 14px;
+  padding: 12px 14px;
+  border: 1.5px solid rgba(63, 180, 255, 0.55);
+  border-radius: 18px;
+  background: linear-gradient(160deg, rgba(22, 119, 255, 0.22) 0%, rgba(6, 16, 42, 0.85) 70%);
+}
+
+.banner-instalar__icone {
+  border-radius: 12px;
+}
+
+.banner-instalar__texto {
+  margin: 0;
+  color: var(--texto);
+  font-size: 0.95rem;
+  line-height: 1.35;
+}
+
+.banner-instalar[role='status'] {
+  grid-template-columns: 1fr;
+}
+
+.banner-instalar__acoes {
+  grid-column: 1 / -1;
+  display: flex;
+  gap: 10px;
+}
+
+.banner-instalar__botao,
+.banner-instalar__agora-nao {
+  min-height: 44px;
+  padding: 0 18px;
+  border-radius: 999px;
+  font: 700 1rem / 1 var(--fonte-texto);
+  cursor: pointer;
+}
+
+.banner-instalar__botao {
+  flex: 1;
+  border: 1px solid var(--botao-borda);
+  background: var(--botao-fundo);
+  color: #fff;
+}
+
+.banner-instalar__agora-nao {
+  border: 1px solid var(--cartao-borda);
+  background: transparent;
+  color: var(--texto-suave);
+}
+
+.banner-instalar__botao:focus-visible,
+.banner-instalar__agora-nao:focus-visible {
+  outline: 3px solid var(--foco);
+  outline-offset: 2px;
+}
