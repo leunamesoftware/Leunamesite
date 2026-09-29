@@ -1524,6 +1524,24 @@ function esconderSplashIntro(){
   splash.classList.add('saindo');
   setTimeout(() => splash.remove(), 400);
 }
+// Bônus que o Sucatell (admin) deu: aparece uma vez, quando a pessoa abre o app.
+async function avisarBonusNovo(){
+  try {
+    const { data } = await api('/bonus/novos');
+    if (!data.ok || !data.bonus.length) return;
+    const total = data.bonus.reduce((a, b) => a + b.quantidade, 0);
+    const mensagens = [...new Set(data.bonus.map(b => b.motivo).filter(Boolean))];
+    abrirModal(`
+      <button class="fechar-folha" onclick="fecharModal()">✕</button>
+      <div style="text-align:center; padding:6px 0 4px;">
+        <div style="font-size:54px;">🎁</div>
+        <h3 style="margin:6px 0;">Você ganhou ${total} crédito${total > 1 ? 's' : ''} de bônus!</h3>
+        <p class="muted" style="margin:0 0 6px;">${mensagens.length ? mensagens.map(esc).join('<br>') : 'Presente do Sucatell por anunciar com a gente.'}</p>
+        <p style="margin:10px 0 0;">Cada crédito vale 1 anúncio de 30 dias. Saldo agora: <b>${data.saldo_creditos}</b> crédito(s).</p>
+      </div>
+      <button class="btn" onclick="fecharModal(); setTab('anunciar');">Anunciar agora</button>`);
+  } catch (e) {}
+}
 async function boot(){
   try {
     setupPWA();
@@ -1539,6 +1557,7 @@ async function boot(){
     document.querySelectorAll('#tabbar button').forEach(b => b.onclick = () => setTab(b.dataset.tab));
     setTab('inicio');
     atualizarBadgeChat();
+    avisarBonusNovo();
   } catch (e) {
     if (!STATE.usuario) renderAuth('login');
   } finally {

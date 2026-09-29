@@ -97,6 +97,14 @@ body.tela-interna .barra-topo .menu-btn{display:none!important;}
 .ad-campos .val{font-weight:600; overflow-wrap:anywhere;}
 .ad-acoes{display:flex; flex-wrap:wrap; gap:8px; margin-top:14px;}
 .linha-clicavel{cursor:pointer;}
+.pill.destaque{background:#fef3c7; color:#92400e;}
+.num-grade{display:grid; grid-template-columns:repeat(auto-fill, minmax(130px, 1fr)); gap:10px;}
+.num-grade > div{background:var(--cinza-bg); border-radius:12px; padding:10px 12px;}
+.num-grade b{display:block; font-size:20px; font-variant-numeric:tabular-nums;}
+.num-grade span{font-size:12px; color:var(--fraco); font-weight:600;}
+.bonus-opcoes{display:flex; flex-wrap:wrap; gap:8px; margin:8px 0 10px;}
+.bonus-opcoes button{background:#fff; color:var(--verde-escuro); border:1.5px solid var(--borda); box-shadow:none; padding:9px 14px;}
+.bonus-opcoes button.ativo{background:var(--verde-forte); color:#fff; border-color:var(--verde-forte);}
 .linha-clicavel:hover{background:var(--verde-claro);}
 .foto-grande{position:fixed; inset:0; z-index:90; background:rgba(0,0,0,.88); display:flex; align-items:center; justify-content:center; padding:16px; cursor:zoom-out;}
 .foto-grande img{max-width:100%; max-height:100%; border-radius:10px;}
@@ -307,6 +315,10 @@ tr:last-child td{border-bottom:none;}
           <div class="card"><h3>Status dos anúncios</h3><div id="rosca-status"></div></div>
           <div class="card"><h3>Anúncios recentes <a data-ir="anuncios">Ver todos</a></h3><div class="lista-mini" id="rec-anuncios"></div></div>
         </div>
+        <div class="card" id="card-destaques" style="margin-bottom:14px;" hidden>
+          <h3>⭐ Clientes destaque <span class="muted" style="font-weight:600;">merecem um bônus</span></h3>
+          <div class="lista-mini" id="lista-destaques"></div>
+        </div>
         <div class="atalhos" id="atalhos"></div>
         <div class="grade-baixo">
           <div class="card"><h3>Usuários mais recentes <a data-ir="usuarios">Ver todos</a></h3><div class="tabela-wrap" id="rec-usuarios"></div></div>
@@ -341,6 +353,11 @@ tr:last-child td{border-bottom:none;}
       <!-- DETALHE DO ANÚNCIO (abre ao tocar num anúncio) -->
       <section class="view" id="view-anuncio" hidden>
         <div id="ad-conteudo"><div class="vazio">Carregando...</div></div>
+      </section>
+
+      <!-- FICHA DO CLIENTE (abre ao tocar num usuário) -->
+      <section class="view" id="view-cliente" hidden>
+        <div id="cli-conteudo"><div class="vazio">Carregando...</div></div>
       </section>
 
       <!-- MODERAÇÃO -->
@@ -771,6 +788,7 @@ CARREGADORES.painel = async () => {
     + kpi('anuncios', '#15803d', 'Anúncios ativos', numero(t.anuncios_ativos), t.anuncios_variacao, 'anuncios')
     + kpi('creditos', '#166534', 'Receita (créditos)', reais(t.receita_centavos), t.receita_variacao, 'pagamentos')
     + kpi('olho', '#14532d', 'Visualizações de anúncios', numero(t.visualizacoes), null, null);
+  carregarDestaques();
   document.getElementById('grafico-receita').innerHTML = graficoReceita(d.receita_30_dias);
   document.getElementById('rosca-status').innerHTML = roscaStatus(d.status_anuncios);
   const r = d.recentes;
@@ -812,9 +830,9 @@ function desenharUsuarios(){
   if (!lista.length) { box.innerHTML = '<div class="vazio">Nenhum usuário encontrado.</div>'; return; }
   box.innerHTML = `<table><tr><th>Usuário</th><th>Bairro</th><th>Anúncios</th><th>Créditos</th><th>Cadastro</th><th>Ações</th></tr>${lista.map(u => {
     const souEu = EU && u.id === EU.id;
-    return `<tr>
+    return `<tr class="linha-clicavel" onclick="if(!event.target.closest('button')) abrirClienteAdmin('${u.id}')">
       <td><div class="cartao-usuario"><div class="avatar">${iniciais(u.nome)}</div><div style="min-width:0;">
-        <b>${esc(u.nome)}</b> ${u.is_admin ? '<span class="pill amarelo">★ admin</span>' : ''} ${u.verificado ? '<span class="pill verde">✓ verificado</span>' : ''} ${u.bloqueado ? '<span class="pill vermelho">bloqueado</span>' : ''} ${souEu ? '<span class="pill azul">você</span>' : ''}
+        <b>${esc(u.nome)}</b> ${(u.destaque || []).length ? `<span class="pill destaque" title="${esc(u.destaque.join(' · '))}">⭐ Destaque</span>` : ''} ${u.is_admin ? '<span class="pill amarelo">★ admin</span>' : ''} ${u.verificado ? '<span class="pill verde">✓ verificado</span>' : ''} ${u.bloqueado ? '<span class="pill vermelho">bloqueado</span>' : ''} ${souEu ? '<span class="pill azul">você</span>' : ''}
         <div class="muted" style="font-size:12px;">${esc(u.email)}${u.telefone ? ' · ' + esc(u.telefone) : ''}</div></div></div></td>
       <td>${esc(u.bairro_nome || '—')}</td>
       <td>${u.anuncios_ativos}</td>
@@ -919,6 +937,127 @@ CARREGADORES.anuncios = async () => {
         : `<button class="pequeno" onclick="mudarStatusAnuncio('${a.id}', 'ativo')">Colocar no ar</button>`}</div></td></tr>`;
   }).join('')}</table>`;
 };
+// ---------- CLIENTES DESTAQUE + FICHA DO CLIENTE ----------
+async function carregarDestaques(){
+  const card = document.getElementById('card-destaques');
+  const d = await api('/admin/clientes-destaque');
+  if (!d.ok || !d.clientes.length) { card.hidden = true; return; }
+  card.hidden = false;
+  document.getElementById('lista-destaques').innerHTML = d.clientes.map(c => `
+    <div class="linha linha-clicavel" onclick="if(!event.target.closest('button')) abrirClienteAdmin('${c.id}')">
+      <div class="avatar" style="width:38px; height:38px; flex-shrink:0;">${iniciais(c.nome)}</div>
+      <div style="flex:1; min-width:0;"><div class="t">${esc(c.nome)}</div><div class="d">${esc(c.destaque.join(' · '))}${c.ultimo_bonus_em ? ' · último bônus ' + quando(c.ultimo_bonus_em) : ''}</div></div>
+      <button class="pequeno" onclick="abrirClienteAdmin('${c.id}', true)">🎁 Dar bônus</button>
+    </div>`).join('');
+}
+let clienteAdminId = null, focarBonus = false;
+window.abrirClienteAdmin = (id, bonus) => { clienteAdminId = id; focarBonus = !!bonus; if (viewAtual === 'cliente') CARREGADORES.cliente(); else irPara('cliente'); };
+let bonusEscolhido = 2;
+CARREGADORES.cliente = async () => {
+  const box = document.getElementById('cli-conteudo');
+  if (!clienteAdminId) { box.innerHTML = '<div class="vazio">Escolha um cliente na lista de Usuários.</div>'; return; }
+  box.innerHTML = '<div class="vazio">Carregando...</div>';
+  const d = await api('/admin/usuarios/' + encodeURIComponent(clienteAdminId));
+  if (!d.ok) { box.innerHTML = '<div class="vazio">Não foi possível abrir esse cliente.</div>'; return; }
+  const c = d.cliente, cr = d.criterios_destaque;
+  box.innerHTML = `
+    <div class="cab-view"><div class="cartao-usuario"><div class="avatar" style="width:48px; height:48px; font-size:17px;">${iniciais(c.nome)}</div><div style="min-width:0;">
+      <h1 style="font-size:22px;">${esc(c.nome)}</h1>
+      <div class="sub">${esc(c.email)}${c.telefone ? ' · ' + esc(c.telefone) : ''}${c.bairro_nome ? ' · 📍 ' + esc(c.bairro_nome) : ''} · cliente desde ${quando(c.criado_em)}</div>
+      <div style="margin-top:6px; display:flex; gap:6px; flex-wrap:wrap;">
+        ${c.destaque.length ? '<span class="pill destaque">⭐ Cliente destaque</span>' : ''} ${c.verificado ? '<span class="pill verde">✓ verificado</span>' : ''} ${c.bloqueado ? '<span class="pill vermelho">bloqueado</span>' : ''} ${c.is_admin ? '<span class="pill amarelo">★ admin</span>' : ''}
+      </div>
+    </div></div></div>
+    ${c.destaque.length ? `<div class="card" style="margin-bottom:14px; background:#fffbeb; border-color:#fde68a;"><b>⭐ Esse cliente é bom!</b> ${esc(c.destaque.join(' · '))}.${c.ultimo_bonus_em ? ` Último bônus: ${quando(c.ultimo_bonus_em)}.` : ' Ainda não ganhou bônus.'}</div>` : ''}
+    <div class="grade-2">
+      <div>
+        <div class="card" style="margin-bottom:14px;">
+          <h3>Últimos 30 dias</h3>
+          <div class="num-grade">
+            <div><b>${numero(c.anuncios_30d)}</b><span>anúncios publicados</span></div>
+            <div><b>${numero(c.vendas_30d)}</b><span>vendas</span></div>
+            <div><b>${reais(c.gasto_30d)}</b><span>gastos em crédito</span></div>
+          </div>
+          <p class="muted" style="margin:10px 0 0; font-size:12px;">Vira destaque com ${cr.anuncios30} anúncios, ${cr.vendas30} vendas ou ${reais(cr.gasto30Centavos)} em crédito nos últimos 30 dias.</p>
+        </div>
+        <div class="card" style="margin-bottom:14px;">
+          <h3>Desde que entrou</h3>
+          <div class="num-grade">
+            <div><b>${numero(c.anuncios_total)}</b><span>anúncios</span></div>
+            <div><b>${numero(c.anuncios_ativos)}</b><span>no ar agora</span></div>
+            <div><b>${numero(c.vendas_confirmadas_total)}</b><span>vendas</span></div>
+            <div><b>${reais(c.gasto_total_centavos)}</b><span>gasto total</span></div>
+            <div><b>${numero(c.creditos_comprados)}</b><span>créditos comprados</span></div>
+            <div><b>${numero(c.bonus_recebidos)}</b><span>créditos de bônus</span></div>
+            <div><b>${numero(c.visualizacoes_total)}</b><span>visualizações</span></div>
+            <div><b>${numero(c.conversas_total)}</b><span>conversas</span></div>
+            <div><b>${c.media_avaliacoes ? '★ ' + c.media_avaliacoes : '—'}</b><span>${numero(c.total_avaliacoes)} avaliação(ões)</span></div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="card" style="margin-bottom:14px;" id="cli-bonus">
+          <h3>🎁 Dar bônus</h3>
+          <div class="muted" style="font-size:13px;">Saldo atual: <b>${c.is_admin ? 'Ilimitado' : numero(c.saldo_creditos) + ' crédito(s)'}</b>. Cada crédito = 1 anúncio de 30 dias (R$ 5,00).</div>
+          <div class="bonus-opcoes" id="bonus-opcoes">${[1, 2, 3, 5, 10].map(n => `<button data-n="${n}" class="${n === bonusEscolhido ? 'ativo' : ''}">${n} crédito${n > 1 ? 's' : ''}</button>`).join('')}</div>
+          <div class="filtros" style="margin:0;"><input id="bonus-outro" type="number" min="1" max="1000" placeholder="Outra quantidade" style="max-width:170px;"></div>
+          <label>Mensagem pro cliente (aparece no app dele)</label>
+          <input id="bonus-motivo" maxlength="200" value="Obrigado por anunciar no Sucatell! Esse bônus é pra você.">
+          <button id="bonus-dar" style="width:100%; margin-top:12px; padding:12px;"></button>
+        </div>
+        <div class="card" style="margin-bottom:14px;">
+          <h3>Histórico de bônus e ajustes</h3>
+          <div class="lista-mini">${d.ajustes.length ? d.ajustes.map(j => `
+            <div class="linha"><div style="flex:1; min-width:0;"><div class="t">${j.quantidade > 0 ? '+' : ''}${j.quantidade} crédito(s)${j.motivo ? ' — ' + esc(j.motivo) : ''}</div>
+            <div class="d">${quando(j.criado_em)}${j.admin_nome ? ' · por ' + esc(j.admin_nome) : ''}${j.quantidade > 0 ? (j.visto_em ? ' · cliente viu' : ' · cliente ainda não abriu o app') : ''}</div></div></div>`).join('') : '<div class="vazio">Nenhum bônus ainda.</div>'}</div>
+        </div>
+        ${!c.is_admin ? `<div class="card" style="margin-bottom:14px;"><h3>Conta</h3><div class="ad-acoes" style="margin-top:0;">
+          <button class="secundario pequeno" onclick="clienteAcao('verificar', ${!c.verificado})">${c.verificado ? 'Tirar verificado' : '✓ Verificar'}</button>
+          <button class="secundario pequeno" onclick="gerarSenhaNova('${c.id}', '${jsStr(c.nome)}', '${jsStr(c.email)}')">🔑 Nova senha</button>
+          <button class="${c.bloqueado ? 'secundario' : 'perigo'} pequeno" onclick="clienteAcao('bloquear', ${!c.bloqueado})">${c.bloqueado ? 'Desbloquear' : 'Bloquear'}</button>
+        </div></div>` : ''}
+      </div>
+    </div>
+    <div class="card">
+      <h3>Anúncios (${d.anuncios.length})</h3>
+      <div class="lista-mini">${d.anuncios.length ? d.anuncios.map(o => `
+        <div class="linha linha-clicavel" onclick="abrirAnuncioAdmin('${o.id}')">${miniatura(o.fotos)}
+          <div style="flex:1; min-width:0;"><div class="t">${esc(o.titulo)}</div><div class="d">${reais(o.preco_centavos)} · 👁 ${numero(o.visualizacoes)} · ${quando(o.criado_em)}</div></div>
+          <span class="pill ${(STATUS_ANUNCIO[o.status]||{}).cls||'cinza'}">${esc((STATUS_ANUNCIO[o.status]||{}).rot || o.status)}</span>
+        </div>`).join('') : '<div class="vazio">Nenhum anúncio ainda.</div>'}</div>
+    </div>`;
+  const outro = document.getElementById('bonus-outro');
+  const btn = document.getElementById('bonus-dar');
+  const qtdAtual = () => Number(outro.value) > 0 ? Math.floor(Number(outro.value)) : bonusEscolhido;
+  const atualizarBtn = () => { const n = qtdAtual(); btn.textContent = `🎁 Dar ${n} crédito${n > 1 ? 's' : ''} (${reais(n * 500)})`; };
+  document.querySelectorAll('#bonus-opcoes button').forEach(b => b.onclick = () => {
+    bonusEscolhido = Number(b.dataset.n); outro.value = '';
+    document.querySelectorAll('#bonus-opcoes button').forEach(x => x.classList.toggle('ativo', x === b)); atualizarBtn();
+  });
+  outro.oninput = () => { document.querySelectorAll('#bonus-opcoes button').forEach(x => x.classList.toggle('ativo', !outro.value && Number(x.dataset.n) === bonusEscolhido)); atualizarBtn(); };
+  atualizarBtn();
+  btn.onclick = async () => {
+    const n = qtdAtual();
+    if (!(n >= 1 && n <= 1000)) return toast('Escolha de 1 a 1000 créditos.', 'erro');
+    if (!confirm(`Dar ${n} crédito(s) de bônus pra ${c.nome}?`)) return;
+    btn.disabled = true;
+    const r = await api('/admin/usuarios/' + c.id + '/creditos', { method:'POST', body:{ quantidade: n, motivo: document.getElementById('bonus-motivo').value } });
+    btn.disabled = false;
+    if (!r.ok) return toast('Erro ao dar o bônus.', 'erro');
+    toast(`🎁 Bônus dado! ${c.nome.split(' ')[0]} agora tem ${r.saldo_creditos} crédito(s).`, 'sucesso');
+    CARREGADORES.cliente();
+  };
+  if (focarBonus) { focarBonus = false; document.getElementById('cli-bonus').scrollIntoView({ behavior:'smooth', block:'start' }); }
+};
+window.clienteAcao = async (acao, valor) => {
+  if (acao === 'bloquear' && valor && !confirm('Bloquear esse cliente? Ele não consegue mais entrar.')) return;
+  const d = acao === 'bloquear'
+    ? await api('/admin/usuarios/' + clienteAdminId + '/bloquear', { method:'POST', body:{ bloqueado: valor } })
+    : await api('/admin/usuarios/' + clienteAdminId + '/verificar', { method:'POST', body:{ verificado: valor } });
+  toast(d.ok ? 'Salvo!' : 'Erro.', d.ok ? 'sucesso' : 'erro');
+  CARREGADORES.cliente();
+};
+
 // ---------- DETALHE DO ANÚNCIO ----------
 let anuncioAdminId = null;
 window.abrirAnuncioAdmin = (id) => { anuncioAdminId = id; if (viewAtual === 'anuncio') CARREGADORES.anuncio(); else irPara('anuncio'); };
@@ -981,6 +1120,7 @@ CARREGADORES.anuncio = async () => {
             ${campo('Créditos', v.is_admin ? 'Ilimitado' : numero(v.saldo_creditos))}
           </div>
           ${v.id && !v.is_admin ? `<div class="ad-acoes">
+            <button class="pequeno" onclick="abrirClienteAdmin('${v.id}')">Ver ficha do cliente</button>
             <button class="secundario pequeno" onclick="vendedorNoDetalhe('verificar', '${v.id}', ${!v.verificado})">${v.verificado ? 'Tirar verificado' : '✓ Verificar vendedor'}</button>
             <button class="${v.bloqueado ? 'secundario' : 'perigo'} pequeno" onclick="vendedorNoDetalhe('bloquear', '${v.id}', ${!v.bloqueado})">${v.bloqueado ? 'Desbloquear' : 'Bloquear vendedor'}</button>
           </div>` : ''}

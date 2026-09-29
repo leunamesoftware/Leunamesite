@@ -144,6 +144,25 @@ async function expirarAnunciosVencidos(env) {
 
 const CONDICOES_VALIDAS = ['novo', 'usado', 'com_defeito', 'sucata'];
 
+// "Cliente destaque": quem, nos últimos 30 dias, anunciou bastante,
+// vendeu bastante ou gastou bastante com crédito. O painel avisa pra o
+// admin dar um bônus.
+const DESTAQUE = { anuncios30: 10, vendas30: 5, gasto30Centavos: 5000 };
+const SQL_METRICAS_30D = (desde) => `
+  (SELECT COUNT(*) FROM anuncios a WHERE a.vendedor_id = u.id AND a.criado_em >= '${desde}') AS anuncios_30d,
+  (SELECT COUNT(*) FROM vendas v WHERE v.vendedor_id = u.id AND v.confirmado_em >= '${desde}') AS vendas_30d,
+  (SELECT COALESCE(SUM(valor_centavos), 0) FROM pagamentos_creditos p WHERE p.user_id = u.id AND p.status = 'confirmado' AND p.confirmado_em >= '${desde}') AS gasto_30d,
+  (SELECT MAX(criado_em) FROM ajustes_creditos j WHERE j.user_id = u.id AND j.quantidade > 0) AS ultimo_bonus_em`;
+function motivosDestaque(u) {
+  const m = [];
+  if (u.anuncios_30d >= DESTAQUE.anuncios30) m.push(`${u.anuncios_30d} anúncios em 30 dias`);
+  if (u.vendas_30d >= DESTAQUE.vendas30) m.push(`${u.vendas_30d} vendas em 30 dias`);
+  if (u.gasto_30d >= DESTAQUE.gasto30Centavos) m.push(`gastou R$ ${(u.gasto_30d / 100).toFixed(2).replace('.', ',')} em 30 dias`);
+  return m;
+}
+// Datas no formato que o banco grava (datetime('now') = 'AAAA-MM-DD HH:MM:SS').
+function dataSqlDiasAtras(dias) { return new Date(Date.now() - dias * 86400000).toISOString().replace('T', ' ').slice(0, 19); }
+
 // IMEI de verdade: 15 dígitos e o último confere pelo cálculo de Luhn
 // (pega erro de digitação, tipo um número trocado).
 function imeiValido(imei) {
@@ -447,6 +466,18 @@ export default {
           .bind(`excluido-${sess.id}@sucatel.invalid`, senhaInutilizavel, sess.id),
       ]);
       return json({ ok: true });
+    }
+
+    // Bônus que o admin deu e o cliente ainda não viu: o app mostra um
+    // aviso ("Você ganhou X créditos!") uma vez só.
+    if (pathname === '/bonus/novos' && request.method === 'GET') {
+      const sess = await autenticar(request, env);
+      if (!sess) return json({ ok: false, erro: 'nao_autenticado' }, 401);
+      const { results } = await env.DB.prepare(
+        'SELECT id, quantidade, motivo, criado_em FROM ajustes_creditos WHERE user_id = ? AND quantidade > 0 AND visto_em IS NULL ORDER BY criado_em'
+      ).bind(sess.id).all();
+      if (results.length) await env.DB.prepare('UPDATE ajustes_creditos SET visto_em = ? WHERE user_id = ? AND quantidade > 0 AND visto_em IS NULL').bind(nowIso(), sess.id).run();
+      return json({ ok: true, bonus: results, saldo_creditos: sess.saldo_creditos });
     }
 
     // ---- créditos ----
@@ -943,11 +974,15 @@ export default {
       // aparecem mais aqui -- não tem nada pra fazer com elas, só polui a lista.
       const { results } = await env.DB.prepare(
         `SELECT u.id, u.nome, u.email, u.telefone, u.verificado, u.bloqueado, u.is_admin, u.reputacao, u.criado_em, u.saldo_creditos,
-                b.nome AS bairro_nome, (SELECT COUNT(*) FROM anuncios a WHERE a.vendedor_id = u.id AND a.status = 'ativo') AS anuncios_ativos
+                b.nome AS bairro_nome, (SELECT COUNT(*) FROM anuncios a WHERE a.vendedor_id = u.id AND a.status = 'ativo') AS anuncios_ativos,
+                ${SQL_METRICAS_30D(dataSqlDiasAtras(30))}
          FROM users u LEFT JOIN bairros b ON b.id = u.bairro_id
          WHERE u.email NOT LIKE '%@sucatel.invalid' ORDER BY u.criado_em DESC LIMIT 300`
       ).all();
-      return json({ ok: true, usuarios: results.map(u => ({ ...u, verificado: !!u.verificado, bloqueado: !!u.bloqueado, is_admin: !!u.is_admin })) });
+      return json({ ok: true, usuarios: results.map(u => ({
+        ...u, verificado: !!u.verificado, bloqueado: !!u.bloqueado, is_admin: !!u.is_admin,
+        destaque: u.is_admin ? [] : motivosDestaque(u),
+      })) });
     }
     const matchEditarUsuarioAdmin = pathname.match(/^\/admin\/usuarios\/([^/]+)$/);
     if (matchEditarUsuarioAdmin && request.method === 'PATCH') {
@@ -1192,16 +1227,76 @@ export default {
         return json({ ok: true, pagamentos: results });
       }
 
+      // Ficha completa de um cliente: quanto anunciou, vendeu e gastou,
+      // bônus que já ganhou, anúncios e pagamentos.
+      const matchClienteAdmin = pathname.match(/^\/admin\/usuarios\/([^/]+)$/);
+      if (matchClienteAdmin && request.method === 'GET') {
+        const id = matchClienteAdmin[1];
+        const u = await env.DB.prepare(
+          `SELECT u.id, u.nome, u.email, u.telefone, u.verificado, u.bloqueado, u.is_admin, u.criado_em, u.saldo_creditos,
+                  u.vendas_confirmadas_total, u.foto_url, b.nome AS bairro_nome, ${SQL_METRICAS_30D(dataSqlDiasAtras(30))}
+           FROM users u LEFT JOIN bairros b ON b.id = u.bairro_id WHERE u.id = ?`
+        ).bind(id).first();
+        if (!u) return json({ ok: false, erro: 'nao_encontrado' }, 404);
+        const [totais, pagos, bonus, av, anuncios, ajustes, pagamentos] = await Promise.all([
+          env.DB.prepare(
+            `SELECT COUNT(*) AS anuncios_total,
+                    SUM(CASE WHEN status = 'ativo' THEN 1 ELSE 0 END) AS ativos,
+                    SUM(CASE WHEN status = 'vendido' THEN 1 ELSE 0 END) AS vendidos,
+                    COALESCE(SUM(visualizacoes), 0) AS visualizacoes,
+                    (SELECT COUNT(*) FROM conversas c WHERE c.vendedor_id = ?) AS conversas
+             FROM anuncios WHERE vendedor_id = ?`
+          ).bind(id, id).first(),
+          env.DB.prepare("SELECT COALESCE(SUM(quantidade_creditos), 0) AS creditos, COALESCE(SUM(valor_centavos), 0) AS valor FROM pagamentos_creditos WHERE user_id = ? AND status = 'confirmado'").bind(id).first(),
+          env.DB.prepare('SELECT COALESCE(SUM(quantidade), 0) AS creditos FROM ajustes_creditos WHERE user_id = ? AND quantidade > 0').bind(id).first(),
+          env.DB.prepare('SELECT COUNT(*) AS n, AVG(nota) AS media FROM avaliacoes WHERE vendedor_id = ?').bind(id).first(),
+          env.DB.prepare('SELECT id, titulo, status, preco_centavos, fotos, criado_em, visualizacoes, imei FROM anuncios WHERE vendedor_id = ? ORDER BY criado_em DESC LIMIT 100').bind(id).all(),
+          env.DB.prepare(
+            `SELECT j.quantidade, j.motivo, j.criado_em, j.visto_em, a.nome AS admin_nome FROM ajustes_creditos j
+             LEFT JOIN users a ON a.id = j.admin_id WHERE j.user_id = ? ORDER BY j.criado_em DESC LIMIT 30`
+          ).bind(id).all(),
+          env.DB.prepare('SELECT quantidade_creditos, valor_centavos, status, criado_em, confirmado_em FROM pagamentos_creditos WHERE user_id = ? ORDER BY criado_em DESC LIMIT 30').bind(id).all(),
+        ]);
+        return json({
+          ok: true,
+          cliente: {
+            ...u, verificado: !!u.verificado, bloqueado: !!u.bloqueado, is_admin: !!u.is_admin,
+            destaque: u.is_admin ? [] : motivosDestaque(u),
+            anuncios_total: totais.anuncios_total || 0, anuncios_ativos: totais.ativos || 0, anuncios_vendidos: totais.vendidos || 0,
+            visualizacoes_total: totais.visualizacoes || 0, conversas_total: totais.conversas || 0,
+            creditos_comprados: pagos.creditos, gasto_total_centavos: pagos.valor, bonus_recebidos: bonus.creditos,
+            total_avaliacoes: av.n, media_avaliacoes: av.media ? Math.round(av.media * 10) / 10 : null,
+          },
+          criterios_destaque: DESTAQUE,
+          anuncios: anuncios.results, ajustes: ajustes.results, pagamentos: pagamentos.results,
+        });
+      }
+      if (pathname === '/admin/clientes-destaque' && request.method === 'GET') {
+        const { results } = await env.DB.prepare(
+          `SELECT u.id, u.nome, u.email, u.saldo_creditos, ${SQL_METRICAS_30D(dataSqlDiasAtras(30))}
+           FROM users u WHERE u.is_admin = 0 AND u.bloqueado = 0 AND u.email NOT LIKE '%@sucatel.invalid'`
+        ).all();
+        const destaques = results.map((u) => ({ ...u, destaque: motivosDestaque(u) }))
+          .filter((u) => u.destaque.length)
+          .sort((x, y) => (y.anuncios_30d + y.vendas_30d * 2 + y.gasto_30d / 500) - (x.anuncios_30d + x.vendas_30d * 2 + x.gasto_30d / 500))
+          .slice(0, 20);
+        return json({ ok: true, clientes: destaques, criterios: DESTAQUE });
+      }
+
       // Dar/tirar crédito manualmente (cortesia, correção, promoção pra um
       // cliente) -- fica registrado no saldo real da pessoa.
       const matchCreditosUsuario = pathname.match(/^\/admin\/usuarios\/([^/]+)\/creditos$/);
       if (matchCreditosUsuario && request.method === 'POST') {
-        const { quantidade } = await request.json().catch(() => ({}));
+        const { quantidade, motivo } = await request.json().catch(() => ({}));
         const qtd = Number(quantidade);
         if (!Number.isInteger(qtd) || qtd === 0 || Math.abs(qtd) > 1000) return json({ ok: false, erro: 'quantidade_invalida' }, 400);
         const alvo = await env.DB.prepare('SELECT id FROM users WHERE id = ?').bind(matchCreditosUsuario[1]).first();
         if (!alvo) return json({ ok: false, erro: 'nao_encontrado' }, 404);
-        await env.DB.prepare('UPDATE users SET saldo_creditos = MAX(0, saldo_creditos + ?) WHERE id = ?').bind(qtd, alvo.id).run();
+        await env.DB.batch([
+          env.DB.prepare('UPDATE users SET saldo_creditos = MAX(0, saldo_creditos + ?) WHERE id = ?').bind(qtd, alvo.id),
+          env.DB.prepare('INSERT INTO ajustes_creditos (id, user_id, admin_id, quantidade, motivo) VALUES (?, ?, ?, ?, ?)')
+            .bind(uid(), alvo.id, sess.id, qtd, String(motivo || '').trim().slice(0, 200)),
+        ]);
         const atualizado = await env.DB.prepare('SELECT saldo_creditos FROM users WHERE id = ?').bind(alvo.id).first();
         return json({ ok: true, saldo_creditos: atualizado.saldo_creditos });
       }
