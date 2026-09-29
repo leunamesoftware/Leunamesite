@@ -422,7 +422,7 @@ tr:last-child td{border-bottom:none;}
             <div class="fotos-prev" id="nv-fotos"></div>
             <label>Título</label><input id="nv-titulo" placeholder="ex: iPhone 11 com tela quebrada">
             <label>Tipo</label><select id="nv-tipo"></select>
-            <div id="nv-imei-box" hidden><label>IMEI do aparelho (obrigatório pra esse tipo)</label><input id="nv-imei" inputmode="numeric" maxlength="15" placeholder="15 números — disque *#06# no aparelho" autocomplete="off"></div>
+            <div id="nv-imei-box" hidden><label id="nv-imei-rotulo">IMEI do aparelho</label><input id="nv-imei" inputmode="numeric" maxlength="15" placeholder="15 números — disque *#06# no aparelho" autocomplete="off"></div>
             <div class="grade-2" style="gap:10px;">
               <div><label>Marca</label><select id="nv-marca"></select></div>
               <div><label>Modelo</label><select id="nv-modelo" disabled><option value="">Escolha a marca</option></select></div>
@@ -1161,14 +1161,21 @@ document.getElementById('nv-novo-salvar').onclick = async () => {
 };
 let TIPOS_LOJA = [];
 function tipoLojaPedeImei(){ const t = TIPOS_LOJA.find(x => x.id === document.getElementById('nv-tipo').value); return !!(t && Number(t.exige_imei)); }
-document.getElementById('nv-tipo').onchange = () => { document.getElementById('nv-imei-box').hidden = !tipoLojaPedeImei(); };
+// Mesma regra da loja: obrigatório só pra aparelho funcionando (novo/usado).
+function imeiLojaObrigatorio(){ return tipoLojaPedeImei() && ['novo', 'usado'].includes(document.getElementById('nv-condicao').value); }
+function atualizarImeiLoja(){
+  document.getElementById('nv-imei-box').hidden = !tipoLojaPedeImei();
+  document.getElementById('nv-imei-rotulo').textContent = imeiLojaObrigatorio() ? 'IMEI do aparelho (obrigatório: aparelho funcionando)' : 'IMEI do aparelho (opcional pra sucata / com defeito)';
+}
+document.getElementById('nv-tipo').onchange = atualizarImeiLoja;
+document.getElementById('nv-condicao').onchange = atualizarImeiLoja;
 document.getElementById('nv-imei').oninput = (e) => { e.target.value = e.target.value.replace(/\D/g, '').slice(0, 15); };
 CARREGADORES.loja = async () => {
   if (!document.getElementById('nv-tipo').options.length) {
     const [t] = await Promise.all([api('/categorias/tipos-peca'), carregarMarcas()]);
     TIPOS_LOJA = t.tipos_peca || [];
     document.getElementById('nv-tipo').innerHTML = opcoesSelect(t.tipos_peca || []);
-    document.getElementById('nv-imei-box').hidden = !tipoLojaPedeImei();
+    atualizarImeiLoja();
     document.getElementById('nv-marca').innerHTML = opcoesSelect(MARCAS, '+ Nova marca');
     desenharFotosNovas();
   }
@@ -1246,7 +1253,8 @@ document.getElementById('nv-publicar').onclick = async () => {
   if (!titulo || !tipo_peca_id || !marca_id || !modelo_id || marca_id === '__novo__' || modelo_id === '__novo__' || !(preco > 0)) return toast('Preencha título, tipo, marca, modelo e preço.', 'erro');
   if (!EU || !EU.bairro_id) return toast('Sua conta está sem bairro. Defina no app da loja primeiro.', 'erro');
   const imei = tipoLojaPedeImei() ? document.getElementById('nv-imei').value.trim() : '';
-  if (tipoLojaPedeImei() && imei.length !== 15) return toast('Digite os 15 números do IMEI.', 'erro');
+  if (imeiLojaObrigatorio() && !imei) return toast('Aparelho funcionando precisa do IMEI. Se não liga, escolha Sucata ou Com defeito.', 'erro');
+  if (imei && imei.length !== 15) return toast('O IMEI tem 15 números.', 'erro');
   btn.disabled = true; btn.textContent = 'Enviando fotos...';
   const fotos = [];
   for (const f of fotosNovas) { const url = await enviarImagem(f.file); if (url) fotos.push(url); }

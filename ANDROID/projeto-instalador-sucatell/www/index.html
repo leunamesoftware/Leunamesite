@@ -90,7 +90,7 @@ a{color:var(--verde);}
 .foto-preview img{width:76px; height:76px; object-fit:cover; border-radius:10px; border:1px solid var(--borda);}
 .foto-preview .remover{position:absolute; top:-6px; right:-6px; width:20px; height:20px; border-radius:50%; background:#000; color:#fff; border:none; font-size:12px; cursor:pointer;}
 .foto-add{width:76px; height:76px; border-radius:10px; border:1.5px dashed var(--borda); display:flex; flex-direction:column; align-items:center; justify-content:center; font-size:11px; color:var(--fraco); cursor:pointer; text-align:center; gap:2px;}
-.msg{max-width:78%; padding:10px 13px; border-radius:15px; margin-bottom:8px; font-size:14px; line-height:1.4;}
+.msg{max-width:78%; padding:10px 13px; border-radius:15px; margin-bottom:8px; font-size:14px; line-height:1.4; white-space:pre-line; word-break:break-word;}
 .msg.minha{background:var(--verde-forte); color:#fff; margin-left:auto; border-bottom-right-radius:4px;}
 .msg.outra{background:var(--card); border:1px solid var(--borda); border-bottom-left-radius:4px;}
 .msg.bloqueada{opacity:.7; font-style:italic;}
@@ -318,8 +318,13 @@ function imeiValido(imei){
   for (let i = 0; i < 15; i++) { let d = Number(imei[14 - i]); if (i % 2 === 1) { d *= 2; if (d > 9) d -= 9; } soma += d; }
   return soma % 10 === 0;
 }
+function imeiObrigatorioAnuncio(){
+  const sel = document.getElementById('an-tipo');
+  const tipo = sel && STATE.tiposPeca.find(t => t.id === sel.value);
+  return !!(tipo && tipo.exige_imei) && ['novo', 'usado'].includes(condicaoSelecionada);
+}
 const ERROS_IMEI = {
-  imei_obrigatorio: 'Essa categoria pede o IMEI do aparelho.',
+  imei_obrigatorio: 'Aparelho funcionando precisa do IMEI (disque *#06#). Se não liga, marque a condição como Sucata ou Com defeito.',
   imei_invalido: 'IMEI inválido. Confira os 15 números (disque *#06# no aparelho pra ver).',
   imei_em_uso: 'Esse IMEI já está num anúncio no ar. Se você vendeu, dê baixa no anúncio antigo primeiro.',
   imei_ja_vendido: 'Você já vendeu esse aparelho (IMEI). Cada unidade nova precisa do IMEI dela.',
@@ -839,7 +844,7 @@ function telaDetalheAnuncio(a){
         <div class="card" style="margin:0; padding:10px;"><span class="muted">Marca</span><br><b>${esc(a.marca_nome)}</b></div>
         <div class="card" style="margin:0; padding:10px;"><span class="muted">Modelo</span><br><b>${esc(a.modelo_nome)}</b></div>
       </div>
-      ${a.imei_final ? `<div class="card" style="margin:10px 0 0; padding:10px;"><span class="muted">IMEI</span><br><b>${a.imei ? esc(a.imei) : '•••••••••••' + esc(a.imei_final)}</b> <span class="muted" style="font-size:12px;">${a.imei ? '(completo só pra você)' : '(confira os últimos números com o aparelho na mão)'}</span></div>` : ''}
+      ${a.imei_final ? `<div class="card" style="margin:10px 0 0; padding:10px;"><span class="muted">IMEI</span><br><b>${a.imei ? esc(a.imei) : '•••••••••••' + esc(a.imei_final)}</b> <span class="muted" style="font-size:12px;">${a.imei ? '(completo só pra você)' : ''}</span>${a.imei ? '' : '<div class="muted" style="font-size:12px; margin-top:4px;">Antes de comprar, peça o IMEI completo pelo chat, consulte na Anatel (Celular Legal) se não tem bloqueio e confira no aparelho com *#06#.</div>'}</div>` : ''}
       <h4>Descrição</h4>
       <p class="muted">${esc(a.descricao || 'Sem descrição.')}</p>
     </div>
@@ -931,9 +936,9 @@ async function renderAnunciar(){
       <p class="muted" style="margin:8px 0 0;">Lote ou acessório sem marca? Escolha "Genérico / Várias marcas".</p>
     </div>
     <div class="card" id="an-imei-card" hidden>
-      <b>IMEI do aparelho</b> <span class="muted">— obrigatório pra essa categoria</span>
+      <b>IMEI do aparelho</b> <span class="muted" id="an-imei-regra">— obrigatório pra aparelho funcionando</span>
       <input id="an-imei" inputmode="numeric" maxlength="15" placeholder="15 números" style="margin-top:8px; letter-spacing:1px;" autocomplete="off">
-      <p class="muted" style="margin:8px 0 0;">Disque <b>*#06#</b> no aparelho pra ver o IMEI. Cada anúncio é uma unidade: vendeu, você dá baixa; tem outra igual, anuncia de novo com o IMEI dela. Na loja só aparecem os 4 últimos números.</p>
+      <p class="muted" id="an-imei-ajuda" style="margin:8px 0 0;">Teste o aparelho e disque <b>*#06#</b> pra ver o IMEI. Cada anúncio é uma unidade: vendeu, você dá baixa; tem outra igual, anuncia de novo com o IMEI dela. Na loja só aparecem os 4 últimos números; o completo você manda pelo chat só pra quem for comprar.</p>
       <p class="muted" id="an-imei-status" style="margin:6px 0 0; font-weight:700;"></p>
     </div>
     <div class="card">
@@ -958,9 +963,17 @@ async function renderAnunciar(){
   const marcaSel = document.getElementById('an-marca');
   const modeloSel = document.getElementById('an-modelo');
   const tipoSel = document.getElementById('an-tipo');
+  // IMEI: obrigatório pra aparelho funcionando (novo/usado); sucata ou
+  // com defeito que não liga não tem como ver -- aí fica opcional.
   const atualizarCampoImei = () => {
     const tipo = STATE.tiposPeca.find(t => t.id === tipoSel.value);
-    document.getElementById('an-imei-card').hidden = !(tipo && tipo.exige_imei);
+    const pede = !!(tipo && tipo.exige_imei);
+    document.getElementById('an-imei-card').hidden = !pede;
+    const obrigatorio = imeiObrigatorioAnuncio();
+    document.getElementById('an-imei-regra').textContent = obrigatorio ? '— obrigatório (aparelho funcionando)' : '— opcional pra sucata / com defeito';
+    document.getElementById('an-imei-ajuda').innerHTML = obrigatorio
+      ? 'Teste o aparelho e disque <b>*#06#</b> pra ver o IMEI. Cada anúncio é uma unidade: vendeu, você dá baixa; tem outra igual, anuncia de novo com o IMEI dela. Na loja só aparecem os 4 últimos números; o completo você manda pelo chat só pra quem for comprar.'
+      : 'Aparelho que não liga não tem como ver o IMEI no *#06#. Se souber (etiqueta atrás ou gaveta do chip), pode colocar; se não, deixe em branco.';
   };
   tipoSel.onchange = atualizarCampoImei;
   document.getElementById('an-imei').oninput = (e) => {
@@ -990,6 +1003,7 @@ async function renderAnunciar(){
   document.querySelectorAll('#an-condicoes button').forEach(b => b.onclick = () => {
     document.querySelectorAll('#an-condicoes button').forEach(x=>x.classList.remove('ativo'));
     b.classList.add('ativo'); condicaoSelecionada = b.dataset.c;
+    atualizarCampoImei();
   });
   document.getElementById('an-foto-input').onchange = (e) => {
     for (const file of e.target.files) {
@@ -1052,7 +1066,8 @@ async function publicarAnuncio(){
   if (!marca_id || !modelo_id || !tipo_peca_id || !titulo || !precoReais || marca_id === '__novo__' || modelo_id === '__novo__') return toast('Preencha tipo, marca, modelo, título e preço.', 'erro');
   const tipoEscolhido = STATE.tiposPeca.find(t => t.id === tipo_peca_id);
   const imei = tipoEscolhido && tipoEscolhido.exige_imei ? document.getElementById('an-imei').value.trim() : '';
-  if (tipoEscolhido && tipoEscolhido.exige_imei && !imeiValido(imei)) return toast(imei ? ERROS_IMEI.imei_invalido : ERROS_IMEI.imei_obrigatorio, 'erro');
+  if (imeiObrigatorioAnuncio() && !imei) return toast(ERROS_IMEI.imei_obrigatorio, 'erro');
+  if (imei && !imeiValido(imei)) return toast(ERROS_IMEI.imei_invalido, 'erro');
   const btn = document.getElementById('an-publicar');
   btn.disabled = true; btn.textContent = 'Enviando fotos...';
   const fotosUrls = [];
@@ -1112,6 +1127,8 @@ async function abrirChat(conversaId){
         <button class="btn pequeno" style="margin:0; width:auto;" id="chat-vendi">✓ Vendi</button>
       </div>` : ''}
     ${conversa && conversa.anuncio_status === 'vendido' ? '<div class="card" style="text-align:center; padding:8px; font-size:13px;">✓ Este item já foi vendido.</div>' : ''}
+    ${souVendedorAqui && conversa.anuncio_tem_imei && conversa.anuncio_status !== 'vendido' ? '<button class="btn secundario pequeno" id="chat-mostrar-imei" style="margin:0 0 10px;">🔒 Enviar o IMEI completo pra este comprador</button>' : ''}
+    ${souComprador && conversa.anuncio_tem_imei && conversa.anuncio_status !== 'vendido' ? '<div class="card" style="padding:8px 12px; font-size:12.5px;">🔒 Peça o IMEI completo ao vendedor e consulte na Anatel (Celular Legal) se o aparelho não tem bloqueio antes de ir buscar.</div>' : ''}
     <div id="chat-msgs"></div>
     <div class="respostas-rapidas">
       <button data-t="Ainda está disponível?">Ainda está disponível?</button>
@@ -1124,6 +1141,13 @@ async function abrirChat(conversaId){
     </div>`;
   document.querySelectorAll('.respostas-rapidas button').forEach(b => b.onclick = () => { document.getElementById('chat-texto').value = b.dataset.t; });
   if (souComprador) document.getElementById('ch-avaliar').onclick = () => abrirAvaliarModal(conversaId);
+  const btnImei = document.getElementById('chat-mostrar-imei');
+  if (btnImei) btnImei.onclick = async () => {
+    if (!confirm('Enviar o IMEI completo só pra esta pessoa? Mande apenas pra quem está mesmo interessado em comprar.')) return;
+    const { data } = await api('/conversas/' + conversaId + '/mostrar-imei', { method:'POST' });
+    if (!data.ok) return toast('Não foi possível enviar o IMEI.', 'erro');
+    btnImei.remove(); carregar();
+  };
   const btnVendi = document.getElementById('chat-vendi');
   if (btnVendi) btnVendi.onclick = async () => {
     const { data: meus } = await api('/anuncios/meus');

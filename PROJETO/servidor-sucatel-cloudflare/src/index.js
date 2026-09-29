@@ -534,15 +534,19 @@ export default {
       if (!marca_id || !modelo_id || !tipo_peca_id || !titulo || !preco_centavos || !bairro_id) {
         return json({ ok: false, erro: 'campos_obrigatorios' }, 400);
       }
+      const condicaoFinal = CONDICOES_VALIDAS.includes(condicao) ? condicao : 'usado';
       const tipo = await env.DB.prepare('SELECT exige_imei, ativo FROM tipos_peca WHERE id = ?').bind(tipo_peca_id).first();
       if (!tipo || tipo.ativo === 0) return json({ ok: false, erro: 'categoria_invalida' }, 400);
       const imei = String(imeiBruto || '').replace(/\D/g, '') || null;
-      if (tipo.exige_imei && !imei) return json({ ok: false, erro: 'imei_obrigatorio' }, 400);
+      // Aparelho funcionando (novo/usado) tem que ter IMEI. Sucata ou com
+      // defeito que não liga não tem como ver o IMEI -- aí é opcional (se
+      // o vendedor souber, pela etiqueta ou gaveta do chip, pode pôr).
+      const imeiObrigatorio = !!tipo.exige_imei && ['novo', 'usado'].includes(condicaoFinal);
+      if (imeiObrigatorio && !imei) return json({ ok: false, erro: 'imei_obrigatorio' }, 400);
       if (imei) {
         const problemaImei = await conferirImei(env, imei, sess.id);
         if (problemaImei) return json({ ok: false, erro: problemaImei }, problemaImei === 'imei_invalido' ? 400 : 409);
       }
-      const condicaoFinal = CONDICOES_VALIDAS.includes(condicao) ? condicao : 'usado';
       if (contemPalavraForaDoTema(titulo) || contemPalavraForaDoTema(descricao)) {
         return json({ ok: false, erro: 'fora_do_tema', mensagem: 'Este anúncio só aceita peças de celular.' }, 400);
       }
@@ -847,6 +851,21 @@ export default {
       const { results } = await env.DB.prepare('SELECT * FROM mensagens WHERE conversa_id = ? ORDER BY criado_em ASC LIMIT 200').bind(conversa.id).all();
       await env.DB.prepare('UPDATE mensagens SET lida = 1 WHERE conversa_id = ? AND remetente_id != ? AND lida = 0').bind(conversa.id, sess.id).run();
       return json({ ok: true, mensagens: results });
+    }
+    // O vendedor manda o IMEI completo só pra quem está negociando com ele
+    // (digitado no chat o filtro de telefone bloquearia), pro comprador
+    // consultar se o aparelho está bloqueado antes de ir buscar.
+    const matchMostrarImei = pathname.match(/^\/conversas\/([^/]+)\/mostrar-imei$/);
+    if (matchMostrarImei && request.method === 'POST') {
+      const sess = await autenticar(request, env);
+      if (!sess) return json({ ok: false, erro: 'nao_autenticado' }, 401);
+      const conversa = await env.DB.prepare('SELECT * FROM conversas WHERE id = ?').bind(matchMostrarImei[1]).first();
+      if (!conversa || conversa.vendedor_id !== sess.id) return json({ ok: false, erro: 'nao_encontrada' }, 404);
+      const anuncio = await env.DB.prepare('SELECT imei FROM anuncios WHERE id = ?').bind(conversa.anuncio_id).first();
+      if (!anuncio || !anuncio.imei) return json({ ok: false, erro: 'sem_imei' }, 400);
+      const texto = `🔒 IMEI do aparelho: ${anuncio.imei}\nAntes de comprar: consulte esse IMEI na Anatel (Celular Legal) pra ver se não tem bloqueio, e na hora confira no aparelho discando *#06#.`;
+      await env.DB.prepare('INSERT INTO mensagens (id, conversa_id, remetente_id, texto, bloqueada) VALUES (?, ?, ?, ?, 0)').bind(uid(), conversa.id, sess.id, texto).run();
+      return json({ ok: true }, 201);
     }
     if (matchConversaMsgs && request.method === 'POST') {
       const sess = await autenticar(request, env);
