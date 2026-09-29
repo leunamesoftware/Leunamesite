@@ -1088,15 +1088,67 @@ export default {
         const q = (url.searchParams.get('q') || '').trim();
         const where = [];
         const binds = [];
-        if (status) { where.push('a.status = ?'); binds.push(status); }
+        if (status === 'revisar') where.push("a.status = 'ativo' AND a.revisado_em IS NULL");
+        else if (status) { where.push('a.status = ?'); binds.push(status); }
         if (q) { where.push('(a.titulo LIKE ? OR u.nome LIKE ? OR a.imei LIKE ?)'); binds.push(`%${q}%`, `%${q}%`, `%${q}%`); }
         const { results } = await env.DB.prepare(
-          `SELECT a.id, a.titulo, a.status, a.criado_em, a.expira_em, a.preco_centavos, a.fotos, a.visualizacoes, a.condicao, a.imei, a.vendido_em,
+          `SELECT a.id, a.titulo, a.status, a.criado_em, a.expira_em, a.preco_centavos, a.fotos, a.visualizacoes, a.condicao, a.imei, a.vendido_em, a.revisado_em,
                   u.nome AS vendedor_nome, u.email AS vendedor_email, b.nome AS bairro_nome, tp.nome AS tipo_peca_nome
            FROM anuncios a JOIN users u ON u.id = a.vendedor_id JOIN bairros b ON b.id = a.bairro_id JOIN tipos_peca tp ON tp.id = a.tipo_peca_id
            ${where.length ? 'WHERE ' + where.join(' AND ') : ''} ORDER BY a.criado_em DESC LIMIT 300`
         ).bind(...binds).all();
         return json({ ok: true, anuncios: results });
+      }
+      // Tudo de um anúncio pro admin analisar: fotos, descrição, IMEI,
+      // quem publicou (com a loja inteira dele), denúncias e conversas.
+      // Não conta visualização (só olhar do admin não é cliente vendo).
+      const matchAnuncioAdmin = pathname.match(/^\/admin\/anuncios\/([^/]+)$/);
+      if (matchAnuncioAdmin && request.method === 'GET') {
+        const anuncio = await env.DB.prepare(
+          `SELECT a.*, m.nome AS marca_nome, mo.nome AS modelo_nome, tp.nome AS tipo_peca_nome,
+                  b.nome AS bairro_nome, c.nome AS cidade_nome
+           FROM anuncios a JOIN marcas m ON m.id = a.marca_id JOIN modelos mo ON mo.id = a.modelo_id
+           JOIN tipos_peca tp ON tp.id = a.tipo_peca_id JOIN bairros b ON b.id = a.bairro_id
+           LEFT JOIN cidades c ON c.id = b.cidade_id
+           WHERE a.id = ?`
+        ).bind(matchAnuncioAdmin[1]).first();
+        if (!anuncio) return json({ ok: false, erro: 'nao_encontrado' }, 404);
+        const [vendedor, av, outros, denuncias, conversas, vendas, imeiRepetido] = await Promise.all([
+          env.DB.prepare(
+            `SELECT id, nome, email, telefone, criado_em, verificado, bloqueado, is_admin, saldo_creditos, vendas_confirmadas_total, foto_url
+             FROM users WHERE id = ?`
+          ).bind(anuncio.vendedor_id).first(),
+          env.DB.prepare('SELECT COUNT(*) AS n, AVG(nota) AS media FROM avaliacoes WHERE vendedor_id = ?').bind(anuncio.vendedor_id).first(),
+          env.DB.prepare(
+            `SELECT id, titulo, status, preco_centavos, fotos, criado_em, imei FROM anuncios
+             WHERE vendedor_id = ? AND id != ? ORDER BY criado_em DESC LIMIT 100`
+          ).bind(anuncio.vendedor_id, anuncio.id).all(),
+          env.DB.prepare(
+            `SELECT d.motivo, d.detalhes, d.status, d.criado_em, u.nome AS denunciante_nome
+             FROM denuncias d JOIN users u ON u.id = d.denunciante_id WHERE d.anuncio_id = ? ORDER BY d.criado_em DESC`
+          ).bind(anuncio.id).all(),
+          env.DB.prepare('SELECT COUNT(*) AS n FROM conversas WHERE anuncio_id = ?').bind(anuncio.id).first(),
+          env.DB.prepare('SELECT COUNT(*) AS n FROM vendas WHERE anuncio_id = ?').bind(anuncio.id).first(),
+          anuncio.imei
+            ? env.DB.prepare(
+                `SELECT a.id, a.titulo, a.status, u.nome AS vendedor_nome FROM anuncios a JOIN users u ON u.id = a.vendedor_id
+                 WHERE a.imei = ? AND a.id != ? ORDER BY a.criado_em DESC LIMIT 10`
+              ).bind(anuncio.imei, anuncio.id).all()
+            : Promise.resolve({ results: [] }),
+        ]);
+        return json({
+          ok: true,
+          anuncio: { ...anuncio, total_conversas: conversas.n, total_vendas: vendas.n },
+          vendedor: vendedor ? { ...vendedor, total_avaliacoes: av.n, media_avaliacoes: av.media ? Math.round(av.media * 10) / 10 : null } : null,
+          outros_anuncios: outros.results,
+          denuncias: denuncias.results,
+          mesmo_imei: imeiRepetido.results,
+        });
+      }
+      const matchRevisarAnuncio = pathname.match(/^\/admin\/anuncios\/([^/]+)\/revisar$/);
+      if (matchRevisarAnuncio && request.method === 'POST') {
+        await env.DB.prepare('UPDATE anuncios SET revisado_em = ? WHERE id = ?').bind(nowIso(), matchRevisarAnuncio[1]).run();
+        return json({ ok: true });
       }
       const matchStatusAnuncioAdmin = pathname.match(/^\/admin\/anuncios\/([^/]+)\/status$/);
       if (matchStatusAnuncioAdmin && request.method === 'POST') {

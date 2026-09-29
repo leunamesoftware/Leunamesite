@@ -89,6 +89,17 @@ body.tela-interna .barra-topo .menu-btn{display:none!important;}
 .perfil-topo .n{font-size:13.5px; font-weight:700; line-height:1.2;} .perfil-topo .p{font-size:11.5px; color:#a9cdb7;}
 .conteudo{padding:22px 22px calc(40px + var(--safe-b)); max-width:1320px; width:100%;}
 .view[hidden]{display:none!important;}
+.ad-fotos{display:grid; grid-template-columns:repeat(auto-fill, minmax(150px, 1fr)); gap:8px;}
+.ad-fotos img{width:100%; aspect-ratio:1; object-fit:cover; border-radius:12px; cursor:zoom-in; background:var(--verde-claro);}
+.ad-sem-foto{height:160px; border-radius:12px; background:var(--verde-claro); display:flex; align-items:center; justify-content:center; font-size:48px;}
+.ad-campos{display:grid; grid-template-columns:repeat(auto-fill, minmax(150px, 1fr)); gap:12px 16px; margin-top:12px;}
+.ad-campos .rot{font-size:11px; font-weight:700; letter-spacing:.4px; text-transform:uppercase; color:var(--fraco);}
+.ad-campos .val{font-weight:600; overflow-wrap:anywhere;}
+.ad-acoes{display:flex; flex-wrap:wrap; gap:8px; margin-top:14px;}
+.linha-clicavel{cursor:pointer;}
+.linha-clicavel:hover{background:var(--verde-claro);}
+.foto-grande{position:fixed; inset:0; z-index:90; background:rgba(0,0,0,.88); display:flex; align-items:center; justify-content:center; padding:16px; cursor:zoom-out;}
+.foto-grande img{max-width:100%; max-height:100%; border-radius:10px;}
 .site-controles{display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-bottom:10px;}
 .seg{display:inline-flex; background:var(--cinza-bg); border-radius:12px; padding:3px;}
 .seg button{background:none; color:var(--fraco); padding:8px 12px; border-radius:10px; font-size:13px; font-weight:700; box-shadow:none;}
@@ -316,6 +327,7 @@ tr:last-child td{border-bottom:none;}
         <div class="cab-view"><div><h1>Anúncios</h1><div class="sub">Tudo que está (ou já esteve) anunciado</div></div></div>
         <div class="filtros" id="anu-filtros">
           <button class="chip ativo" data-s="">Todos</button>
+          <button class="chip" data-s="revisar">Para revisar</button>
           <button class="chip" data-s="ativo">Ativos</button>
           <button class="chip" data-s="expirado">Expirados</button>
           <button class="chip" data-s="pausado_manual">Pausados</button>
@@ -324,6 +336,11 @@ tr:last-child td{border-bottom:none;}
           <input id="anu-busca" placeholder="Buscar título, vendedor ou IMEI...">
         </div>
         <div class="card"><div class="tabela-wrap" id="anu-tabela"></div></div>
+      </section>
+
+      <!-- DETALHE DO ANÚNCIO (abre ao tocar num anúncio) -->
+      <section class="view" id="view-anuncio" hidden>
+        <div id="ad-conteudo"><div class="vazio">Carregando...</div></div>
       </section>
 
       <!-- MODERAÇÃO -->
@@ -758,7 +775,7 @@ CARREGADORES.painel = async () => {
   document.getElementById('rosca-status').innerHTML = roscaStatus(d.status_anuncios);
   const r = d.recentes;
   document.getElementById('rec-anuncios').innerHTML = r.anuncios.length ? r.anuncios.map(a => `
-    <div class="linha">${miniatura(a.fotos)}
+    <div class="linha linha-clicavel" onclick="abrirAnuncioAdmin('${a.id}')">${miniatura(a.fotos)}
       <div style="flex:1; min-width:0;"><div class="t">${esc(a.titulo)}</div><div class="d">${esc(a.vendedor_nome)} · ${reais(a.preco_centavos)}</div></div>
       <div style="text-align:right;"><span class="pill ${(STATUS_ANUNCIO[a.status]||{}).cls||'cinza'}">${(STATUS_ANUNCIO[a.status]||{}).rot||esc(a.status)}</span><div class="d" style="margin-top:3px;">${quando(a.criado_em)}</div></div>
     </div>`).join('') : '<div class="vazio">Nenhum anúncio ainda. Que tal publicar os seus em <a data-ir="loja" style="color:var(--verde); cursor:pointer;">Minha loja</a>?</div>';
@@ -892,15 +909,112 @@ CARREGADORES.anuncios = async () => {
   if (!d.anuncios.length) { box.innerHTML = '<div class="vazio">Nenhum anúncio encontrado.</div>'; return; }
   box.innerHTML = `<table><tr><th>Anúncio</th><th>Vendedor</th><th>Preço</th><th>Visualizações</th><th>Status</th><th>Ações</th></tr>${d.anuncios.map(a => {
     const st = STATUS_ANUNCIO[a.status] || { rot:a.status, cls:'cinza' };
-    return `<tr>
-      <td><div style="display:flex; align-items:center; gap:10px;">${miniatura(a.fotos)}<div style="min-width:0;"><b>${esc(a.titulo)}</b><div class="muted" style="font-size:12px;">${esc(a.tipo_peca_nome)} · ${esc(a.bairro_nome)} · ${quando(a.criado_em)}</div>${a.imei ? `<div class="muted" style="font-size:12px;">IMEI <b>${esc(a.imei)}</b></div>` : ''}${a.status === 'vendido' && a.vendido_em ? `<div class="muted" style="font-size:12px;">Vendido ${quando(a.vendido_em)}</div>` : ''}</div></div></td>
+    return `<tr class="linha-clicavel" onclick="if(!event.target.closest('button')) abrirAnuncioAdmin('${a.id}')">
+      <td><div style="display:flex; align-items:center; gap:10px;">${miniatura(a.fotos)}<div style="min-width:0;"><b>${esc(a.titulo)}</b> ${a.status === 'ativo' && !a.revisado_em ? '<span class="pill amarelo">Para revisar</span>' : ''}<div class="muted" style="font-size:12px;">${esc(a.tipo_peca_nome)} · ${esc(a.bairro_nome)} · ${quando(a.criado_em)}</div>${a.imei ? `<div class="muted" style="font-size:12px;">IMEI <b>${esc(a.imei)}</b></div>` : ''}${a.status === 'vendido' && a.vendido_em ? `<div class="muted" style="font-size:12px;">Vendido ${quando(a.vendido_em)}</div>` : ''}</div></div></td>
       <td>${esc(a.vendedor_nome)}<div class="muted" style="font-size:12px;">${esc(a.vendedor_email)}</div></td>
       <td>${reais(a.preco_centavos)}</td><td>${numero(a.visualizacoes)}</td>
       <td><span class="pill ${st.cls}">${esc(st.rot)}</span></td>
-      <td><div class="acoes">${a.status === 'ativo'
+      <td><div class="acoes"><button class="secundario pequeno" onclick="abrirAnuncioAdmin('${a.id}')">Ver detalhes</button>${a.status === 'ativo'
         ? `<button class="perigo pequeno" onclick="mudarStatusAnuncio('${a.id}', 'removido_admin')">Tirar do ar</button>`
         : `<button class="pequeno" onclick="mudarStatusAnuncio('${a.id}', 'ativo')">Colocar no ar</button>`}</div></td></tr>`;
   }).join('')}</table>`;
+};
+// ---------- DETALHE DO ANÚNCIO ----------
+let anuncioAdminId = null;
+window.abrirAnuncioAdmin = (id) => { anuncioAdminId = id; if (viewAtual === 'anuncio') CARREGADORES.anuncio(); else irPara('anuncio'); };
+const CONDICAO_NOME = { novo:'Novo', usado:'Usado', com_defeito:'Com defeito', sucata:'Sucata' };
+function campo(rot, val){ return `<div><div class="rot">${rot}</div><div class="val">${val}</div></div>`; }
+window.verFotoGrande = (url) => {
+  const el = document.createElement('div'); el.className = 'foto-grande';
+  el.innerHTML = `<img src="${esc(url)}" alt="">`; el.onclick = () => el.remove();
+  document.body.appendChild(el);
+};
+CARREGADORES.anuncio = async () => {
+  const box = document.getElementById('ad-conteudo');
+  if (!anuncioAdminId) { box.innerHTML = '<div class="vazio">Escolha um anúncio na lista de Anúncios.</div>'; return; }
+  box.innerHTML = '<div class="vazio">Carregando...</div>';
+  const d = await api('/admin/anuncios/' + encodeURIComponent(anuncioAdminId));
+  if (!d.ok) { box.innerHTML = '<div class="vazio">Não foi possível abrir esse anúncio.</div>'; return; }
+  const a = d.anuncio, v = d.vendedor || {};
+  let fotos = []; try { fotos = JSON.parse(a.fotos || '[]'); } catch (e) {}
+  const st = STATUS_ANUNCIO[a.status] || { rot:a.status, cls:'cinza' };
+  const pendentes = d.denuncias.filter(x => x.status === 'pendente').length;
+  box.innerHTML = `
+    <div class="cab-view"><div>
+      <h1>${esc(a.titulo)}</h1>
+      <div class="sub"><span class="pill ${st.cls}">${esc(st.rot)}</span> ${a.status === 'ativo' && !a.revisado_em ? '<span class="pill amarelo">Para revisar</span>' : a.revisado_em ? `<span class="pill verde">✓ Aprovado ${quando(a.revisado_em)}</span>` : ''} ${pendentes ? `<span class="pill vermelho">${pendentes} denúncia(s)</span>` : ''}</div>
+    </div></div>
+    <div class="grade-2">
+      <div class="card">
+        <h3>Fotos (${fotos.length}) <span class="muted" style="font-weight:600;">toque pra ampliar</span></h3>
+        ${fotos.length ? `<div class="ad-fotos">${fotos.map(f => `<img src="${esc(f)}" alt="" onclick="verFotoGrande('${jsStr(f)}')">`).join('')}</div>` : '<div class="ad-sem-foto">📦</div><p class="muted" style="margin:8px 0 0;">O vendedor não colocou foto.</p>'}
+        <div class="ad-campos">
+          ${campo('Preço', reais(a.preco_centavos))}
+          ${campo('Condição', esc(CONDICAO_NOME[a.condicao] || a.condicao || '—'))}
+          ${campo('Categoria', esc(a.tipo_peca_nome))}
+          ${campo('Marca / modelo', esc(a.marca_nome) + ' ' + esc(a.modelo_nome))}
+          ${campo('IMEI', a.imei ? esc(a.imei) : '<span class="muted">não informado</span>')}
+          ${campo('Local', esc(a.bairro_nome) + (a.cidade_nome ? ' · ' + esc(a.cidade_nome) : ''))}
+          ${campo('Publicado', quando(a.criado_em))}
+          ${campo(a.status === 'vendido' ? 'Vendido' : 'Expira', a.status === 'vendido' ? quando(a.vendido_em) : new Date(a.expira_em).toLocaleDateString('pt-BR'))}
+          ${campo('Visualizações', numero(a.visualizacoes))}
+          ${campo('Conversas', numero(a.total_conversas))}
+        </div>
+        <h3 style="margin-top:16px;">Descrição</h3>
+        <p style="margin:0; white-space:pre-line;">${esc(a.descricao || '') || '<span class="muted">Sem descrição.</span>'}</p>
+        ${d.mesmo_imei.length ? `<div class="card" style="margin-top:14px; background:var(--alerta-bg); border:none;"><b>⚠️ Esse IMEI aparece em outro(s) anúncio(s):</b>${d.mesmo_imei.map(o => `<div class="linha-clicavel" style="padding:6px 0;" onclick="abrirAnuncioAdmin('${o.id}')">${esc(o.titulo)} — ${esc(o.vendedor_nome)} <span class="pill cinza">${esc((STATUS_ANUNCIO[o.status]||{}).rot || o.status)}</span></div>`).join('')}</div>` : ''}
+        <div class="ad-acoes">
+          ${a.status === 'ativo' && !a.revisado_em ? `<button onclick="aprovarAnuncio('${a.id}')">✓ Aprovar</button>` : ''}
+          ${a.status === 'ativo' ? `<button class="perigo" onclick="statusNoDetalhe('${a.id}', 'removido_admin')">Tirar do ar</button>` : a.status !== 'vendido' ? `<button onclick="statusNoDetalhe('${a.id}', 'ativo')">Colocar no ar</button>` : ''}
+        </div>
+      </div>
+      <div>
+        <div class="card" style="margin-bottom:14px;">
+          <h3>Quem publicou</h3>
+          <div class="cartao-usuario"><div class="avatar">${iniciais(v.nome)}</div><div style="min-width:0;">
+            <b>${esc(v.nome || '—')}</b> ${v.verificado ? '<span class="pill verde">✓ verificado</span>' : ''} ${v.bloqueado ? '<span class="pill vermelho">bloqueado</span>' : ''} ${v.is_admin ? '<span class="pill amarelo">★ admin</span>' : ''}
+            <div class="muted" style="font-size:12.5px;">${esc(v.email || '')}${v.telefone ? ' · ' + esc(v.telefone) : ''}</div></div></div>
+          <div class="ad-campos">
+            ${campo('Cliente desde', quando(v.criado_em))}
+            ${campo('Vendas feitas', numero(v.vendas_confirmadas_total))}
+            ${campo('Avaliação', v.media_avaliacoes ? '★ ' + v.media_avaliacoes + ' (' + v.total_avaliacoes + ')' : '<span class="muted">sem avaliação</span>')}
+            ${campo('Créditos', v.is_admin ? 'Ilimitado' : numero(v.saldo_creditos))}
+          </div>
+          ${v.id && !v.is_admin ? `<div class="ad-acoes">
+            <button class="secundario pequeno" onclick="vendedorNoDetalhe('verificar', '${v.id}', ${!v.verificado})">${v.verificado ? 'Tirar verificado' : '✓ Verificar vendedor'}</button>
+            <button class="${v.bloqueado ? 'secundario' : 'perigo'} pequeno" onclick="vendedorNoDetalhe('bloquear', '${v.id}', ${!v.bloqueado})">${v.bloqueado ? 'Desbloquear' : 'Bloquear vendedor'}</button>
+          </div>` : ''}
+        </div>
+        ${d.denuncias.length ? `<div class="card" style="margin-bottom:14px;"><h3>Denúncias (${d.denuncias.length})</h3>${d.denuncias.map(x => `<div style="padding:8px 0; border-bottom:1px solid var(--borda);"><b>${esc(MOTIVOS[x.motivo] || x.motivo)}</b> <span class="pill ${x.status === 'pendente' ? 'amarelo' : 'cinza'}">${esc(x.status)}</span><div class="muted" style="font-size:12.5px;">${esc(x.denunciante_nome)} · ${quando(x.criado_em)}${x.detalhes ? ' — ' + esc(x.detalhes) : ''}</div></div>`).join('')}<div class="ad-acoes"><button class="secundario pequeno" data-ir="moderacao">Ir pra Moderação</button></div></div>` : ''}
+        <div class="card">
+          <h3>Loja de ${esc((v.nome || '').split(' ')[0])} — outros anúncios (${d.outros_anuncios.length})</h3>
+          <div class="lista-mini">${d.outros_anuncios.length ? d.outros_anuncios.map(o => `
+            <div class="linha linha-clicavel" onclick="abrirAnuncioAdmin('${o.id}')">${miniatura(o.fotos)}
+              <div style="flex:1; min-width:0;"><div class="t">${esc(o.titulo)}</div><div class="d">${reais(o.preco_centavos)} · ${quando(o.criado_em)}${o.imei ? ' · IMEI …' + esc(o.imei.slice(-4)) : ''}</div></div>
+              <span class="pill ${(STATUS_ANUNCIO[o.status]||{}).cls||'cinza'}">${esc((STATUS_ANUNCIO[o.status]||{}).rot || o.status)}</span>
+            </div>`).join('') : '<div class="vazio">Esse é o único anúncio dele.</div>'}</div>
+        </div>
+      </div>
+    </div>`;
+};
+window.aprovarAnuncio = async (id) => {
+  const d = await api('/admin/anuncios/' + id + '/revisar', { method:'POST' });
+  toast(d.ok ? 'Anúncio aprovado.' : 'Erro ao salvar.', d.ok ? 'sucesso' : 'erro');
+  CARREGADORES.anuncio();
+};
+window.statusNoDetalhe = async (id, status) => {
+  if (status === 'removido_admin' && !confirm('Tirar esse anúncio do ar?')) return;
+  const d = await api('/admin/anuncios/' + id + '/status', { method:'POST', body:{ status } });
+  toast(d.ok ? (status === 'ativo' ? 'Anúncio de volta no ar.' : 'Anúncio tirado do ar.') : 'Erro.', d.ok ? 'sucesso' : 'erro');
+  CARREGADORES.anuncio();
+};
+window.vendedorNoDetalhe = async (acao, id, valor) => {
+  if (acao === 'bloquear' && valor && !confirm('Bloquear esse vendedor? Ele não consegue mais entrar.')) return;
+  const d = acao === 'bloquear'
+    ? await api('/admin/usuarios/' + id + '/bloquear', { method:'POST', body:{ bloqueado: valor } })
+    : await api('/admin/usuarios/' + id + '/verificar', { method:'POST', body:{ verificado: valor } });
+  toast(d.ok ? 'Salvo!' : 'Erro.', d.ok ? 'sucesso' : 'erro');
+  CARREGADORES.anuncio();
 };
 window.mudarStatusAnuncio = async (id, status) => {
   if (status === 'removido_admin' && !confirm('Tirar esse anúncio do ar?')) return;
@@ -925,6 +1039,7 @@ CARREGADORES.moderacao = async () => {
       <div class="muted" style="margin-top:4px;">Denunciado por ${esc(dn.denunciante_nome)} · ${quando(dn.criado_em)}</div>
       ${dn.detalhes ? `<div style="background:var(--bg); border-radius:10px; padding:10px; margin-top:8px; font-size:13.5px;">"${esc(dn.detalhes)}"</div>` : ''}
       <div class="acoes" style="margin-top:12px;">
+        <button class="secundario" onclick="abrirAnuncioAdmin('${dn.anuncio_id}')">Ver o anúncio</button>
         <button class="perigo" onclick="resolverDenuncia('${dn.id}', true)">Procedente — tirar anúncio do ar</button>
         <button class="secundario" onclick="resolverDenuncia('${dn.id}', false)">Improcedente — manter</button>
       </div>
