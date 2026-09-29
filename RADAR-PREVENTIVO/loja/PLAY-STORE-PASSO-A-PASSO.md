@@ -7,7 +7,8 @@ só o que o app faz de verdade.
 
 | O quê | Arquivo |
 |---|---|
-| App (AAB) | baixar em GitHub → Actions → "Gerar AAB do Radar Preventivo" → Artifacts → `RadarPreventivo-Play-Store` |
+| App para a Play (AAB) | GitHub → Actions → "Gerar AAB e APK do Radar Preventivo" → Artifacts → `RadarPreventivo-Play-Store` → `RadarPreventivo.aab` |
+| Instalar direto no celular (APK) | mesmo pacote → `RadarPreventivo-instalar-no-celular.apk` |
 | Ícone (512×512) | `marca/icone-play-store-512.png` |
 | Imagem de destaque (1024×500) | `loja/imagem-destaque-1024x500.png` |
 | Capturas de tela do celular | `loja/capturas/1-abertura.png` até `6-cadastrar.png` (1080×1920) |
@@ -77,3 +78,8 @@ O teste interno costuma liberar em minutos, sem esperar os 14 dias. Se a Play pe
 ## Chave de assinatura (importante)
 
 Na primeira geração do AAB, o pacote de download vem com `RadarPreventivo-chave-assinatura.keystore` e `LEIA-ISSO-chave-de-assinatura.txt`. **Guarde os dois em pelo menos 2 lugares seguros.** Toda atualização futura do app precisa dessa mesma chave.
+
+## Próximas versões (1.1, 1.2, 1.3…)
+
+- **Melhorias no sistema** (telas, regras, correções): chegam sozinhas no app já instalado, porque o app abre o Radar hospedado na Cloudflare. Não precisa enviar AAB novo.
+- **Versão nova na Play** (só quando mudar algo do próprio app Android, como ícone, nome ou permissões): aumente `versionCode` (ex.: 1 → 2) e `versionName` (ex.: 1.0.0 → 1.1.0) em `app-android/versao-release.properties`, rode o workflow de novo e envie o AAB novo na mesma faixa de teste ou de produção.
