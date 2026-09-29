@@ -1,0 +1,36 @@
+# Radar Preventivo na Cloudflare: um único Worker serve o aplicativo (frontend) e a API.
+name = "radar-preventivo"
+main = "backend/src/worker.ts"
+compatibility_date = "2026-09-01"
+
+# Aplicativo (frontend já compilado). Endereços que não são arquivos voltam para o
+# index.html (navegação do app); só /api/* passa pelo código do Worker.
+[assets]
+directory = "frontend/dist"
+binding = "ASSETS"
+not_found_handling = "single-page-application"
+run_worker_first = ["/api/*"]
+
+[[d1_databases]]
+binding = "BANCO"
+database_name = "radar-preventivo"
+database_id = "9e16a7b5-4ed8-4011-8893-7e5f83b1b655"
+migrations_dir = "backend/src/banco/migracoes"
+
+[[r2_buckets]]
+binding = "ANEXOS"
+bucket_name = "radar-preventivo-anexos"
+
+# Rotina diária de análise e alertas: 09:00 UTC = 06:00 em Brasília.
+[triggers]
+crons = ["0 9 * * *"]
+
+[vars]
+NODE_ENV = "production"
+FUSO_HORARIO = "America/Sao_Paulo"
+DIAS_SESSAO = "30"
+ORIGENS_PERMITIDAS = ""
+# PIMENTA_SENHA é segredo (wrangler secret put), nunca fica aqui.
+
+[observability]
+enabled = true

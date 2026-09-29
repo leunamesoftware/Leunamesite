@@ -15,7 +15,7 @@ export interface Config {
   diasSessao: number;
 }
 
-export function carregarConfig(ambiente: NodeJS.ProcessEnv = process.env): Config {
+export function carregarConfig(ambiente: Record<string, string | undefined> = process.env): Config {
   const producao = ambiente.NODE_ENV === 'production';
   const pimenta = ambiente.PIMENTA_SENHA ?? '';
   if (producao && pimenta.length < 16) {

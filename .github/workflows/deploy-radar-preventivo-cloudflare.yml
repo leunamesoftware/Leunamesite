@@ -1,0 +1,76 @@
+name: Deploy Radar Preventivo (Cloudflare)
+
+# Publica o Radar Preventivo na Cloudflare: um Worker "radar-preventivo" que serve
+# o aplicativo (frontend) e a API, com banco D1 (radar-preventivo) e anexos no R2
+# (radar-preventivo-anexos). Antes de publicar, roda os testes do backend.
+# PROVISÓRIO neste repositório até o repositório próprio do Radar existir.
+on:
+  workflow_dispatch:
+  push:
+    branches: [claude/leuname-github-setup-qwkedw]
+    paths:
+      - 'RADAR-PREVENTIVO/**'
+      - '.github/workflows/deploy-radar-preventivo-cloudflare.yml'
+
+concurrency:
+  group: deploy-radar-preventivo
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: RADAR-PREVENTIVO
+    steps:
+      - name: Baixar código do repositório
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Instalar dependências
+        run: |
+          npm ci --prefix backend
+          npm ci --prefix frontend
+
+      - name: Testes do backend
+        run: npm run testar --prefix backend
+
+      - name: Compilar o aplicativo (frontend)
+        run: npm run construir --prefix frontend
+
+      - name: Aplicar as migrações no banco D1
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+        run: npx wrangler@4 d1 migrations apply radar-preventivo --remote
+
+      - name: Publicar o Worker (app + API + D1 + R2 + rotina diária)
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+        run: npx wrangler@4 deploy
+
+      - name: Gerar o segredo PIMENTA_SENHA (só se ainda não existir)
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+        run: |
+          if npx wrangler@4 secret list | grep -q '"PIMENTA_SENHA"'; then
+            echo "PIMENTA_SENHA já existe -- não mexe (trocar invalidaria todas as senhas)."
+          else
+            openssl rand -hex 32 | tr -d '\n' | npx wrangler@4 secret put PIMENTA_SENHA
+          fi
+
+      - name: Esperar propagar
+        run: sleep 15
+
+      - name: Testar no ar (API e aplicativo)
+        run: |
+          URL="https://radar-preventivo.emanuelantunes2024.workers.dev"
+          for i in 1 2 3 4 5; do
+            if curl -sS --fail "$URL/api/saude" && curl -sS --fail -o /dev/null "$URL/entrar"; then echo; echo "No ar: $URL"; exit 0; fi
+            echo "Tentativa $i falhou, esperando mais um pouco..."
+            sleep 15
+          done
+          exit 1

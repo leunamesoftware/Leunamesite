@@ -1,13 +1,13 @@
-import { webcrypto } from 'node:crypto';
-
-const crypto = webcrypto as unknown as Crypto;
+// Web Crypto padrão: funciona igual no Node 22 e na Cloudflare.
+const crypto = globalThis.crypto;
 
 // 100 mil iterações: forte e ainda compatível com qualquer hospedagem (algumas limitam a 100 mil).
 const ITERACOES = 100_000;
 const BYTES_SAL = 16;
 
-const paraHex = (bytes: ArrayBuffer | Uint8Array) => Buffer.from(bytes instanceof Uint8Array ? bytes : new Uint8Array(bytes)).toString('hex');
-const deHex = (hex: string) => new Uint8Array(Buffer.from(hex, 'hex'));
+const paraHex = (bytes: ArrayBuffer | Uint8Array) =>
+  Array.from(bytes instanceof Uint8Array ? bytes : new Uint8Array(bytes), (b) => b.toString(16).padStart(2, '0')).join('');
+const deHex = (hex: string) => new Uint8Array((hex.match(/../g) ?? []).map((par) => parseInt(par, 16)));
 
 async function derivar(senha: string, sal: Uint8Array, pimenta: string, iteracoes: number): Promise<string> {
   const chave = await crypto.subtle.importKey('raw', new TextEncoder().encode(senha + pimenta), 'PBKDF2', false, ['deriveBits']);

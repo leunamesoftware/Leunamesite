@@ -4,7 +4,7 @@ import { criarApp } from '../src/app.js';
 import type { Dependencias } from '../src/comum/ambiente.js';
 import { carregarConfig } from '../src/config.js';
 import { migrar } from '../src/banco/migrar.js';
-import { criarArmazenamentoMemoria } from '../src/infra/armazenamento/disco-local.js';
+import { criarArmazenamentoMemoria } from '../src/infra/armazenamento/memoria.js';
 import { criarBancoSqlite } from '../src/infra/banco/sqlite.js';
 import { canalApp } from '../src/modulos/alertas/canais.js';
 import { executarRotina } from '../src/modulos/rotina/servico.js';
