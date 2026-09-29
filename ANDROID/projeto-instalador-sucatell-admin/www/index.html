@@ -441,8 +441,8 @@ tr:last-child td{border-bottom:none;}
             <button data-modo="visitante">Quem ainda não tem cadastro</button>
           </div>
           <div class="seg" id="site-tamanho">
-            <button data-tam="celular" class="ativo">📱 Celular</button>
-            <button data-tam="computador">💻 Computador</button>
+            <button data-tam="celular" class="ativo">📱 App no celular</button>
+            <button data-tam="computador">💻 Site no navegador</button>
           </div>
           <button class="secundario pequeno" id="site-recarregar">↻ Recarregar</button>
           <button class="secundario pequeno" id="site-navegador">Abrir em tela cheia</button>
@@ -1568,7 +1568,9 @@ async function abrirSite(){
       aviso.textContent = 'Você está vendo a loja com a sua conta (' + (EU ? EU.email : '') + '). O que fizer aqui vale de verdade: anúncios, mensagens, favoritos.';
     }
   } catch (e) {}
-  trocarPaginaQuadro(frame, SITE_LOJA + '?painel=' + Date.now());
+  // Celular = como fica no app baixado; Computador = como fica o site no navegador.
+  const modo = document.getElementById('site-moldura').classList.contains('computador') ? 'site' : 'app';
+  trocarPaginaQuadro(frame, SITE_LOJA + '?painel=' + Date.now() + '&modo=' + modo);
 }
 CARREGADORES.site = abrirSite;
 document.querySelectorAll('#site-modo button').forEach(b => b.onclick = () => {
@@ -1578,6 +1580,7 @@ document.querySelectorAll('#site-modo button').forEach(b => b.onclick = () => {
 document.querySelectorAll('#site-tamanho button').forEach(b => b.onclick = () => {
   document.querySelectorAll('#site-tamanho button').forEach(x => x.classList.toggle('ativo', x === b));
   document.getElementById('site-moldura').classList.toggle('computador', b.dataset.tam === 'computador');
+  abrirSite();
 });
 document.getElementById('site-recarregar').onclick = abrirSite;
 document.getElementById('site-navegador').onclick = () => { location.href = SITE_LOJA; };

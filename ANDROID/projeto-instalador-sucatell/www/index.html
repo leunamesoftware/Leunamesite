@@ -105,6 +105,40 @@ a{color:var(--verde);}
 .produto-info{flex:1; min-width:0;}
 .produto-titulo{font-weight:700; margin:2px 0 3px; font-size:14.5px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
 .produto-local{display:flex; align-items:center; gap:4px; color:var(--fraco); font-size:12px;}
+/* ===== Modo site (loja aberta no navegador) =====
+   Menu no topo em vez da barra de baixo, produtos em grade (2 colunas no
+   celular, mais no computador) e rodapé de site. O app baixado continua
+   com a barra de baixo. */
+.site-nav{display:none;}
+.modo-site .tabbar{display:none;}
+.modo-site .conteudo{padding-bottom:0;}
+.modo-site .toast{bottom:calc(20px + var(--safe-b));}
+.modo-site .site-nav{display:flex; gap:6px; overflow-x:auto; margin:10px -4px 0; padding:0 4px 2px; scrollbar-width:none;}
+.modo-site .site-nav button{flex-shrink:0; background:rgba(255,255,255,.1); color:#fff; border:1px solid rgba(255,255,255,.18); border-radius:10px; padding:8px 11px; font-size:12.5px; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:5px;}
+.modo-site .site-nav button.ativo{background:#fff; color:var(--verde-escuro);}
+.modo-site .site-nav button.destaque{background:#4ade80; color:#0d3b1f; border-color:#4ade80;}
+.modo-site .conteudo > :not(.site-rodape){max-width:1180px; margin-left:auto!important; margin-right:auto!important;}
+.modo-site .topo > *{max-width:1180px; margin-left:auto; margin-right:auto;}
+.modo-site .lista-produtos{display:grid; grid-template-columns:repeat(auto-fill, minmax(160px, 1fr)); gap:12px;}
+.modo-site .lista-produtos .card{margin-bottom:0;}
+.modo-site .lista-produtos > .empty, .modo-site .lista-produtos > .muted{grid-column:1 / -1;}
+.modo-site .lista-produtos .produto-card{flex-direction:column; gap:8px; padding:0; overflow:hidden; position:relative;}
+.modo-site .lista-produtos .produto-foto{width:100%; height:auto; aspect-ratio:1; border-radius:0;}
+.modo-site .lista-produtos .produto-info{padding:0 10px 12px;}
+.modo-site .lista-produtos .produto-titulo{white-space:normal; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical;}
+.modo-site .lista-produtos .produto-card > button{position:absolute; top:6px; right:6px; background:rgba(255,255,255,.9)!important; border-radius:50%; width:32px; height:32px;}
+.site-rodape{display:none;}
+.modo-site .site-rodape{display:block; background:var(--verde-escuro); color:#dcefe3; margin:28px -16px 0; padding:26px 16px calc(26px + var(--safe-b));}
+.site-rodape .rodape-grade{max-width:1180px; margin:0 auto; display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:18px;}
+.site-rodape h4{color:#fff; margin:0 0 8px; font-size:14px;}
+.site-rodape a{display:block; color:#dcefe3; text-decoration:none; font-size:13.5px; padding:4px 0; cursor:pointer;}
+.site-rodape a:hover{color:#4ade80;}
+.site-rodape .rodape-fim{max-width:1180px; margin:18px auto 0; padding-top:14px; border-top:1px solid rgba(255,255,255,.15); font-size:12px; color:#a9cdb7;}
+@media (min-width:900px){
+  .modo-site .conteudo{padding:22px 24px 0;}
+  .modo-site .lista-produtos{grid-template-columns:repeat(auto-fill, minmax(210px, 1fr)); gap:16px;}
+  .modo-site .site-rodape{margin:36px -24px 0;}
+}
 .grid-cat{display:grid; grid-template-columns:repeat(3,1fr); gap:10px;}
 .grid-cat.pequeno{grid-template-columns:repeat(4,1fr);}
 .cat-item{display:flex; flex-direction:column; align-items:center; gap:6px; background:var(--card); border:1px solid var(--borda); border-radius:14px; padding:14px 4px; cursor:pointer; font-size:11.5px; font-weight:600; text-align:center; color:var(--texto);}
@@ -381,7 +415,39 @@ async function api(path, opts={}){
   return { status: resp.status, data };
 }
 
-function setTopo(html){ document.getElementById('topo').innerHTML = html; }
+// App baixado (Capacitor/WebView ou instalado na tela) = barra de baixo.
+// Navegador = cara de site. ?modo=app|site força (usado pelo "Ver o site"
+// do painel pra mostrar os dois jeitos).
+const MODO_FORCADO = new URLSearchParams(location.search).get('modo');
+const EH_APP = MODO_FORCADO ? MODO_FORCADO === 'app' : !!(
+  (window.Capacitor && (window.Capacitor.isNativePlatform ? window.Capacitor.isNativePlatform() : true))
+  || (window.matchMedia && matchMedia('(display-mode: standalone)').matches)
+  || / wv\)/.test(navigator.userAgent)
+);
+if (!EH_APP) document.documentElement.classList.add('modo-site');
+function navSite(){
+  if (EH_APP) return '';
+  // Sem conta, o "Entrar" já fica no topo; aqui só o que dá pra navegar.
+  const itens = [['inicio','🏠','Início'], ['categorias','▦','Categorias'], ['anunciar','➕','Anunciar'], ['chat','💬','Chat']].concat(STATE.usuario ? [['perfil','👤','Minha conta']] : []);
+  return `<nav class="site-nav">${itens.map(([t, i, r]) => `<button data-site-tab="${t}" class="${t === 'anunciar' ? 'destaque' : ''} ${STATE.aba === t && !STATE.pilha.length ? 'ativo' : ''}">${i} ${r}</button>`).join('')}</nav>`;
+}
+function setTopo(html){
+  const topo = document.getElementById('topo');
+  topo.innerHTML = html + navSite();
+  topo.querySelectorAll('[data-site-tab]').forEach(b => b.onclick = () => setTab(b.dataset.siteTab));
+}
+function rodapeSite(){
+  if (EH_APP) return '';
+  return `<footer class="site-rodape">
+    <div class="rodape-grade">
+      <div><h4>Sucat<span style="color:#4ade80;">ell</span></h4><div style="font-size:13.5px; line-height:1.5;">Compra e venda de celulares, peças e sucata perto de você. Anúncios de clientes de vários bairros, com chat seguro dentro do app.</div></div>
+      <div><h4>Comprar</h4><a onclick="setTab('inicio')">Ofertas</a><a onclick="setTab('categorias')">Categorias</a><a onclick="verTodosBairros()">Todos os bairros</a></div>
+      <div><h4>Vender</h4><a onclick="setTab('anunciar')">Anunciar um produto</a><a onclick="${STATE.usuario ? "setTab('perfil'); irPara(renderMeusAnuncios);" : "pedirLogin('ver seus anúncios')"}">Meus anúncios</a><a onclick="${STATE.usuario ? "setTab('perfil')" : "pedirLogin('')"}">${STATE.usuario ? 'Minha conta' : 'Entrar / criar conta grátis'}</a></div>
+      <div><h4>Ajuda</h4><a href="https://api.leunamesoftware.com/download/sucatell.apk">📲 Baixar o app (Android)</a><a onclick="abrirEsqueciSenha()">Falar com o suporte</a></div>
+    </div>
+    <div class="rodape-fim">© ${new Date().getFullYear()} Sucatell · LeuName Softwares</div>
+  </footer>`;
+}
 function topoComVoltar(titulo, aoVoltar, direita){
   setTopo(`<div class="topo-linha">
     <button class="icone" id="topo-voltar">←</button>
@@ -666,6 +732,7 @@ async function carregarSeletorBairro(){
   };
 }
 function nomeBairroAtual(){
+  if (STATE.bairroId === 'todos') return 'Todos os bairros';
   const salvo = safeJsonParse(localStorage.getItem('sucatel_bairro_visualizacao'), null);
   if (salvo && salvo.id === STATE.bairroId) return salvo.nome;
   return STATE.usuario?.bairro_nome || 'Meu bairro';
@@ -712,7 +779,8 @@ async function renderInicio(){
       <h3 style="margin:0; font-size:16px;">${STATE.bairroId === 'todos' ? 'Ofertas de todos os bairros' : 'Ofertas perto de você'}</h3>
       <a href="javascript:void(0)" id="in-ver-todos" style="font-size:13px; font-weight:700;">Ver todos</a>
     </div>
-    <div id="in-resultados"><div class="muted">Carregando...</div></div>`;
+    <div id="in-resultados" class="lista-produtos"><div class="muted">Carregando...</div></div>
+    ${rodapeSite()}`;
   document.getElementById('in-categorias-rapidas').innerHTML = categoriasGrid().map(c => `
     <div class="cat-chip" data-grupo="${c.grupo}"><div class="cat-icone-box">${c.icone}</div><span>${esc(c.nome)}</span></div>`).join('');
   document.querySelectorAll('#in-categorias-rapidas .cat-chip').forEach(item => {
@@ -756,7 +824,8 @@ function renderCategorias(){
       <div class="cat-card-grande" data-grupo="${c.grupo}">
         <div class="topo-icone-grande" ${c.foto ? `style="background-image:url('${c.foto}');"` : ''}>${c.foto ? '' : c.icone}</div>
         <div class="rodape-cat">${esc(c.nome)} <span class="seta">›</span></div>
-      </div>`).join('')}</div>`;
+      </div>`).join('')}</div>
+    ${rodapeSite()}`;
   document.querySelectorAll('.grid-cat-grande .cat-card-grande').forEach(item => {
     item.onclick = () => irPara(() => renderListaProdutos({ grupo: item.dataset.grupo, nome: categoriasGrid().find(c=>c.grupo===item.dataset.grupo).nome }));
   });
@@ -802,7 +871,8 @@ async function renderListaProdutos(filtro){
     <div class="filtro-chips" id="lp-condicoes">
       ${['','novo','usado','sucata','com_defeito'].map(c => `<button data-c="${c}" class="${c===''?'ativo':''}">${c===''?'Todos':(c==='novo'?'Novos':c==='usado'?'Usados':c==='sucata'?'Sucata':'Com defeito')}</button>`).join('')}
     </div>
-    <div id="lp-resultados"></div>`;
+    <div id="lp-resultados" class="lista-produtos"></div>
+    ${rodapeSite()}`;
   document.getElementById('lp-filtros').onclick = abrirFiltrosBusca;
   filtroAtual.ordenar = 'perto';
   document.querySelectorAll('#lp-ordenar button').forEach(b => b.onclick = () => {
@@ -1444,6 +1514,7 @@ async function renderPerfilVendedor(usuarioId, aba){
     <div id="pv-conteudo"></div>`;
   document.querySelectorAll('#pv-abas button').forEach(b => b.onclick = () => renderPerfilVendedor(usuarioId, b.dataset.a));
   const box = document.getElementById('pv-conteudo');
+  box.classList.toggle('lista-produtos', aba === 'anuncios');
   if (aba === 'anuncios') {
     const { data: an } = await api('/usuarios/' + usuarioId + '/anuncios');
     box.innerHTML = (an.ok && an.anuncios.length) ? an.anuncios.map(cartaoProduto).join('') : '<div class="empty">Nenhum anúncio ativo.</div>';
