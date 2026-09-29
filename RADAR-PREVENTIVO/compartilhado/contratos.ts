@@ -51,6 +51,7 @@ export type CodigoErro =
   | 'arquivo_invalido'
   | 'arquivo_grande_demais'
   | 'item_resolvido'
+  | 'item_nao_pago'
   | 'erro_interno';
 
 // ---------- conta ----------
@@ -215,8 +216,9 @@ export interface ResumoFinanceiro {
   porData: (TotalContas & { data: string })[];
   /** Contas vencidas e ainda não pagas. */
   emAtraso: TotalContas;
-  /** Mês atual (AAAA-MM): quanto já foi pago e quanto falta pagar do que vence no mês. */
-  mes: { referencia: string; pago: TotalContas; aPagar: TotalContas };
+  /** Mês atual (AAAA-MM): quanto já foi pago e quanto falta pagar do que vence no mês.
+   *  pago.quantidade conta todas as contas pagas no mês; pagoSemValor, as que foram pagas sem valor informado. */
+  mes: { referencia: string; pago: TotalContas; pagoSemValor: number; aPagar: TotalContas };
   /** Contas ativas com data e sem valor informado (ficam fora das somas). */
   semValor: number;
 }

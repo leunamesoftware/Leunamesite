@@ -136,6 +136,21 @@ export async function resolverItem(deps: Dependencias, usuarioId: string, id: st
   return detalharItem(deps, usuarioId, id);
 }
 
+/** Corrige a data e/ou o valor de um pagamento já registrado (ex.: conta paga antes de informar o valor). */
+export async function corrigirPagamento(deps: Dependencias, usuarioId: string, id: string, entrada: unknown) {
+  const { pagoEm, valorPagoCentavos } = validar(esquemaPagamento, entrada);
+  const atual = await linhaDoUsuario(deps, usuarioId, id);
+  if (atual.estado !== 'resolvido') throw new ErroApp('item_nao_pago', 409, 'Este item ainda não foi pago. Use "Marcar como pago".');
+  if (pagoEm && pagoEm > hojeLocal(deps)) throw erros.dadosInvalidos({ pagoEm: 'A data do pagamento não pode ser no futuro.' });
+  await repositorioItens.marcarResolvido(
+    deps.banco, id,
+    pagoEm ? `${pagoEm}T15:00:00.000Z` : atual.resolvido_em!,
+    valorPagoCentavos ?? atual.valor_pago_centavos,
+    deps.relogio.agora().toISOString(),
+  );
+  return detalharItem(deps, usuarioId, id);
+}
+
 /** Excluir (a pedido do usuário) apaga o item, seus alertas e os arquivos anexados. */
 export async function excluirItem(deps: Dependencias, usuarioId: string, id: string) {
   await linhaDoUsuario(deps, usuarioId, id);

@@ -70,6 +70,13 @@ export function ResumoContas({ financeiro: f }: { financeiro: ResumoFinanceiro }
         </div>
       </div>
 
+      {f.mes.pagoSemValor > 0 && (
+        <Link to={rotaPagos} className="resumo-contas__aviso resumo-contas__aviso--link">
+          {f.mes.pagoSemValor === 1
+            ? '1 conta paga neste mês está sem valor. Toque aqui, abra a conta e use "Informar valor pago".'
+            : `${f.mes.pagoSemValor} contas pagas neste mês estão sem valor. Toque aqui, abra cada uma e use "Informar valor pago".`}
+        </Link>
+      )}
       {f.semValor > 0 && (
         <p className="resumo-contas__aviso">
           {f.semValor === 1 ? '1 conta está sem valor e fica fora das somas.' : `${f.semValor} contas estão sem valor e ficam fora das somas.`}

@@ -1,7 +1,7 @@
 import { Hono } from 'hono';
 import type { Ambiente, Dependencias } from '../../comum/ambiente.js';
 import { lerJson } from '../../comum/validacao.js';
-import { atualizarItem, criarItem, detalharItem, excluirItem, listarItens, resolverItem, tiposUsados } from './servico.js';
+import { atualizarItem, corrigirPagamento, criarItem, detalharItem, excluirItem, listarItens, resolverItem, tiposUsados } from './servico.js';
 
 export function rotasItens(deps: Dependencias) {
   const r = new Hono<Ambiente>();
@@ -18,6 +18,7 @@ export function rotasItens(deps: Dependencias) {
     const entrada = c.req.header('content-length') === '0' || !c.req.header('content-type') ? undefined : await lerJson(c.req.raw);
     return c.json({ ok: true, dados: await resolverItem(deps, uid(c), c.req.param('id'), entrada) });
   });
+  r.post('/:id/pagamento', async (c) => c.json({ ok: true, dados: await corrigirPagamento(deps, uid(c), c.req.param('id'), await lerJson(c.req.raw)) }));
   r.delete('/:id', async (c) => {
     await excluirItem(deps, uid(c), c.req.param('id'));
     return c.json({ ok: true, dados: null });

@@ -108,3 +108,10 @@ a.resumo-contas__mes-item:focus-visible {
   color: var(--texto-suave);
   font-size: 0.88rem;
 }
+
+.resumo-contas__aviso--link {
+  display: block;
+  color: #ffd866;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}

@@ -101,14 +101,15 @@ async function resumoFinanceiro(deps: Dependencias, usuarioId: string, ativos: I
     [usuarioId, `${mes}-01`],
   );
   const pago = vazio();
+  let pagoSemValor = 0;
   for (const p of pagos) {
-    if (p.valor === null || dataLocal(new Date(p.resolvido_em), deps.config.fusoHorario).slice(0, 7) !== mes) continue;
-    somar(pago, Number(p.valor));
+    if (dataLocal(new Date(p.resolvido_em), deps.config.fusoHorario).slice(0, 7) !== mes) continue;
+    if (p.valor === null) { pago.quantidade++; pagoSemValor++; } else somar(pago, Number(p.valor));
   }
   return {
     porData: [...porData.entries()].sort(([a], [b]) => a.localeCompare(b)).slice(0, 5).map(([data, t]) => ({ data, ...t })),
     emAtraso,
-    mes: { referencia: mes, pago, aPagar },
+    mes: { referencia: mes, pago, pagoSemValor, aPagar },
     semValor,
   };
 }

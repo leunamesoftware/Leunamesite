@@ -60,7 +60,7 @@ export function TelaDetalheItem() {
   const avisoInicial = (local.state as { aviso?: string | null } | null)?.aviso ?? null;
   const detalhe = useCarregar(() => api<ItemDetalhe>(`/itens/${encodeURIComponent(id)}`), [api, id]);
   const [aviso, setAviso] = useState<string | null>(avisoInicial);
-  const [confirmar, setConfirmar] = useState<null | 'excluir' | 'resolver' | { anexo: Anexo }>(null);
+  const [confirmar, setConfirmar] = useState<null | 'excluir' | 'resolver' | 'corrigir' | { anexo: Anexo }>(null);
   const [ocupado, setOcupado] = useState(false);
   const [pagoEm, setPagoEm] = useState('');
   const [valorPago, setValorPago] = useState<number | null>(null);
@@ -93,6 +93,22 @@ export function TelaDetalheItem() {
     setValorPago(detalhe.dados?.valorCentavos ?? null);
     setConfirmar('resolver');
   }
+
+  function abrirCorrecao() {
+    const d = detalhe.dados;
+    setPagoEm(d?.resolvidoEm ? d.resolvidoEm.slice(0, 10) : hojeLocal());
+    setValorPago(d?.valorPagoCentavos ?? d?.valorCentavos ?? null);
+    setConfirmar('corrigir');
+  }
+
+  const corrigir = () =>
+    executar(async () => {
+      await api(`/itens/${encodeURIComponent(id)}/pagamento`, {
+        metodo: 'POST',
+        corpo: { ...(pagoEm ? { pagoEm } : {}), ...(valorPago !== null ? { valorPagoCentavos: valorPago } : {}) },
+      });
+      await detalhe.recarregar();
+    });
 
   const excluir = () =>
     executar(async () => {
@@ -167,8 +183,32 @@ export function TelaDetalheItem() {
   const acoesMenu = [
     ...(!resolvido ? [{ nome: 'Editar', aoEscolher: () => navegar(rotaEditarItem(item.id)) }] : []),
     ...(!resolvido ? [{ nome: 'Marcar como pago', aoEscolher: abrirPagamento }] : []),
+    ...(resolvido ? [{ nome: 'Corrigir pagamento', aoEscolher: abrirCorrecao }] : []),
     { nome: 'Excluir', aoEscolher: () => setConfirmar('excluir'), perigo: true },
   ];
+
+  // Campos do pagamento, usados em "Marcar como pago" e em "Corrigir pagamento".
+  const camposPagamento = (
+    <>
+      <label className="detalhe__pago-rotulo" htmlFor="detalhe-pago-em">
+        Pago em
+      </label>
+      <input
+        id="detalhe-pago-em"
+        className="detalhe__pago-data"
+        type="date"
+        max={hojeLocal()}
+        value={pagoEm}
+        onChange={(e) => setPagoEm(e.target.value)}
+      />
+      <label className="detalhe__pago-rotulo" htmlFor="detalhe-valor-pago">
+        Valor pago <span className="detalhe__pago-opcional">(com juros, se teve)</span>
+      </label>
+      <span className="detalhe__pago-valor">
+        <CampoValor id="detalhe-valor-pago" valor={valorPago} aoMudar={setValorPago} />
+      </span>
+    </>
+  );
 
   return (
     <div className="detalhe">
@@ -324,6 +364,12 @@ export function TelaDetalheItem() {
           </button>
         </div>
       )}
+      {resolvido && (
+        <button type="button" className="detalhe__acao detalhe__acao--corrigir" onClick={abrirCorrecao}>
+          <IconeCheck />
+          {item.valorPagoCentavos === null ? 'Informar valor pago' : 'Corrigir pagamento'}
+        </button>
+      )}
       <button type="button" className="detalhe__acao detalhe__acao--excluir" onClick={() => setConfirmar('excluir')}>
         <IconeLixeira />
         Excluir
@@ -335,28 +381,26 @@ export function TelaDetalheItem() {
         texto={
           <>
             <p>O item passa para Em dia e o Radar para de alertar. Ele fica guardado com todo o histórico em Documentos → Em dia (pagos).</p>
-            <label className="detalhe__pago-rotulo" htmlFor="detalhe-pago-em">
-              Pago em
-            </label>
-            <input
-              id="detalhe-pago-em"
-              className="detalhe__pago-data"
-              type="date"
-              max={hojeLocal()}
-              value={pagoEm}
-              onChange={(e) => setPagoEm(e.target.value)}
-            />
-            <label className="detalhe__pago-rotulo" htmlFor="detalhe-valor-pago">
-              Valor pago <span className="detalhe__pago-opcional">(com juros, se teve)</span>
-            </label>
-            <span className="detalhe__pago-valor">
-              <CampoValor id="detalhe-valor-pago" valor={valorPago} aoMudar={setValorPago} />
-            </span>
+            {camposPagamento}
           </>
         }
         textoConfirmar="Marcar como pago"
         ocupado={ocupado}
         aoConfirmar={() => void resolver()}
+        aoCancelar={() => setConfirmar(null)}
+      />
+      <ConfirmarDialogo
+        aberto={confirmar === 'corrigir'}
+        titulo="Corrigir pagamento"
+        texto={
+          <>
+            <p>Informe quando pagou e quanto pagou. O valor entra nas somas do mês no Radar.</p>
+            {camposPagamento}
+          </>
+        }
+        textoConfirmar="Salvar"
+        ocupado={ocupado}
+        aoConfirmar={() => void corrigir()}
         aoCancelar={() => setConfirmar(null)}
       />
       <ConfirmarDialogo

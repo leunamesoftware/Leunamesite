@@ -273,9 +273,26 @@ describe('valores', () => {
         { data: '2026-11-05', quantidade: 1, totalCentavos: 120000 },
       ],
       emAtraso: { quantidade: 1, totalCentavos: 30000 },
-      mes: { referencia: '2026-10', pago: { quantidade: 1, totalCentavos: 10500 }, aPagar: { quantidade: 2, totalCentavos: 23050 } },
+      mes: { referencia: '2026-10', pago: { quantidade: 1, totalCentavos: 10500 }, pagoSemValor: 0, aPagar: { quantidade: 2, totalCentavos: 23050 } },
       semValor: 1,
     });
+  });
+
+  it('conta paga sem valor conta no mês e o valor pode ser informado depois', async () => {
+    const token = await novaConta();
+    const item = (await criarItem(token, { dataVencimento: '2026-09-20' })).json.dados;
+    await chamar('POST', `/api/itens/${item.id}/resolver`, { token, corpo: { pagoEm: '2026-10-01' } });
+    let mes = (await chamar<{ financeiro: { mes: unknown } }>('GET', '/api/radar', { token })).json.dados.financeiro.mes;
+    expect(mes).toMatchObject({ pago: { quantidade: 1, totalCentavos: 0 }, pagoSemValor: 1 });
+
+    const ativo = (await criarItem(token, { dataVencimento: '2026-10-20' })).json.dados;
+    expect((await chamar('POST', `/api/itens/${ativo.id}/pagamento`, { token, corpo: { valorPagoCentavos: 100 } })).json.erro).toBe('item_nao_pago');
+
+    const r = await chamar<ItemDetalhe>('POST', `/api/itens/${item.id}/pagamento`, { token, corpo: { valorPagoCentavos: 9990 } });
+    expect(r.json.dados.valorPagoCentavos).toBe(9990);
+    expect(r.json.dados.resolvidoEm!.slice(0, 10)).toBe('2026-10-01');
+    mes = (await chamar<{ financeiro: { mes: unknown } }>('GET', '/api/radar', { token })).json.dados.financeiro.mes;
+    expect(mes).toMatchObject({ pago: { quantidade: 1, totalCentavos: 9990 }, pagoSemValor: 0 });
   });
 
   it('sem valor pago informado, vale o valor da conta', async () => {
