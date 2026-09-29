@@ -117,7 +117,7 @@ export function TelaRadar() {
             )}
           </SecaoRadar>
 
-          <SecaoRadar titulo="Contas a pagar" tom="verde">
+          <SecaoRadar titulo="Contas a pagar" tom="amarelo">
             <ResumoContas financeiro={resumo.financeiro} />
           </SecaoRadar>
 

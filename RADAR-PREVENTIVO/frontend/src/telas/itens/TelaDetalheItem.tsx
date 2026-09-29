@@ -34,6 +34,7 @@ import {
   TOM_DA_SITUACAO,
   type Tom,
   classePiscar,
+  pilulaPago,
   venceLogo,
   hojeLocal,
 } from '../../utilitarios/situacao';
@@ -184,7 +185,11 @@ export function TelaDetalheItem() {
               {resolvido && item.valorPagoCentavos !== null && <span className="detalhe__valor-pago">Pago {reais(item.valorPagoCentavos)}</span>}
             </p>
           )}
-          <Pilula tom={tom}>{resolvido ? 'Em dia' : venceLogo(item) === 'amanha' ? 'Vence amanhã' : NOME_DA_SITUACAO[situacao]}</Pilula>
+          {resolvido ? (
+            <Pilula tom={pilulaPago(item).tom}>{pilulaPago(item).texto}</Pilula>
+          ) : (
+            <Pilula tom={tom}>{venceLogo(item) === 'amanha' ? 'Vence amanhã' : NOME_DA_SITUACAO[situacao]}</Pilula>
+          )}
         </div>
         {!resolvido && (
           <button type="button" className="detalhe__editar" onClick={() => navegar(rotaEditarItem(item.id))}>

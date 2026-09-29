@@ -131,3 +131,8 @@ export function classePiscar(item: ItemResumo): string {
   const quando = venceLogo(item);
   return quando ? `piscando piscando--${quando}` : '';
 }
+
+/** Etiqueta de um item pago: verde se pagou até o vencimento, laranja se pagou depois. */
+export function pilulaPago(item: ItemResumo): { texto: string; tom: Tom } {
+  return pagoComAtraso(item) ? { texto: 'Pago com atraso', tom: 'laranja' } : { texto: 'Pago em dia', tom: 'verde' };
+}

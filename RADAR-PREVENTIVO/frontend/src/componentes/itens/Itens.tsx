@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import type { ItemResumo } from '@compartilhado/contratos';
 import { IconeCalendario, IconeChevron, IconeDocumento } from '../icones/Icones';
-import { classePiscar, dataBr, pagoComAtraso, situacaoDe, textoPilula, textoPrazo, TOM_DA_SITUACAO, type Tom } from '../../utilitarios/situacao';
+import { classePiscar, dataBr, pagoComAtraso, pilulaPago, situacaoDe, textoPilula, textoPrazo, TOM_DA_SITUACAO, type Tom } from '../../utilitarios/situacao';
 import { rotaItem } from '../../rotas';
 import { reais } from '../../utilitarios/dinheiro';
 import './Itens.css';
@@ -61,9 +61,13 @@ export function CartaoItem({ item }: { item: ItemResumo }) {
         <ValorDoItem item={item} />
       </span>
       <span className="cartao-item__prazo">
-        <Pilula tom={tom} neutra={neutra}>
-          {textoPilula(item)}
-        </Pilula>
+        {resolvido ? (
+          <Pilula tom={pilulaPago(item).tom}>{pilulaPago(item).texto}</Pilula>
+        ) : (
+          <Pilula tom={tom} neutra={neutra}>
+            {textoPilula(item)}
+          </Pilula>
+        )}
         {data && (
           <span className={`cartao-item__data ${neutra ? 'cartao-item__data--neutra' : ''}`}>
             {resolvido ? `pago ${dataBr(data)}` : dataBr(data)}
@@ -99,7 +103,7 @@ function LinhaPago({ item }: { item: ItemResumo }) {
         </span>
         {valor !== null && <span className="item-valor item-valor--pago">{reais(valor)}</span>}
       </span>
-      <Pilula tom="verde">{atraso ? 'Pago com atraso' : 'Pago em dia'}</Pilula>
+      <Pilula tom={pilulaPago(item).tom}>{pilulaPago(item).texto}</Pilula>
       <IconeChevron className="linha-item__seta" />
     </Link>
   );
