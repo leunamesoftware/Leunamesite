@@ -77,6 +77,7 @@ svg.ic{width:20px; height:20px; fill:none; stroke:currentColor; stroke-width:2; 
 .barra-topo .menu-btn{display:none; background:rgba(255,255,255,.1); padding:8px; border-radius:10px;}
 .barra-topo .voltar-btn{display:inline-flex; align-items:center; gap:4px; background:rgba(255,255,255,.1); color:#fff; padding:8px 12px 8px 8px; border-radius:10px; font-weight:700; font-size:13.5px;}
 .barra-topo .voltar-btn:hover{background:rgba(255,255,255,.18);}
+body.tela-interna .barra-topo .menu-btn{display:none!important;}
 .busca-topo{flex:1; max-width:520px; position:relative;}
 .busca-topo input{background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.14); color:#fff; padding-left:38px;}
 .busca-topo input::placeholder{color:#a9cdb7;}
@@ -587,7 +588,10 @@ function irPara(view, doHistorico){
     else { history.pushState({ view }, '', '#' + view); passosHistorico++; }
   }
   viewAtual = view;
-  document.getElementById('btn-voltar').hidden = view === 'painel' && passosHistorico === 0;
+  // Painel inicial: só o menu (☰). Qualquer outra tela: só o "Voltar",
+  // que leva de volta pro painel, onde fica o menu.
+  document.getElementById('btn-voltar').hidden = view === 'painel';
+  document.body.classList.toggle('tela-interna', view !== 'painel');
   document.querySelectorAll('.item-menu[data-view]').forEach(b => b.classList.toggle('ativo', b.dataset.view === view));
   document.querySelectorAll('.view').forEach(v => v.hidden = v.id !== 'view-' + view);
   document.body.classList.remove('menu-aberto');
@@ -1199,10 +1203,15 @@ document.getElementById('loja-abrir-app').onclick = () => irPara('site');
 // "abrir em nova aba" não faz nada.
 const LS_TOKEN_LOJA = 'sucatel_token';
 let siteModo = 'conta';
+// Troca a página do quadro sem criar passo no histórico -- senão o
+// "Voltar" do painel voltava a página de dentro da loja em vez da tela.
+function trocarPaginaQuadro(frame, url){
+  try { frame.contentWindow.location.replace(url); } catch (e) { frame.src = url; }
+}
 async function abrirSite(){
   const frame = document.getElementById('site-frame');
   const aviso = document.getElementById('site-aviso');
-  frame.src = 'about:blank';
+  trocarPaginaQuadro(frame, 'about:blank');
   try {
     if (siteModo === 'visitante') {
       localStorage.removeItem(LS_TOKEN_LOJA);
@@ -1214,7 +1223,7 @@ async function abrirSite(){
       aviso.textContent = 'Você está vendo a loja com a sua conta (' + (EU ? EU.email : '') + '). O que fizer aqui vale de verdade: anúncios, mensagens, favoritos.';
     }
   } catch (e) {}
-  frame.src = SITE_LOJA + '?painel=' + Date.now();
+  trocarPaginaQuadro(frame, SITE_LOJA + '?painel=' + Date.now());
 }
 CARREGADORES.site = abrirSite;
 document.querySelectorAll('#site-modo button').forEach(b => b.onclick = () => {
