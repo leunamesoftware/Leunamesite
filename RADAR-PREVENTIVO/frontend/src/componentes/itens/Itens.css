@@ -87,7 +87,7 @@
   color: var(--texto-forte);
   font-size: 1.08rem;
   font-weight: 600;
-  overflow-wrap: anywhere;
+  overflow-wrap: break-word;
 }
 
 .linha-item__prazo {
@@ -145,7 +145,7 @@
   color: var(--texto-forte);
   font-size: 1.1rem;
   font-weight: 700;
-  overflow-wrap: anywhere;
+  overflow-wrap: break-word;
 }
 
 .cartao-item__tipo {
@@ -178,6 +178,50 @@
   height: 22px;
   flex: none;
   color: #9fb4d8;
+}
+
+/* Celulares estreitos: a situação (pílula e data) desce para baixo do nome,
+   para o nome não quebrar no meio da palavra. */
+@media (max-width: 420px) {
+  .linha-item,
+  .cartao-item {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    grid-template-areas:
+      'icone textos seta'
+      'icone prazo seta';
+    column-gap: 12px;
+    row-gap: 6px;
+  }
+
+  .linha-item > .icone-item,
+  .cartao-item > .icone-item {
+    grid-area: icone;
+    align-self: center;
+  }
+
+  .linha-item__textos,
+  .cartao-item__textos {
+    grid-area: textos;
+  }
+
+  .linha-item > .pilula {
+    grid-area: prazo;
+    justify-self: start;
+  }
+
+  .cartao-item__prazo {
+    grid-area: prazo;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .linha-item__seta,
+  .cartao-item__seta {
+    grid-area: seta;
+    align-self: center;
+  }
 }
 
 @media (max-width: 380px) {

@@ -141,3 +141,29 @@
   flex-direction: column;
   margin-top: 4px;
 }
+
+/* Celulares estreitos: contadores mais compactos, sem a seta (o cartão inteiro já é tocável). */
+@media (max-width: 420px) {
+  .cartao-contador {
+    padding: 10px 8px;
+    gap: 6px;
+    border-radius: 16px;
+  }
+
+  .cartao-contador__icone {
+    width: 24px;
+    height: 24px;
+  }
+
+  .cartao-contador__valor {
+    font-size: 1.55rem;
+  }
+
+  .cartao-contador__seta {
+    display: none;
+  }
+
+  .cartao-contador__nome {
+    font-size: 0.78rem;
+  }
+}

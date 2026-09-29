@@ -141,7 +141,7 @@ export function FormularioItem({ inicial, tiposSugeridos, comAnexo = false, text
             id={`${id}-tipo`}
             className="formulario-item__entrada"
             list={`${id}-tipos`}
-            placeholder="Escolha ou digite uma categoria"
+            placeholder="Ex.: Veículo, Casa, Empresa"
             maxLength={60}
             value={tipo}
             onChange={(e) => {
@@ -164,7 +164,7 @@ export function FormularioItem({ inicial, tiposSugeridos, comAnexo = false, text
           <input
             id={`${id}-titulo`}
             className="formulario-item__entrada"
-            placeholder="Ex.: IPVA, CNH, Licenciamento…"
+            placeholder="Ex.: IPVA, CNH…"
             maxLength={120}
             value={titulo}
             onChange={(e) => {
