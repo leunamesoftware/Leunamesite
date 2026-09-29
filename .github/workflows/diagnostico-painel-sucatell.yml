@@ -22,7 +22,7 @@ jobs:
             p.on('response', r => { if (r.url().includes('workers.dev') && r.status() >= 400) console.log('API', r.status(), r.url()); });
             await p.goto('https://sucatell.leunamesoftware.com.br/admin.html', { waitUntil: 'networkidle' });
             await p.waitForTimeout(3000);
-            await p.fill('#lg-email', 'leunamesoftware@gmail.com');
+            await p.fill('#lg-email', 'emanuelantunes2021@gmail.com');
             await p.fill('#lg-senha', 'sucatell2582');
             await p.click('#lg-entrar');
             await p.waitForTimeout(5000);
