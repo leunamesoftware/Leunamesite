@@ -1528,7 +1528,21 @@ function esconderSplashIntro(){
 async function avisarBonusNovo(){
   try {
     const { data } = await api('/bonus/novos');
-    if (!data.ok || !data.bonus.length) return;
+    if (!data.ok) return;
+    const prazos = data.prorrogacoes || [];
+    if (!data.bonus.length && prazos.length) {
+      abrirModal(`
+        <button class="fechar-folha" onclick="fecharModal()">✕</button>
+        <div style="text-align:center; padding:6px 0 4px;">
+          <div style="font-size:54px;">⏳</div>
+          <h3 style="margin:6px 0;">Você ganhou mais prazo!</h3>
+          <p class="muted" style="margin:0;">Presente do Sucatell, sem gastar crédito:</p>
+        </div>
+        ${prazos.map(p => `<div class="card" style="margin:8px 0; padding:10px 12px;"><b>+${p.dias} dias</b> em "${esc(p.titulo)}"<div class="muted" style="font-size:12.5px;">Agora fica no ar até ${new Date(p.expira_em_novo).toLocaleDateString('pt-BR')}</div></div>`).join('')}
+        <button class="btn" onclick="fecharModal(); setTab('perfil'); irPara(renderMeusAnuncios);">Ver meus anúncios</button>`);
+      return;
+    }
+    if (!data.bonus.length) return;
     const total = data.bonus.reduce((a, b) => a + b.quantidade, 0);
     const mensagens = [...new Set(data.bonus.map(b => b.motivo).filter(Boolean))];
     abrirModal(`
@@ -1539,6 +1553,7 @@ async function avisarBonusNovo(){
         <p class="muted" style="margin:0 0 6px;">${mensagens.length ? mensagens.map(esc).join('<br>') : 'Presente do Sucatell por anunciar com a gente.'}</p>
         <p style="margin:10px 0 0;">Cada crédito vale 1 anúncio de 30 dias. Saldo agora: <b>${data.saldo_creditos}</b> crédito(s).</p>
       </div>
+      ${prazos.length ? `<p class="muted" style="text-align:center; margin:4px 0 0;">⏳ E ainda ganhou mais prazo em ${prazos.length} anúncio(s)!</p>` : ''}
       <button class="btn" onclick="fecharModal(); setTab('anunciar');">Anunciar agora</button>`);
   } catch (e) {}
 }

@@ -160,6 +160,22 @@ function motivosDestaque(u) {
   if (u.gasto_30d >= DESTAQUE.gasto30Centavos) m.push(`gastou R$ ${(u.gasto_30d / 100).toFixed(2).replace('.', ',')} em 30 dias`);
   return m;
 }
+// Dá mais prazo num anúncio: soma os dias a partir do vencimento (ou de
+// hoje, se já venceu) e, se tinha vencido, volta pro ar. Vendido ou
+// removido pelo admin não entra (esses se resolvem de outro jeito).
+async function prorrogarAnuncio(env, anuncio, dias, adminId) {
+  if (!['ativo', 'pausado_manual', 'expirado'].includes(anuncio.status)) return null;
+  const base = Math.max(Date.now(), new Date(anuncio.expira_em).getTime() || 0);
+  const novoVencimento = new Date(base + dias * 86400000).toISOString();
+  const novoStatus = anuncio.status === 'expirado' ? 'ativo' : anuncio.status;
+  await env.DB.batch([
+    env.DB.prepare('UPDATE anuncios SET expira_em = ?, status = ? WHERE id = ?').bind(novoVencimento, novoStatus, anuncio.id),
+    env.DB.prepare('INSERT INTO prorrogacoes (id, anuncio_id, user_id, admin_id, dias, expira_em_novo) VALUES (?, ?, ?, ?, ?, ?)')
+      .bind(uid(), anuncio.id, anuncio.vendedor_id, adminId, dias, novoVencimento),
+  ]);
+  return novoVencimento;
+}
+function diasValidos(d) { const n = Number(d); return Number.isInteger(n) && n >= 1 && n <= 365 ? n : null; }
 // Datas no formato que o banco grava (datetime('now') = 'AAAA-MM-DD HH:MM:SS').
 function dataSqlDiasAtras(dias) { return new Date(Date.now() - dias * 86400000).toISOString().replace('T', ' ').slice(0, 19); }
 
@@ -477,7 +493,12 @@ export default {
         'SELECT id, quantidade, motivo, criado_em FROM ajustes_creditos WHERE user_id = ? AND quantidade > 0 AND visto_em IS NULL ORDER BY criado_em'
       ).bind(sess.id).all();
       if (results.length) await env.DB.prepare('UPDATE ajustes_creditos SET visto_em = ? WHERE user_id = ? AND quantidade > 0 AND visto_em IS NULL').bind(nowIso(), sess.id).run();
-      return json({ ok: true, bonus: results, saldo_creditos: sess.saldo_creditos });
+      const { results: prazos } = await env.DB.prepare(
+        `SELECT p.dias, p.expira_em_novo, a.titulo FROM prorrogacoes p JOIN anuncios a ON a.id = p.anuncio_id
+         WHERE p.user_id = ? AND p.visto_em IS NULL ORDER BY p.criado_em`
+      ).bind(sess.id).all();
+      if (prazos.length) await env.DB.prepare('UPDATE prorrogacoes SET visto_em = ? WHERE user_id = ? AND visto_em IS NULL').bind(nowIso(), sess.id).run();
+      return json({ ok: true, bonus: results, prorrogacoes: prazos, saldo_creditos: sess.saldo_creditos });
     }
 
     // ---- créditos ----
@@ -1124,6 +1145,7 @@ export default {
         const where = [];
         const binds = [];
         if (status === 'revisar') where.push("a.status = 'ativo' AND a.revisado_em IS NULL");
+        else if (status === 'vencendo') { where.push("a.status = 'ativo' AND a.expira_em <= ?"); binds.push(new Date(Date.now() + 3 * 86400000).toISOString()); }
         else if (status) { where.push('a.status = ?'); binds.push(status); }
         if (q) { where.push('(a.titulo LIKE ? OR u.nome LIKE ? OR a.imei LIKE ?)'); binds.push(`%${q}%`, `%${q}%`, `%${q}%`); }
         const { results } = await env.DB.prepare(
@@ -1179,6 +1201,31 @@ export default {
           denuncias: denuncias.results,
           mesmo_imei: imeiRepetido.results,
         });
+      }
+      const matchProrrogarAnuncio = pathname.match(/^\/admin\/anuncios\/([^/]+)\/prorrogar$/);
+      if (matchProrrogarAnuncio && request.method === 'POST') {
+        const { dias } = await request.json().catch(() => ({}));
+        const n = diasValidos(dias);
+        if (!n) return json({ ok: false, erro: 'dias_invalidos' }, 400);
+        const anuncio = await env.DB.prepare('SELECT id, vendedor_id, status, expira_em FROM anuncios WHERE id = ?').bind(matchProrrogarAnuncio[1]).first();
+        if (!anuncio) return json({ ok: false, erro: 'nao_encontrado' }, 404);
+        const novo = await prorrogarAnuncio(env, anuncio, n, sess.id);
+        if (!novo) return json({ ok: false, erro: 'status_nao_permite' }, 409);
+        return json({ ok: true, expira_em: novo });
+      }
+      // Mais prazo em todos os anúncios de um cliente: os no ar, os
+      // pausados e os que venceram nos últimos 30 dias (voltam pro ar).
+      const matchProrrogarTodos = pathname.match(/^\/admin\/usuarios\/([^/]+)\/prorrogar-anuncios$/);
+      if (matchProrrogarTodos && request.method === 'POST') {
+        const { dias } = await request.json().catch(() => ({}));
+        const n = diasValidos(dias);
+        if (!n) return json({ ok: false, erro: 'dias_invalidos' }, 400);
+        const { results } = await env.DB.prepare(
+          `SELECT id, vendedor_id, status, expira_em FROM anuncios WHERE vendedor_id = ?
+           AND (status IN ('ativo', 'pausado_manual') OR (status = 'expirado' AND expira_em >= ?))`
+        ).bind(matchProrrogarTodos[1], new Date(Date.now() - 30 * 86400000).toISOString()).all();
+        for (const a of results) await prorrogarAnuncio(env, a, n, sess.id);
+        return json({ ok: true, total: results.length });
       }
       const matchRevisarAnuncio = pathname.match(/^\/admin\/anuncios\/([^/]+)\/revisar$/);
       if (matchRevisarAnuncio && request.method === 'POST') {
@@ -1250,7 +1297,7 @@ export default {
           env.DB.prepare("SELECT COALESCE(SUM(quantidade_creditos), 0) AS creditos, COALESCE(SUM(valor_centavos), 0) AS valor FROM pagamentos_creditos WHERE user_id = ? AND status = 'confirmado'").bind(id).first(),
           env.DB.prepare('SELECT COALESCE(SUM(quantidade), 0) AS creditos FROM ajustes_creditos WHERE user_id = ? AND quantidade > 0').bind(id).first(),
           env.DB.prepare('SELECT COUNT(*) AS n, AVG(nota) AS media FROM avaliacoes WHERE vendedor_id = ?').bind(id).first(),
-          env.DB.prepare('SELECT id, titulo, status, preco_centavos, fotos, criado_em, visualizacoes, imei FROM anuncios WHERE vendedor_id = ? ORDER BY criado_em DESC LIMIT 100').bind(id).all(),
+          env.DB.prepare('SELECT id, titulo, status, preco_centavos, fotos, criado_em, expira_em, visualizacoes, imei FROM anuncios WHERE vendedor_id = ? ORDER BY criado_em DESC LIMIT 100').bind(id).all(),
           env.DB.prepare(
             `SELECT j.quantidade, j.motivo, j.criado_em, j.visto_em, a.nome AS admin_nome FROM ajustes_creditos j
              LEFT JOIN users a ON a.id = j.admin_id WHERE j.user_id = ? ORDER BY j.criado_em DESC LIMIT 30`

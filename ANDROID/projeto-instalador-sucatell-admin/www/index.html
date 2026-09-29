@@ -340,6 +340,7 @@ tr:last-child td{border-bottom:none;}
         <div class="filtros" id="anu-filtros">
           <button class="chip ativo" data-s="">Todos</button>
           <button class="chip" data-s="revisar">Para revisar</button>
+          <button class="chip" data-s="vencendo">Vencendo (3 dias)</button>
           <button class="chip" data-s="ativo">Ativos</button>
           <button class="chip" data-s="expirado">Expirados</button>
           <button class="chip" data-s="pausado_manual">Pausados</button>
@@ -928,7 +929,7 @@ CARREGADORES.anuncios = async () => {
   box.innerHTML = `<table><tr><th>Anúncio</th><th>Vendedor</th><th>Preço</th><th>Visualizações</th><th>Status</th><th>Ações</th></tr>${d.anuncios.map(a => {
     const st = STATUS_ANUNCIO[a.status] || { rot:a.status, cls:'cinza' };
     return `<tr class="linha-clicavel" onclick="if(!event.target.closest('button')) abrirAnuncioAdmin('${a.id}')">
-      <td><div style="display:flex; align-items:center; gap:10px;">${miniatura(a.fotos)}<div style="min-width:0;"><b>${esc(a.titulo)}</b> ${a.status === 'ativo' && !a.revisado_em ? '<span class="pill amarelo">Para revisar</span>' : ''}<div class="muted" style="font-size:12px;">${esc(a.tipo_peca_nome)} · ${esc(a.bairro_nome)} · ${quando(a.criado_em)}</div>${a.imei ? `<div class="muted" style="font-size:12px;">IMEI <b>${esc(a.imei)}</b></div>` : ''}${a.status === 'vendido' && a.vendido_em ? `<div class="muted" style="font-size:12px;">Vendido ${quando(a.vendido_em)}</div>` : ''}</div></div></td>
+      <td><div style="display:flex; align-items:center; gap:10px;">${miniatura(a.fotos)}<div style="min-width:0;"><b>${esc(a.titulo)}</b> ${a.status === 'ativo' && !a.revisado_em ? '<span class="pill amarelo">Para revisar</span>' : ''}<div class="muted" style="font-size:12px;">${esc(a.tipo_peca_nome)} · ${esc(a.bairro_nome)} · ${quando(a.criado_em)}</div>${a.imei ? `<div class="muted" style="font-size:12px;">IMEI <b>${esc(a.imei)}</b></div>` : ''}${a.status === 'vendido' && a.vendido_em ? `<div class="muted" style="font-size:12px;">Vendido ${quando(a.vendido_em)}</div>` : ''}${venceTexto(a.expira_em, a.status) ? `<div class="muted" style="font-size:12px;">⏳ ${venceTexto(a.expira_em, a.status)}</div>` : ''}</div></div></td>
       <td>${esc(a.vendedor_nome)}<div class="muted" style="font-size:12px;">${esc(a.vendedor_email)}</div></td>
       <td>${reais(a.preco_centavos)}</td><td>${numero(a.visualizacoes)}</td>
       <td><span class="pill ${st.cls}">${esc(st.rot)}</span></td>
@@ -937,6 +938,40 @@ CARREGADORES.anuncios = async () => {
         : `<button class="pequeno" onclick="mudarStatusAnuncio('${a.id}', 'ativo')">Colocar no ar</button>`}</div></td></tr>`;
   }).join('')}</table>`;
 };
+// ---------- PRAZO DOS ANÚNCIOS ----------
+function venceTexto(expiraEm, status){
+  if (!expiraEm || !['ativo', 'pausado_manual', 'expirado'].includes(status)) return '';
+  const dias = Math.ceil((new Date(expiraEm) - Date.now()) / 86400000);
+  if (dias < 0 || status === 'expirado') return `<span style="color:var(--erro); font-weight:700;">venceu ${quando(expiraEm)}</span>`;
+  if (dias === 0) return '<span style="color:var(--erro); font-weight:700;">vence hoje</span>';
+  if (dias <= 3) return `<span style="color:var(--alerta); font-weight:700;">vence em ${dias} dia${dias > 1 ? 's' : ''}</span>`;
+  return `vence em ${dias} dias`;
+}
+// Controle "dar mais prazo": escolhe 5/10/15/20/30 dias ou digita outro.
+function htmlPrazo(px, textoBotao){
+  return `<div class="bonus-opcoes" id="${px}-opcoes">${[5, 10, 15, 20, 30].map(n => `<button data-n="${n}" class="${n === 10 ? 'ativo' : ''}">+${n} dias</button>`).join('')}</div>
+    <div class="filtros" style="margin:0;"><input id="${px}-outro" type="number" min="1" max="365" placeholder="Outro nº de dias" style="max-width:170px;"></div>
+    <button id="${px}-dar" style="width:100%; margin-top:10px; padding:11px;" data-texto="${esc(textoBotao)}"></button>`;
+}
+function ligarPrazo(px, aoConfirmar){
+  let escolhido = 10;
+  const outro = document.getElementById(px + '-outro'), btn = document.getElementById(px + '-dar');
+  if (!btn) return;
+  const dias = () => Number(outro.value) > 0 ? Math.floor(Number(outro.value)) : escolhido;
+  const atualizar = () => { btn.textContent = btn.dataset.texto.replace('{n}', dias()); };
+  document.querySelectorAll('#' + px + '-opcoes button').forEach(b => b.onclick = () => {
+    escolhido = Number(b.dataset.n); outro.value = '';
+    document.querySelectorAll('#' + px + '-opcoes button').forEach(x => x.classList.toggle('ativo', x === b)); atualizar();
+  });
+  outro.oninput = () => { document.querySelectorAll('#' + px + '-opcoes button').forEach(x => x.classList.toggle('ativo', !outro.value && Number(x.dataset.n) === escolhido)); atualizar(); };
+  atualizar();
+  btn.onclick = async () => {
+    const n = dias();
+    if (!(n >= 1 && n <= 365)) return toast('Escolha de 1 a 365 dias.', 'erro');
+    btn.disabled = true; await aoConfirmar(n); btn.disabled = false;
+  };
+}
+
 // ---------- CLIENTES DESTAQUE + FICHA DO CLIENTE ----------
 async function carregarDestaques(){
   const card = document.getElementById('card-destaques');
@@ -1006,6 +1041,11 @@ CARREGADORES.cliente = async () => {
           <button id="bonus-dar" style="width:100%; margin-top:12px; padding:12px;"></button>
         </div>
         <div class="card" style="margin-bottom:14px;">
+          <h3>⏳ Dar mais prazo nos anúncios</h3>
+          <div class="muted" style="font-size:13px;">Vale pra todos os anúncios dele no ar, pausados e os que venceram nos últimos 30 dias (esses voltam pro ar). Não gasta crédito do cliente. Pra um anúncio só, toque nele lá embaixo.</div>
+          ${htmlPrazo('prazo-cli', '⏳ Dar +{n} dias em todos os anúncios')}
+        </div>
+        <div class="card" style="margin-bottom:14px;">
           <h3>Histórico de bônus e ajustes</h3>
           <div class="lista-mini">${d.ajustes.length ? d.ajustes.map(j => `
             <div class="linha"><div style="flex:1; min-width:0;"><div class="t">${j.quantidade > 0 ? '+' : ''}${j.quantidade} crédito(s)${j.motivo ? ' — ' + esc(j.motivo) : ''}</div>
@@ -1022,7 +1062,7 @@ CARREGADORES.cliente = async () => {
       <h3>Anúncios (${d.anuncios.length})</h3>
       <div class="lista-mini">${d.anuncios.length ? d.anuncios.map(o => `
         <div class="linha linha-clicavel" onclick="abrirAnuncioAdmin('${o.id}')">${miniatura(o.fotos)}
-          <div style="flex:1; min-width:0;"><div class="t">${esc(o.titulo)}</div><div class="d">${reais(o.preco_centavos)} · 👁 ${numero(o.visualizacoes)} · ${quando(o.criado_em)}</div></div>
+          <div style="flex:1; min-width:0;"><div class="t">${esc(o.titulo)}</div><div class="d">${reais(o.preco_centavos)} · 👁 ${numero(o.visualizacoes)}${venceTexto(o.expira_em, o.status) ? ' · ⏳ ' + venceTexto(o.expira_em, o.status) : ''}</div></div>
           <span class="pill ${(STATUS_ANUNCIO[o.status]||{}).cls||'cinza'}">${esc((STATUS_ANUNCIO[o.status]||{}).rot || o.status)}</span>
         </div>`).join('') : '<div class="vazio">Nenhum anúncio ainda.</div>'}</div>
     </div>`;
@@ -1047,6 +1087,13 @@ CARREGADORES.cliente = async () => {
     toast(`🎁 Bônus dado! ${c.nome.split(' ')[0]} agora tem ${r.saldo_creditos} crédito(s).`, 'sucesso');
     CARREGADORES.cliente();
   };
+  ligarPrazo('prazo-cli', async (n) => {
+    if (!confirm(`Dar mais ${n} dias em todos os anúncios de ${c.nome}?`)) return;
+    const r = await api('/admin/usuarios/' + c.id + '/prorrogar-anuncios', { method:'POST', body:{ dias: n } });
+    if (!r.ok) return toast('Não foi possível dar mais prazo.', 'erro');
+    toast(r.total ? `⏳ +${n} dias em ${r.total} anúncio(s)!` : 'Esse cliente não tem anúncio pra prorrogar.', r.total ? 'sucesso' : 'erro');
+    CARREGADORES.cliente();
+  });
   if (focarBonus) { focarBonus = false; document.getElementById('cli-bonus').scrollIntoView({ behavior:'smooth', block:'start' }); }
 };
 window.clienteAcao = async (acao, valor) => {
@@ -1095,13 +1142,17 @@ CARREGADORES.anuncio = async () => {
           ${campo('IMEI', a.imei ? esc(a.imei) : '<span class="muted">não informado</span>')}
           ${campo('Local', esc(a.bairro_nome) + (a.cidade_nome ? ' · ' + esc(a.cidade_nome) : ''))}
           ${campo('Publicado', quando(a.criado_em))}
-          ${campo(a.status === 'vendido' ? 'Vendido' : 'Expira', a.status === 'vendido' ? quando(a.vendido_em) : new Date(a.expira_em).toLocaleDateString('pt-BR'))}
+          ${campo(a.status === 'vendido' ? 'Vendido' : 'Vencimento', a.status === 'vendido' ? quando(a.vendido_em) : new Date(a.expira_em).toLocaleDateString('pt-BR') + (venceTexto(a.expira_em, a.status) ? '<div style="font-size:12px; font-weight:600;">' + venceTexto(a.expira_em, a.status) + '</div>' : ''))}
           ${campo('Visualizações', numero(a.visualizacoes))}
           ${campo('Conversas', numero(a.total_conversas))}
         </div>
         <h3 style="margin-top:16px;">Descrição</h3>
         <p style="margin:0; white-space:pre-line;">${esc(a.descricao || '') || '<span class="muted">Sem descrição.</span>'}</p>
         ${d.mesmo_imei.length ? `<div class="card" style="margin-top:14px; background:var(--alerta-bg); border:none;"><b>⚠️ Esse IMEI aparece em outro(s) anúncio(s):</b>${d.mesmo_imei.map(o => `<div class="linha-clicavel" style="padding:6px 0;" onclick="abrirAnuncioAdmin('${o.id}')">${esc(o.titulo)} — ${esc(o.vendedor_nome)} <span class="pill cinza">${esc((STATUS_ANUNCIO[o.status]||{}).rot || o.status)}</span></div>`).join('')}</div>` : ''}
+        ${['ativo', 'pausado_manual', 'expirado'].includes(a.status) ? `<div class="card" style="margin-top:14px; background:var(--cinza-bg); border:none;">
+          <b>⏳ Dar mais prazo</b> <span class="muted" style="font-size:12.5px;">${a.status === 'expirado' ? 'o anúncio volta pro ar' : 'soma ao vencimento atual'}, sem gastar crédito do cliente</span>
+          ${htmlPrazo('prazo-ad', '⏳ Dar +{n} dias nesse anúncio')}
+        </div>` : ''}
         <div class="ad-acoes">
           ${a.status === 'ativo' && !a.revisado_em ? `<button onclick="aprovarAnuncio('${a.id}')">✓ Aprovar</button>` : ''}
           ${a.status === 'ativo' ? `<button class="perigo" onclick="statusNoDetalhe('${a.id}', 'removido_admin')">Tirar do ar</button>` : a.status !== 'vendido' ? `<button onclick="statusNoDetalhe('${a.id}', 'ativo')">Colocar no ar</button>` : ''}
@@ -1136,6 +1187,13 @@ CARREGADORES.anuncio = async () => {
         </div>
       </div>
     </div>`;
+  ligarPrazo('prazo-ad', async (n) => {
+    if (!confirm(`Dar mais ${n} dias no anúncio "${a.titulo}"?`)) return;
+    const r = await api('/admin/anuncios/' + a.id + '/prorrogar', { method:'POST', body:{ dias: n } });
+    if (!r.ok) return toast('Não foi possível dar mais prazo.', 'erro');
+    toast(`⏳ +${n} dias! Agora vence em ${new Date(r.expira_em).toLocaleDateString('pt-BR')}.`, 'sucesso');
+    CARREGADORES.anuncio();
+  });
 };
 window.aprovarAnuncio = async (id) => {
   const d = await api('/admin/anuncios/' + id + '/revisar', { method:'POST' });
