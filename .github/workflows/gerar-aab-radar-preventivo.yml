@@ -84,7 +84,12 @@ jobs:
           t = estilos.read_text(encoding="utf-8")
           # Abertura do sistema (Android 12+) e a tela até a página carregar são iguais:
           # o azul do app com o símbolo (288dp de área, o símbolo ocupa 46% = ~132dp).
+          # Os atributos "android:" valem para a abertura do próprio Android 12+ (sem eles
+          # aparece uma tela cinza vazia antes); os sem prefixo, para a biblioteca de abertura.
           novo = ('<item name="android:background">@drawable/radar_abertura_tela</item>\n'
+                  '        <item name="android:windowBackground">@drawable/radar_abertura_tela</item>\n'
+                  '        <item name="android:windowSplashScreenBackground">@color/radar_fundo</item>\n'
+                  '        <item name="android:windowSplashScreenAnimatedIcon">@mipmap/ic_launcher_foreground</item>\n'
                   '        <item name="windowSplashScreenBackground">@color/radar_fundo</item>\n'
                   '        <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_launcher_foreground</item>')
           t, n = re.subn(r'<item name="android:background">@drawable/splash</item>', novo, t)
