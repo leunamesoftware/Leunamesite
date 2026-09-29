@@ -1,0 +1,15 @@
+{
+  "appId": "com.radarpreventivo.app",
+  "appName": "Radar Preventivo",
+  "webDir": "www",
+  "backgroundColor": "#01050f",
+  "android": {
+    "backgroundColor": "#01050f",
+    "allowMixedContent": false
+  },
+  "server": {
+    "url": "https://radar-preventivo.emanuelantunes2024.workers.dev",
+    "androidScheme": "https",
+    "errorPath": "index.html"
+  }
+}

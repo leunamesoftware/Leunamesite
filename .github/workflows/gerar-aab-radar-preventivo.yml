@@ -1,0 +1,157 @@
+name: Gerar AAB do Radar Preventivo (Google Play)
+
+# Gera o Android App Bundle (.aab) assinado do Radar Preventivo para enviar à Play Store.
+# O app abre o Radar hospedado na Cloudflare (server.url), então atualizações do
+# sistema chegam sem precisar publicar um AAB novo.
+#
+# Chave de assinatura:
+# - Se o segredo RADAR_KEYSTORE_B64 existir, usa essa chave (atualizações).
+# - Se não existir (primeira vez), gera uma chave nova e entrega junto com o AAB,
+#   com as instruções para guardar. GUARDE A CHAVE: toda atualização futura precisa dela.
+# PROVISÓRIO neste repositório até o repositório próprio do Radar existir.
+on:
+  workflow_dispatch:
+
+jobs:
+  aab:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: RADAR-PREVENTIVO/app-android
+    steps:
+      - name: Baixar código do repositório
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Configurar Java 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Configurar o Android SDK (API 36)
+        run: |
+          export ANDROID_SDK_ROOT="${ANDROID_SDK_ROOT:-${ANDROID_HOME:-/usr/local/lib/android/sdk}}"
+          echo "ANDROID_SDK_ROOT=$ANDROID_SDK_ROOT" >> "$GITHUB_ENV"
+          echo "ANDROID_HOME=$ANDROID_SDK_ROOT" >> "$GITHUB_ENV"
+          SDKMANAGER="$(find "$ANDROID_SDK_ROOT" -maxdepth 4 -type f -name sdkmanager 2>/dev/null | sort -V | tail -n1)"
+          yes | "$SDKMANAGER" --licenses > /dev/null || true
+          "$SDKMANAGER" --install "platform-tools" "platforms;android-36" "build-tools;36.0.0" > /dev/null
+
+      - name: Instalar dependências e criar o projeto Android (Capacitor)
+        run: |
+          npm install
+          npx cap add android
+          npx cap sync android
+
+      - name: Aplicar o ícone oficial do Radar Preventivo
+        run: |
+          for d in mipmap-mdpi mipmap-hdpi mipmap-xhdpi mipmap-xxhdpi mipmap-xxxhdpi; do
+            cp icones/$d/*.png "android/app/src/main/res/$d/"
+          done
+          cp icones/ic_launcher_background.xml android/app/src/main/res/values/ic_launcher_background.xml
+
+      - name: Preparar a chave de assinatura
+        env:
+          KEYSTORE_B64: ${{ secrets.RADAR_KEYSTORE_B64 }}
+          KEYSTORE_PASSWORD_SALVA: ${{ secrets.RADAR_KEYSTORE_PASSWORD }}
+          KEY_PASSWORD_SALVA: ${{ secrets.RADAR_KEY_PASSWORD }}
+        run: |
+          if [ -n "$KEYSTORE_B64" ]; then
+            echo "$KEYSTORE_B64" | base64 -d > android/app/release.keystore
+            echo "KEYSTORE_PASSWORD=$KEYSTORE_PASSWORD_SALVA" >> "$GITHUB_ENV"
+            echo "KEY_PASSWORD=$KEY_PASSWORD_SALVA" >> "$GITHUB_ENV"
+            echo "CHAVE_NOVA=nao" >> "$GITHUB_ENV"
+            echo "Usando a chave já guardada nos segredos."
+          else
+            KEYSTORE_PASSWORD="$(openssl rand -base64 24 | tr -dc 'A-Za-z0-9' | cut -c1-24)"
+            KEY_PASSWORD="$(openssl rand -base64 24 | tr -dc 'A-Za-z0-9' | cut -c1-24)"
+            echo "::add-mask::$KEYSTORE_PASSWORD"
+            echo "::add-mask::$KEY_PASSWORD"
+            keytool -genkeypair -v -keystore android/app/release.keystore -alias radarpreventivo \
+              -keyalg RSA -keysize 2048 -validity 10000 \
+              -storepass "$KEYSTORE_PASSWORD" -keypass "$KEY_PASSWORD" \
+              -dname "CN=Radar Preventivo, OU=Radar Preventivo, O=Radar Preventivo, L=Brasil, S=Brasil, C=BR"
+            echo "KEYSTORE_PASSWORD=$KEYSTORE_PASSWORD" >> "$GITHUB_ENV"
+            echo "KEY_PASSWORD=$KEY_PASSWORD" >> "$GITHUB_ENV"
+            echo "CHAVE_NOVA=sim" >> "$GITHUB_ENV"
+            echo "Chave nova gerada (primeira vez)."
+          fi
+
+      - name: Configurar versão e assinatura no build.gradle
+        run: |
+          python3 - <<'PY'
+          import re
+          props = dict(l.strip().split("=", 1) for l in open("versao-release.properties", encoding="utf-8") if "=" in l and not l.lstrip().startswith("#"))
+          caminho = "android/app/build.gradle"
+          t = open(caminho, encoding="utf-8").read()
+          t = re.sub(r"versionCode\s+\d+", f"versionCode {props['versionCode']}", t, count=1)
+          t = re.sub(r'versionName\s+"[^"]*"', f'versionName "{props["versionName"]}"', t, count=1)
+          assinatura = (
+              "    signingConfigs {\n"
+              "        release {\n"
+              "            storeFile file('release.keystore')\n"
+              "            storePassword System.getenv('KEYSTORE_PASSWORD')\n"
+              "            keyAlias 'radarpreventivo'\n"
+              "            keyPassword System.getenv('KEY_PASSWORD')\n"
+              "        }\n"
+              "    }\n"
+          )
+          assert "    buildTypes {" in t, "buildTypes não encontrado"
+          t = t.replace("    buildTypes {", assinatura + "    buildTypes {", 1)
+          t, n = re.subn(r"(buildTypes \{\s*release \{)", r"\1\n            signingConfig signingConfigs.release", t, count=1)
+          assert n == 1, "bloco release não encontrado"
+          open(caminho, "w", encoding="utf-8").write(t)
+          print("versão", props["versionCode"], props["versionName"], "e assinatura aplicadas")
+          PY
+          grep -nE "versionCode|versionName|targetSdk|signingConfig" android/app/build.gradle android/variables.gradle || true
+
+      - name: Gerar o AAB assinado
+        working-directory: RADAR-PREVENTIVO/app-android/android
+        run: |
+          chmod +x gradlew
+          ./gradlew bundleRelease --no-daemon
+
+      - name: Conferir a assinatura do AAB
+        run: jarsigner -verify -verbose:summary android/app/build/outputs/bundle/release/app-release.aab | tail -3
+
+      - name: Preparar a entrega
+        run: |
+          mkdir -p entrega
+          cp android/app/build/outputs/bundle/release/app-release.aab entrega/RadarPreventivo.aab
+          if [ "$CHAVE_NOVA" = "sim" ]; then
+            cp android/app/release.keystore entrega/RadarPreventivo-chave-assinatura.keystore
+            {
+              echo "CHAVE DE ASSINATURA -- Radar Preventivo"
+              echo
+              echo "GUARDE ESTE ARQUIVO E O .keystore EM PELO MENOS 2 LUGARES SEGUROS."
+              echo "Toda atualização do app na Play Store precisa desta mesma chave."
+              echo
+              echo "Alias: radarpreventivo"
+              echo "Senha do keystore: $KEYSTORE_PASSWORD"
+              echo "Senha da chave: $KEY_PASSWORD"
+              echo
+              echo "Para as próximas versões saírem automáticas, cadastre no GitHub"
+              echo "(Settings -> Secrets and variables -> Actions):"
+              echo "  RADAR_KEYSTORE_PASSWORD = senha do keystore acima"
+              echo "  RADAR_KEY_PASSWORD      = senha da chave acima"
+              echo "  RADAR_KEYSTORE_B64      = o conteúdo abaixo (uma linha só):"
+              echo
+              base64 -w0 android/app/release.keystore
+              echo
+            } > entrega/LEIA-ISSO-chave-de-assinatura.txt
+          fi
+          ls -la entrega
+
+      - name: Enviar para download (Artifact)
+        uses: actions/upload-artifact@v4
+        with:
+          name: RadarPreventivo-Play-Store
+          path: RADAR-PREVENTIVO/app-android/entrega/
+          if-no-files-found: error
+          retention-days: 30
