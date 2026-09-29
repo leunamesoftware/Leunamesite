@@ -117,7 +117,16 @@ a{color:var(--verde);}
 .modo-site .site-nav button{flex-shrink:0; background:rgba(255,255,255,.1); color:#fff; border:1px solid rgba(255,255,255,.18); border-radius:10px; padding:8px 11px; font-size:12.5px; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:5px;}
 .modo-site .site-nav button.ativo{background:#fff; color:var(--verde-escuro);}
 .modo-site .site-nav button.destaque{background:#4ade80; color:#0d3b1f; border-color:#4ade80;}
-.modo-site .conteudo > :not(.site-rodape){max-width:1180px; margin-left:auto!important; margin-right:auto!important;}
+/* Conteúdo em coluna: o rodapé sempre encosta no fim da tela (sem faixa
+   vazia embaixo). Telas de grade (início, categorias, listas, loja do
+   vendedor) usam até 1180px; o resto (anúncio, formulários, chat, perfil)
+   fica numa coluna de 720px pra não esticar. */
+.modo-site .conteudo{display:flex; flex-direction:column;}
+.modo-site .conteudo > :not(.site-rodape){width:100%; max-width:720px; margin-left:auto!important; margin-right:auto!important; flex-shrink:0;}
+.modo-site .conteudo.largo > :not(.site-rodape){max-width:1180px;}
+.modo-site .site-rodape{margin-top:auto!important; flex-shrink:0;}
+.modo-site .grid-cat-grande{grid-template-columns:repeat(auto-fill, minmax(170px, 1fr));}
+.modo-site .cat-card-grande .topo-icone-grande{height:auto; aspect-ratio:16/10;}
 .modo-site .topo > *{max-width:1180px; margin-left:auto; margin-right:auto;}
 .modo-site .lista-produtos{display:grid; grid-template-columns:repeat(auto-fill, minmax(160px, 1fr)); gap:12px;}
 .modo-site .lista-produtos .card{margin-bottom:0;}
@@ -128,7 +137,7 @@ a{color:var(--verde);}
 .modo-site .lista-produtos .produto-titulo{white-space:normal; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical;}
 .modo-site .lista-produtos .produto-card > button{position:absolute; top:6px; right:6px; background:rgba(255,255,255,.9)!important; border-radius:50%; width:32px; height:32px;}
 .site-rodape{display:none;}
-.modo-site .site-rodape{display:block; background:var(--verde-escuro); color:#dcefe3; margin:28px -16px 0; padding:26px 16px calc(26px + var(--safe-b));}
+.modo-site .site-rodape{display:block; background:var(--verde-escuro); color:#dcefe3; margin:28px -16px 0; padding:26px 16px calc(26px + var(--safe-b)); padding-top:26px;}
 .site-rodape .rodape-grade{max-width:1180px; margin:0 auto; display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:18px;}
 .site-rodape h4{color:#fff; margin:0 0 8px; font-size:14px;}
 .site-rodape a{display:block; color:#dcefe3; text-decoration:none; font-size:13.5px; padding:4px 0; cursor:pointer;}
@@ -156,6 +165,7 @@ a{color:var(--verde);}
 .galeria-anuncio{position:relative; margin-bottom:8px;}
 .galeria-scroll{display:flex; overflow-x:auto; scroll-snap-type:x mandatory; border-radius:14px;}
 .galeria-scroll img{width:100%; flex:0 0 100%; height:250px; object-fit:cover; scroll-snap-align:start;}
+.modo-site .galeria-scroll img{height:auto; aspect-ratio:4/3; max-height:520px; background:var(--verde-claro);}
 .galeria-contador{position:absolute; right:10px; top:10px; background:rgba(0,0,0,.6); color:#fff; font-size:12px; font-weight:700; padding:3px 10px; border-radius:20px;}
 .galeria-miniaturas{display:flex; gap:6px; overflow-x:auto; margin-bottom:10px;}
 .galeria-miniaturas img{width:54px; height:54px; object-fit:cover; border-radius:8px; flex-shrink:0; cursor:pointer; opacity:.55; border:2px solid transparent;}
@@ -432,12 +442,15 @@ function navSite(){
   return `<nav class="site-nav">${itens.map(([t, i, r]) => `<button data-site-tab="${t}" class="${t === 'anunciar' ? 'destaque' : ''} ${STATE.aba === t && !STATE.pilha.length ? 'ativo' : ''}">${i} ${r}</button>`).join('')}</nav>`;
 }
 function setTopo(html){
+  document.getElementById('conteudo').classList.remove('largo');
   const topo = document.getElementById('topo');
   topo.innerHTML = html + navSite();
   topo.querySelectorAll('[data-site-tab]').forEach(b => b.onclick = () => setTab(b.dataset.siteTab));
 }
 function rodapeSite(){
   if (EH_APP) return '';
+  // Tela com rodapé = tela de vitrine (grade larga).
+  document.getElementById('conteudo').classList.add('largo');
   return `<footer class="site-rodape">
     <div class="rodape-grade">
       <div><h4>Sucat<span style="color:#4ade80;">ell</span></h4><div style="font-size:13.5px; line-height:1.5;">Compra e venda de celulares, peças e sucata perto de você. Anúncios de clientes de vários bairros, com chat seguro dentro do app.</div></div>
@@ -1515,6 +1528,7 @@ async function renderPerfilVendedor(usuarioId, aba){
   document.querySelectorAll('#pv-abas button').forEach(b => b.onclick = () => renderPerfilVendedor(usuarioId, b.dataset.a));
   const box = document.getElementById('pv-conteudo');
   box.classList.toggle('lista-produtos', aba === 'anuncios');
+  document.getElementById('conteudo').classList.add('largo');
   if (aba === 'anuncios') {
     const { data: an } = await api('/usuarios/' + usuarioId + '/anuncios');
     box.innerHTML = (an.ok && an.anuncios.length) ? an.anuncios.map(cartaoProduto).join('') : '<div class="empty">Nenhum anúncio ativo.</div>';
