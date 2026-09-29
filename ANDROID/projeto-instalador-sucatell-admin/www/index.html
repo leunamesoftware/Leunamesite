@@ -739,7 +739,7 @@ function graficoReceita(serie){
   <div class="muted" style="margin-top:6px;">Total no período: <b style="color:var(--texto);">${reais(total * 100)}</b>${total === 0 ? ' — nenhum pagamento confirmado ainda' : ''}</div>`;
 }
 function roscaStatus(status){
-  const ordem = ['ativo', 'pausado_manual', 'removido_admin', 'expirado'];
+  const ordem = ['ativo', 'vendido', 'pausado_manual', 'removido_admin', 'expirado'];
   const total = ordem.reduce((a, k) => a + (status[k] || 0), 0);
   let offset = 25, segs = '';
   ordem.forEach(k => {
