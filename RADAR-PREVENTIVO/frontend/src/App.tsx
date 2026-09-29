@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { ProvedorSessao, RotaProtegida, RotaPublica } from './estado/SessaoContexto';
+import { AtualizacaoAutomatica } from './estado/AtualizacaoAutomatica';
 import { LayoutApp } from './componentes/app/LayoutApp';
 import { Abertura } from './telas/abertura/Abertura';
 import { Entrar } from './telas/entrar/Entrar';
@@ -27,6 +28,7 @@ function Interna({ children }: { children: ReactNode }) {
 export function App() {
   return (
     <BrowserRouter>
+      <AtualizacaoAutomatica />
       <ProvedorSessao>
         <Routes>
           <Route path={rotas.abertura} element={<Abertura />} />
