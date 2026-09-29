@@ -4,8 +4,9 @@ import { lerJson } from '../../comum/validacao.js';
 import { tokenDaRequisicao } from './middleware.js';
 import { cadastrar, entrar, sair } from './servico.js';
 
+// IP de quem chama, pelo cabeçalho padrão de proxy (independe da hospedagem escolhida).
 const ipDe = (c: { req: { header(n: string): string | undefined } }) =>
-  c.req.header('cf-connecting-ip') ?? c.req.header('x-forwarded-for')?.split(',')[0]?.trim() ?? 'local';
+  c.req.header('x-forwarded-for')?.split(',')[0]?.trim() || 'local';
 
 export function rotasAutenticacao(deps: Dependencias) {
   const r = new Hono<Ambiente>();
