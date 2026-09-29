@@ -164,6 +164,17 @@ a{color:var(--verde);}
 .cat-scroll{display:grid; grid-template-columns:repeat(5, 1fr); gap:12px 6px; margin-bottom:10px;}
 .cat-scroll .cat-chip{width:auto; min-width:0;}
 @media (min-width:700px){ .cat-scroll{grid-template-columns:repeat(auto-fill, minmax(86px, 1fr));} }
+.preco-linha{display:flex; align-items:center; justify-content:space-between; gap:8px; flex-wrap:wrap;}
+.btn-negociar{background:var(--verde-forte); color:#fff; border:none; border-radius:10px; padding:7px 11px; font-size:12.5px; font-weight:800; cursor:pointer; white-space:nowrap;}
+.btn-negociar:active{transform:scale(.97);}
+.loja-capa{background:var(--card); border:1px solid var(--borda); border-radius:18px; overflow:hidden; margin-bottom:12px; padding:0 15px 15px;}
+.loja-faixa{margin:0 -15px; height:92px; background:linear-gradient(120deg, #0d3b1f 0%, #15803d 60%, #4ade80 130%); display:flex; align-items:flex-start; justify-content:flex-end; padding:12px 15px 0;}
+.loja-faixa span{color:#dcfce7; font-size:11.5px; font-weight:700; letter-spacing:.4px;}
+.loja-faixa b{color:#4ade80;}
+.loja-cabeca{display:flex; align-items:flex-start; gap:12px; margin-top:-34px;}
+.loja-cabeca > div:last-child{padding-top:40px;}
+.loja-nome{font-size:19px; font-weight:800; line-height:1.2;}
+.destaque-negociar{border:2px solid var(--verde-forte); background:var(--verde-claro);}
 .selo-vendido{position:absolute; top:8px; left:8px; z-index:1; background:#0d3b1f; color:#fff; font-size:11px; font-weight:800; letter-spacing:.5px; padding:4px 8px; border-radius:8px;}
 .produto-card{position:relative;}
 .produto-card.vendido .produto-foto{filter:grayscale(.55); opacity:.8;}
@@ -912,7 +923,10 @@ function cartaoProduto(a){
       <div style="display:flex; align-items:center; gap:6px; margin-bottom:3px;">
         <span class="chip cinza" style="margin:0;">${esc(CONDICOES[a.condicao]||'Usado')}</span>
       </div>
-      <div class="preco">${centavosParaReais(a.preco_centavos)}</div>
+      <div class="preco-linha">
+        <div class="preco">${centavosParaReais(a.preco_centavos)}</div>
+        ${a.status !== 'vendido' && a.vendedor_id && a.vendedor_id !== STATE.usuario?.id ? `<button class="btn-negociar" onclick="event.stopPropagation(); abrirLojaNegociar('${a.vendedor_id}', '${a.id}')">💬 Negociar</button>` : ''}
+      </div>
     </div>
     <button onclick="event.stopPropagation(); marcarFavoritoUI(this,'${a.id}')" style="background:none;border:none;font-size:17px;align-self:flex-start;cursor:pointer;">${favoritado?'❤️':'🤍'}</button>
   </div>`;
@@ -1034,7 +1048,7 @@ function telaDetalheAnuncio(a){
         : `<div class="mapa-fake">📍 ${esc(a.bairro_nome)}${a.distancia_km!=null?' · '+distanciaLabel(a.distancia_km):''}</div>`}
     </div>
     ${a.status !== 'ativo' && !souVendedor ? `<div class="card" style="text-align:center; font-weight:700;">${a.status === 'vendido' ? '✓ Este item já foi vendido.' : 'Este anúncio não está mais disponível.'}<div class="muted" style="font-weight:400; margin-top:4px;">Veja o que mais esse vendedor tem na loja dele.</div></div>` : souVendedor ? '<p class="muted" style="text-align:center;">Este é o seu anúncio.</p>' : `
-      <button class="btn" onclick="iniciarConversa('${a.id}')">💬 Conversar com o vendedor</button>
+      <button class="btn" onclick="iniciarConversa('${a.id}')">💬 Negociar com o vendedor</button>
       <button class="btn secundario" onclick="abrirDenunciar('${a.id}')">🚩 Denunciar anúncio</button>`}`;
   if (fotos.length > 1) {
     const scrollEl = document.getElementById('galeria-scroll');
@@ -1265,7 +1279,8 @@ async function publicarAnuncio(){
 window.iniciarConversa = async function(anuncioId){
   if (!STATE.usuario) return pedirLogin('conversar com o vendedor');
   const { data } = await api('/conversas', { method:'POST', body:{ anuncio_id: anuncioId } });
-  if (!data.ok) return toast('Erro ao iniciar conversa.', 'erro');
+  if (!data.ok) return toast(data.erro === 'anuncio_indisponivel' ? 'Esse produto não está mais disponível.' : data.erro === 'nao_pode_conversar_com_proprio_anuncio' ? 'Esse anúncio é seu.' : 'Erro ao iniciar conversa.', 'erro');
+  if (data.nova) toast('Mensagem enviada ao vendedor. Continue a conversa por aqui!', 'sucesso');
   irPara(() => abrirChat(data.conversa.id));
 };
 async function renderConversas(){
@@ -1622,38 +1637,69 @@ window.renovarAnuncio = async function(id){
 
 // ---------------- PERFIL PÚBLICO DO VENDEDOR ----------------
 window.abrirPerfilVendedor = function(usuarioId){ irPara(() => renderPerfilVendedor(usuarioId)); };
-async function renderPerfilVendedor(usuarioId, aba){
+// "Negociar" num produto: abre a loja do vendedor com esse produto em
+// destaque no topo e o botão pra negociar ele (igual marketplace).
+window.abrirLojaNegociar = function(usuarioId, anuncioId){ irPara(() => renderPerfilVendedor(usuarioId, 'anuncios', anuncioId)); };
+async function renderPerfilVendedor(usuarioId, aba, destaqueId){
   aba = aba || 'anuncios';
-  const { data } = await api('/usuarios/' + usuarioId);
+  const [{ data }, destaqueResp] = await Promise.all([
+    api('/usuarios/' + usuarioId),
+    destaqueId ? api('/anuncios/' + destaqueId) : Promise.resolve(null),
+  ]);
   if (!data.ok) { topoComVoltar('Vendedor', voltar); document.getElementById('conteudo').innerHTML = '<div class="empty">Vendedor não encontrado.</div>'; return; }
   const u = data.usuario;
+  const souEu = usuarioId === STATE.usuario?.id;
+  const destaque = destaqueResp && destaqueResp.data && destaqueResp.data.ok ? destaqueResp.data.anuncio : null;
+  const capaDestaque = destaque ? safeJsonParse(destaque.fotos, [])[0] : null;
   topoComVoltar('Loja de ' + (u.nome || '').split(' ')[0], voltar);
   document.getElementById('conteudo').innerHTML = `
-    <div class="card" style="text-align:center;">
-      ${avatarHtml(u.nome, u.foto_url, 'margin:0 auto 10px; width:64px; height:64px; font-size:22px;')}
-      <b style="font-size:17px;">${esc(u.nome)}</b>
-      ${u.verificado ? '<div class="selo-verificado" style="margin:6px auto;">✅ Vendedor verificado</div>' : ''}
-      <div class="muted">Membro desde ${dataPorExtenso(u.criado_em)}</div>
-      <div class="estat-grid">
-        <div class="estat-item"><b>${u.anuncios_ativos}</b><span>Anúncios ativos</span></div>
-        <div class="estat-item"><b>${u.vendas_confirmadas_total}</b><span>Itens vendidos</span></div>
-        <div class="estat-item"><b>${u.media_avaliacoes ?? '—'}</b><span>Avaliação média</span></div>
+    <div class="loja-capa">
+      <div class="loja-faixa"><span>Sucat<b>ell</b> · Loja oficial do vendedor</span></div>
+      <div class="loja-cabeca">
+        ${avatarHtml(u.nome, u.foto_url, 'width:78px; height:78px; font-size:26px; border:4px solid var(--card); flex-shrink:0;')}
+        <div style="min-width:0; flex:1;">
+          <div class="loja-nome">Loja de ${esc(u.nome)}</div>
+          <div style="display:flex; flex-wrap:wrap; gap:6px; margin-top:4px; align-items:center;">
+            ${u.verificado ? '<span class="selo-verificado">✅ Vendedor verificado</span>' : ''}
+            ${u.bairro_nome ? `<span class="muted">📍 ${esc(u.bairro_nome)}</span>` : ''}
+            <span class="muted">· desde ${dataPorExtenso(u.criado_em)}</span>
+          </div>
+        </div>
+      </div>
+      <div class="estat-grid" style="margin:12px 0 0;">
+        <div class="estat-item"><b>${u.anuncios_ativos}</b><span>À venda</span></div>
+        <div class="estat-item"><b>${u.vendas_confirmadas_total}</b><span>Vendas</span></div>
+        <div class="estat-item"><b>${u.media_avaliacoes ? '★ ' + u.media_avaliacoes : '—'}</b><span>Avaliação</span></div>
         <div class="estat-item"><b>${u.total_avaliacoes}</b><span>Avaliações</span></div>
       </div>
-      ${usuarioId !== STATE.usuario?.id ? `<button class="btn" onclick="iniciarConversaComVendedor('${usuarioId}')">💬 Conversar</button>` : ''}
+      ${souEu ? '<p class="muted" style="text-align:center; margin:12px 0 0;">É assim que os clientes veem a sua loja.</p>' : `<button class="btn" onclick="iniciarConversaComVendedor('${usuarioId}', '${destaque ? destaque.id : ''}')">💬 Falar com o vendedor</button>`}
     </div>
+    ${destaque ? `<div class="card destaque-negociar">
+      <div class="muted" style="font-weight:700; margin-bottom:8px;">Você escolheu este produto:</div>
+      <div style="display:flex; gap:12px; align-items:center;">
+        ${capaDestaque ? `<img src="${esc(capaDestaque)}" alt="" style="width:84px; height:84px; object-fit:cover; border-radius:12px; flex-shrink:0; cursor:pointer;" onclick="abrirAnuncio('${destaque.id}')">` : `<div class="produto-foto produto-foto-vazia" style="width:84px; height:84px;">${iconeTipo(destaque.tipo_peca_id)}</div>`}
+        <div style="flex:1; min-width:0;">
+          <div style="font-weight:800; font-size:15px;">${esc(destaque.titulo)}</div>
+          <div class="muted">${esc(CONDICOES[destaque.condicao] || 'Usado')} · 📍 ${esc(destaque.bairro_nome || '')}</div>
+          <div class="preco" style="font-size:19px; margin-top:2px;">${centavosParaReais(destaque.preco_centavos)}</div>
+        </div>
+      </div>
+      ${destaque.status === 'ativo' && !souEu ? `<button class="btn" onclick="iniciarConversa('${destaque.id}')">💬 Negociar este produto</button>` : destaque.status !== 'ativo' ? '<div class="muted" style="margin-top:10px; font-weight:700;">Esse produto não está mais disponível. Veja o resto da loja abaixo.</div>' : ''}
+      <a href="javascript:void(0)" onclick="abrirAnuncio('${destaque.id}')" style="display:block; text-align:center; margin-top:10px; font-weight:700; font-size:13px;">Ver fotos e detalhes do produto ›</a>
+    </div>` : ''}
     <div class="abas-perfil" id="pv-abas">
       <button data-a="anuncios" class="${aba==='anuncios'?'ativo':''}">À venda (${u.anuncios_ativos})</button>
       <button data-a="vendidos" class="${aba==='vendidos'?'ativo':''}">Vendidos (${u.anuncios_vendidos || 0})</button>
       <button data-a="avaliacoes" class="${aba==='avaliacoes'?'ativo':''}">Avaliações (${u.total_avaliacoes})</button>
     </div>
     <div id="pv-conteudo"></div>`;
-  document.querySelectorAll('#pv-abas button').forEach(b => b.onclick = () => renderPerfilVendedor(usuarioId, b.dataset.a));
+  document.querySelectorAll('#pv-abas button').forEach(b => b.onclick = () => renderPerfilVendedor(usuarioId, b.dataset.a, destaqueId));
   const box = document.getElementById('pv-conteudo');
   box.classList.toggle('lista-produtos', aba === 'anuncios' || aba === 'vendidos');
   document.getElementById('conteudo').classList.add('largo');
   if (aba === 'anuncios') {
     const { data: an } = await api('/usuarios/' + usuarioId + '/anuncios');
+    STATE.anunciosLojaAberta = an.ok ? an.anuncios : [];
     box.innerHTML = (an.ok && an.anuncios.length) ? an.anuncios.map(cartaoProduto).join('') : '<div class="empty">Nenhum anúncio ativo.</div>';
   } else if (aba === 'vendidos') {
     const { data: an } = await api('/usuarios/' + usuarioId + '/anuncios?status=vendido');
@@ -1673,7 +1719,28 @@ async function renderPerfilVendedor(usuarioId, aba){
         </div>`).join('') : '<div class="empty">Nenhuma avaliação ainda.</div>'}`;
   }
 }
-window.iniciarConversaComVendedor = function(){ toast('Abra a conversa a partir de um anúncio desse vendedor.'); };
+// "Falar com o vendedor" na loja: a conversa é sempre sobre um produto.
+// Veio pelo "Negociar"? Já é sobre aquele. Senão, pergunta qual.
+window.iniciarConversaComVendedor = async function(usuarioId, anuncioId){
+  if (!STATE.usuario) return pedirLogin('falar com o vendedor');
+  if (anuncioId) return iniciarConversa(anuncioId);
+  let lista = STATE.anunciosLojaAberta;
+  if (!lista || !lista.length || lista[0].vendedor_id !== usuarioId) {
+    const { data } = await api('/usuarios/' + usuarioId + '/anuncios');
+    lista = data.ok ? data.anuncios : [];
+  }
+  if (!lista.length) return toast('Esse vendedor não tem produtos à venda agora.', 'erro');
+  if (lista.length === 1) return iniciarConversa(lista[0].id);
+  abrirModal(`
+    <button class="fechar-folha" onclick="fecharModal()">✕</button>
+    <h3>Sobre qual produto você quer falar?</h3>
+    ${lista.map(a => { const f = safeJsonParse(a.fotos, [])[0]; return `
+      <div class="card" style="display:flex; gap:10px; align-items:center; cursor:pointer; margin-bottom:8px; padding:10px;" onclick="fecharModal(); iniciarConversa('${a.id}')">
+        ${f ? `<img src="${esc(f)}" alt="" style="width:52px; height:52px; object-fit:cover; border-radius:10px;">` : `<div class="produto-foto produto-foto-vazia" style="width:52px; height:52px;">${iconeTipo(a.tipo_peca_id)}</div>`}
+        <div style="flex:1; min-width:0;"><b>${esc(a.titulo)}</b><div class="preco" style="font-size:14px;">${centavosParaReais(a.preco_centavos)}</div></div>
+        <span style="color:var(--verde); font-weight:800;">Negociar ›</span>
+      </div>`; }).join('')}`);
+};
 
 // ---------------- COMPRAR CRÉDITOS ----------------
 async function renderComprarCreditos(){

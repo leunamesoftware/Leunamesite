@@ -782,7 +782,10 @@ export default {
     // ---- perfil público do vendedor ----
     const matchUsuarioPublico = pathname.match(/^\/usuarios\/([^/]+)$/);
     if (matchUsuarioPublico && request.method === 'GET') {
-      const u = await env.DB.prepare('SELECT id, nome, criado_em, reputacao, vendas_confirmadas_total, verificado, foto_url FROM users WHERE id = ?').bind(matchUsuarioPublico[1]).first();
+      const u = await env.DB.prepare(
+        `SELECT u.id, u.nome, u.criado_em, u.reputacao, u.vendas_confirmadas_total, u.verificado, u.foto_url, b.nome AS bairro_nome
+         FROM users u LEFT JOIN bairros b ON b.id = u.bairro_id WHERE u.id = ?`
+      ).bind(matchUsuarioPublico[1]).first();
       if (!u) return json({ ok: false, erro: 'nao_encontrado' }, 404);
       const [anunciosAtivos, av] = await Promise.all([
         env.DB.prepare("SELECT SUM(CASE WHEN status = 'ativo' THEN 1 ELSE 0 END) AS n, SUM(CASE WHEN status = 'vendido' THEN 1 ELSE 0 END) AS vendidos FROM anuncios WHERE vendedor_id = ?").bind(u.id).first(),
@@ -792,7 +795,7 @@ export default {
         ok: true,
         usuario: {
           id: u.id, nome: u.nome, criado_em: u.criado_em, reputacao: u.reputacao,
-          vendas_confirmadas_total: u.vendas_confirmadas_total, verificado: !!u.verificado, foto_url: u.foto_url || null,
+          vendas_confirmadas_total: u.vendas_confirmadas_total, verificado: !!u.verificado, foto_url: u.foto_url || null, bairro_nome: u.bairro_nome || null,
           anuncios_ativos: anunciosAtivos.n || 0, anuncios_vendidos: anunciosAtivos.vendidos || 0, total_avaliacoes: av.n, media_avaliacoes: av.media ? Math.round(av.media * 10) / 10 : null,
         },
       });
@@ -872,12 +875,22 @@ export default {
       if (!anuncio) return json({ ok: false, erro: 'anuncio_nao_encontrado' }, 404);
       if (anuncio.vendedor_id === sess.id) return json({ ok: false, erro: 'nao_pode_conversar_com_proprio_anuncio' }, 400);
       let conversa = await env.DB.prepare('SELECT * FROM conversas WHERE anuncio_id = ? AND comprador_id = ?').bind(anuncio_id, sess.id).first();
+      let nova = false;
       if (!conversa) {
+        if (anuncio.status !== 'ativo') return json({ ok: false, erro: 'anuncio_indisponivel' }, 409);
         const id = uid();
-        await env.DB.prepare('INSERT INTO conversas (id, anuncio_id, comprador_id, vendedor_id) VALUES (?, ?, ?, ?)').bind(id, anuncio_id, sess.id, anuncio.vendedor_id).run();
+        // Primeira mensagem já vai pronta, dizendo de qual produto se trata
+        // (o comprador chegou pelo "Negociar"); ele continua dali.
+        const preco = (anuncio.preco_centavos / 100).toFixed(2).replace('.', ',');
+        await env.DB.batch([
+          env.DB.prepare('INSERT INTO conversas (id, anuncio_id, comprador_id, vendedor_id) VALUES (?, ?, ?, ?)').bind(id, anuncio_id, sess.id, anuncio.vendedor_id),
+          env.DB.prepare('INSERT INTO mensagens (id, conversa_id, remetente_id, texto, bloqueada) VALUES (?, ?, ?, ?, 0)')
+            .bind(uid(), id, sess.id, `Olá! Tenho interesse em "${anuncio.titulo}" (R$ ${preco}). Ainda está disponível? Podemos negociar?`),
+        ]);
         conversa = await env.DB.prepare('SELECT * FROM conversas WHERE id = ?').bind(id).first();
+        nova = true;
       }
-      return json({ ok: true, conversa });
+      return json({ ok: true, conversa, nova });
     }
     if (pathname === '/conversas' && request.method === 'GET') {
       const sess = await autenticar(request, env);
