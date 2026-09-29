@@ -73,3 +73,22 @@ export const GRUPOS: Record<GrupoSituacao, { nome: string; situacoes: Situacao[]
 export function ehGrupo(valor: string | null): valor is GrupoSituacao {
   return !!valor && valor in GRUPOS;
 }
+
+/** Frase da situação atual no detalhe: "Vencido há 10 dias.", "Vence em 5 dias.". */
+export function fraseSituacao(item: ItemResumo): string {
+  if (item.estado === 'resolvido') return item.resolvidoEm ? `Resolvido em ${dataBr(item.resolvidoEm.slice(0, 10))}.` : 'Resolvido.';
+  const s = situacaoDe(item);
+  const dias = item.analise?.diasRestantes ?? null;
+  if (s === 'sem_prazo' || dias === null) return 'Sem data de vencimento.';
+  if (s === 'vencido') return `Vencido há ${emDias(-dias)}.`;
+  if (s === 'vence_hoje') return 'Vence hoje.';
+  if (dias === 1) return 'Vence amanhã.';
+  return s === 'em_dia' ? `Em dia — vence em ${emDias(dias)}.` : `Vence em ${emDias(dias)}.`;
+}
+
+/** Soma (ou subtrai) dias de uma data AAAA-MM-DD sem depender de fuso. */
+export function somarDiasData(data: string, dias: number): string {
+  const [a, m, d] = data.split('-').map(Number);
+  const t = new Date(Date.UTC(a!, m! - 1, d! + dias));
+  return t.toISOString().slice(0, 10);
+}
