@@ -62,7 +62,7 @@ export function CartaoItem({ item }: { item: ItemResumo }) {
         </Pilula>
         {data && (
           <span className={`cartao-item__data ${neutra ? 'cartao-item__data--neutra' : ''}`}>
-            {resolvido ? `em ${dataBr(data)}` : dataBr(data)}
+            {resolvido ? `pago ${dataBr(data)}` : dataBr(data)}
           </span>
         )}
       </span>

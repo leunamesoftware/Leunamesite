@@ -367,3 +367,10 @@
     height: 22px;
   }
 }
+
+.formulario-item__rotulo-pago {
+  margin-top: 4px;
+  color: #d6e0f2;
+  font-size: 0.95rem;
+  font-weight: 600;
+}

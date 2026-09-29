@@ -6,7 +6,7 @@ import { novoId } from '../../comum/seguranca.js';
 import { dataValida } from '../../comum/tempo.js';
 import { validar } from '../../comum/validacao.js';
 import { repositorioAlertas } from '../alertas/repositorio.js';
-import { analisarItem } from '../analise/servico.js';
+import { analisarItem, hojeLocal } from '../analise/servico.js';
 import { repositorioAnexos, paraAnexo } from '../anexos/repositorio.js';
 import { gerarOrientacao } from '../orientacao/gerador.js';
 import { analiseDaLinha, paraResumo, repositorioItens, type LinhaItem } from './repositorio.js';
@@ -90,7 +90,7 @@ export async function criarItem(deps: Dependencias, usuarioId: string, entrada: 
 
 export async function atualizarItem(deps: Dependencias, usuarioId: string, id: string, entrada: unknown) {
   const atual = await linhaDoUsuario(deps, usuarioId, id);
-  if (atual.estado !== 'ativo') throw new ErroApp('item_resolvido', 409, 'Este item já foi resolvido e fica guardado no histórico.');
+  if (atual.estado !== 'ativo') throw new ErroApp('item_resolvido', 409, 'Este item já foi pago e fica guardado no histórico.');
   const d = validar(esquemaItem, entrada) as Required<ItemEntrada>;
   const agora = deps.relogio.agora().toISOString();
   await deps.banco.transacao(async (banco) => {
@@ -101,13 +101,23 @@ export async function atualizarItem(deps: Dependencias, usuarioId: string, id: s
   return detalharItem(deps, usuarioId, id);
 }
 
-/** Resolver NÃO apaga nada: o item e seus alertas ficam registrados como resolvidos. */
-export async function resolverItem(deps: Dependencias, usuarioId: string, id: string) {
+const esquemaPagamento = z.object({ pagoEm: dataOpcional }).optional().transform((v) => v ?? { pagoEm: null });
+
+/**
+ * Marcar como pago NÃO apaga nada: o item e seus alertas ficam registrados como pagos.
+ * `pagoEm` (AAAA-MM-DD) é o dia em que a pessoa pagou; sem ele, vale o dia de hoje.
+ * O horário gravado é meio-dia no fuso do Brasil, para a data nunca "virar" de dia.
+ */
+export async function resolverItem(deps: Dependencias, usuarioId: string, id: string, entrada?: unknown) {
+  const { pagoEm } = validar(esquemaPagamento, entrada);
   const atual = await linhaDoUsuario(deps, usuarioId, id);
-  if (atual.estado !== 'ativo') throw new ErroApp('item_resolvido', 409, 'Este item já está resolvido.');
+  if (atual.estado !== 'ativo') throw new ErroApp('item_resolvido', 409, 'Este item já está pago.');
+  const hoje = hojeLocal(deps);
+  if (pagoEm && pagoEm > hoje) throw erros.dadosInvalidos({ pagoEm: 'A data do pagamento não pode ser no futuro.' });
+  const pagoEmIso = `${pagoEm ?? hoje}T15:00:00.000Z`;
   const agora = deps.relogio.agora().toISOString();
   await deps.banco.transacao(async (banco) => {
-    await repositorioItens.marcarResolvido(banco, id, agora);
+    await repositorioItens.marcarResolvido(banco, id, pagoEmIso, agora);
     await repositorioAlertas.resolverDoItem(banco, id, agora);
   });
   return detalharItem(deps, usuarioId, id);

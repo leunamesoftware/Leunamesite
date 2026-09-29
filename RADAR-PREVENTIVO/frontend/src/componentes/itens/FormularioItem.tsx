@@ -1,6 +1,7 @@
 import { useId, useRef, useState, type DragEvent, type FormEvent, type ReactNode } from 'react';
 import type { ItemEntrada, Natureza } from '@compartilhado/contratos';
 import { ErroApi } from '../../servicos/api';
+import { hojeLocal, pagamentoSugerido } from '../../utilitarios/situacao';
 import { AvisoErro } from '../formulario/AvisoErro';
 import { BotaoPrincipal } from '../botoes/BotaoPrincipal';
 import {
@@ -32,15 +33,18 @@ const ANTECEDENCIAS: { dias: number | null; nome: string }[] = [
   { dias: 7, nome: '7 dias antes' },
 ];
 
-type Erros = Partial<Record<'natureza' | 'tipo' | 'titulo' | 'dataVencimento' | 'descricao' | 'antecedenciaDias' | 'arquivo', string>>;
+type Erros = Partial<Record<'natureza' | 'tipo' | 'titulo' | 'dataVencimento' | 'descricao' | 'antecedenciaDias' | 'arquivo' | 'pagoEm', string>>;
 
 type Props = {
   inicial?: ItemEntrada;
   tiposSugeridos: string[];
   /** Mostra o campo de anexo (só no cadastro; na edição os anexos ficam no detalhe). */
   comAnexo?: boolean;
+  /** Mostra a escolha "Ainda vou pagar / Já está pago" (só no cadastro). */
+  comSituacaoPagamento?: boolean;
   textoSalvar: string;
-  aoSalvar: (dados: ItemEntrada, arquivo: File | null) => Promise<void>;
+  /** pagoEm: AAAA-MM-DD quando a pessoa marcou "Já está pago"; null quando ainda vai pagar. */
+  aoSalvar: (dados: ItemEntrada, arquivo: File | null, pagoEm: string | null) => Promise<void>;
 };
 
 export function formatarTamanho(bytes: number): string {
@@ -48,7 +52,7 @@ export function formatarTamanho(bytes: number): string {
   return `${(bytes / (1024 * 1024)).toFixed(1).replace('.', ',')} MB`;
 }
 
-export function FormularioItem({ inicial, tiposSugeridos, comAnexo = false, textoSalvar, aoSalvar }: Props) {
+export function FormularioItem({ inicial, tiposSugeridos, comAnexo = false, comSituacaoPagamento = false, textoSalvar, aoSalvar }: Props) {
   const id = useId();
   const [natureza, setNatureza] = useState<Natureza>(inicial?.natureza ?? 'documento');
   const [tipo, setTipo] = useState(inicial?.tipo ?? '');
@@ -57,6 +61,8 @@ export function FormularioItem({ inicial, tiposSugeridos, comAnexo = false, text
   const [descricao, setDescricao] = useState(inicial?.descricao ?? '');
   const [antecedencia, setAntecedencia] = useState<number | null>(inicial?.antecedenciaDias ?? null);
   const [arquivo, setArquivo] = useState<File | null>(null);
+  const [jaPago, setJaPago] = useState(false);
+  const [pagoEm, setPagoEm] = useState('');
   const [arrastando, setArrastando] = useState(false);
   const [erros, setErros] = useState<Erros>({});
   const [erroGeral, setErroGeral] = useState<string | null>(null);
@@ -94,6 +100,8 @@ export function FormularioItem({ inicial, tiposSugeridos, comAnexo = false, text
     const encontrados: Erros = {};
     if (!tipo.trim()) encontrados.tipo = 'Informe o tipo (ex.: Veículo, Casa, Empresa).';
     if (!titulo.trim()) encontrados.titulo = 'Informe o nome (ex.: IPVA, CNH).';
+    if (jaPago && !pagoEm) encontrados.pagoEm = 'Informe quando foi pago.';
+    else if (jaPago && pagoEm > hojeLocal()) encontrados.pagoEm = 'A data do pagamento não pode ser no futuro.';
     setErros(encontrados);
     setErroGeral(null);
     if (Object.values(encontrados).some(Boolean)) return;
@@ -111,6 +119,7 @@ export function FormularioItem({ inicial, tiposSugeridos, comAnexo = false, text
           ...(inicial?.dataEmissao !== undefined ? { dataEmissao: inicial.dataEmissao } : {}),
         },
         arquivo,
+        jaPago ? pagoEm : null,
       );
     } catch (erro) {
       if (erro instanceof ErroApi && Object.keys(erro.campos).length > 0) setErros(erro.campos as Erros);
@@ -197,6 +206,56 @@ export function FormularioItem({ inicial, tiposSugeridos, comAnexo = false, text
           />
         </div>
       </Bloco>
+
+      {comSituacaoPagamento && (
+        <Bloco icone={<IconeCheck />} titulo="Situação" erro={erros.pagoEm}>
+          <div className="formulario-item__natureza" role="radiogroup" aria-label="Situação do pagamento">
+            {[
+              { valor: false, nome: 'Ainda vou pagar' },
+              { valor: true, nome: 'Já está pago' },
+            ].map((o) => (
+              <button
+                key={o.nome}
+                type="button"
+                role="radio"
+                aria-checked={jaPago === o.valor}
+                className={`formulario-item__segmento ${jaPago === o.valor ? 'formulario-item__segmento--ativo' : ''}`}
+                onClick={() => {
+                  setJaPago(o.valor);
+                  if (o.valor && !pagoEm) setPagoEm(pagamentoSugerido(dataVencimento));
+                  setErros((er) => ({ ...er, pagoEm: undefined }));
+                }}
+              >
+                {o.nome}
+              </button>
+            ))}
+          </div>
+          {jaPago && (
+            <>
+              <label className="formulario-item__rotulo-pago" htmlFor={`${id}-pago-em`}>
+                Pago em
+              </label>
+              <div className="formulario-item__caixa">
+                <input
+                  id={`${id}-pago-em`}
+                  className="formulario-item__entrada formulario-item__data"
+                  type="date"
+                  max={hojeLocal()}
+                  value={pagoEm}
+                  onChange={(e) => {
+                    setPagoEm(e.target.value);
+                    setErros((er) => ({ ...er, pagoEm: undefined }));
+                  }}
+                  aria-invalid={erros.pagoEm ? true : undefined}
+                />
+              </div>
+              <p className="formulario-item__apoio">
+                O item entra direto como Em dia (pago) e fica no histórico, sem alertas. Se foi pago depois do vencimento, aparece como pago com atraso.
+              </p>
+            </>
+          )}
+        </Bloco>
+      )}
 
       <Bloco icone={<IconeNota />} titulo="Observações" opcional htmlFor={`${id}-obs`} erro={erros.descricao}>
         <div className="formulario-item__caixa formulario-item__caixa--texto">

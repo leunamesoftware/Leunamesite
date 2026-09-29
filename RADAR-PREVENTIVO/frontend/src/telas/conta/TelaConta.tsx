@@ -72,9 +72,9 @@ export function TelaConta() {
       </section>
 
       <div className="tela-conta__numeros">
-        <Numero tom="azul" icone={<IconeDocumento />} valor={resumo.dados?.totalAtivos} nome="Documentos" detalhe="ativos" />
+        <Numero tom="azul" icone={<IconeDocumento />} valor={resumo.dados?.totalAtivos} nome="A pagar" detalhe="a vencer ou vencidos" />
         <Numero tom="vermelho" icone={<IconeSino />} valor={naoLidos} nome="Alertas" detalhe="não lidos" />
-        <Numero tom="verde" icone={<IconeCheck />} valor={resumo.dados?.contagem.em_dia} nome="Em dia" detalhe="tudo certo" />
+        <Numero tom="verde" icone={<IconeCheck />} valor={resumo.dados?.totalResolvidos} nome="Em dia" detalhe="pagos" />
         <Numero tom="laranja" icone={<IconePasta />} valor={resumo.dados?.pendencias.length} nome="Pendências" detalhe="de cadastro" />
       </div>
 

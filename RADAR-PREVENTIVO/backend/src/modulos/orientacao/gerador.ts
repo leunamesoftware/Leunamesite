@@ -36,8 +36,14 @@ export function gerarOrientacao(item: DadosParaOrientacao, analise: Analise): Or
   const n = analise.diasRestantes ?? 0;
 
   if (item.estado === 'resolvido') {
+    const pagoEm = item.resolvidoEm ? item.resolvidoEm.slice(0, 10) : null;
+    const comAtraso = !!(pagoEm && item.dataVencimento && pagoEm > item.dataVencimento);
     return {
-      resumo: `${t} foi resolvido${item.resolvidoEm ? ` em ${dataBr(item.resolvidoEm.slice(0, 10))}` : ''}.`,
+      resumo: pagoEm
+        ? comAtraso
+          ? `${t} está em dia: foi pago com atraso em ${dataBr(pagoEm)} (venceu em ${data}).`
+          : `${t} está em dia: foi pago em ${dataBr(pagoEm)}.`
+        : `${t} está em dia: foi pago.`,
       prioridade: 'baixa',
       passos: ['Nenhuma ação necessária. O registro e os alertas ficam guardados no histórico.'],
       aviso: AVISO_ORIENTACAO,
@@ -56,7 +62,7 @@ export function gerarOrientacao(item: DadosParaOrientacao, analise: Analise): Or
       ],
     }),
     em_dia: () => ({
-      resumo: `${t} está em dia. Vence em ${dias(n)} (${data}).`,
+      resumo: `${t} vence em ${dias(n)} (${data}).`,
       passos: [
         'Nenhuma ação necessária agora.',
         `O Radar vai avisar quando faltarem ${dias(item.antecedenciaDias ?? FAIXAS.atencaoDias)} para o vencimento.`,
@@ -73,7 +79,7 @@ export function gerarOrientacao(item: DadosParaOrientacao, analise: Analise): Or
         : [
             'Planeje quando e como vai cumprir este prazo.',
             'Separe com antecedência os documentos e valores que forem necessários.',
-            'Quando concluir, marque o item como resolvido.',
+            'Quando pagar ou concluir, marque o item como pago.',
           ],
     }),
     urgente: () => ({
@@ -87,7 +93,7 @@ export function gerarOrientacao(item: DadosParaOrientacao, analise: Analise): Or
         : [
             `Resolva nos próximos dias — o limite é ${data}.`,
             'Se não for possível cumprir no prazo, procure o responsável para negociar ou pedir mais prazo.',
-            'Quando concluir, marque o item como resolvido.',
+            'Quando pagar ou concluir, marque o item como pago.',
           ],
     }),
     vence_hoje: () => ({
@@ -101,7 +107,7 @@ export function gerarOrientacao(item: DadosParaOrientacao, analise: Analise): Or
         : [
             'Hoje é o último dia para cumprir este prazo.',
             'Conclua hoje para evitar multa, juros ou outras consequências.',
-            'Quando concluir, marque o item como resolvido.',
+            'Quando pagar ou concluir, marque o item como pago.',
           ],
     }),
     vencido: () => ({
@@ -115,7 +121,7 @@ export function gerarOrientacao(item: DadosParaOrientacao, analise: Analise): Or
         : [
             'O prazo passou. Regularize o quanto antes para limitar multa, juros ou outras consequências.',
             'Procure o responsável para saber como regularizar.',
-            'Quando resolver, marque o item como resolvido para o Radar parar de alertar.',
+            'Quando pagar ou resolver, marque o item como pago para o Radar parar de alertar.',
           ],
     }),
   };

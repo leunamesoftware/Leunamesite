@@ -50,8 +50,10 @@
   justify-content: space-between;
   min-height: 60px;
   margin-top: 4px;
-  --botao-tamanho: clamp(1.05rem, 4.4vw, 1.3rem);
+  --botao-tamanho: clamp(0.95rem, 4vw, 1.3rem);
   --botao-peso: 700;
+  padding-inline: 1.1em;
+  white-space: nowrap;
 }
 
 .tela-radar__cadastrar-texto {

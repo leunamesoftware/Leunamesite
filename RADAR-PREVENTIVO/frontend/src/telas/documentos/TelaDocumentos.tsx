@@ -120,10 +120,10 @@ export function TelaDocumentos() {
             <legend>Mostrar</legend>
             <div className="tela-documentos__opcoes">
               <Opcao ativa={estado === 'ativo'} aoEscolher={() => mudarParametro('estado', null)}>
-                Ativos
+                A pagar / a vencer
               </Opcao>
               <Opcao ativa={estado === 'resolvido'} aoEscolher={() => mudarParametro('estado', 'resolvido')}>
-                Resolvidos
+                Em dia (pagos)
               </Opcao>
             </div>
           </fieldset>
@@ -147,7 +147,7 @@ export function TelaDocumentos() {
         <div className="tela-documentos__ativos">
           {estado === 'resolvido' && (
             <button type="button" className="tela-documentos__etiqueta" onClick={() => mudarParametro('estado', null)}>
-              Resolvidos
+              Em dia (pagos)
               <IconeFechar />
               <span className="somente-leitor">(remover filtro)</span>
             </button>
@@ -180,7 +180,7 @@ export function TelaDocumentos() {
           {filtrando
             ? 'Nenhum item encontrado com esses filtros.'
             : estado === 'resolvido'
-              ? 'Nenhum item resolvido ainda.'
+              ? 'Nenhum item pago ainda. Quando pagar algo, toque em "Marcar como pago" no item.'
               : 'Você ainda não cadastrou documentos ou prazos. Toque em Cadastrar para começar.'}
         </Vazio>
       )}

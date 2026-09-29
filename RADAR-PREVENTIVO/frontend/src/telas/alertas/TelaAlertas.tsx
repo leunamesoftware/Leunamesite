@@ -230,7 +230,7 @@ export function TelaAlertas() {
                     <span className="cartao-alerta__textos">
                       <span className="cartao-alerta__titulo">{tituloDoAlerta(a)}</span>
                       <span className="cartao-alerta__mensagem">{a.mensagem}</span>
-                      {a.resolvidoEm && <span className="cartao-alerta__resolvido">Resolvido</span>}
+                      {a.resolvidoEm && <span className="cartao-alerta__resolvido">Pago</span>}
                     </span>
                     <span className="cartao-alerta__quando">
                       {a.itemDataVencimento && <span className="cartao-alerta__data">{dataBr(a.itemDataVencimento)}</span>}

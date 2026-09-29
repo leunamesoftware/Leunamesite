@@ -13,7 +13,11 @@ export function rotasItens(deps: Dependencias) {
   r.post('/', async (c) => c.json({ ok: true, dados: await criarItem(deps, uid(c), await lerJson(c.req.raw)) }, 201));
   r.get('/:id', async (c) => c.json({ ok: true, dados: await detalharItem(deps, uid(c), c.req.param('id')) }));
   r.put('/:id', async (c) => c.json({ ok: true, dados: await atualizarItem(deps, uid(c), c.req.param('id'), await lerJson(c.req.raw)) }));
-  r.post('/:id/resolver', async (c) => c.json({ ok: true, dados: await resolverItem(deps, uid(c), c.req.param('id')) }));
+  r.post('/:id/resolver', async (c) => {
+    // O corpo é opcional: sem ele, o pagamento fica registrado com a data de hoje.
+    const entrada = c.req.header('content-length') === '0' || !c.req.header('content-type') ? undefined : await lerJson(c.req.raw);
+    return c.json({ ok: true, dados: await resolverItem(deps, uid(c), c.req.param('id'), entrada) });
+  });
   r.delete('/:id', async (c) => {
     await excluirItem(deps, uid(c), c.req.param('id'));
     return c.json({ ok: true, dados: null });

@@ -211,7 +211,7 @@ describe('resolver não apaga o histórico', () => {
     expect(r.json.dados.resolvidoEm).toBeTruthy();
     expect(r.json.dados.alertas).toHaveLength(1);
     expect(r.json.dados.alertas[0]!.resolvidoEm).toBeTruthy();
-    expect(r.json.dados.orientacao.resumo).toMatch(/foi resolvido/);
+    expect(r.json.dados.orientacao.resumo).toBe('"CNH" está em dia: foi pago com atraso em 01/10/2026 (venceu em 25/09/2026).');
 
     expect((await chamar<unknown[]>('GET', '/api/itens', { token })).json.dados).toHaveLength(0);
     expect((await chamar<unknown[]>('GET', '/api/itens?estado=resolvido', { token })).json.dados).toHaveLength(1);
@@ -222,6 +222,21 @@ describe('resolver não apaga o histórico', () => {
     const editar = await chamar('PUT', `/api/itens/${item.id}`, { token, corpo: { natureza: 'documento', titulo: 'X', tipo: 'CNH' } });
     expect(editar.json.erro).toBe('item_resolvido');
     expect(await deps.banco.um('SELECT id FROM itens WHERE id = ?', [item.id])).toBeTruthy();
+  });
+});
+
+describe('data do pagamento', () => {
+  it('pago em dia quando a data informada é até o vencimento; recusa data no futuro', async () => {
+    const token = await novaConta();
+    const item = (await criarItem(token, { dataVencimento: '2026-09-25' })).json.dados;
+    const futuro = await chamar('POST', `/api/itens/${item.id}/resolver`, { token, corpo: { pagoEm: '2026-10-02' } });
+    expect(futuro.status).toBe(400);
+    expect((futuro.json as { campos?: Record<string, string> }).campos?.pagoEm).toBe('A data do pagamento não pode ser no futuro.');
+
+    const r = await chamar<ItemDetalhe>('POST', `/api/itens/${item.id}/resolver`, { token, corpo: { pagoEm: '2026-09-20' } });
+    expect(r.status).toBe(200);
+    expect(r.json.dados.resolvidoEm!.slice(0, 10)).toBe('2026-09-20');
+    expect(r.json.dados.orientacao.resumo).toBe('"CNH" está em dia: foi pago em 20/09/2026.');
   });
 });
 

@@ -135,3 +135,7 @@
 .menu-acoes__item--perigo {
   color: var(--erro-texto);
 }
+
+.dialogo__texto p {
+  margin: 0;
+}

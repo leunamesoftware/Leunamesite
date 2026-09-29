@@ -461,3 +461,30 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* Data do pagamento no diálogo "Marcar como pago" */
+.detalhe__pago-rotulo {
+  display: block;
+  margin-top: 14px;
+  color: var(--texto-forte);
+  font-weight: 700;
+}
+
+.detalhe__pago-data {
+  display: block;
+  width: 100%;
+  min-height: 48px;
+  margin-top: 6px;
+  padding: 0 14px;
+  border: 1px solid var(--cartao-borda);
+  border-radius: 12px;
+  background: var(--fundo-elevado);
+  color: var(--texto-forte);
+  font: 400 max(16px, 1rem) / 1.3 var(--fonte-texto);
+  color-scheme: dark;
+}
+
+.detalhe__pago-data:focus-visible {
+  outline: 2px solid var(--foco);
+  outline-offset: 2px;
+}

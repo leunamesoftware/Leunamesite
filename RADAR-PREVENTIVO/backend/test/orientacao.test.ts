@@ -18,7 +18,7 @@ describe('orientação gerada pelo sistema', () => {
     const o = gerarOrientacao({ ...base, natureza: 'prazo', titulo: 'IPTU', dataVencimento: '2026-09-21' }, analise('vencido', -10));
     expect(o.resumo).toBe('"IPTU" venceu há 10 dias (21/09/2026).');
     expect(o.prioridade).toBe('critica');
-    expect(o.passos.at(-1)).toMatch(/marque o item como resolvido/);
+    expect(o.passos.at(-1)).toMatch(/marque o item como pago/);
   });
   it('sem data orienta a informar a data', () => {
     const o = gerarOrientacao({ ...base, dataVencimento: null }, { ...analise('sem_prazo', null), pendencias: ['sem_data_vencimento'] });
@@ -30,7 +30,9 @@ describe('orientação gerada pelo sistema', () => {
   });
   it('item resolvido: nenhuma ação e histórico guardado', () => {
     const o = gerarOrientacao({ ...base, estado: 'resolvido', resolvidoEm: '2026-10-02T12:00:00Z' }, analise('urgente', 4));
-    expect(o.resumo).toBe('"CNH" foi resolvido em 02/10/2026.');
+    expect(o.resumo).toBe('"CNH" está em dia: foi pago em 02/10/2026.');
+    const atrasado = gerarOrientacao({ ...base, estado: 'resolvido', resolvidoEm: '2026-10-09T12:00:00Z' }, analise('vencido', -3));
+    expect(atrasado.resumo).toBe('"CNH" está em dia: foi pago com atraso em 09/10/2026 (venceu em 06/10/2026).');
     expect(o.passos[0]).toMatch(/histórico/);
   });
 });

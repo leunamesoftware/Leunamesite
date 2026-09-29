@@ -18,7 +18,7 @@ export const NOME_DA_SITUACAO: Record<Situacao, string> = {
   vence_hoje: 'Vence hoje',
   urgente: 'Urgente',
   atencao: 'Atenção',
-  em_dia: 'Em dia',
+  em_dia: 'A vencer',
   sem_prazo: 'Sem data',
 };
 
@@ -49,7 +49,7 @@ export function textoPrazo(item: ItemResumo): string {
 
 /** Texto curto da pílula na lista de documentos: "Vencido", "Vence hoje", "Vence em 12 dias". */
 export function textoPilula(item: ItemResumo): string {
-  if (item.estado === 'resolvido') return 'Resolvido';
+  if (item.estado === 'resolvido') return 'Em dia';
   const s = situacaoDe(item);
   const dias = item.analise?.diasRestantes ?? null;
   if (s === 'vencido') return 'Vencido';
@@ -59,14 +59,14 @@ export function textoPilula(item: ItemResumo): string {
 }
 
 /** Grupos usados pelos contadores do painel e pelo filtro da lista. */
-export type GrupoSituacao = 'vencidos' | 'urgentes' | 'atencao' | 'em_dia' | 'sem_data' | 'precisa_atencao';
+export type GrupoSituacao = 'vencidos' | 'urgentes' | 'atencao' | 'a_vencer' | 'sem_data' | 'precisa_atencao';
 
 export const GRUPOS: Record<GrupoSituacao, { nome: string; situacoes: Situacao[] }> = {
   precisa_atencao: { nome: 'Precisam de atenção', situacoes: ['vencido', 'vence_hoje', 'urgente', 'atencao'] },
   vencidos: { nome: 'Vencidos', situacoes: ['vencido'] },
   urgentes: { nome: 'Urgentes', situacoes: ['vence_hoje', 'urgente'] },
   atencao: { nome: 'Em atenção', situacoes: ['atencao'] },
-  em_dia: { nome: 'Em dia', situacoes: ['em_dia'] },
+  a_vencer: { nome: 'A vencer', situacoes: ['atencao', 'em_dia'] },
   sem_data: { nome: 'Sem data', situacoes: ['sem_prazo'] },
 };
 
@@ -76,14 +76,19 @@ export function ehGrupo(valor: string | null): valor is GrupoSituacao {
 
 /** Frase da situação atual no detalhe: "Vencido há 10 dias.", "Vence em 5 dias.". */
 export function fraseSituacao(item: ItemResumo): string {
-  if (item.estado === 'resolvido') return item.resolvidoEm ? `Resolvido em ${dataBr(item.resolvidoEm.slice(0, 10))}.` : 'Resolvido.';
+  if (item.estado === 'resolvido') {
+    if (!item.resolvidoEm) return 'Em dia — pago.';
+    return pagoComAtraso(item)
+      ? `Em dia — pago com atraso em ${dataBr(item.resolvidoEm.slice(0, 10))}.`
+      : `Em dia — pago em ${dataBr(item.resolvidoEm.slice(0, 10))}.`;
+  }
   const s = situacaoDe(item);
   const dias = item.analise?.diasRestantes ?? null;
   if (s === 'sem_prazo' || dias === null) return 'Sem data de vencimento.';
   if (s === 'vencido') return `Vencido há ${emDias(-dias)}.`;
   if (s === 'vence_hoje') return 'Vence hoje.';
   if (dias === 1) return 'Vence amanhã.';
-  return s === 'em_dia' ? `Em dia — vence em ${emDias(dias)}.` : `Vence em ${emDias(dias)}.`;
+  return s === 'em_dia' ? `A vencer — vence em ${emDias(dias)}.` : `Vence em ${emDias(dias)}.`;
 }
 
 /** Soma (ou subtrai) dias de uma data AAAA-MM-DD sem depender de fuso. */
@@ -91,4 +96,20 @@ export function somarDiasData(data: string, dias: number): string {
   const [a, m, d] = data.split('-').map(Number);
   const t = new Date(Date.UTC(a!, m! - 1, d! + dias));
   return t.toISOString().slice(0, 10);
+}
+
+/** Pago depois da data de vencimento? */
+export function pagoComAtraso(item: ItemResumo): boolean {
+  return !!(item.resolvidoEm && item.dataVencimento && item.resolvidoEm.slice(0, 10) > item.dataVencimento);
+}
+
+/** Hoje (AAAA-MM-DD) no fuso do Brasil. */
+export function hojeLocal(): string {
+  return new Date().toLocaleDateString('sv-SE', { timeZone: 'America/Sao_Paulo' });
+}
+
+/** Data de pagamento sugerida: o vencimento, se já passou ou é hoje; senão, hoje. */
+export function pagamentoSugerido(dataVencimento: string | null | undefined): string {
+  const hoje = hojeLocal();
+  return dataVencimento && dataVencimento <= hoje ? dataVencimento : hoje;
 }

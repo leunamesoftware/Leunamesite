@@ -23,7 +23,7 @@ import {
   IconeSino,
   IconeTriangulo,
 } from '../../componentes/icones/Icones';
-import { rotaDocumentos, rotas } from '../../rotas';
+import { rotaDocumentos, rotaPagos, rotas } from '../../rotas';
 import './TelaRadar.css';
 
 // Interface 3 — Radar (painel geral). Recriada a partir da referência visual oficial.
@@ -78,8 +78,8 @@ export function TelaRadar() {
           <div className="tela-radar__contadores">
             <CartaoContador valor={c.vencido} nome="Vencidos" tom="vermelho" icone={<IconeExclamacao />} para={rotaDocumentos('vencidos')} />
             <CartaoContador valor={c.urgente + c.vence_hoje} nome="Urgentes" tom="laranja" icone={<IconeRelogio />} para={rotaDocumentos('urgentes')} />
-            <CartaoContador valor={c.atencao} nome="Em atenção" tom="amarelo" icone={<IconeTriangulo />} para={rotaDocumentos('atencao')} />
-            <CartaoContador valor={c.em_dia} nome="Em dia" tom="verde" icone={<IconeCheck />} para={rotaDocumentos('em_dia')} />
+            <CartaoContador valor={c.atencao + c.em_dia} nome="A vencer" tom="amarelo" icone={<IconeTriangulo />} para={rotaDocumentos('a_vencer')} />
+            <CartaoContador valor={resumo.totalResolvidos} nome="Em dia" tom="verde" icone={<IconeCheck />} para={rotaPagos} />
           </div>
 
           <SecaoRadar
@@ -97,10 +97,10 @@ export function TelaRadar() {
           <SecaoRadar
             titulo="Próximos vencimentos"
             tom="azul"
-            verTodos={resumo.proximos.length > 0 ? rotaDocumentos('em_dia') : undefined}
+            verTodos={resumo.proximos.length > 0 ? rotaDocumentos('a_vencer') : undefined}
           >
             {resumo.proximos.length === 0 ? (
-              <Vazio>Nenhum vencimento em dia para mostrar.</Vazio>
+              <Vazio>Nenhum vencimento mais distante por enquanto.</Vazio>
             ) : (
               resumo.proximos.slice(0, LIMITE_POR_SECAO).map((item) => <LinhaItem key={item.id} item={item} variante="dias" />)
             )}

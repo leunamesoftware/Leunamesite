@@ -17,3 +17,6 @@ export const rotaEditarItem = (id: string) => `${rotaItem(id)}/editar`;
 
 /** Lista de documentos já filtrada por um grupo de situação (ex.: vencidos). */
 export const rotaDocumentos = (grupo?: GrupoSituacao) => (grupo ? `${rotas.documentos}?situacao=${grupo}` : rotas.documentos);
+
+/** Itens já pagos (em dia). */
+export const rotaPagos = `${rotas.documentos}?estado=resolvido`;

@@ -29,9 +29,11 @@ import {
   fraseSituacao,
   NOME_DA_SITUACAO,
   situacaoDe,
+  pagoComAtraso,
   somarDiasData,
   TOM_DA_SITUACAO,
   type Tom,
+  hojeLocal,
 } from '../../utilitarios/situacao';
 import { rotaEditarItem, rotas } from '../../rotas';
 import './TelaDetalheItem.css';
@@ -55,6 +57,7 @@ export function TelaDetalheItem() {
   const [aviso, setAviso] = useState<string | null>(avisoInicial);
   const [confirmar, setConfirmar] = useState<null | 'excluir' | 'resolver' | { anexo: Anexo }>(null);
   const [ocupado, setOcupado] = useState(false);
+  const [pagoEm, setPagoEm] = useState('');
   const [enviandoArquivo, setEnviandoArquivo] = useState(false);
   const entradaArquivo = useRef<HTMLInputElement>(null);
 
@@ -75,9 +78,14 @@ export function TelaDetalheItem() {
 
   const resolver = () =>
     executar(async () => {
-      await api(`/itens/${encodeURIComponent(id)}/resolver`, { metodo: 'POST' });
+      await api(`/itens/${encodeURIComponent(id)}/resolver`, { metodo: 'POST', corpo: pagoEm ? { pagoEm } : {} });
       await detalhe.recarregar();
     });
+
+  function abrirPagamento() {
+    setPagoEm(hojeLocal());
+    setConfirmar('resolver');
+  }
 
   const excluir = () =>
     executar(async () => {
@@ -146,12 +154,12 @@ export function TelaDetalheItem() {
   const historico = [
     { data: item.criadoEm, ordem: 0, texto: `${item.natureza === 'prazo' ? 'Prazo' : 'Documento'} cadastrado.`, tom: 'azul' as Tom },
     ...item.alertas.map((a) => ({ data: a.criadoEm, ordem: 1, texto: `Alerta: ${a.mensagem}`, tom: TOM_DA_SITUACAO[a.situacao] })),
-    ...(item.resolvidoEm ? [{ data: item.resolvidoEm, ordem: 2, texto: 'Marcado como resolvido.', tom: 'verde' as Tom }] : []),
+    ...(item.resolvidoEm ? [{ data: item.resolvidoEm, ordem: 2, texto: pagoComAtraso(item) ? 'Pago com atraso.' : 'Pago.', tom: 'verde' as Tom }] : []),
   ].sort((a, b) => b.data.localeCompare(a.data) || b.ordem - a.ordem);
 
   const acoesMenu = [
     ...(!resolvido ? [{ nome: 'Editar', aoEscolher: () => navegar(rotaEditarItem(item.id)) }] : []),
-    ...(!resolvido ? [{ nome: 'Marcar como resolvido', aoEscolher: () => setConfirmar('resolver') }] : []),
+    ...(!resolvido ? [{ nome: 'Marcar como pago', aoEscolher: abrirPagamento }] : []),
     { nome: 'Excluir', aoEscolher: () => setConfirmar('excluir'), perigo: true },
   ];
 
@@ -164,7 +172,7 @@ export function TelaDetalheItem() {
         <div className="detalhe__identificacao">
           <h1 className="detalhe__titulo">{item.titulo}</h1>
           <p className="detalhe__tipo">{item.tipo}</p>
-          <Pilula tom={tom}>{resolvido ? 'Resolvido' : NOME_DA_SITUACAO[situacao]}</Pilula>
+          <Pilula tom={tom}>{resolvido ? 'Em dia' : NOME_DA_SITUACAO[situacao]}</Pilula>
         </div>
         {!resolvido && (
           <button type="button" className="detalhe__editar" onClick={() => navegar(rotaEditarItem(item.id))}>
@@ -289,9 +297,9 @@ export function TelaDetalheItem() {
 
       {!resolvido && (
         <div className="detalhe__acoes">
-          <button type="button" className="detalhe__acao detalhe__acao--resolver" onClick={() => setConfirmar('resolver')}>
+          <button type="button" className="detalhe__acao detalhe__acao--resolver" onClick={abrirPagamento}>
             <IconeCheck />
-            Marcar como resolvido
+            Marcar como pago
           </button>
           <button type="button" className="detalhe__acao detalhe__acao--reagendar" onClick={() => navegar(rotaEditarItem(item.id))}>
             <IconeCalendario />
@@ -306,9 +314,24 @@ export function TelaDetalheItem() {
 
       <ConfirmarDialogo
         aberto={confirmar === 'resolver'}
-        titulo="Marcar como resolvido?"
-        texto="O item sai do seu Radar, mas fica guardado com todo o histórico em Documentos → Resolvidos."
-        textoConfirmar="Marcar como resolvido"
+        titulo="Marcar como pago?"
+        texto={
+          <>
+            <p>O item passa para Em dia e o Radar para de alertar. Ele fica guardado com todo o histórico em Documentos → Em dia (pagos).</p>
+            <label className="detalhe__pago-rotulo" htmlFor="detalhe-pago-em">
+              Pago em
+            </label>
+            <input
+              id="detalhe-pago-em"
+              className="detalhe__pago-data"
+              type="date"
+              max={hojeLocal()}
+              value={pagoEm}
+              onChange={(e) => setPagoEm(e.target.value)}
+            />
+          </>
+        }
+        textoConfirmar="Marcar como pago"
         ocupado={ocupado}
         aoConfirmar={() => void resolver()}
         aoCancelar={() => setConfirmar(null)}
@@ -316,7 +339,7 @@ export function TelaDetalheItem() {
       <ConfirmarDialogo
         aberto={confirmar === 'excluir'}
         titulo="Excluir este item?"
-        texto="O item, os alertas e os arquivos anexados serão apagados de vez. Se ele só foi resolvido, prefira “Marcar como resolvido”."
+        texto="O item, os alertas e os arquivos anexados serão apagados de vez. Se ele só foi pago, prefira “Marcar como pago”."
         textoConfirmar="Excluir"
         perigoso
         ocupado={ocupado}

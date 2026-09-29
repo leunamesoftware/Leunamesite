@@ -69,8 +69,8 @@ export const repositorioItens = {
       [d.natureza, d.titulo, d.tipo, d.descricao, d.dataEmissao, d.dataVencimento, d.antecedenciaDias, d.agora, id],
     );
   },
-  async marcarResolvido(banco: Banco, id: string, agora: string) {
-    await banco.executar(`UPDATE itens SET estado = 'resolvido', resolvido_em = ?, atualizado_em = ? WHERE id = ?`, [agora, agora, id]);
+  async marcarResolvido(banco: Banco, id: string, resolvidoEm: string, agora: string) {
+    await banco.executar(`UPDATE itens SET estado = 'resolvido', resolvido_em = ?, atualizado_em = ? WHERE id = ?`, [resolvidoEm, agora, id]);
   },
   async excluir(banco: Banco, id: string) {
     await banco.executar('DELETE FROM itens WHERE id = ?', [id]);

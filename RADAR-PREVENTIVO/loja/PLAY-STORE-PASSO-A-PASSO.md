@@ -34,10 +34,10 @@ só o que o app faz de verdade.
 >
 > Cadastre o que precisa ser renovado ou pago — CNH, IPVA, alvará, contrato, seguro, qualquer prazo — com a data de vencimento. O Radar analisa cada item na hora e todos os dias:
 >
-> • Mostra no painel o que está vencido, o que é urgente, o que pede atenção e o que está em dia.
+> • Mostra no painel o que está vencido, o que é urgente, o que está a vencer e o que já foi pago (em dia).
 > • Gera alertas dentro do app quando um item entra em atenção, fica urgente, vence hoje ou vence.
 > • Traz uma orientação preventiva com os próximos passos para cada situação.
-> • Guarda o histórico de cada item, mesmo depois de resolvido.
+> • Marque como pago informando a data: o Radar mostra se foi pago em dia ou com atraso e guarda o histórico.
 > • Permite anexar o documento (PDF, JPG ou PNG) para ter tudo em um lugar só.
 > • Radar animado que destaca o que precisa de ação agora.
 >
