@@ -4,7 +4,7 @@ import type { Banco, Parametro } from '../../infra/banco/tipos.js';
 export interface LinhaItem {
   id: string; usuario_id: string; natureza: Natureza; titulo: string; tipo: string; descricao: string | null;
   data_emissao: string | null; data_vencimento: string | null; antecedencia_dias: number | null;
-  estado: EstadoItem; resolvido_em: string | null; origem_dados: OrigemDados; criado_em: string; atualizado_em: string;
+  estado: EstadoItem; resolvido_em: string | null; valor_centavos: number | null; valor_pago_centavos: number | null; origem_dados: OrigemDados; criado_em: string; atualizado_em: string;
   // da análise (LEFT JOIN)
   a_situacao: Situacao | null; a_dias: number | null; a_pendencias: string | null; a_em: string | null; a_versao: string | null;
   qtd_anexos: number;
@@ -26,7 +26,7 @@ export function analiseDaLinha(l: LinhaItem): Analise | null {
 export function paraResumo(l: LinhaItem): ItemResumo {
   return {
     id: l.id, natureza: l.natureza, titulo: l.titulo, tipo: l.tipo, dataVencimento: l.data_vencimento,
-    estado: l.estado, resolvidoEm: l.resolvido_em, analise: analiseDaLinha(l), quantidadeAnexos: Number(l.qtd_anexos),
+    estado: l.estado, resolvidoEm: l.resolvido_em, valorCentavos: l.valor_centavos, valorPagoCentavos: l.valor_pago_centavos, analise: analiseDaLinha(l), quantidadeAnexos: Number(l.qtd_anexos),
     atualizadoEm: l.atualizado_em,
   };
 }
@@ -56,21 +56,21 @@ export const repositorioItens = {
       'SELECT tipo FROM itens WHERE usuario_id = ? GROUP BY tipo ORDER BY COUNT(*) DESC, tipo LIMIT 50', [usuarioId]);
     return linhas.map((l) => l.tipo);
   },
-  async inserir(banco: Banco, d: { id: string; usuarioId: string; natureza: Natureza; titulo: string; tipo: string; descricao: string | null; dataEmissao: string | null; dataVencimento: string | null; antecedenciaDias: number | null; agora: string }) {
+  async inserir(banco: Banco, d: { id: string; usuarioId: string; natureza: Natureza; titulo: string; tipo: string; descricao: string | null; dataEmissao: string | null; dataVencimento: string | null; antecedenciaDias: number | null; valorCentavos: number | null; agora: string }) {
     await banco.executar(
-      `INSERT INTO itens (id, usuario_id, natureza, titulo, tipo, descricao, data_emissao, data_vencimento, antecedencia_dias, estado, origem_dados, criado_em, atualizado_em)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'ativo', 'manual', ?, ?)`,
-      [d.id, d.usuarioId, d.natureza, d.titulo, d.tipo, d.descricao, d.dataEmissao, d.dataVencimento, d.antecedenciaDias, d.agora, d.agora],
+      `INSERT INTO itens (id, usuario_id, natureza, titulo, tipo, descricao, data_emissao, data_vencimento, antecedencia_dias, valor_centavos, estado, origem_dados, criado_em, atualizado_em)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'ativo', 'manual', ?, ?)`,
+      [d.id, d.usuarioId, d.natureza, d.titulo, d.tipo, d.descricao, d.dataEmissao, d.dataVencimento, d.antecedenciaDias, d.valorCentavos, d.agora, d.agora],
     );
   },
-  async atualizar(banco: Banco, id: string, d: { natureza: Natureza; titulo: string; tipo: string; descricao: string | null; dataEmissao: string | null; dataVencimento: string | null; antecedenciaDias: number | null; agora: string }) {
+  async atualizar(banco: Banco, id: string, d: { natureza: Natureza; titulo: string; tipo: string; descricao: string | null; dataEmissao: string | null; dataVencimento: string | null; antecedenciaDias: number | null; valorCentavos: number | null; agora: string }) {
     await banco.executar(
-      `UPDATE itens SET natureza = ?, titulo = ?, tipo = ?, descricao = ?, data_emissao = ?, data_vencimento = ?, antecedencia_dias = ?, atualizado_em = ? WHERE id = ?`,
-      [d.natureza, d.titulo, d.tipo, d.descricao, d.dataEmissao, d.dataVencimento, d.antecedenciaDias, d.agora, id],
+      `UPDATE itens SET natureza = ?, titulo = ?, tipo = ?, descricao = ?, data_emissao = ?, data_vencimento = ?, antecedencia_dias = ?, valor_centavos = ?, atualizado_em = ? WHERE id = ?`,
+      [d.natureza, d.titulo, d.tipo, d.descricao, d.dataEmissao, d.dataVencimento, d.antecedenciaDias, d.valorCentavos, d.agora, id],
     );
   },
-  async marcarResolvido(banco: Banco, id: string, resolvidoEm: string, agora: string) {
-    await banco.executar(`UPDATE itens SET estado = 'resolvido', resolvido_em = ?, atualizado_em = ? WHERE id = ?`, [resolvidoEm, agora, id]);
+  async marcarResolvido(banco: Banco, id: string, resolvidoEm: string, valorPagoCentavos: number | null, agora: string) {
+    await banco.executar(`UPDATE itens SET estado = 'resolvido', resolvido_em = ?, valor_pago_centavos = ?, atualizado_em = ? WHERE id = ?`, [resolvidoEm, valorPagoCentavos, agora, id]);
   },
   async excluir(banco: Banco, id: string) {
     await banco.executar('DELETE FROM itens WHERE id = ?', [id]);

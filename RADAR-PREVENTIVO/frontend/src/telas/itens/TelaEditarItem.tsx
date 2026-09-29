@@ -41,6 +41,7 @@ export function TelaEditarItem() {
             dataEmissao: d.dataEmissao,
             dataVencimento: d.dataVencimento,
             antecedenciaDias: d.antecedenciaDias,
+            valorCentavos: d.valorCentavos,
           }}
           tiposSugeridos={tipos.dados ?? []}
           textoSalvar="Salvar alterações"

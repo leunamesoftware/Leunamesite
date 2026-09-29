@@ -1,0 +1,110 @@
+.resumo-contas {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 4px 0 8px;
+}
+
+.resumo-contas__linha {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 52px;
+  padding: 8px 6px;
+  border-radius: 12px;
+  color: inherit;
+  text-decoration: none;
+}
+
+.resumo-contas__linha + .resumo-contas__linha {
+  border-top: 1px solid rgba(100, 140, 210, 0.18);
+}
+
+.resumo-contas__rotulo {
+  display: flex;
+  flex-direction: column;
+  color: var(--texto-forte);
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+.resumo-contas__quantidade {
+  color: var(--texto-suave);
+  font-size: 0.9rem;
+  font-weight: 400;
+}
+
+.resumo-contas__total {
+  color: var(--texto-forte);
+  font-size: 1.15rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.resumo-contas__linha--atraso .resumo-contas__rotulo,
+.resumo-contas__linha--atraso .resumo-contas__total {
+  color: #ff8a95;
+}
+
+.resumo-contas__linha--hoje .resumo-contas__rotulo,
+.resumo-contas__linha--hoje .resumo-contas__total {
+  color: #ffae66;
+}
+
+a.resumo-contas__linha:focus-visible,
+a.resumo-contas__mes-item:focus-visible {
+  outline: 3px solid var(--foco);
+  outline-offset: 2px;
+}
+
+.resumo-contas__mes {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.resumo-contas__mes-titulo {
+  grid-column: 1 / -1;
+  margin: 0;
+  color: var(--texto-suave);
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.resumo-contas__mes-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 10px 12px;
+  border: 1px solid var(--cartao-borda);
+  border-radius: 14px;
+  background: rgba(6, 23, 58, 0.6);
+  color: var(--texto);
+  font-size: 0.9rem;
+  text-decoration: none;
+}
+
+.resumo-contas__mes-item strong {
+  color: var(--texto-forte);
+  font-size: 1.1rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.resumo-contas__mes-item--pago {
+  border-color: rgba(34, 211, 107, 0.45);
+}
+
+.resumo-contas__mes-item--pago strong {
+  color: #6ee89c;
+}
+
+.resumo-contas__aviso {
+  margin: 8px 0 0;
+  color: var(--texto-suave);
+  font-size: 0.88rem;
+}

@@ -1,4 +1,4 @@
-import type { Analise, ItemResumo, ResumoRadar, Situacao } from '../../../../compartilhado/contratos.js';
+import type { Analise, ItemResumo, ResumoFinanceiro, ResumoRadar, Situacao, TotalContas } from '../../../../compartilhado/contratos.js';
 import type { Dependencias } from '../../comum/ambiente.js';
 import { dataLocal } from '../../comum/tempo.js';
 import type { Banco } from '../../infra/banco/tipos.js';
@@ -68,5 +68,46 @@ export async function resumoRadar(deps: Dependencias, usuarioId: string): Promis
     proximos,
     pendencias,
     alertasNaoLidos: await repositorioAlertas.contarNaoLidos(deps.banco, usuarioId),
+    financeiro: await resumoFinanceiro(deps, usuarioId, ativos),
+  };
+}
+
+const somar = (t: TotalContas, centavos: number) => { t.quantidade++; t.totalCentavos += centavos; };
+const vazio = (): TotalContas => ({ quantidade: 0, totalCentavos: 0 });
+
+/** Somas dos valores: a pagar por data, em atraso e o mês atual (pago × falta pagar). */
+async function resumoFinanceiro(deps: Dependencias, usuarioId: string, ativos: ItemResumo[]): Promise<ResumoFinanceiro> {
+  const hoje = hojeLocal(deps);
+  const mes = hoje.slice(0, 7);
+  const porData = new Map<string, TotalContas>();
+  const emAtraso = vazio();
+  const aPagar = vazio();
+  let semValor = 0;
+  for (const i of ativos) {
+    if (!i.dataVencimento) continue;
+    if (i.valorCentavos === null) { semValor++; continue; }
+    if (i.dataVencimento < hoje) somar(emAtraso, i.valorCentavos);
+    else {
+      if (!porData.has(i.dataVencimento)) porData.set(i.dataVencimento, vazio());
+      somar(porData.get(i.dataVencimento)!, i.valorCentavos);
+    }
+    if (i.dataVencimento.startsWith(mes)) somar(aPagar, i.valorCentavos);
+  }
+  // Pagos no mês: a data do pagamento é gravada ao meio-dia (horário de Brasília), então a margem de 1 dia basta.
+  const pagos = await deps.banco.todos<{ resolvido_em: string; valor: number | null }>(
+    `SELECT resolvido_em, COALESCE(valor_pago_centavos, valor_centavos) AS valor FROM itens
+     WHERE usuario_id = ? AND estado = 'resolvido' AND resolvido_em >= ?`,
+    [usuarioId, `${mes}-01`],
+  );
+  const pago = vazio();
+  for (const p of pagos) {
+    if (p.valor === null || dataLocal(new Date(p.resolvido_em), deps.config.fusoHorario).slice(0, 7) !== mes) continue;
+    somar(pago, Number(p.valor));
+  }
+  return {
+    porData: [...porData.entries()].sort(([a], [b]) => a.localeCompare(b)).slice(0, 5).map(([data, t]) => ({ data, ...t })),
+    emAtraso,
+    mes: { referencia: mes, pago, aPagar },
+    semValor,
   };
 }

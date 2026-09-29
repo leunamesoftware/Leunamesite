@@ -23,14 +23,17 @@ export function ConfirmarDialogo({
   aoCancelar: () => void;
 }) {
   const cancelar = useRef<HTMLButtonElement>(null);
+  const aoCancelarAtual = useRef(aoCancelar);
+  aoCancelarAtual.current = aoCancelar;
 
+  // Foca "Cancelar" só ao abrir; não rouba o foco de campos dentro do diálogo a cada tecla.
   useEffect(() => {
     if (!aberto) return;
     cancelar.current?.focus();
-    const aoTeclar = (e: KeyboardEvent) => e.key === 'Escape' && aoCancelar();
+    const aoTeclar = (e: KeyboardEvent) => e.key === 'Escape' && aoCancelarAtual.current();
     document.addEventListener('keydown', aoTeclar);
     return () => document.removeEventListener('keydown', aoTeclar);
-  }, [aberto, aoCancelar]);
+  }, [aberto]);
 
   if (!aberto) return null;
   return (

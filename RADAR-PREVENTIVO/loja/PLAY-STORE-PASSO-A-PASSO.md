@@ -37,7 +37,8 @@ só o que o app faz de verdade.
 > • Mostra no painel o que está vencido, o que é urgente, o que está a vencer e o que já foi pago (em dia).
 > • Gera alertas dentro do app quando um item entra em atenção, fica urgente, vence hoje ou vence.
 > • Traz uma orientação preventiva com os próximos passos para cada situação.
-> • Marque como pago informando a data: o Radar mostra se foi pago em dia ou com atraso e guarda o histórico.
+> • Informe o valor das contas: o Radar soma quanto pagar em cada dia, o que está em atraso e quanto você pagou no mês.
+> • Marque como pago informando a data e o valor pago: o Radar mostra se foi pago em dia ou com atraso e guarda o histórico.
 > • Permite anexar o documento (PDF, JPG ou PNG) para ter tudo em um lugar só.
 > • Radar animado que destaca o que precisa de ação agora.
 >
@@ -55,6 +56,7 @@ só o que o app faz de verdade.
   - Informações pessoais → **Nome** e **Endereço de e-mail**
   - Arquivos e documentos → **Arquivos e documentos** (anexos que a pessoa escolhe enviar; opcional)
   - Atividade no app → **Outros conteúdos gerados pelo usuário** (documentos e prazos cadastrados)
+  - Informações financeiras → **Outras informações financeiras** (valor das contas e valor pago, que a pessoa digita; opcional)
 - **Anúncios:** o app não tem anúncios.
 
 ## Outras declarações

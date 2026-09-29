@@ -4,6 +4,7 @@ import type { ItemResumo } from '@compartilhado/contratos';
 import { IconeCalendario, IconeChevron, IconeDocumento } from '../icones/Icones';
 import { classePiscar, dataBr, situacaoDe, textoPilula, textoPrazo, TOM_DA_SITUACAO, type Tom } from '../../utilitarios/situacao';
 import { rotaItem } from '../../rotas';
+import { reais } from '../../utilitarios/dinheiro';
 import './Itens.css';
 
 /** Bolinha colorida com o ícone do item: documento ou prazo. */
@@ -31,6 +32,7 @@ export function LinhaItem({ item, variante = 'situacao' }: { item: ItemResumo; v
       <span className="linha-item__textos">
         <span className="linha-item__titulo">{item.titulo}</span>
         <span className={`linha-item__prazo ${variante === 'dias' ? 'linha-item__prazo--neutro' : ''}`}>{textoPrazo(item)}</span>
+        {item.valorCentavos !== null && <span className="item-valor">{reais(item.valorCentavos)}</span>}
       </span>
       {variante === 'dias' && dias != null ? (
         <Pilula neutra>{dias === 1 ? 'Amanhã' : `Em ${dias} dias`}</Pilula>
@@ -55,6 +57,7 @@ export function CartaoItem({ item }: { item: ItemResumo }) {
       <span className="cartao-item__textos">
         <span className="cartao-item__titulo">{item.titulo}</span>
         <span className="cartao-item__tipo">{item.tipo}</span>
+        <ValorDoItem item={item} />
       </span>
       <span className="cartao-item__prazo">
         <Pilula tom={tom} neutra={neutra}>
@@ -69,4 +72,13 @@ export function CartaoItem({ item }: { item: ItemResumo }) {
       <IconeChevron className="cartao-item__seta" />
     </Link>
   );
+}
+
+/** Valor da conta; se já foi paga, o valor pago (com juros, se houve). */
+function ValorDoItem({ item }: { item: ItemResumo }) {
+  if (item.estado === 'resolvido' && item.valorPagoCentavos !== null) {
+    return <span className="item-valor item-valor--pago">Pago {reais(item.valorPagoCentavos)}</span>;
+  }
+  if (item.valorCentavos === null) return null;
+  return <span className="item-valor">{reais(item.valorCentavos)}</span>;
 }

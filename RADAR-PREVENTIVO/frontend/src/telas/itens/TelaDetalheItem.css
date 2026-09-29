@@ -488,3 +488,36 @@
   outline: 2px solid var(--foco);
   outline-offset: 2px;
 }
+
+.detalhe__valor {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  margin: 2px 0 6px;
+  color: var(--texto-forte);
+  font-size: 1.15rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.detalhe__valor-pago {
+  color: #6ee89c;
+}
+
+.detalhe__pago-opcional {
+  color: var(--texto-suave);
+  font-weight: 400;
+}
+
+.detalhe__pago-valor {
+  display: flex;
+  margin-top: 6px;
+  border: 1px solid var(--cartao-borda);
+  border-radius: 12px;
+  background: var(--fundo-elevado);
+}
+
+.detalhe__pago-valor:focus-within {
+  outline: 2px solid var(--foco);
+  outline-offset: 2px;
+}

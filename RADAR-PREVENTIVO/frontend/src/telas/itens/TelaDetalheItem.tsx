@@ -38,6 +38,8 @@ import {
   hojeLocal,
 } from '../../utilitarios/situacao';
 import { rotaEditarItem, rotas } from '../../rotas';
+import { reais } from '../../utilitarios/dinheiro';
+import { CampoValor } from '../../componentes/formulario/CampoValor';
 import './TelaDetalheItem.css';
 
 // Interface 6 — Detalhe do item. Recriada a partir da referência visual oficial.
@@ -60,6 +62,7 @@ export function TelaDetalheItem() {
   const [confirmar, setConfirmar] = useState<null | 'excluir' | 'resolver' | { anexo: Anexo }>(null);
   const [ocupado, setOcupado] = useState(false);
   const [pagoEm, setPagoEm] = useState('');
+  const [valorPago, setValorPago] = useState<number | null>(null);
   const [enviandoArquivo, setEnviandoArquivo] = useState(false);
   const entradaArquivo = useRef<HTMLInputElement>(null);
 
@@ -80,12 +83,13 @@ export function TelaDetalheItem() {
 
   const resolver = () =>
     executar(async () => {
-      await api(`/itens/${encodeURIComponent(id)}/resolver`, { metodo: 'POST', corpo: pagoEm ? { pagoEm } : {} });
+      await api(`/itens/${encodeURIComponent(id)}/resolver`, { metodo: 'POST', corpo: { ...(pagoEm ? { pagoEm } : {}), ...(valorPago !== null ? { valorPagoCentavos: valorPago } : {}) } });
       await detalhe.recarregar();
     });
 
   function abrirPagamento() {
     setPagoEm(hojeLocal());
+    setValorPago(detalhe.dados?.valorCentavos ?? null);
     setConfirmar('resolver');
   }
 
@@ -174,6 +178,12 @@ export function TelaDetalheItem() {
         <div className="detalhe__identificacao">
           <h1 className="detalhe__titulo">{item.titulo}</h1>
           <p className="detalhe__tipo">{item.tipo}</p>
+          {(item.valorCentavos !== null || item.valorPagoCentavos !== null) && (
+            <p className="detalhe__valor">
+              {item.valorCentavos !== null && <span>{reais(item.valorCentavos)}</span>}
+              {resolvido && item.valorPagoCentavos !== null && <span className="detalhe__valor-pago">Pago {reais(item.valorPagoCentavos)}</span>}
+            </p>
+          )}
           <Pilula tom={tom}>{resolvido ? 'Em dia' : venceLogo(item) === 'amanha' ? 'Vence amanhã' : NOME_DA_SITUACAO[situacao]}</Pilula>
         </div>
         {!resolvido && (
@@ -331,6 +341,12 @@ export function TelaDetalheItem() {
               value={pagoEm}
               onChange={(e) => setPagoEm(e.target.value)}
             />
+            <label className="detalhe__pago-rotulo" htmlFor="detalhe-valor-pago">
+              Valor pago <span className="detalhe__pago-opcional">(com juros, se teve)</span>
+            </label>
+            <span className="detalhe__pago-valor">
+              <CampoValor id="detalhe-valor-pago" valor={valorPago} aoMudar={setValorPago} />
+            </span>
           </>
         }
         textoConfirmar="Marcar como pago"

@@ -245,6 +245,45 @@ describe('virada do dia sem esperar a rotina', () => {
   });
 });
 
+describe('valores', () => {
+  it('soma a pagar por data, em atraso e o mês (pago × falta pagar)', async () => {
+    const token = await novaConta();
+    await criarItem(token, { titulo: 'Luz', dataVencimento: '2026-10-12', valorCentavos: 15000 });
+    await criarItem(token, { titulo: 'Água', dataVencimento: '2026-10-12', valorCentavos: 8050 });
+    await criarItem(token, { titulo: 'Aluguel', dataVencimento: '2026-11-05', valorCentavos: 120000 });
+    await criarItem(token, { titulo: 'Gás', dataVencimento: '2026-10-13' });
+    const atrasada = (await criarItem(token, { titulo: 'Internet', dataVencimento: '2026-09-25', valorCentavos: 10000 })).json.dados;
+    const outra = (await criarItem(token, { titulo: 'Cartão', dataVencimento: '2026-09-28', valorCentavos: 30000 })).json.dados;
+    expect(outra.valorCentavos).toBe(30000);
+
+    const invalido = await criarItem(token, { valorCentavos: -1 });
+    expect(invalido.status).toBe(400);
+
+    // Pagou a internet com juros hoje; o valor pago fica registrado.
+    const pago = await chamar<ItemDetalhe>('POST', `/api/itens/${atrasada.id}/resolver`, { token, corpo: { valorPagoCentavos: 10500 } });
+    expect(pago.json.dados.valorPagoCentavos).toBe(10500);
+    expect(pago.json.dados.valorCentavos).toBe(10000);
+
+    const f = (await chamar<{ financeiro: unknown }>('GET', '/api/radar', { token })).json.dados.financeiro;
+    expect(f).toEqual({
+      porData: [
+        { data: '2026-10-12', quantidade: 2, totalCentavos: 23050 },
+        { data: '2026-11-05', quantidade: 1, totalCentavos: 120000 },
+      ],
+      emAtraso: { quantidade: 1, totalCentavos: 30000 },
+      mes: { referencia: '2026-10', pago: { quantidade: 1, totalCentavos: 10500 }, aPagar: { quantidade: 2, totalCentavos: 23050 } },
+      semValor: 1,
+    });
+  });
+
+  it('sem valor pago informado, vale o valor da conta', async () => {
+    const token = await novaConta();
+    const item = (await criarItem(token, { dataVencimento: '2026-10-05', valorCentavos: 4990 })).json.dados;
+    const pago = await chamar<ItemDetalhe>('POST', `/api/itens/${item.id}/resolver`, { token });
+    expect(pago.json.dados.valorPagoCentavos).toBe(4990);
+  });
+});
+
 describe('data do pagamento', () => {
   it('pago em dia quando a data informada é até o vencimento; recusa data no futuro', async () => {
     const token = await novaConta();

@@ -17,6 +17,12 @@ const dataOpcional = z
   .transform((v) => (v ? v : null))
   .refine((v) => v === null || dataValida(v), 'Data inválida (use o formato AAAA-MM-DD).');
 
+/** Valor em centavos (R$ 12,34 = 1234). Até R$ 99.999.999,99. */
+const valorOpcional = z
+  .union([z.number().int('Valor inválido.').min(0, 'O valor não pode ser negativo.').max(9_999_999_999, 'Valor alto demais.'), z.null()])
+  .optional()
+  .transform((v) => v ?? null);
+
 const esquemaItem = z
   .object({
     natureza: z.enum(['documento', 'prazo'], { errorMap: () => ({ message: 'Escolha: documento ou prazo.' }) }),
@@ -29,6 +35,7 @@ const esquemaItem = z
       .union([z.number().int('Use um número inteiro de dias.').min(1, 'Mínimo 1 dia.').max(365, 'Máximo 365 dias.'), z.null()])
       .optional()
       .transform((v) => v ?? null),
+    valorCentavos: valorOpcional,
   })
   .refine((d) => !(d.dataEmissao && d.dataVencimento && d.dataEmissao > d.dataVencimento), {
     message: 'A data de vencimento não pode ser anterior à de emissão.',
@@ -83,7 +90,7 @@ export async function criarItem(deps: Dependencias, usuarioId: string, entrada: 
   const id = novoId();
   const agora = deps.relogio.agora().toISOString();
   await deps.banco.transacao(async (banco) => {
-    await repositorioItens.inserir(banco, { id, usuarioId, ...d, descricao: d.descricao ?? null, dataEmissao: d.dataEmissao ?? null, dataVencimento: d.dataVencimento ?? null, antecedenciaDias: d.antecedenciaDias ?? null, agora });
+    await repositorioItens.inserir(banco, { id, usuarioId, ...d, descricao: d.descricao ?? null, dataEmissao: d.dataEmissao ?? null, dataVencimento: d.dataVencimento ?? null, antecedenciaDias: d.antecedenciaDias ?? null, valorCentavos: d.valorCentavos ?? null, agora });
     const linha = await repositorioItens.buscar(banco, usuarioId, id);
     await analisarItem(deps, banco, linha!);
   });
@@ -96,22 +103,26 @@ export async function atualizarItem(deps: Dependencias, usuarioId: string, id: s
   const d = validar(esquemaItem, entrada) as Required<ItemEntrada>;
   const agora = deps.relogio.agora().toISOString();
   await deps.banco.transacao(async (banco) => {
-    await repositorioItens.atualizar(banco, id, { ...d, descricao: d.descricao ?? null, dataEmissao: d.dataEmissao ?? null, dataVencimento: d.dataVencimento ?? null, antecedenciaDias: d.antecedenciaDias ?? null, agora });
+    await repositorioItens.atualizar(banco, id, { ...d, descricao: d.descricao ?? null, dataEmissao: d.dataEmissao ?? null, dataVencimento: d.dataVencimento ?? null, antecedenciaDias: d.antecedenciaDias ?? null, valorCentavos: d.valorCentavos ?? null, agora });
     const linha = await repositorioItens.buscar(banco, usuarioId, id);
     await analisarItem(deps, banco, linha!);
   });
   return detalharItem(deps, usuarioId, id);
 }
 
-const esquemaPagamento = z.object({ pagoEm: dataOpcional }).optional().transform((v) => v ?? { pagoEm: null });
+const esquemaPagamento = z
+  .object({ pagoEm: dataOpcional, valorPagoCentavos: valorOpcional })
+  .optional()
+  .transform((v) => v ?? { pagoEm: null, valorPagoCentavos: null });
 
 /**
  * Marcar como pago NÃO apaga nada: o item e seus alertas ficam registrados como pagos.
  * `pagoEm` (AAAA-MM-DD) é o dia em que a pessoa pagou; sem ele, vale o dia de hoje.
+ * `valorPagoCentavos` é quanto pagou (com juros, se houve); sem ele, vale o valor da conta.
  * O horário gravado é meio-dia no fuso do Brasil, para a data nunca "virar" de dia.
  */
 export async function resolverItem(deps: Dependencias, usuarioId: string, id: string, entrada?: unknown) {
-  const { pagoEm } = validar(esquemaPagamento, entrada);
+  const { pagoEm, valorPagoCentavos } = validar(esquemaPagamento, entrada);
   const atual = await linhaDoUsuario(deps, usuarioId, id);
   if (atual.estado !== 'ativo') throw new ErroApp('item_resolvido', 409, 'Este item já está pago.');
   const hoje = hojeLocal(deps);
@@ -119,7 +130,7 @@ export async function resolverItem(deps: Dependencias, usuarioId: string, id: st
   const pagoEmIso = `${pagoEm ?? hoje}T15:00:00.000Z`;
   const agora = deps.relogio.agora().toISOString();
   await deps.banco.transacao(async (banco) => {
-    await repositorioItens.marcarResolvido(banco, id, pagoEmIso, agora);
+    await repositorioItens.marcarResolvido(banco, id, pagoEmIso, valorPagoCentavos ?? atual.valor_centavos, agora);
     await repositorioAlertas.resolverDoItem(banco, id, agora);
   });
   return detalharItem(deps, usuarioId, id);

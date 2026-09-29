@@ -9,6 +9,7 @@ import { BotaoIcone } from '../../componentes/app/BotaoIcone';
 import { Contador } from '../../componentes/app/Contador';
 import { MarcaHorizontal } from '../../componentes/marca/MarcaHorizontal';
 import { CartaoContador, SecaoRadar } from '../../componentes/radar/Radar';
+import { ResumoContas } from '../../componentes/radar/ResumoContas';
 import { LinhaItem } from '../../componentes/itens/Itens';
 import { Carregando, FalhaAoCarregar, Vazio } from '../../componentes/estado-tela/EstadoTela';
 import { BotaoPrincipal } from '../../componentes/botoes/BotaoPrincipal';
@@ -106,6 +107,10 @@ export function TelaRadar() {
             ) : (
               resumo.proximos.slice(0, LIMITE_POR_SECAO).map((item) => <LinhaItem key={item.id} item={item} variante="dias" />)
             )}
+          </SecaoRadar>
+
+          <SecaoRadar titulo="Contas a pagar" tom="verde">
+            <ResumoContas financeiro={resumo.financeiro} />
           </SecaoRadar>
 
           <SecaoRadar titulo="Pendências de cadastro" tom="roxo" verTodos={pendentes > 0 ? rotaDocumentos('sem_data') : undefined}>

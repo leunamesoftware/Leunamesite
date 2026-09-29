@@ -3,12 +3,14 @@ import type { ItemEntrada, Natureza } from '@compartilhado/contratos';
 import { ErroApi } from '../../servicos/api';
 import { hojeLocal, pagamentoSugerido } from '../../utilitarios/situacao';
 import { AvisoErro } from '../formulario/AvisoErro';
+import { CampoValor } from '../formulario/CampoValor';
 import { BotaoPrincipal } from '../botoes/BotaoPrincipal';
 import {
   IconeCalendario,
   IconeCheck,
   IconeChevron,
   IconeClipe,
+  IconeDinheiro,
   IconeDocumento,
   IconeFechar,
   IconeNota,
@@ -33,7 +35,7 @@ const ANTECEDENCIAS: { dias: number | null; nome: string }[] = [
   { dias: 7, nome: '7 dias antes' },
 ];
 
-type Erros = Partial<Record<'natureza' | 'tipo' | 'titulo' | 'dataVencimento' | 'descricao' | 'antecedenciaDias' | 'arquivo' | 'pagoEm', string>>;
+type Erros = Partial<Record<'natureza' | 'tipo' | 'titulo' | 'dataVencimento' | 'descricao' | 'antecedenciaDias' | 'arquivo' | 'pagoEm' | 'valorCentavos', string>>;
 
 type Props = {
   inicial?: ItemEntrada;
@@ -59,6 +61,7 @@ export function FormularioItem({ inicial, tiposSugeridos, comAnexo = false, comS
   const [titulo, setTitulo] = useState(inicial?.titulo ?? '');
   const [dataVencimento, setDataVencimento] = useState(inicial?.dataVencimento ?? '');
   const [descricao, setDescricao] = useState(inicial?.descricao ?? '');
+  const [valor, setValor] = useState<number | null>(inicial?.valorCentavos ?? null);
   const [antecedencia, setAntecedencia] = useState<number | null>(inicial?.antecedenciaDias ?? null);
   const [arquivo, setArquivo] = useState<File | null>(null);
   const [jaPago, setJaPago] = useState(false);
@@ -116,6 +119,7 @@ export function FormularioItem({ inicial, tiposSugeridos, comAnexo = false, comS
           dataVencimento: dataVencimento || null,
           descricao: descricao.trim() || null,
           antecedenciaDias: antecedencia,
+          valorCentavos: valor,
           ...(inicial?.dataEmissao !== undefined ? { dataEmissao: inicial.dataEmissao } : {}),
         },
         arquivo,
@@ -203,6 +207,20 @@ export function FormularioItem({ inicial, tiposSugeridos, comAnexo = false, comS
               setErros((er) => ({ ...er, dataVencimento: undefined }));
             }}
             aria-invalid={erros.dataVencimento ? true : undefined}
+          />
+        </div>
+      </Bloco>
+
+      <Bloco icone={<IconeDinheiro />} titulo="Valor" opcional htmlFor={`${id}-valor`} erro={erros.valorCentavos} ajuda="Com o valor, o Radar soma quanto pagar em cada dia e quanto você pagou no mês.">
+        <div className="formulario-item__caixa">
+          <CampoValor
+            id={`${id}-valor`}
+            valor={valor}
+            aoMudar={(v) => {
+              setValor(v);
+              setErros((er) => ({ ...er, valorCentavos: undefined }));
+            }}
+            invalido={!!erros.valorCentavos}
           />
         </div>
       </Bloco>

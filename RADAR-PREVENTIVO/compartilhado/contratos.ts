@@ -106,6 +106,8 @@ export interface ItemEntrada {
   dataVencimento?: string | null;
   /** Substitui os 30 dias padrão da faixa "Atenção" só neste item. */
   antecedenciaDias?: number | null;
+  /** Valor a pagar, em centavos (R$ 12,34 = 1234). Opcional. */
+  valorCentavos?: number | null;
 }
 
 export interface Analise {
@@ -141,6 +143,10 @@ export interface ItemResumo {
   dataVencimento: string | null;
   estado: EstadoItem;
   resolvidoEm: string | null;
+  /** Valor a pagar, em centavos. */
+  valorCentavos: number | null;
+  /** Quanto foi pago (com juros, se houve), em centavos. Só em itens pagos. */
+  valorPagoCentavos: number | null;
   analise: Analise | null;
   quantidadeAnexos: number;
   atualizadoEm: string;
@@ -193,4 +199,22 @@ export interface ResumoRadar {
   /** Itens com alguma pendência de cadastro. */
   pendencias: ItemResumo[];
   alertasNaoLidos: number;
+  financeiro: ResumoFinanceiro;
+}
+
+export interface TotalContas {
+  quantidade: number;
+  totalCentavos: number;
+}
+
+/** Somas dos valores informados. Itens sem valor não entram nas somas. */
+export interface ResumoFinanceiro {
+  /** Contas ainda não pagas que vencem de hoje em diante, somadas por data (até 5 datas). */
+  porData: (TotalContas & { data: string })[];
+  /** Contas vencidas e ainda não pagas. */
+  emAtraso: TotalContas;
+  /** Mês atual (AAAA-MM): quanto já foi pago e quanto falta pagar do que vence no mês. */
+  mes: { referencia: string; pago: TotalContas; aPagar: TotalContas };
+  /** Contas ativas com data e sem valor informado (ficam fora das somas). */
+  semValor: number;
 }
