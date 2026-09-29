@@ -1,6 +1,6 @@
 import { createContext, useCallback, useContext, useMemo, useState, type ReactNode } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
-import type { SessaoCriada } from '@compartilhado/contratos';
+import type { SessaoCriada, Usuario } from '@compartilhado/contratos';
 import { chamarApi, ErroApi } from '../servicos/api';
 import { lerSessao, limparSessao, salvarSessao } from './sessao';
 import { rotas } from '../rotas';
@@ -9,6 +9,8 @@ type ValorSessao = {
   sessao: SessaoCriada | null;
   /** Guarda a sessão recém-criada (login ou cadastro). */
   iniciar: (sessao: SessaoCriada) => void;
+  /** Atualiza os dados da pessoa guardados na sessão (ex.: depois de editar o nome). */
+  atualizarUsuario: (usuario: Usuario) => void;
   /** Sai da conta: encerra a sessão no servidor e apaga a cópia do aparelho. */
   sair: () => Promise<void>;
   /** Chamada à API já com a credencial; se a sessão expirou, volta para o login. */
@@ -23,6 +25,15 @@ export function ProvedorSessao({ children }: { children: ReactNode }) {
   const iniciar = useCallback((nova: SessaoCriada) => {
     salvarSessao(nova);
     setSessao(nova);
+  }, []);
+
+  const atualizarUsuario = useCallback((usuario: Usuario) => {
+    setSessao((atual) => {
+      if (!atual) return atual;
+      const nova = { ...atual, usuario };
+      salvarSessao(nova);
+      return nova;
+    });
   }, []);
 
   const expirar = useCallback(() => {
@@ -48,7 +59,7 @@ export function ProvedorSessao({ children }: { children: ReactNode }) {
     [sessao, expirar],
   );
 
-  const valor = useMemo(() => ({ sessao, iniciar, sair, api }), [sessao, iniciar, sair, api]);
+  const valor = useMemo(() => ({ sessao, iniciar, atualizarUsuario, sair, api }), [sessao, iniciar, atualizarUsuario, sair, api]);
   return <Contexto.Provider value={valor}>{children}</Contexto.Provider>;
 }
 

@@ -11,7 +11,7 @@ import { TelaCadastrarItem } from './telas/itens/TelaCadastrarItem';
 import { TelaEditarItem } from './telas/itens/TelaEditarItem';
 import { TelaDetalheItem } from './telas/itens/TelaDetalheItem';
 import { TelaAlertas } from './telas/alertas/TelaAlertas';
-import { TelaPendente } from './telas/pendente/TelaPendente';
+import { TelaConta } from './telas/conta/TelaConta';
 import { rotas } from './rotas';
 
 /** Tela interna: exige login e usa o layout com a barra de navegação. */
@@ -38,7 +38,7 @@ export function App() {
           <Route path="/itens/:id/editar" element={<Interna><TelaEditarItem /></Interna>} />
           <Route path="/itens/:id" element={<Interna><TelaDetalheItem /></Interna>} />
           <Route path={rotas.alertas} element={<Interna><TelaAlertas /></Interna>} />
-          <Route path={rotas.conta} element={<RotaProtegida><TelaPendente titulo="Conta" /></RotaProtegida>} />
+          <Route path={rotas.conta} element={<Interna><TelaConta /></Interna>} />
           <Route path="*" element={<Navigate to={rotas.abertura} replace />} />
         </Routes>
       </ProvedorSessao>

@@ -1,0 +1,313 @@
+.tela-conta {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.tela-conta__marca {
+  --marca-tamanho: clamp(22px, 6.6vw, 32px);
+}
+
+/* Perfil */
+.tela-conta__perfil {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  border: 1.5px solid var(--cartao-borda);
+  border-radius: 22px;
+  background: var(--cartao-fundo);
+}
+
+.tela-conta__perfil::before {
+  content: '';
+  position: absolute;
+  inset: -1.5px;
+  border-radius: inherit;
+  border-top: 2.5px solid var(--azul-item);
+  border-left: 3px solid var(--azul-item);
+  -webkit-mask-image: radial-gradient(circle at 0 0, #000 0, #000 70px, transparent 160px);
+  mask-image: radial-gradient(circle at 0 0, #000 0, #000 70px, transparent 160px);
+  filter: drop-shadow(0 0 6px var(--azul-item));
+  pointer-events: none;
+}
+
+.tela-conta__avatar {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 78px;
+  height: 78px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #4a9bff 0%, #1c64e6 60%, #0f3d9e 100%);
+  box-shadow: 0 0 20px rgba(40, 130, 255, 0.5);
+  color: #fff;
+  font: 800 1.7rem / 1 var(--fonte-texto);
+}
+
+.tela-conta__avatar svg {
+  width: 40px;
+  height: 40px;
+}
+
+.tela-conta__identidade {
+  flex: 1;
+  min-width: 0;
+}
+
+.tela-conta__identidade p {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.tela-conta__nome {
+  color: var(--texto-forte);
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+
+.tela-conta__email {
+  color: #7fb8ff;
+  font-size: 1rem;
+}
+
+.tela-conta__desde {
+  margin-top: 2px !important;
+  color: #9cc2ff;
+  font-size: 0.95rem;
+}
+
+.tela-conta__editar {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex: none;
+  min-height: 46px;
+  padding: 0 14px;
+  border: 1.5px solid rgba(90, 150, 240, 0.7);
+  border-radius: 14px;
+  background: rgba(8, 20, 52, 0.7);
+  color: var(--texto-forte);
+  font: 600 0.95rem / 1 var(--fonte-texto);
+  cursor: pointer;
+}
+
+.tela-conta__editar svg {
+  width: 20px;
+  height: 20px;
+}
+
+@media (max-width: 460px) {
+  .tela-conta__perfil {
+    flex-wrap: wrap;
+  }
+
+  .tela-conta__avatar {
+    width: 62px;
+    height: 62px;
+    font-size: 1.35rem;
+  }
+
+  .tela-conta__editar {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* Números */
+.tela-conta__numeros {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+
+@media (max-width: 520px) {
+  .tela-conta__numeros {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.tela-conta__numero {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 10px;
+  border: 1.5px solid color-mix(in srgb, var(--tom) 45%, rgba(64, 112, 200, 0.4));
+  border-radius: 18px;
+  background: var(--cartao-fundo);
+}
+
+.tela-conta__numero-icone {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: var(--tom);
+  box-shadow: 0 0 12px color-mix(in srgb, var(--tom) 55%, transparent);
+  color: #fff;
+}
+
+.tela-conta__numero-icone svg {
+  width: 22px;
+  height: 22px;
+}
+
+.tela-conta__numero p {
+  margin: 0;
+}
+
+.tela-conta__numero-valor {
+  color: var(--tom-claro);
+  font: 800 1.6rem / 1.05 var(--fonte-texto);
+  font-variant-numeric: tabular-nums;
+}
+
+.tela-conta__numero-nome {
+  color: var(--texto-forte);
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.tela-conta__numero-detalhe {
+  color: #aebfdc;
+  font-size: 0.82rem;
+}
+
+/* Opções */
+.tela-conta__opcoes {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.tela-conta__opcao {
+  border: 1.5px solid rgba(64, 112, 200, 0.32);
+  border-left: 3px solid var(--tom);
+  border-radius: 18px;
+  background: var(--cartao-fundo);
+  box-shadow: inset 6px 0 18px -10px var(--tom);
+}
+
+.tela-conta__opcao-botao {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: 12px 12px 12px 14px;
+  border: 0;
+  border-radius: 18px;
+  background: transparent;
+  color: inherit;
+  font-family: var(--fonte-texto);
+  text-align: left;
+  cursor: pointer;
+}
+
+.tela-conta__opcao-botao:focus-visible {
+  outline: 3px solid var(--foco);
+  outline-offset: -3px;
+}
+
+.tela-conta__opcao-textos {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+.tela-conta__opcao-titulo {
+  color: var(--texto-forte);
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.tela-conta__opcao-descricao {
+  color: #aebfdc;
+  font-size: 0.95rem;
+}
+
+.tela-conta__opcao-seta {
+  width: 22px;
+  height: 22px;
+  flex: none;
+  color: #9fb4d8;
+  transition: transform 160ms ease;
+}
+
+.tela-conta__opcao--aberta .tela-conta__opcao-seta {
+  transform: rotate(90deg);
+}
+
+.tela-conta__painel {
+  padding: 4px 14px 16px;
+}
+
+.tela-conta__formulario {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  --campo-altura: 54px;
+}
+
+.tela-conta__fixo {
+  margin: 0;
+  color: var(--texto-suave);
+  overflow-wrap: anywhere;
+}
+
+.tela-conta__fixo strong {
+  color: var(--texto);
+  font-weight: 600;
+}
+
+.tela-conta__tipo {
+  display: flex;
+  gap: 8px;
+}
+
+.tela-conta__sucesso {
+  margin: 0;
+  padding: 12px 14px;
+  border: 1px solid var(--verde);
+  border-radius: 14px;
+  background: rgba(34, 211, 107, 0.12);
+  color: #b9f5d0;
+}
+
+/* Sair */
+.tela-conta__sair {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  min-height: 56px;
+  margin-top: 4px;
+  border: 2px solid var(--vermelho);
+  border-radius: 999px;
+  background: linear-gradient(180deg, rgba(160, 20, 50, 0.55), rgba(110, 10, 35, 0.55));
+  box-shadow: 0 0 18px rgba(255, 77, 94, 0.3);
+  color: var(--texto-forte);
+  font: 700 1.1rem / 1 var(--fonte-texto);
+  cursor: pointer;
+}
+
+.tela-conta__sair svg {
+  width: 24px;
+  height: 24px;
+}
+
+.tela-conta__sair:focus-visible,
+.tela-conta__editar:focus-visible {
+  outline: 3px solid var(--foco);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tela-conta__opcao-seta {
+    transition: none;
+  }
+}
