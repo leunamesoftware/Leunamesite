@@ -342,7 +342,10 @@ export default {
       const ident = email.toLowerCase().trim();
       if (await limiteExcedido(env, ident, 'login')) return json({ ok: false, erro: 'muitas_tentativas' }, 429);
       const user = await env.DB.prepare('SELECT * FROM users WHERE email = ?').bind(ident).first();
-      const valido = user ? await verificarSenha(senha, user.senha_hash, env) : false;
+      let valido = user ? await verificarSenha(senha, user.senha_hash, env) : false;
+      // Teclado do celular às vezes põe um espaço no fim da senha sem a
+      // pessoa perceber -- tenta de novo sem os espaços das pontas.
+      if (!valido && user && senha !== senha.trim()) valido = await verificarSenha(senha.trim(), user.senha_hash, env);
       await registrarTentativa(env, ident, 'login', valido);
       if (!valido) return json({ ok: false, erro: 'credenciais_invalidas' }, 401);
       if (user.bloqueado) return json({ ok: false, erro: 'conta_bloqueada' }, 403);
