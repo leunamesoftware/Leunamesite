@@ -19,13 +19,15 @@ export class ErroApi extends Error {
 
 type Opcoes = {
   metodo?: 'GET' | 'POST' | 'PUT' | 'DELETE';
+  /** Objeto (vai como JSON) ou FormData (envio de arquivo). */
   corpo?: unknown;
   token?: string | null;
 };
 
 export async function chamarApi<T>(caminho: string, { metodo = 'GET', corpo, token }: Opcoes = {}): Promise<T> {
   const cabecalhos: Record<string, string> = {};
-  if (corpo !== undefined) cabecalhos['Content-Type'] = 'application/json';
+  const ehArquivo = corpo instanceof FormData;
+  if (corpo !== undefined && !ehArquivo) cabecalhos['Content-Type'] = 'application/json';
   if (token) cabecalhos.Authorization = `Bearer ${token}`;
 
   let resposta: Response;
@@ -33,7 +35,7 @@ export async function chamarApi<T>(caminho: string, { metodo = 'GET', corpo, tok
     resposta = await fetch(`${BASE}/api${caminho}`, {
       method: metodo,
       headers: cabecalhos,
-      body: corpo === undefined ? undefined : JSON.stringify(corpo),
+      body: corpo === undefined ? undefined : ehArquivo ? corpo : JSON.stringify(corpo),
     });
   } catch {
     throw new ErroApi('sem_conexao', 'Não foi possível conectar. Verifique sua internet e tente de novo.');

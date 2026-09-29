@@ -7,6 +7,8 @@ import { Entrar } from './telas/entrar/Entrar';
 import { CriarConta } from './telas/criar-conta/CriarConta';
 import { TelaRadar } from './telas/radar/TelaRadar';
 import { TelaDocumentos } from './telas/documentos/TelaDocumentos';
+import { TelaCadastrarItem } from './telas/itens/TelaCadastrarItem';
+import { TelaEditarItem } from './telas/itens/TelaEditarItem';
 import { TelaPendente } from './telas/pendente/TelaPendente';
 import { rotas } from './rotas';
 
@@ -30,7 +32,8 @@ export function App() {
           <Route path={rotas.criarConta} element={<RotaPublica><CriarConta /></RotaPublica>} />
           <Route path={rotas.radar} element={<Interna><TelaRadar /></Interna>} />
           <Route path={rotas.documentos} element={<Interna><TelaDocumentos /></Interna>} />
-          <Route path={rotas.novoItem} element={<RotaProtegida><TelaPendente titulo="Cadastrar documento ou prazo" /></RotaProtegida>} />
+          <Route path={rotas.novoItem} element={<Interna><TelaCadastrarItem /></Interna>} />
+          <Route path="/itens/:id/editar" element={<Interna><TelaEditarItem /></Interna>} />
           <Route path="/itens/:id" element={<RotaProtegida><TelaPendente titulo="Detalhe do item" /></RotaProtegida>} />
           <Route path={rotas.alertas} element={<RotaProtegida><TelaPendente titulo="Alertas" /></RotaProtegida>} />
           <Route path={rotas.conta} element={<RotaProtegida><TelaPendente titulo="Conta" /></RotaProtegida>} />

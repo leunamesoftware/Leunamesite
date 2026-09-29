@@ -228,3 +228,81 @@ export function IconeSair(p: Props) {
     </Base>
   );
 }
+
+export function IconeVoltar(p: Props) {
+  return (
+    <Base {...p}>
+      <path d="M20 12H5M11 5.5 4.5 12l6.5 6.5" strokeWidth="2.2" />
+    </Base>
+  );
+}
+
+export function IconeNota(p: Props) {
+  return (
+    <Base {...p}>
+      <path d="M5 4h14a1 1 0 0 1 1 1v9.5L14.5 20H5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1Z" />
+      <path d="M14.5 20v-4.5a1 1 0 0 1 1-1H20M8 8.5h8M8 12h5" />
+    </Base>
+  );
+}
+
+export function IconeClipe(p: Props) {
+  return (
+    <Base {...p}>
+      <path d="M20 11.5 12.2 19.3a5 5 0 0 1-7.1-7.1l8.3-8.3a3.4 3.4 0 0 1 4.8 4.8l-8.3 8.3a1.7 1.7 0 0 1-2.4-2.4l7.6-7.6" />
+    </Base>
+  );
+}
+
+export function IconeNuvemEnvio(p: Props) {
+  return (
+    <Base {...p}>
+      <path d="M7 18.5a4.5 4.5 0 0 1-.6-8.96A6 6 0 0 1 18 8.5a4 4 0 0 1-.5 10H16" />
+      <path d="M12 21v-8.5M8.8 15.5 12 12.3l3.2 3.2" />
+    </Base>
+  );
+}
+
+export function IconeSalvarDocumento(p: Props) {
+  return (
+    <Base {...p}>
+      <path d="M13 21H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h8l4.5 4.5V12" />
+      <path d="M14 3v4.5h4.5M8.5 12h6M8.5 15.5H12M18 15v6M15 18h6" />
+    </Base>
+  );
+}
+
+export function IconeLapis(p: Props) {
+  return (
+    <Base {...p}>
+      <path d="M4 20l1-4.5L15.8 4.7a2 2 0 0 1 2.8 0l.7.7a2 2 0 0 1 0 2.8L8.5 19Z" />
+      <path d="M14 6.5l3.5 3.5" />
+    </Base>
+  );
+}
+
+export function IconeLixeira(p: Props) {
+  return (
+    <Base {...p}>
+      <path d="M4 6.5h16M9.5 6.5V4.5h5v2M6.5 6.5l.9 13a1 1 0 0 0 1 .9h7.2a1 1 0 0 0 1-.9l.9-13M10 10.5v6.5M14 10.5v6.5" />
+    </Base>
+  );
+}
+
+export function IconeTresPontos(p: Props) {
+  return (
+    <Base {...p}>
+      <circle cx="12" cy="5.5" r="1.6" fill="currentColor" stroke="none" />
+      <circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none" />
+      <circle cx="12" cy="18.5" r="1.6" fill="currentColor" stroke="none" />
+    </Base>
+  );
+}
+
+export function IconeComentario(p: Props) {
+  return (
+    <Base {...p}>
+      <path d="M4 5.5a1.5 1.5 0 0 1 1.5-1.5h13A1.5 1.5 0 0 1 20 5.5v9a1.5 1.5 0 0 1-1.5 1.5H10l-4.5 4v-4H5.5A1.5 1.5 0 0 1 4 14.5Z" />
+    </Base>
+  );
+}

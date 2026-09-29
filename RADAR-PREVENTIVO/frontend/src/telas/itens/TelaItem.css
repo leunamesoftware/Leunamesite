@@ -1,0 +1,9 @@
+.tela-item {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.tela-item .app-titulo {
+  font-size: clamp(1.45rem, 6vw, 2.15rem);
+}
