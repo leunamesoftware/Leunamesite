@@ -1,4 +1,4 @@
-name: Gerar AAB do Radar Preventivo (Google Play)
+name: Gerar AAB e APK do Radar Preventivo
 
 # Gera o Android App Bundle (.aab) assinado do Radar Preventivo para enviar à Play Store.
 # O app abre o Radar hospedado na Cloudflare (server.url), então atualizações do
@@ -111,11 +111,11 @@ jobs:
           PY
           grep -nE "versionCode|versionName|targetSdk|signingConfig" android/app/build.gradle android/variables.gradle || true
 
-      - name: Gerar o AAB assinado
+      - name: Gerar o AAB (Play Store) e o APK (instalar direto no celular), mesma chave
         working-directory: RADAR-PREVENTIVO/app-android/android
         run: |
           chmod +x gradlew
-          ./gradlew bundleRelease --no-daemon
+          ./gradlew bundleRelease assembleRelease --no-daemon
 
       - name: Conferir a assinatura do AAB
         run: jarsigner -verify -verbose:summary android/app/build/outputs/bundle/release/app-release.aab | tail -3
@@ -124,6 +124,7 @@ jobs:
         run: |
           mkdir -p entrega
           cp android/app/build/outputs/bundle/release/app-release.aab entrega/RadarPreventivo.aab
+          cp android/app/build/outputs/apk/release/app-release.apk entrega/RadarPreventivo-instalar-no-celular.apk
           if [ "$CHAVE_NOVA" = "sim" ]; then
             cp android/app/release.keystore entrega/RadarPreventivo-chave-assinatura.keystore
             {
