@@ -1,0 +1,36 @@
+import { z } from 'zod';
+import type { Dependencias } from '../../comum/ambiente.js';
+import { ErroApp, erros } from '../../comum/erros.js';
+import { conferirSenha, gerarHashSenha, sha256 } from '../../comum/seguranca.js';
+import { validar } from '../../comum/validacao.js';
+import { esquemaSenha } from '../autenticacao/servico.js';
+import { paraUsuario, repositorioAuth } from '../autenticacao/repositorio.js';
+
+const esquemaAtualizar = z.object({
+  nome: z.string().trim().min(2, 'Informe o nome.').max(120, 'Máximo de 120 caracteres.').optional(),
+  tipoConta: z.enum(['pessoa', 'empresa'], { errorMap: () => ({ message: 'Escolha: pessoa ou empresa.' }) }).optional(),
+});
+const esquemaSenhaNova = z.object({ senhaAtual: z.string().min(1, 'Informe a senha atual.'), novaSenha: esquemaSenha });
+
+export async function atualizarConta(deps: Dependencias, usuarioId: string, entrada: unknown) {
+  const d = validar(esquemaAtualizar, entrada);
+  const u = await repositorioAuth.usuarioPorId(deps.banco, usuarioId);
+  if (!u) throw erros.naoEncontrado('Usuário');
+  await deps.banco.executar('UPDATE usuarios SET nome = ?, tipo_conta = ?, atualizado_em = ? WHERE id = ?',
+    [d.nome ?? u.nome, d.tipoConta ?? u.tipo_conta, deps.relogio.agora().toISOString(), usuarioId]);
+  return paraUsuario((await repositorioAuth.usuarioPorId(deps.banco, usuarioId))!);
+}
+
+/** Troca a senha e desconecta os outros aparelhos (o atual continua conectado). */
+export async function trocarSenha(deps: Dependencias, usuarioId: string, tokenAtual: string, entrada: unknown) {
+  const d = validar(esquemaSenhaNova, entrada);
+  const u = await repositorioAuth.usuarioPorId(deps.banco, usuarioId);
+  if (!u) throw erros.naoEncontrado('Usuário');
+  if (!(await conferirSenha(d.senhaAtual, u.senha_hash, deps.config.pimentaSenha))) {
+    throw new ErroApp('senha_atual_incorreta', 400, 'A senha atual está incorreta.', { senhaAtual: 'A senha atual está incorreta.' });
+  }
+  const agora = deps.relogio.agora().toISOString();
+  await deps.banco.executar('UPDATE usuarios SET senha_hash = ?, atualizado_em = ? WHERE id = ?',
+    [await gerarHashSenha(d.novaSenha, deps.config.pimentaSenha), agora, usuarioId]);
+  await repositorioAuth.encerrarOutrasSessoes(deps.banco, usuarioId, await sha256(tokenAtual), agora);
+}

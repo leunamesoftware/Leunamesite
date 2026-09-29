@@ -1,0 +1,31 @@
+/* Identidade visual do Radar Preventivo — definida pela referência oficial da Interface 1.
+   Azul-marinho profundo, azul elétrico e ciano luminoso. */
+:root {
+  color-scheme: dark;
+
+  --fundo-profundo: #01050f;
+  --fundo: #020a1c;
+  --fundo-elevado: #06173a;
+  --azul-noite: #0a2a66;
+  --azul: #1677ff;
+  --azul-eletrico: #1f9bff;
+  --ciano: #1ec8ff;
+  --ciano-claro: #7fe3ff;
+  --brilho: #c9f6ff;
+
+  --texto-forte: #ffffff;
+  --texto: #e3edf9;
+  --texto-suave: #9fb4d3;
+
+  --foco: #7fe3ff;
+
+  --botao-fundo: linear-gradient(180deg, #4cc9ff 0%, #1ea4ff 45%, #0b7bf2 100%);
+  --botao-borda: rgba(170, 230, 255, 0.55);
+  --botao-sombra: 0 0 0 1px rgba(40, 150, 255, 0.35), 0 8px 28px rgba(20, 140, 255, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.45);
+  --botao-sombra-forte: 0 0 0 1px rgba(60, 170, 255, 0.5), 0 10px 40px rgba(30, 160, 255, 0.65),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5);
+
+  --fonte-marca: 'Lexend Zetta', 'Arial Black', system-ui, sans-serif;
+  --fonte-texto: 'Nunito Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+}

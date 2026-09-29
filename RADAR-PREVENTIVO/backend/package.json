@@ -1,0 +1,29 @@
+{
+  "name": "radar-preventivo-backend",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "API do Radar Preventivo (V1)",
+  "scripts": {
+    "dev": "NODE_OPTIONS=--no-warnings tsx watch src/servidor.ts",
+    "iniciar": "NODE_OPTIONS=--no-warnings tsx src/servidor.ts",
+    "migrar": "NODE_OPTIONS=--no-warnings tsx src/banco/migrar-cli.ts",
+    "rotina": "NODE_OPTIONS=--no-warnings tsx src/modulos/rotina/executar-cli.ts",
+    "testar": "NODE_OPTIONS=--no-warnings vitest run",
+    "tipos": "tsc --noEmit"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "dependencies": {
+    "@hono/node-server": "^1.19.17",
+    "hono": "^4.13.11",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@types/node": "^22.20.4",
+    "tsx": "^4.23.15",
+    "typescript": "^5.9.3",
+    "vitest": "^2.1.9"
+  }
+}
