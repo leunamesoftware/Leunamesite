@@ -52,7 +52,7 @@ a{color:var(--verde);}
 .linha2{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
 .app-root{display:none; flex-direction:column; height:100vh;}
 .app-root.pronto{display:flex;}
-.topo{background:var(--verde-escuro); color:#fff; padding:calc(12px + var(--safe-t)) 16px 12px; flex-shrink:0;}
+.topo{background:var(--verde-escuro); color:#fff; padding:calc(12px + var(--safe-t)) 16px 12px; flex-shrink:0; position:relative;}
 .topo-linha{display:flex; align-items:center; gap:10px;}
 .topo h2{font-size:17px; margin:0; flex:1; font-weight:700;}
 .topo button.icone{background:rgba(255,255,255,.12); border:none; color:#fff; font-size:18px; width:38px; height:38px; border-radius:10px; cursor:pointer; flex-shrink:0; display:flex; align-items:center; justify-content:center;}
@@ -77,7 +77,7 @@ a{color:var(--verde);}
 .card{background:var(--card); border:1px solid var(--borda); border-radius:14px; padding:15px; margin-bottom:12px;}
 .chip{display:inline-flex; align-items:center; background:var(--verde-claro); color:var(--verde); border-radius:20px; padding:5px 12px; font-size:12px; font-weight:600; margin:2px 4px 2px 0;}
 .chip.cinza{background:var(--bg); color:var(--fraco); border:1px solid var(--borda);}
-.filtro-chips{display:flex; gap:8px; overflow-x:auto; padding-bottom:4px; margin-bottom:12px;}
+.filtro-chips{display:flex; flex-wrap:wrap; gap:8px; padding-bottom:4px; margin-bottom:12px;}
 .filtro-chips button{flex-shrink:0; background:var(--card); border:1.5px solid var(--borda); color:var(--texto); border-radius:20px; padding:8px 14px; font-size:13px; font-weight:600; cursor:pointer;}
 .filtro-chips button.ativo{background:var(--verde-escuro); color:#fff; border-color:var(--verde-escuro);}
 .preco{font-weight:800; color:var(--verde-forte); font-size:16px;}
@@ -117,6 +117,14 @@ a{color:var(--verde);}
 .modo-site .site-nav button{flex-shrink:0; background:rgba(255,255,255,.1); color:#fff; border:1px solid rgba(255,255,255,.18); border-radius:10px; padding:8px 11px; font-size:12.5px; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:5px;}
 .modo-site .site-nav button.ativo{background:#fff; color:var(--verde-escuro);}
 .modo-site .site-nav button.destaque{background:#4ade80; color:#0d3b1f; border-color:#4ade80;}
+/* Celular: o menu vira uma fileira fixa de botões do mesmo tamanho,
+   ícone em cima e nome embaixo -- tudo visível, sem arrastar. */
+@media (max-width:700px){
+  .modo-site .site-nav{display:grid; grid-auto-flow:column; grid-auto-columns:1fr; gap:6px; overflow:visible; margin:10px 0 0; padding:0;}
+  .modo-site .site-nav .nav-espaco{display:none;}
+  .modo-site .site-nav button{flex-direction:column; justify-content:center; gap:2px; padding:7px 2px; font-size:11.5px; min-width:0;}
+  .modo-site .site-nav button .nav-ic{font-size:17px; line-height:1.1;}
+}
 /* Conteúdo em coluna: o rodapé sempre encosta no fim da tela (sem faixa
    vazia embaixo). Telas de grade (início, categorias, listas, loja do
    vendedor) usam até 1180px; o resto (anúncio, formulários, chat, perfil)
@@ -152,7 +160,20 @@ a{color:var(--verde);}
 .grid-cat.pequeno{grid-template-columns:repeat(4,1fr);}
 .cat-item{display:flex; flex-direction:column; align-items:center; gap:6px; background:var(--card); border:1px solid var(--borda); border-radius:14px; padding:14px 4px; cursor:pointer; font-size:11.5px; font-weight:600; text-align:center; color:var(--texto);}
 .cat-item .cat-icone{font-size:26px;}
-.cat-scroll{display:flex; gap:12px; overflow-x:auto; padding-bottom:4px; margin-bottom:4px;}
+/* Categorias da tela inicial: grade fixa e alinhada (não arrasta pro lado). */
+.cat-scroll{display:grid; grid-template-columns:repeat(5, 1fr); gap:12px 6px; margin-bottom:10px;}
+.cat-scroll .cat-chip{width:auto; min-width:0;}
+@media (min-width:700px){ .cat-scroll{grid-template-columns:repeat(auto-fill, minmax(86px, 1fr));} }
+.selo-vendido{position:absolute; top:8px; left:8px; z-index:1; background:#0d3b1f; color:#fff; font-size:11px; font-weight:800; letter-spacing:.5px; padding:4px 8px; border-radius:8px;}
+.produto-card{position:relative;}
+.produto-card.vendido .produto-foto{filter:grayscale(.55); opacity:.8;}
+.menu-categorias{position:absolute; left:0; right:0; top:100%; z-index:60; background:var(--card); color:var(--texto); border-bottom:1px solid var(--borda); box-shadow:0 14px 30px rgba(0,0,0,.18); padding:14px 16px 16px;}
+.menu-categorias .mc-grade{max-width:1180px; margin:0 auto; display:grid; grid-template-columns:repeat(2, 1fr); gap:6px;}
+.menu-categorias button{display:flex; align-items:center; gap:10px; background:none; border:none; border-radius:10px; padding:10px; font-size:14px; font-weight:600; color:var(--texto); cursor:pointer; text-align:left;}
+.menu-categorias button:hover{background:var(--verde-claro);}
+.menu-categorias .mc-ic{width:34px; height:34px; border-radius:10px; background:var(--verde-claro); display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0;}
+.menu-categorias .mc-todas{max-width:1180px; margin:10px auto 0; display:block; text-align:center; font-weight:800; color:var(--verde);}
+@media (min-width:700px){ .menu-categorias .mc-grade{grid-template-columns:repeat(4, 1fr);} }
 .cat-chip{flex-shrink:0; display:flex; flex-direction:column; align-items:center; gap:6px; width:62px; cursor:pointer;}
 .cat-chip .cat-icone-box{width:56px; height:56px; border-radius:16px; background:var(--verde-claro); display:flex; align-items:center; justify-content:center; font-size:25px;}
 .cat-chip span{font-size:11px; font-weight:600; text-align:center; color:var(--texto); line-height:1.2;}
@@ -439,17 +460,40 @@ function navSite(){
   if (EH_APP) return '';
   // Igual Shopee: à esquerda a vitrine (todo mundo vê); à direita a área
   // do cliente -- Vender, Chat e Minha loja (painel do vendedor).
-  const btn = ([t, i, r, cls]) => `<button data-site-tab="${t}" class="${cls || ''} ${STATE.aba === t && !STATE.pilha.length ? 'ativo' : ''}">${i} ${r}</button>`;
+  const btn = ([t, i, r, cls]) => `<button data-site-tab="${t}" class="${cls || ''} ${STATE.aba === t && !STATE.pilha.length ? 'ativo' : ''}"><span class="nav-ic">${i}</span><span>${r}</span></button>`;
   const vitrine = [['inicio','🏠','Início'], ['categorias','▦','Categorias']];
   const cliente = [['anunciar','➕','Vender', 'destaque']].concat(STATE.usuario ? [['chat','💬','Chat'], ['loja','🏪','Minha loja']] : []);
-  return `<nav class="site-nav">${vitrine.map(btn).join('')}<span style="flex:1; min-width:8px;"></span>${cliente.map(btn).join('')}</nav>`;
+  return `<nav class="site-nav">${vitrine.map(btn).join('')}<span class="nav-espaco" style="flex:1; min-width:8px;"></span>${cliente.map(btn).join('')}</nav>`;
 }
 function setTopo(html){
   document.getElementById('conteudo').classList.remove('largo');
   const topo = document.getElementById('topo');
   topo.innerHTML = html + navSite();
-  topo.querySelectorAll('[data-site-tab]').forEach(b => b.onclick = () => setTab(b.dataset.siteTab));
+  topo.querySelectorAll('[data-site-tab]').forEach(b => b.onclick = (e) => {
+    if (b.dataset.siteTab === 'categorias') { e.stopPropagation(); return alternarMenuCategorias(); }
+    setTab(b.dataset.siteTab);
+  });
 }
+// Menu suspenso de categorias (site): abre embaixo do topo, fecha ao
+// escolher, ao tocar fora ou com Esc.
+function alternarMenuCategorias(){
+  const aberto = document.getElementById('menu-categorias');
+  if (aberto) { aberto.remove(); return; }
+  const m = document.createElement('div');
+  m.id = 'menu-categorias'; m.className = 'menu-categorias';
+  m.innerHTML = `<div class="mc-grade">${categoriasGrid().map(c => `<button data-grupo="${c.grupo}"><span class="mc-ic">${c.icone}</span>${esc(c.nome)}</button>`).join('')}</div>
+    <a href="javascript:void(0)" class="mc-todas" id="mc-todas">Ver todas as categorias ›</a>`;
+  m.onclick = (e) => e.stopPropagation();
+  document.getElementById('topo').appendChild(m);
+  m.querySelectorAll('[data-grupo]').forEach(b => b.onclick = () => {
+    m.remove();
+    const c = categoriasGrid().find(x => x.grupo === b.dataset.grupo);
+    irPara(() => renderListaProdutos({ grupo: c.grupo, nome: c.nome }));
+  });
+  document.getElementById('mc-todas').onclick = () => { m.remove(); setTab('categorias'); };
+}
+document.addEventListener('click', () => { const m = document.getElementById('menu-categorias'); if (m) m.remove(); });
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { const m = document.getElementById('menu-categorias'); if (m) m.remove(); } });
 function rodapeSite(){
   if (EH_APP) return '';
   // Tela com rodapé = tela de vitrine (grade larga).
@@ -797,9 +841,14 @@ async function renderInicio(){
     </div>
     <div id="in-resultados" class="lista-produtos"><div class="muted">Carregando...</div></div>
     ${rodapeSite()}`;
-  document.getElementById('in-categorias-rapidas').innerHTML = categoriasGrid().map(c => `
-    <div class="cat-chip" data-grupo="${c.grupo}"><div class="cat-icone-box">${c.icone}</div><span>${esc(c.nome)}</span></div>`).join('');
-  document.querySelectorAll('#in-categorias-rapidas .cat-chip').forEach(item => {
+  const todasCats = categoriasGrid();
+  const limiteCats = window.innerWidth >= 700 ? todasCats.length : 9;
+  document.getElementById('in-categorias-rapidas').innerHTML = todasCats.slice(0, todasCats.length > limiteCats ? limiteCats : todasCats.length).map(c => `
+    <div class="cat-chip" data-grupo="${c.grupo}"><div class="cat-icone-box">${c.icone}</div><span>${esc(c.nome)}</span></div>`).join('')
+    + (todasCats.length > limiteCats ? `<div class="cat-chip" id="in-cat-todas"><div class="cat-icone-box">▦</div><span>Ver todas</span></div>` : '');
+  const catTodas = document.getElementById('in-cat-todas');
+  if (catTodas) catTodas.onclick = () => setTab('categorias');
+  document.querySelectorAll('#in-categorias-rapidas .cat-chip[data-grupo]').forEach(item => {
     item.onclick = () => irPara(() => renderListaProdutos({ grupo: item.dataset.grupo, nome: categoriasGrid().find(c=>c.grupo===item.dataset.grupo).nome }));
   });
   document.getElementById('in-ver-todos').onclick = () => irPara(() => renderListaProdutos({ nome: 'Todos os anúncios' }));
@@ -854,7 +903,8 @@ function cartaoProduto(a){
   const capa = fotos[0] || null;
   const favoritado = favoritos().includes(a.id);
   return `
-  <div class="card produto-card" onclick="abrirAnuncio('${a.id}')">
+  <div class="card produto-card ${a.status === 'vendido' ? 'vendido' : ''}" onclick="abrirAnuncio('${a.id}')">
+    ${a.status === 'vendido' ? '<span class="selo-vendido">✓ VENDIDO</span>' : ''}
     ${capa ? `<img class="produto-foto" src="${esc(capa)}" alt="">` : `<div class="produto-foto produto-foto-vazia">${iconeTipo(a.tipo_peca_id)}</div>`}
     <div class="produto-info">
       <div class="produto-local">📍 ${esc(a.bairro_nome||'')} ${a.distancia_km!=null?'· '+distanciaLabel(a.distancia_km):''} · ${tempoRelativo(a.criado_em)}</div>
@@ -983,7 +1033,7 @@ function telaDetalheAnuncio(a){
       ${a.bairro_lat != null ? `<div id="mapa-anuncio" class="mapa-real"></div><p class="muted" style="margin:6px 0 0;">📍 ${esc(a.bairro_nome)}${a.distancia_km!=null?' · '+distanciaLabel(a.distancia_km):''} — região aproximada, não o endereço exato</p>`
         : `<div class="mapa-fake">📍 ${esc(a.bairro_nome)}${a.distancia_km!=null?' · '+distanciaLabel(a.distancia_km):''}</div>`}
     </div>
-    ${souVendedor ? '<p class="muted" style="text-align:center;">Este é o seu anúncio.</p>' : `
+    ${a.status !== 'ativo' && !souVendedor ? `<div class="card" style="text-align:center; font-weight:700;">${a.status === 'vendido' ? '✓ Este item já foi vendido.' : 'Este anúncio não está mais disponível.'}<div class="muted" style="font-weight:400; margin-top:4px;">Veja o que mais esse vendedor tem na loja dele.</div></div>` : souVendedor ? '<p class="muted" style="text-align:center;">Este é o seu anúncio.</p>' : `
       <button class="btn" onclick="iniciarConversa('${a.id}')">💬 Conversar com o vendedor</button>
       <button class="btn secundario" onclick="abrirDenunciar('${a.id}')">🚩 Denunciar anúncio</button>`}`;
   if (fotos.length > 1) {
@@ -1594,16 +1644,20 @@ async function renderPerfilVendedor(usuarioId, aba){
     </div>
     <div class="abas-perfil" id="pv-abas">
       <button data-a="anuncios" class="${aba==='anuncios'?'ativo':''}">À venda (${u.anuncios_ativos})</button>
+      <button data-a="vendidos" class="${aba==='vendidos'?'ativo':''}">Vendidos (${u.anuncios_vendidos || 0})</button>
       <button data-a="avaliacoes" class="${aba==='avaliacoes'?'ativo':''}">Avaliações (${u.total_avaliacoes})</button>
     </div>
     <div id="pv-conteudo"></div>`;
   document.querySelectorAll('#pv-abas button').forEach(b => b.onclick = () => renderPerfilVendedor(usuarioId, b.dataset.a));
   const box = document.getElementById('pv-conteudo');
-  box.classList.toggle('lista-produtos', aba === 'anuncios');
+  box.classList.toggle('lista-produtos', aba === 'anuncios' || aba === 'vendidos');
   document.getElementById('conteudo').classList.add('largo');
   if (aba === 'anuncios') {
     const { data: an } = await api('/usuarios/' + usuarioId + '/anuncios');
     box.innerHTML = (an.ok && an.anuncios.length) ? an.anuncios.map(cartaoProduto).join('') : '<div class="empty">Nenhum anúncio ativo.</div>';
+  } else if (aba === 'vendidos') {
+    const { data: an } = await api('/usuarios/' + usuarioId + '/anuncios?status=vendido');
+    box.innerHTML = (an.ok && an.anuncios.length) ? an.anuncios.map(cartaoProduto).join('') : '<div class="empty">Nenhuma venda ainda.</div>';
   } else {
     const { data: av } = await api('/usuarios/' + usuarioId + '/avaliacoes');
     if (!av.ok) { box.innerHTML = '<div class="empty">Erro ao carregar.</div>'; return; }

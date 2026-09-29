@@ -785,7 +785,7 @@ export default {
       const u = await env.DB.prepare('SELECT id, nome, criado_em, reputacao, vendas_confirmadas_total, verificado, foto_url FROM users WHERE id = ?').bind(matchUsuarioPublico[1]).first();
       if (!u) return json({ ok: false, erro: 'nao_encontrado' }, 404);
       const [anunciosAtivos, av] = await Promise.all([
-        env.DB.prepare("SELECT COUNT(*) AS n FROM anuncios WHERE vendedor_id = ? AND status = 'ativo'").bind(u.id).first(),
+        env.DB.prepare("SELECT SUM(CASE WHEN status = 'ativo' THEN 1 ELSE 0 END) AS n, SUM(CASE WHEN status = 'vendido' THEN 1 ELSE 0 END) AS vendidos FROM anuncios WHERE vendedor_id = ?").bind(u.id).first(),
         env.DB.prepare('SELECT COUNT(*) AS n, AVG(nota) AS media FROM avaliacoes WHERE vendedor_id = ?').bind(u.id).first(),
       ]);
       return json({
@@ -793,17 +793,21 @@ export default {
         usuario: {
           id: u.id, nome: u.nome, criado_em: u.criado_em, reputacao: u.reputacao,
           vendas_confirmadas_total: u.vendas_confirmadas_total, verificado: !!u.verificado, foto_url: u.foto_url || null,
-          anuncios_ativos: anunciosAtivos.n, total_avaliacoes: av.n, media_avaliacoes: av.media ? Math.round(av.media * 10) / 10 : null,
+          anuncios_ativos: anunciosAtivos.n || 0, anuncios_vendidos: anunciosAtivos.vendidos || 0, total_avaliacoes: av.n, media_avaliacoes: av.media ? Math.round(av.media * 10) / 10 : null,
         },
       });
     }
     const matchUsuarioAnuncios = pathname.match(/^\/usuarios\/([^/]+)\/anuncios$/);
     if (matchUsuarioAnuncios && request.method === 'GET') {
+      // ?status=vendido mostra o histórico de vendas da loja (dá confiança
+      // pro comprador); sem isso, só o que está à venda.
+      const vendidos = url.searchParams.get('status') === 'vendido';
       const { results } = await env.DB.prepare(
-        `SELECT a.*, m.nome AS marca_nome, mo.nome AS modelo_nome, tp.nome AS tipo_peca_nome
+        `SELECT a.*, m.nome AS marca_nome, mo.nome AS modelo_nome, tp.nome AS tipo_peca_nome, b.nome AS bairro_nome
          FROM anuncios a JOIN marcas m ON m.id = a.marca_id JOIN modelos mo ON mo.id = a.modelo_id JOIN tipos_peca tp ON tp.id = a.tipo_peca_id
-         WHERE a.vendedor_id = ? AND a.status = 'ativo' ORDER BY a.criado_em DESC LIMIT 100`
-      ).bind(matchUsuarioAnuncios[1]).all();
+         JOIN bairros b ON b.id = a.bairro_id
+         WHERE a.vendedor_id = ? AND a.status = ? ORDER BY ${vendidos ? 'a.vendido_em' : 'a.criado_em'} DESC LIMIT 100`
+      ).bind(matchUsuarioAnuncios[1], vendidos ? 'vendido' : 'ativo').all();
       return json({ ok: true, anuncios: results.map((a) => esconderImei(a, false)) });
     }
     const matchUsuarioAvaliacoes = pathname.match(/^\/usuarios\/([^/]+)\/avaliacoes$/);
