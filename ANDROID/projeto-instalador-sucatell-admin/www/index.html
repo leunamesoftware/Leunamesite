@@ -191,7 +191,7 @@ tr:last-child td{border-bottom:none;}
   #cat-tipos tr:first-child{display:none;}
   #cat-tipos tr{padding:10px 0; border-bottom:1px solid var(--borda);}
   #cat-tipos td{border:none; padding:3px 0;}
-  #cat-tipos td:nth-child(2), #cat-tipos td:nth-child(3), #cat-tipos td:nth-child(4){display:inline-block; margin-right:10px; font-size:12.5px;}
+  #cat-tipos td:nth-child(2), #cat-tipos td:nth-child(3), #cat-tipos td:nth-child(4), #cat-tipos td:nth-child(5){display:inline-block; margin-right:10px; font-size:12.5px;}
   #cat-tipos td:nth-child(3)::after{content:' anúncios'; color:var(--fraco);}
   #cat-tipos .acoes{margin-top:6px;}
 }
@@ -311,8 +311,9 @@ tr:last-child td{border-bottom:none;}
           <button class="chip" data-s="ativo">Ativos</button>
           <button class="chip" data-s="expirado">Expirados</button>
           <button class="chip" data-s="pausado_manual">Pausados</button>
+          <button class="chip" data-s="vendido">Vendidos</button>
           <button class="chip" data-s="removido_admin">Removidos</button>
-          <input id="anu-busca" placeholder="Buscar título ou vendedor...">
+          <input id="anu-busca" placeholder="Buscar título, vendedor ou IMEI...">
         </div>
         <div class="card"><div class="tabela-wrap" id="anu-tabela"></div></div>
       </section>
@@ -349,6 +350,7 @@ tr:last-child td{border-bottom:none;}
             <div style="flex:2; min-width:180px;"><label style="margin-top:0;">Nome</label><input id="cat-novo-nome" placeholder="Ex: Notebooks, Videogames, Ferramentas"></div>
             <div style="flex:0 0 90px;"><label style="margin-top:0;">Ícone</label><input id="cat-novo-icone" placeholder="💻" maxlength="8" style="text-align:center;"></div>
             <div style="flex:2; min-width:180px;"><label style="margin-top:0;">Onde aparece na loja</label><select id="cat-novo-grupo"></select></div>
+            <label style="margin:0; display:flex; align-items:center; gap:6px; font-weight:600; white-space:nowrap; align-self:center;"><input type="checkbox" id="cat-novo-imei" style="width:auto;"> Pede IMEI</label>
             <button id="cat-add-categoria">Adicionar categoria</button>
           </div>
           <p class="muted" style="margin:10px 0 0; font-size:12.5px;">"Botão próprio" cria um botão novo na tela inicial e em Categorias da loja. Escolhendo um grupo, ela entra como opção dentro dele (ex: um tipo novo de peça dentro de "Peças"). O ícone é um emoji; se deixar vazio, fica 📦.</p>
@@ -419,6 +421,7 @@ tr:last-child td{border-bottom:none;}
             <div class="fotos-prev" id="nv-fotos"></div>
             <label>Título</label><input id="nv-titulo" placeholder="ex: iPhone 11 com tela quebrada">
             <label>Tipo</label><select id="nv-tipo"></select>
+            <div id="nv-imei-box" hidden><label>IMEI do aparelho (obrigatório pra esse tipo)</label><input id="nv-imei" inputmode="numeric" maxlength="15" placeholder="15 números — disque *#06# no aparelho" autocomplete="off"></div>
             <div class="grade-2" style="gap:10px;">
               <div><label>Marca</label><select id="nv-marca"></select></div>
               <div><label>Modelo</label><select id="nv-modelo" disabled><option value="">Escolha a marca</option></select></div>
@@ -516,6 +519,7 @@ const STATUS_ANUNCIO = {
   expirado:{ rot:'Expirado', cls:'cinza', cor:'#9aa9a0' },
   pausado_manual:{ rot:'Pausado', cls:'amarelo', cor:'#f59e0b' },
   removido_admin:{ rot:'Removido', cls:'vermelho', cor:'#ef4444' },
+  vendido:{ rot:'Vendido', cls:'azul', cor:'#2563eb' },
 };
 const STATUS_PAGAMENTO = { confirmado:['Pago','verde'], pendente:['Aguardando','amarelo'], expirado:['Expirado','cinza'] };
 const MOTIVOS = { sem_estoque:'Sem estoque / não responde', fora_do_tema:'Fora do tema', golpe:'Suspeita de golpe', outro:'Outro motivo' };
@@ -860,7 +864,7 @@ CARREGADORES.anuncios = async () => {
   box.innerHTML = `<table><tr><th>Anúncio</th><th>Vendedor</th><th>Preço</th><th>Visualizações</th><th>Status</th><th>Ações</th></tr>${d.anuncios.map(a => {
     const st = STATUS_ANUNCIO[a.status] || { rot:a.status, cls:'cinza' };
     return `<tr>
-      <td><div style="display:flex; align-items:center; gap:10px;">${miniatura(a.fotos)}<div style="min-width:0;"><b>${esc(a.titulo)}</b><div class="muted" style="font-size:12px;">${esc(a.tipo_peca_nome)} · ${esc(a.bairro_nome)} · ${quando(a.criado_em)}</div></div></div></td>
+      <td><div style="display:flex; align-items:center; gap:10px;">${miniatura(a.fotos)}<div style="min-width:0;"><b>${esc(a.titulo)}</b><div class="muted" style="font-size:12px;">${esc(a.tipo_peca_nome)} · ${esc(a.bairro_nome)} · ${quando(a.criado_em)}</div>${a.imei ? `<div class="muted" style="font-size:12px;">IMEI <b>${esc(a.imei)}</b></div>` : ''}${a.status === 'vendido' && a.vendido_em ? `<div class="muted" style="font-size:12px;">Vendido ${quando(a.vendido_em)}</div>` : ''}</div></div></td>
       <td>${esc(a.vendedor_nome)}<div class="muted" style="font-size:12px;">${esc(a.vendedor_email)}</div></td>
       <td>${reais(a.preco_centavos)}</td><td>${numero(a.visualizacoes)}</td>
       <td><span class="pill ${st.cls}">${esc(st.rot)}</span></td>
@@ -933,7 +937,7 @@ function renderCategoriasAdmin(){
   selGrupo.innerHTML = '<option value="">Botão próprio na tela inicial</option>'
     + grupos.map(g => `<option value="${esc(g)}">Dentro de: ${esc(nomeGrupo(g))}</option>`).join('');
   if (grupos.includes(grupoAtual)) selGrupo.value = grupoAtual;
-  document.getElementById('cat-tipos').innerHTML = CATEGORIAS_ADMIN.length ? `<table><tr><th>Categoria</th><th>Aparece em</th><th>Anúncios</th><th>Status</th><th>Ações</th></tr>${CATEGORIAS_ADMIN.map(c => {
+  document.getElementById('cat-tipos').innerHTML = CATEGORIAS_ADMIN.length ? `<table><tr><th>Categoria</th><th>Aparece em</th><th>Anúncios</th><th>Status</th><th>IMEI</th><th>Ações</th></tr>${CATEGORIAS_ADMIN.map(c => {
     const g = c.grupo || c.id;
     const ativo = c.ativo === undefined || c.ativo === null || Number(c.ativo) === 1;
     return `<tr>
@@ -941,6 +945,7 @@ function renderCategoriasAdmin(){
       <td>${g === c.id ? '<span class="pill azul">Botão próprio</span>' : esc(nomeGrupo(g))}</td>
       <td>${c.total_anuncios || 0}</td>
       <td>${ativo ? '<span class="pill verde">Visível</span>' : '<span class="pill cinza">Oculta</span>'}</td>
+      <td><label style="margin:0; display:inline-flex; align-items:center; gap:6px; font-weight:600; font-size:12.5px; cursor:pointer;"><input type="checkbox" style="width:auto;" ${Number(c.exige_imei) ? 'checked' : ''} onchange="alternarImeiCategoria('${jsStr(c.id)}', this.checked)"> Pede IMEI</label></td>
       <td><div class="acoes">
         <button class="secundario pequeno" onclick="editarCategoria('${jsStr(c.id)}')">Editar</button>
         <button class="secundario pequeno" onclick="alternarCategoria('${jsStr(c.id)}', ${!ativo})">${ativo ? 'Ocultar' : 'Mostrar'}</button>
@@ -958,11 +963,13 @@ document.getElementById('cat-add-categoria').onclick = async () => {
   const nome = document.getElementById('cat-novo-nome').value.trim();
   const icone = document.getElementById('cat-novo-icone').value.trim();
   const grupo = document.getElementById('cat-novo-grupo').value;
+  const exige_imei = document.getElementById('cat-novo-imei').checked;
   if (!nome) return toast('Digite o nome da categoria.', 'erro');
-  const d = await api('/admin/categorias', { method:'POST', body:{ nome, icone, grupo } });
+  const d = await api('/admin/categorias', { method:'POST', body:{ nome, icone, grupo, exige_imei } });
   if (!d.ok) return toast(d.erro === 'ja_existe' ? 'Já existe uma categoria com esse nome.' : 'Erro ao adicionar.', 'erro');
   document.getElementById('cat-novo-nome').value = '';
   document.getElementById('cat-novo-icone').value = '';
+  document.getElementById('cat-novo-imei').checked = false;
   toast('Categoria adicionada! Já aparece na loja.', 'sucesso');
   carregarCategoriasAdmin();
 };
@@ -973,6 +980,12 @@ window.editarCategoria = async (id) => {
   const d = await api('/admin/categorias/' + encodeURIComponent(id), { method:'PATCH', body:{ nome, icone } });
   if (!d.ok) return toast('Erro ao salvar.', 'erro');
   toast('Categoria atualizada!', 'sucesso'); carregarCategoriasAdmin();
+};
+window.alternarImeiCategoria = async (id, exige_imei) => {
+  const d = await api('/admin/categorias/' + encodeURIComponent(id), { method:'PATCH', body:{ exige_imei } });
+  if (!d.ok) { toast('Erro ao salvar.', 'erro'); return carregarCategoriasAdmin(); }
+  toast(exige_imei ? 'Anúncios nessa categoria agora pedem IMEI.' : 'Essa categoria não pede mais IMEI.', 'sucesso');
+  const c = CATEGORIAS_ADMIN.find(x => x.id === id); if (c) c.exige_imei = exige_imei ? 1 : 0;
 };
 window.alternarCategoria = async (id, ativo) => {
   const d = await api('/admin/categorias/' + encodeURIComponent(id), { method:'PATCH', body:{ ativo } });
@@ -1142,10 +1155,16 @@ document.getElementById('nv-novo-salvar').onclick = async () => {
   document.getElementById('nv-novo-item').hidden = true;
   toast('Adicionado!', 'sucesso');
 };
+let TIPOS_LOJA = [];
+function tipoLojaPedeImei(){ const t = TIPOS_LOJA.find(x => x.id === document.getElementById('nv-tipo').value); return !!(t && Number(t.exige_imei)); }
+document.getElementById('nv-tipo').onchange = () => { document.getElementById('nv-imei-box').hidden = !tipoLojaPedeImei(); };
+document.getElementById('nv-imei').oninput = (e) => { e.target.value = e.target.value.replace(/\D/g, '').slice(0, 15); };
 CARREGADORES.loja = async () => {
   if (!document.getElementById('nv-tipo').options.length) {
     const [t] = await Promise.all([api('/categorias/tipos-peca'), carregarMarcas()]);
+    TIPOS_LOJA = t.tipos_peca || [];
     document.getElementById('nv-tipo').innerHTML = opcoesSelect(t.tipos_peca || []);
+    document.getElementById('nv-imei-box').hidden = !tipoLojaPedeImei();
     document.getElementById('nv-marca').innerHTML = opcoesSelect(MARCAS, '+ Nova marca');
     desenharFotosNovas();
   }
@@ -1157,11 +1176,20 @@ CARREGADORES.loja = async () => {
   box.innerHTML = meus.length ? meus.map(a => {
     const st = STATUS_ANUNCIO[a.status] || { rot:a.status, cls:'cinza' };
     return `<div class="linha">${miniatura(a.fotos)}
-      <div style="flex:1; min-width:0;"><div class="t">${esc(a.titulo)}</div><div class="d">${reais(a.preco_centavos)} · 👁 ${numero(a.visualizacoes)} · ${quando(a.criado_em)}</div></div>
+      <div style="flex:1; min-width:0;"><div class="t">${esc(a.titulo)}</div><div class="d">${reais(a.preco_centavos)} · 👁 ${numero(a.visualizacoes)} · ${quando(a.criado_em)}${a.imei ? ' · IMEI ' + esc(a.imei) : ''}</div></div>
       <div style="display:flex; flex-direction:column; align-items:flex-end; gap:5px;"><span class="pill ${st.cls}">${esc(st.rot)}</span>
-      ${a.status === 'ativo' ? `<button class="perigo pequeno" onclick="mudarStatusAnuncio('${a.id}', 'removido_admin')">Tirar do ar</button>` : `<button class="pequeno" onclick="mudarStatusAnuncio('${a.id}', 'ativo')">Colocar no ar</button>`}</div>
+      ${a.status === 'ativo' ? `<button class="pequeno" onclick="darBaixaMinhaLoja('${a.id}', ${a.imei ? 'true' : 'false'})">✓ Vendi</button><button class="perigo pequeno" onclick="mudarStatusAnuncio('${a.id}', 'removido_admin')">Tirar do ar</button>` : a.status === 'vendido' ? '' : `<button class="pequeno" onclick="mudarStatusAnuncio('${a.id}', 'ativo')">Colocar no ar</button>`}</div>
     </div>`;
   }).join('') : '<div class="vazio">Você ainda não tem anúncios. Publique o primeiro aqui do lado.</div>';
+};
+window.darBaixaMinhaLoja = async (id, temImei) => {
+  const encerrar = temImei ? confirm('Confirmar a venda? O anúncio sai da loja e vai pra "Vendidos".')
+    : confirm('Vendeu e acabou? OK = tirar da loja. Cancelar = registrar a venda e manter o anúncio no ar (ainda tem mais).');
+  if (temImei && !encerrar) return;
+  const d = await api('/anuncios/' + id + '/vender', { method:'POST', body:{ encerrar } });
+  if (!d.ok) return toast('Erro ao dar baixa.', 'erro');
+  toast(d.encerrado ? 'Baixa feita! Saiu da loja.' : 'Venda registrada.', 'sucesso');
+  CARREGADORES.loja();
 };
 document.getElementById('loja-abrir-app').onclick = () => irPara('site');
 
@@ -1208,6 +1236,8 @@ document.getElementById('nv-publicar').onclick = async () => {
   const preco = parseFloat(document.getElementById('nv-preco').value);
   if (!titulo || !tipo_peca_id || !marca_id || !modelo_id || marca_id === '__novo__' || modelo_id === '__novo__' || !(preco > 0)) return toast('Preencha título, tipo, marca, modelo e preço.', 'erro');
   if (!EU || !EU.bairro_id) return toast('Sua conta está sem bairro. Defina no app da loja primeiro.', 'erro');
+  const imei = tipoLojaPedeImei() ? document.getElementById('nv-imei').value.trim() : '';
+  if (tipoLojaPedeImei() && imei.length !== 15) return toast('Digite os 15 números do IMEI.', 'erro');
   btn.disabled = true; btn.textContent = 'Enviando fotos...';
   const fotos = [];
   for (const f of fotosNovas) { const url = await enviarImagem(f.file); if (url) fotos.push(url); }
@@ -1215,13 +1245,14 @@ document.getElementById('nv-publicar').onclick = async () => {
   const d = await api('/anuncios', { method:'POST', body:{
     titulo, tipo_peca_id, marca_id, modelo_id, preco_centavos: Math.round(preco * 100),
     condicao: document.getElementById('nv-condicao').value, descricao: document.getElementById('nv-descricao').value.trim(),
-    fotos, bairro_id: EU.bairro_id,
+    fotos, bairro_id: EU.bairro_id, imei,
   } });
   btn.disabled = false; btn.textContent = 'Publicar anúncio';
-  if (!d.ok) return toast(d.mensagem || ('Erro ao publicar (' + (d.erro || 'desconhecido') + ').'), 'erro');
+  const ERROS_IMEI = { imei_obrigatorio:'Esse tipo pede o IMEI.', imei_invalido:'IMEI inválido, confira os 15 números.', imei_em_uso:'Esse IMEI já está num anúncio no ar.', imei_ja_vendido:'Esse IMEI já foi vendido por você.' };
+  if (!d.ok) return toast(ERROS_IMEI[d.erro] || d.mensagem || ('Erro ao publicar (' + (d.erro || 'desconhecido') + ').'), 'erro');
   toast('Anúncio publicado na loja!', 'sucesso');
   fotosNovas = []; desenharFotosNovas();
-  ['nv-titulo', 'nv-preco', 'nv-descricao'].forEach(id => document.getElementById(id).value = '');
+  ['nv-titulo', 'nv-preco', 'nv-descricao', 'nv-imei'].forEach(id => document.getElementById(id).value = '');
   CARREGADORES.loja();
 };
 

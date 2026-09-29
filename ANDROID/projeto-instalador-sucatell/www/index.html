@@ -311,6 +311,19 @@ function iconeTipo(id){
   const t = ((typeof STATE !== 'undefined' && STATE.tiposPeca) || []).find(x => x.id === id);
   return ICONE_TIPO[id] || (t && t.icone) || '📦';
 }
+// Mesma conferência do servidor: 15 dígitos + dígito verificador (Luhn).
+function imeiValido(imei){
+  if (!/^\d{15}$/.test(imei)) return false;
+  let soma = 0;
+  for (let i = 0; i < 15; i++) { let d = Number(imei[14 - i]); if (i % 2 === 1) { d *= 2; if (d > 9) d -= 9; } soma += d; }
+  return soma % 10 === 0;
+}
+const ERROS_IMEI = {
+  imei_obrigatorio: 'Essa categoria pede o IMEI do aparelho.',
+  imei_invalido: 'IMEI inválido. Confira os 15 números (disque *#06# no aparelho pra ver).',
+  imei_em_uso: 'Esse IMEI já está num anúncio no ar. Se você vendeu, dê baixa no anúncio antigo primeiro.',
+  imei_ja_vendido: 'Você já vendeu esse aparelho (IMEI). Cada unidade nova precisa do IMEI dela.',
+};
 function tempoRelativo(iso){
   if(!iso) return '';
   const d = new Date(iso.includes('T') ? iso : iso.replace(' ','T')+'Z');
@@ -522,6 +535,7 @@ function abrirSeletorBairro(){
     <button class="fechar-folha" onclick="fecharModal()">✕</button>
     <h3>Escolher bairro/região</h3>
     <p class="muted">Mostramos anúncios do seu bairro e da região perto dele.</p>
+    <button class="btn secundario" onclick="verTodosBairros()" style="margin-top:0;">🌎 Ver anúncios de todos os bairros</button>
     <div id="sel-bairro-estado-area"></div>`);
   carregarSeletorBairro();
 }
@@ -541,6 +555,13 @@ async function carregarMapaSeletor(){
     if (b.id === STATE.bairroId) marcador.openPopup();
   });
 }
+window.verTodosBairros = function(){
+  STATE.bairroId = 'todos';
+  localStorage.setItem('sucatel_bairro_visualizacao', JSON.stringify({ id: 'todos', nome: 'Todos os bairros' }));
+  fecharModal();
+  setTab(STATE.aba, true);
+  toast('Mostrando anúncios de todos os bairros', 'sucesso');
+};
 window.selecionarBairroDoMapa = function(id, nome){
   STATE.bairroId = id;
   localStorage.setItem('sucatel_bairro_visualizacao', JSON.stringify({ id, nome }));
@@ -782,7 +803,7 @@ async function buscarEListar(){
   let anuncios = data.anuncios;
   if (filtroAtual.ordenar === 'recentes') anuncios = [...anuncios].sort((x,y) => new Date(y.criado_em) - new Date(x.criado_em));
   else if (filtroAtual.ordenar === 'preco') anuncios = [...anuncios].sort((x,y) => x.preco_centavos - y.preco_centavos);
-  if (contagem) contagem.textContent = anuncios.length + ' anúncio(s) na sua região';
+  if (contagem) contagem.textContent = anuncios.length + (STATE.bairroId === 'todos' ? ' anúncio(s) em todos os bairros' : ' anúncio(s) na sua região');
   box.innerHTML = anuncios.length ? anuncios.map(cartaoProduto).join('') : '<div class="empty"><span class="emoji-vazio">📭</span>Nenhum anúncio encontrado.</div>';
 }
 
@@ -818,6 +839,7 @@ function telaDetalheAnuncio(a){
         <div class="card" style="margin:0; padding:10px;"><span class="muted">Marca</span><br><b>${esc(a.marca_nome)}</b></div>
         <div class="card" style="margin:0; padding:10px;"><span class="muted">Modelo</span><br><b>${esc(a.modelo_nome)}</b></div>
       </div>
+      ${a.imei_final ? `<div class="card" style="margin:10px 0 0; padding:10px;"><span class="muted">IMEI</span><br><b>${a.imei ? esc(a.imei) : '•••••••••••' + esc(a.imei_final)}</b> <span class="muted" style="font-size:12px;">${a.imei ? '(completo só pra você)' : '(confira os últimos números com o aparelho na mão)'}</span></div>` : ''}
       <h4>Descrição</h4>
       <p class="muted">${esc(a.descricao || 'Sem descrição.')}</p>
     </div>
@@ -829,6 +851,7 @@ function telaDetalheAnuncio(a){
           ${a.vendedor_media_avaliacoes ? `<div class="estrelas" style="font-size:13px;">${'★'.repeat(Math.round(a.vendedor_media_avaliacoes))}${'☆'.repeat(5-Math.round(a.vendedor_media_avaliacoes))} <span class="muted">(${a.vendedor_total_avaliacoes})</span></div>` : ''}
           ${a.vendedor_verificado ? '<div class="selo-verificado" style="margin-top:3px;">✅ Verificado</div>' : ''}
           <div class="muted">Membro desde ${dataPorExtenso(a.vendedor_desde)}</div>
+          <div style="color:var(--verde); font-weight:700; font-size:13px; margin-top:4px;">🏪 Ver a loja do vendedor</div>
         </div>
         <span>›</span>
       </div>
@@ -907,6 +930,12 @@ async function renderAnunciar(){
       <label>Modelo</label><select id="an-modelo" disabled><option value="">Escolha a marca primeiro</option></select>
       <p class="muted" style="margin:8px 0 0;">Lote ou acessório sem marca? Escolha "Genérico / Várias marcas".</p>
     </div>
+    <div class="card" id="an-imei-card" hidden>
+      <b>IMEI do aparelho</b> <span class="muted">— obrigatório pra essa categoria</span>
+      <input id="an-imei" inputmode="numeric" maxlength="15" placeholder="15 números" style="margin-top:8px; letter-spacing:1px;" autocomplete="off">
+      <p class="muted" style="margin:8px 0 0;">Disque <b>*#06#</b> no aparelho pra ver o IMEI. Cada anúncio é uma unidade: vendeu, você dá baixa; tem outra igual, anuncia de novo com o IMEI dela. Na loja só aparecem os 4 últimos números.</p>
+      <p class="muted" id="an-imei-status" style="margin:6px 0 0; font-weight:700;"></p>
+    </div>
     <div class="card">
       <b>4. Condição</b>
       <div class="filtro-chips" id="an-condicoes" style="margin-top:10px;">
@@ -928,6 +957,18 @@ async function renderAnunciar(){
     <button class="btn" id="an-publicar">${STATE.usuario.is_admin ? 'Publicar anúncio' : 'Publicar anúncio (1 crédito)'}</button>`;
   const marcaSel = document.getElementById('an-marca');
   const modeloSel = document.getElementById('an-modelo');
+  const tipoSel = document.getElementById('an-tipo');
+  const atualizarCampoImei = () => {
+    const tipo = STATE.tiposPeca.find(t => t.id === tipoSel.value);
+    document.getElementById('an-imei-card').hidden = !(tipo && tipo.exige_imei);
+  };
+  tipoSel.onchange = atualizarCampoImei;
+  document.getElementById('an-imei').oninput = (e) => {
+    e.target.value = e.target.value.replace(/\D/g, '').slice(0, 15);
+    const st = document.getElementById('an-imei-status');
+    st.textContent = e.target.value.length < 15 ? '' : (imeiValido(e.target.value) ? '✅ IMEI válido' : '⚠️ IMEI não confere, verifique os números');
+    st.style.color = imeiValido(e.target.value) ? 'var(--verde)' : 'var(--erro, #dc2626)';
+  };
   async function carregarModelosAnuncio(){
     const marcaId = marcaSel.value;
     if (!marcaId || marcaId === '__novo__') { modeloSel.disabled = true; modeloSel.innerHTML = '<option value="">Escolha a marca primeiro</option>'; return; }
@@ -1009,6 +1050,9 @@ async function publicarAnuncio(){
   const descricao = document.getElementById('an-descricao').value.trim();
   const precoReais = parseFloat(document.getElementById('an-preco').value);
   if (!marca_id || !modelo_id || !tipo_peca_id || !titulo || !precoReais || marca_id === '__novo__' || modelo_id === '__novo__') return toast('Preencha tipo, marca, modelo, título e preço.', 'erro');
+  const tipoEscolhido = STATE.tiposPeca.find(t => t.id === tipo_peca_id);
+  const imei = tipoEscolhido && tipoEscolhido.exige_imei ? document.getElementById('an-imei').value.trim() : '';
+  if (tipoEscolhido && tipoEscolhido.exige_imei && !imeiValido(imei)) return toast(imei ? ERROS_IMEI.imei_invalido : ERROS_IMEI.imei_obrigatorio, 'erro');
   const btn = document.getElementById('an-publicar');
   btn.disabled = true; btn.textContent = 'Enviando fotos...';
   const fotosUrls = [];
@@ -1021,11 +1065,12 @@ async function publicarAnuncio(){
   }
   if (falhasFoto) toast(`${falhasFoto} foto(s) não subiram -- o anúncio vai sem elas.`, 'erro');
   btn.textContent = 'Publicando...';
-  const { data } = await api('/anuncios', { method:'POST', body:{ marca_id, modelo_id, tipo_peca_id, titulo, descricao, preco_centavos: Math.round(precoReais*100), fotos: fotosUrls, bairro_id: STATE.usuario.bairro_id, condicao: condicaoSelecionada } });
+  const { data } = await api('/anuncios', { method:'POST', body:{ marca_id, modelo_id, tipo_peca_id, titulo, descricao, preco_centavos: Math.round(precoReais*100), fotos: fotosUrls, bairro_id: STATE.usuario.bairro_id, condicao: condicaoSelecionada, imei } });
   btn.disabled = false; btn.textContent = STATE.usuario.is_admin ? 'Publicar anúncio' : 'Publicar anúncio (1 crédito)';
   if (!data.ok) {
     if (data.erro === 'sem_creditos') { toast('Você não tem créditos.', 'erro'); return irPara(renderComprarCreditos); }
     if (data.erro === 'fora_do_tema') return toast('Este anúncio só aceita celular, peças e acessórios.', 'erro');
+    if (ERROS_IMEI[data.erro]) return toast(ERROS_IMEI[data.erro], 'erro');
     return toast('Erro ao publicar' + (data.erro ? ' (' + data.erro + ')' : '') + '.', 'erro');
   }
   toast('Anúncio publicado!', 'sucesso');
@@ -1058,8 +1103,15 @@ async function abrirChat(conversaId){
   const { data: minhas } = await api('/conversas');
   const conversa = (minhas.conversas||[]).find(c => c.id === conversaId);
   const souComprador = conversa && STATE.usuario.id === conversa.comprador_id;
+  const souVendedorAqui = conversa && STATE.usuario.id === conversa.vendedor_id;
   topoComVoltar(conversa ? conversa.anuncio_titulo : 'Conversa', voltar, souComprador ? `<button class="icone" id="ch-avaliar">⭐</button>` : '');
   document.getElementById('conteudo').innerHTML = `
+    ${souVendedorAqui && (conversa.anuncio_status === 'ativo' || conversa.anuncio_status === 'pausado_manual') ? `
+      <div class="card" id="chat-baixa" style="background:var(--verde-claro); border:none; display:flex; align-items:center; gap:10px; padding:10px 12px;">
+        <div style="flex:1; font-size:13px;"><b>Fechou negócio?</b><br><span class="muted">Depois de vender, dê baixa pra sair da loja.</span></div>
+        <button class="btn pequeno" style="margin:0; width:auto;" id="chat-vendi">✓ Vendi</button>
+      </div>` : ''}
+    ${conversa && conversa.anuncio_status === 'vendido' ? '<div class="card" style="text-align:center; padding:8px; font-size:13px;">✓ Este item já foi vendido.</div>' : ''}
     <div id="chat-msgs"></div>
     <div class="respostas-rapidas">
       <button data-t="Ainda está disponível?">Ainda está disponível?</button>
@@ -1072,6 +1124,13 @@ async function abrirChat(conversaId){
     </div>`;
   document.querySelectorAll('.respostas-rapidas button').forEach(b => b.onclick = () => { document.getElementById('chat-texto').value = b.dataset.t; });
   if (souComprador) document.getElementById('ch-avaliar').onclick = () => abrirAvaliarModal(conversaId);
+  const btnVendi = document.getElementById('chat-vendi');
+  if (btnVendi) btnVendi.onclick = async () => {
+    const { data: meus } = await api('/anuncios/meus');
+    cacheMeusAnuncios = meus.ok ? meus.anuncios : [];
+    window.aoDarBaixaNoChat = () => { const c = document.getElementById('chat-baixa'); if (c) c.remove(); };
+    marcarVendido(conversa.anuncio_id);
+  };
   const carregar = async () => {
     const { data } = await api('/conversas/' + conversaId + '/mensagens');
     document.getElementById('chat-msgs').innerHTML = (data.mensagens||[]).map(m => {
@@ -1227,7 +1286,7 @@ async function renderSeguranca(){
   };
 }
 
-function statusLabel(s){ return { ativo:'Ativo', pausado_manual:'Pausado', expirado:'Expirado', removido_admin:'Removido' }[s] || s; }
+function statusLabel(s){ return { ativo:'Ativo', pausado_manual:'Pausado', expirado:'Expirado', removido_admin:'Removido', vendido:'Vendido ✓' }[s] || s; }
 let abaMeusAnuncios = 'todos';
 async function renderMeusAnuncios(){
   topoComVoltar('Meus anúncios', voltar);
@@ -1237,6 +1296,7 @@ async function renderMeusAnuncios(){
       <button data-a="ativo">Ativos</button>
       <button data-a="pausado_manual">Pausados</button>
       <button data-a="expirado">Expirados</button>
+      <button data-a="vendido">Vendidos</button>
     </div>
     <div id="ma-lista"><div class="muted">Carregando...</div></div>`;
   document.querySelectorAll('#ma-abas button').forEach(b => b.onclick = () => {
@@ -1260,24 +1320,40 @@ async function desenharMeusAnuncios(){
         <span class="chip cinza">${statusLabel(a.status)}</span>
       </div>
       <div class="preco">${centavosParaReais(a.preco_centavos)}</div>
-      <p class="muted">Expira em ${new Date(a.expira_em).toLocaleDateString('pt-BR')}</p>
-      ${a.status === 'ativo' ? `<div class="linha2">
-          <button class="btn pequeno" onclick="marcarVendido('${a.id}')">Marcar venda</button>
-          <button class="btn pequeno secundario" onclick="pausarAnuncio('${a.id}')">Pausar</button>
+      ${a.imei ? `<p class="muted" style="margin:4px 0;">IMEI: <b>${esc(a.imei)}</b></p>` : ''}
+      <p class="muted">${a.status === 'vendido' ? 'Vendido em ' + new Date(a.vendido_em || a.criado_em).toLocaleDateString('pt-BR') : 'Expira em ' + new Date(a.expira_em).toLocaleDateString('pt-BR')}</p>
+      ${a.status === 'ativo' || a.status === 'pausado_manual' ? `<div class="linha2">
+          <button class="btn pequeno" onclick="marcarVendido('${a.id}')">✓ Vendi</button>
+          ${a.status === 'ativo' ? `<button class="btn pequeno secundario" onclick="pausarAnuncio('${a.id}')">Pausar</button>` : ''}
         </div>` : ''}
       ${a.status === 'expirado' ? `<button class="btn pequeno" onclick="renovarAnuncio('${a.id}')">Renovar (1 crédito)</button>` : ''}
     </div>`).join('');
 }
-window.marcarVendido = async function(id){
-  const { data } = await api('/anuncios/' + id + '/vender', { method:'POST' });
-  if (!data.ok) return toast('Erro.', 'erro');
-  toast(data.ganhou_credito_bonus ? 'Venda registrada! Você ganhou 1 crédito de bônus 🎉' : 'Venda registrada!', 'sucesso');
-  desenharMeusAnuncios();
+// Dar baixa na venda. Com IMEI o anúncio é uma unidade: sai da loja.
+// Sem IMEI (capinha, cabo, lote) pergunta se ainda tem mais pra vender.
+window.marcarVendido = function(id){
+  const a = cacheMeusAnuncios.find(x => x.id === id) || {};
+  abrirModal(`
+    <button class="fechar-folha" onclick="fecharModal()">✕</button>
+    <h3>Dar baixa na venda</h3>
+    <p class="muted"><b>${esc(a.titulo || '')}</b>${a.imei ? '<br>IMEI ' + esc(a.imei) : ''}</p>
+    ${a.imei ? `<p class="muted">O anúncio sai da loja e vai pra "Vendidos". Se tiver outra unidade, anuncie de novo com o IMEI dela.</p>
+      <button class="btn" onclick="confirmarVenda('${id}', true)">✓ Confirmar: vendi</button>`
+    : `<button class="btn" onclick="confirmarVenda('${id}', true)">Vendi e acabou (tirar da loja)</button>
+      <button class="btn secundario" onclick="confirmarVenda('${id}', false)">Vendi um, ainda tenho mais (manter na loja)</button>`}`);
+};
+window.confirmarVenda = async function(id, encerrar){
+  fecharModal();
+  const { data } = await api('/anuncios/' + id + '/vender', { method:'POST', body:{ encerrar } });
+  if (!data.ok) return toast(data.erro === 'ja_vendido' ? 'Esse anúncio já está como vendido.' : 'Erro ao dar baixa.', 'erro');
+  toast(data.ganhou_credito_bonus ? 'Venda registrada! Você ganhou 1 crédito de bônus 🎉' : (data.encerrado ? 'Baixa feita! O anúncio saiu da loja.' : 'Venda registrada!'), 'sucesso');
+  if (document.getElementById('ma-lista')) desenharMeusAnuncios();
+  else if (typeof aoDarBaixaNoChat === 'function') aoDarBaixaNoChat();
 };
 window.pausarAnuncio = async function(id){ await api('/anuncios/' + id + '/pausar', { method:'POST' }); toast('Anúncio pausado.', 'sucesso'); desenharMeusAnuncios(); };
 window.renovarAnuncio = async function(id){
   const { data } = await api('/anuncios/' + id + '/renovar', { method:'POST' });
-  if (!data.ok) return toast(data.erro === 'sem_creditos' ? 'Sem créditos suficientes.' : 'Erro.', 'erro');
+  if (!data.ok) return toast(data.erro === 'sem_creditos' ? 'Sem créditos suficientes.' : (ERROS_IMEI[data.erro] || 'Erro.'), 'erro');
   toast('Anúncio renovado por mais 30 dias!', 'sucesso'); desenharMeusAnuncios();
 };
 
@@ -1288,7 +1364,7 @@ async function renderPerfilVendedor(usuarioId, aba){
   const { data } = await api('/usuarios/' + usuarioId);
   if (!data.ok) { topoComVoltar('Vendedor', voltar); document.getElementById('conteudo').innerHTML = '<div class="empty">Vendedor não encontrado.</div>'; return; }
   const u = data.usuario;
-  topoComVoltar('Perfil do vendedor', voltar);
+  topoComVoltar('Loja de ' + (u.nome || '').split(' ')[0], voltar);
   document.getElementById('conteudo').innerHTML = `
     <div class="card" style="text-align:center;">
       ${avatarHtml(u.nome, u.foto_url, 'margin:0 auto 10px; width:64px; height:64px; font-size:22px;')}
@@ -1304,7 +1380,7 @@ async function renderPerfilVendedor(usuarioId, aba){
       ${usuarioId !== STATE.usuario.id ? `<button class="btn" onclick="iniciarConversaComVendedor('${usuarioId}')">💬 Conversar</button>` : ''}
     </div>
     <div class="abas-perfil" id="pv-abas">
-      <button data-a="anuncios" class="${aba==='anuncios'?'ativo':''}">Anúncios (${u.anuncios_ativos})</button>
+      <button data-a="anuncios" class="${aba==='anuncios'?'ativo':''}">À venda (${u.anuncios_ativos})</button>
       <button data-a="avaliacoes" class="${aba==='avaliacoes'?'ativo':''}">Avaliações (${u.total_avaliacoes})</button>
     </div>
     <div id="pv-conteudo"></div>`;
