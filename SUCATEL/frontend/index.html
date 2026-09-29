@@ -437,9 +437,12 @@ const EH_APP = MODO_FORCADO ? MODO_FORCADO === 'app' : !!(
 if (!EH_APP) document.documentElement.classList.add('modo-site');
 function navSite(){
   if (EH_APP) return '';
-  // Sem conta, o "Entrar" já fica no topo; aqui só o que dá pra navegar.
-  const itens = [['inicio','🏠','Início'], ['categorias','▦','Categorias'], ['anunciar','➕','Anunciar'], ['chat','💬','Chat']].concat(STATE.usuario ? [['perfil','👤','Minha conta']] : []);
-  return `<nav class="site-nav">${itens.map(([t, i, r]) => `<button data-site-tab="${t}" class="${t === 'anunciar' ? 'destaque' : ''} ${STATE.aba === t && !STATE.pilha.length ? 'ativo' : ''}">${i} ${r}</button>`).join('')}</nav>`;
+  // Igual Shopee: à esquerda a vitrine (todo mundo vê); à direita a área
+  // do cliente -- Vender, Chat e Minha loja (painel do vendedor).
+  const btn = ([t, i, r, cls]) => `<button data-site-tab="${t}" class="${cls || ''} ${STATE.aba === t && !STATE.pilha.length ? 'ativo' : ''}">${i} ${r}</button>`;
+  const vitrine = [['inicio','🏠','Início'], ['categorias','▦','Categorias']];
+  const cliente = [['anunciar','➕','Vender', 'destaque']].concat(STATE.usuario ? [['chat','💬','Chat'], ['loja','🏪','Minha loja']] : []);
+  return `<nav class="site-nav">${vitrine.map(btn).join('')}<span style="flex:1; min-width:8px;"></span>${cliente.map(btn).join('')}</nav>`;
 }
 function setTopo(html){
   document.getElementById('conteudo').classList.remove('largo');
@@ -629,12 +632,12 @@ function voltar(){
   const anterior = STATE.pilha[STATE.pilha.length - 1];
   if (anterior) anterior(); else setTab(STATE.aba, true);
 }
-const ABAS_COM_CONTA = { anunciar:'anunciar seus produtos', chat:'conversar com vendedores', perfil:'ver seu perfil e seus anúncios' };
+const ABAS_COM_CONTA = { anunciar:'anunciar seus produtos', chat:'conversar com vendedores', perfil:'ver seu perfil e seus anúncios', loja:'abrir a sua loja' };
 function setTab(tab, semEmpilhar){
   if (!STATE.usuario && ABAS_COM_CONTA[tab]) return pedirLogin(ABAS_COM_CONTA[tab]);
   STATE.aba = tab; STATE.pilha = [];
   document.querySelectorAll('#tabbar button').forEach(b => b.classList.toggle('ativo', b.dataset.tab === tab));
-  ({ inicio:renderInicio, categorias:renderCategorias, anunciar:renderAnunciar, chat:renderConversas, perfil:renderPerfilConta })[tab]();
+  ({ inicio:renderInicio, categorias:renderCategorias, anunciar:renderAnunciar, chat:renderConversas, perfil:renderPerfilConta, loja:renderMinhaLoja })[tab]();
 }
 
 // ---------------- seletor de bairro (região) ----------------
@@ -1205,7 +1208,7 @@ async function publicarAnuncio(){
     return toast('Erro ao publicar' + (data.erro ? ' (' + data.erro + ')' : '') + '.', 'erro');
   }
   toast('Anúncio publicado!', 'sucesso');
-  setTab('perfil'); irPara(renderMeusAnuncios);
+  setTab('loja');
 }
 
 // ---------------- CHAT ----------------
@@ -1320,6 +1323,68 @@ function abrirAvaliarModal(conversaId){
   };
 }
 
+// ---------------- MINHA LOJA (painel do vendedor) ----------------
+// Tudo de quem vende num lugar só: números da loja, anunciar, mensagens,
+// créditos e os anúncios à venda. A vitrine pública é a "Loja de Fulano".
+async function renderMinhaLoja(comVoltar){
+  if (comVoltar === true) topoComVoltar('Minha loja', voltar); else { topoAba('Minha loja', false); marcarAbaTab('perfil'); }
+  const el = document.getElementById('conteudo');
+  el.innerHTML = '<div class="muted">Carregando sua loja...</div>';
+  const u = STATE.usuario;
+  const [{ data: an }, { data: cv }, { data: sd }, { data: nl }] = await Promise.all([
+    api('/anuncios/meus'), api('/conversas'), api('/creditos/saldo'), api('/conversas/contagem-nao-lidas'),
+  ]);
+  const anuncios = an.ok ? an.anuncios : [];
+  cacheMeusAnuncios = anuncios;
+  const aVenda = anuncios.filter(a => a.status === 'ativo' || a.status === 'pausado_manual');
+  const vendidos = anuncios.filter(a => a.status === 'vendido').length;
+  const visualizacoes = anuncios.reduce((t, a) => t + (a.visualizacoes || 0), 0);
+  const conversasComoVendedor = (cv.ok ? cv.conversas : []).filter(c => c.vendedor_id === u.id).length;
+  const naoLidas = nl.ok ? nl.nao_lidas : 0;
+  const vencendo = aVenda.filter(a => a.status === 'ativo' && (new Date(a.expira_em) - Date.now()) < 3 * 86400000);
+  const expirados = anuncios.filter(a => a.status === 'expirado').length;
+  const saldo = u.is_admin ? '∞' : (sd.ok ? sd.saldo_creditos : 0);
+  const diasPara = (iso) => Math.max(0, Math.ceil((new Date(iso) - Date.now()) / 86400000));
+  el.innerHTML = `
+    <div class="card" id="ml-painel" style="display:flex; align-items:center; gap:12px;">
+      ${avatarHtml(u.nome, u.foto_url, 'width:56px; height:56px; font-size:20px;')}
+      <div style="flex:1; min-width:0;">
+        <b style="font-size:17px;">Loja de ${esc((u.nome || '').split(' ')[0])}</b> ${u.verificado ? '<span class="selo-verificado">✅ Verificado</span>' : ''}
+        <div class="muted">📍 ${esc(u.bairro_nome || '')}</div>
+      </div>
+      <button class="btn pequeno secundario" onclick="abrirPerfilVendedor('${u.id}')">👁️ Ver como cliente</button>
+    </div>
+    <div class="estat-grid" style="margin-bottom:12px;">
+      <div class="estat-item card" style="margin:0;"><b>${aVenda.length}</b><span>À venda</span></div>
+      <div class="estat-item card" style="margin:0;"><b>${vendidos}</b><span>Vendidos</span></div>
+      <div class="estat-item card" style="margin:0;"><b>${visualizacoes}</b><span>Visualizações</span></div>
+      <div class="estat-item card" style="margin:0;"><b>${conversasComoVendedor}</b><span>Conversas</span></div>
+    </div>
+    <div class="linha2" style="grid-template-columns:repeat(3,1fr); margin-bottom:12px;">
+      <button class="btn" style="margin:0; flex-direction:column; padding:12px 6px; font-size:13px;" onclick="setTab('anunciar')"><span style="font-size:22px;">➕</span>Anunciar</button>
+      <button class="btn secundario" style="margin:0; flex-direction:column; padding:12px 6px; font-size:13px; position:relative;" onclick="setTab('chat')"><span style="font-size:22px;">💬</span>Mensagens${naoLidas ? `<span class="badge-tab" style="top:6px; right:10px;">${naoLidas > 9 ? '9+' : naoLidas}</span>` : ''}</button>
+      <button class="btn secundario" style="margin:0; flex-direction:column; padding:12px 6px; font-size:13px;" onclick="irPara(renderComprarCreditos)"><span style="font-size:22px;">💳</span>${saldo} crédito${saldo === 1 ? '' : 's'}</button>
+    </div>
+    ${vencendo.length || expirados ? `<div class="card" style="background:#fffbeb; border-color:#fde68a; cursor:pointer;" onclick="irPara(renderMeusAnuncios)">⚠️ ${vencendo.length ? `<b>${vencendo.length} anúncio(s) vencem em até 3 dias.</b> ` : ''}${expirados ? `<b>${expirados} vencido(s)</b> — renove pra voltar pra loja. ` : ''}<span style="color:var(--verde); font-weight:700;">Ver ›</span></div>` : ''}
+    <div style="display:flex; align-items:baseline; justify-content:space-between; margin:16px 0 10px;">
+      <h3 style="margin:0; font-size:16px;">À venda agora</h3>
+      <a href="javascript:void(0)" onclick="irPara(renderMeusAnuncios)" style="font-size:13px; font-weight:700;">Gerenciar todos (${anuncios.length}) ›</a>
+    </div>
+    <div class="lista-produtos">${aVenda.length ? aVenda.map(a => {
+      const capa = safeJsonParse(a.fotos, [])[0];
+      return `<div class="card produto-card" onclick="abrirAnuncio('${a.id}')">
+        ${capa ? `<img class="produto-foto" src="${esc(capa)}" alt="">` : `<div class="produto-foto produto-foto-vazia">${iconeTipo(a.tipo_peca_id)}</div>`}
+        <div class="produto-info">
+          <div class="produto-titulo">${esc(a.titulo)}</div>
+          <div class="preco">${centavosParaReais(a.preco_centavos)}</div>
+          <div class="produto-local">👁 ${a.visualizacoes || 0} · ${a.status === 'pausado_manual' ? 'pausado' : 'vence em ' + diasPara(a.expira_em) + ' dia(s)'}</div>
+          <button class="btn pequeno" style="margin-top:8px;" onclick="event.stopPropagation(); marcarVendido('${a.id}')">✓ Vendi</button>
+        </div>
+      </div>`;
+    }).join('') : `<div class="empty"><span class="emoji-vazio">🏪</span>Sua loja ainda está vazia.<br><button class="btn" style="margin-top:12px;" onclick="setTab('anunciar')">➕ Anunciar meu primeiro produto</button></div>`}</div>
+    ${rodapeSite()}`;
+}
+
 // ---------------- PERFIL (conta) ----------------
 async function renderPerfilConta(){
   topoAba('Perfil', false); marcarAbaTab('perfil');
@@ -1343,15 +1408,21 @@ async function renderPerfilConta(){
         <div class="estat-item"><b>${u.is_admin ? '∞' : (saldoData.saldo_creditos ?? 0)}</b><span>Créditos</span></div>
       </div>
     </div>
+    <div class="card" id="mi-minha-loja" style="display:flex; align-items:center; gap:12px; cursor:pointer; background:linear-gradient(135deg,var(--verde-escuro),#154a28); color:#fff; border:none;">
+      <span style="font-size:30px;">🏪</span>
+      <div style="flex:1;"><b style="font-size:16px;">Minha loja</b><div style="font-size:12.5px; opacity:.85;">Painel do vendedor: anunciar, seus anúncios, vendas e mensagens</div></div>
+      <span style="font-size:20px;">›</span>
+    </div>
     <div class="card" style="padding:6px 15px;">
       <div class="menu-item" id="mi-dados"><span class="icone-menu">👤</span><div class="texto-menu"><b>Meus dados</b><span class="muted">Nome, e-mail e telefone</span></div><span class="seta">›</span></div>
       <div class="menu-item" id="mi-seguranca"><span class="icone-menu">🔒</span><div class="texto-menu"><b>Segurança</b><span class="muted">Trocar senha</span></div><span class="seta">›</span></div>
       <div class="menu-item" id="mi-anuncios"><span class="icone-menu">📦</span><div class="texto-menu"><b>Meus anúncios</b><span class="muted">Gerenciar anúncios ativos</span></div><span class="seta">›</span></div>
-      <div class="menu-item" id="mi-vendedor"><span class="icone-menu">🏪</span><div class="texto-menu"><b>Perfil de vendedor</b><span class="muted">Como os compradores te veem</span></div><span class="seta">›</span></div>
+      <div class="menu-item" id="mi-vendedor"><span class="icone-menu">👁️</span><div class="texto-menu"><b>Ver minha loja como os clientes veem</b><span class="muted">Sua vitrine pública</span></div><span class="seta">›</span></div>
       <div class="menu-item" id="mi-creditos"><span class="icone-menu">💳</span><div class="texto-menu"><b>Comprar créditos</b><span class="muted">1 crédito = R$5 = 1 anúncio</span></div><span class="seta">›</span></div>
       <div class="menu-item" id="mi-config"><span class="icone-menu">⚙️</span><div class="texto-menu"><b>Configurações</b><span class="muted">Tema, ajuda e conta</span></div><span class="seta">›</span></div>
     </div>
     <button class="btn secundario" id="pf-sair">Sair da conta</button>`;
+  document.getElementById('mi-minha-loja').onclick = () => irPara(() => renderMinhaLoja(true));
   document.getElementById('mi-dados').onclick = () => irPara(renderMeusDados);
   document.getElementById('mi-seguranca').onclick = () => irPara(renderSeguranca);
   document.getElementById('mi-anuncios').onclick = () => irPara(renderMeusAnuncios);
@@ -1489,6 +1560,7 @@ window.confirmarVenda = async function(id, encerrar){
   if (!data.ok) return toast(data.erro === 'ja_vendido' ? 'Esse anúncio já está como vendido.' : 'Erro ao dar baixa.', 'erro');
   toast(data.ganhou_credito_bonus ? 'Venda registrada! Você ganhou 1 crédito de bônus 🎉' : (data.encerrado ? 'Baixa feita! O anúncio saiu da loja.' : 'Venda registrada!'), 'sucesso');
   if (document.getElementById('ma-lista')) desenharMeusAnuncios();
+  else if (document.getElementById('ml-painel')) renderMinhaLoja(STATE.pilha.length ? true : undefined);
   else if (typeof aoDarBaixaNoChat === 'function') aoDarBaixaNoChat();
 };
 window.pausarAnuncio = async function(id){ await api('/anuncios/' + id + '/pausar', { method:'POST' }); toast('Anúncio pausado.', 'sucesso'); desenharMeusAnuncios(); };
