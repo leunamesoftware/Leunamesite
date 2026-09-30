@@ -22,8 +22,23 @@ name: Build Android AAB (Google Play)
 # Para lançar uma atualização depois de já publicado: aumente o
 # versionCode em ANDROID/projeto-instalador-android/versao-release.properties
 # e rode este workflow de novo.
+#
+# Envio automático para a Google Play (opcional): cadastre também o secret
+#   PLAY_SERVICE_ACCOUNT_JSON  (conteúdo do arquivo .json da conta de serviço
+#                               com permissão de lançar versões no Play Console)
+# Sem esse secret o workflow só gera os arquivos, como antes.
 on:
   workflow_dispatch:
+    inputs:
+      trilha:
+        description: 'Para onde enviar na Google Play (precisa do secret PLAY_SERVICE_ACCOUNT_JSON)'
+        type: choice
+        default: production
+        options:
+          - production
+          - alpha
+          - internal
+          - nenhuma
 
 permissions:
   contents: write
@@ -31,6 +46,8 @@ permissions:
 jobs:
   build-android-release:
     runs-on: ubuntu-latest
+    env:
+      PLAY_JSON: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
     steps:
       - name: Baixar código do repositório
         uses: actions/checkout@v4
@@ -277,3 +294,17 @@ jobs:
           files: |
             ANDROID/projeto-instalador-android/android/app/build/outputs/bundle/release/Gestacell.aab
             ANDROID/projeto-instalador-android/android/app/build/outputs/apk/release/Gestacell.apk
+
+      - name: Enviar a versão direto para a Google Play
+        # Só roda com o secret PLAY_SERVICE_ACCOUNT_JSON (chave da conta de serviço
+        # convidada no Play Console). A versão vai para revisão do Google; com a
+        # publicação gerenciada ativada, ela só sai para o público quando o dono
+        # tocar em "Publicar" em Visão geral da publicação.
+        if: env.PLAY_JSON != '' && inputs.trilha != 'nenhuma'
+        uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
+          packageName: com.leunamesoftwares.gestacell
+          releaseFiles: ANDROID/projeto-instalador-android/android/app/build/outputs/bundle/release/LeuName-Gestao.aab
+          track: ${{ inputs.trilha }}
+          status: completed
