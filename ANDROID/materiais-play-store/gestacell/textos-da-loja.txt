@@ -1,0 +1,46 @@
+=== NOME DO APP (até 30 caracteres) ===
+Gestacell: Gestão de Loja
+
+=== DESCRIÇÃO CURTA (até 80 caracteres) ===
+Vendas, ordens de serviço, estoque e financeiro da sua loja de celular.
+
+=== DESCRIÇÃO COMPLETA ===
+O Gestacell é o sistema de gestão feito para lojas de celular e assistências técnicas. Controle vendas, ordens de serviço, estoque e financeiro direto do celular, de forma simples e rápida.
+
+📱 ORDENS DE SERVIÇO
+• Registre o aparelho, o defeito, os acessórios e o estado físico na entrada
+• Checklist do aparelho e senha/padrão de desbloqueio
+• Acompanhe o status: em análise, aguardando peça, em reparo, pronto e entregue
+• Imprima ou compartilhe a OS com o cliente
+
+🛒 VENDAS NO BALCÃO
+• Venda rápida com Pix, cartão ou dinheiro
+• Histórico completo de vendas por cliente
+• Lucro de cada venda calculado automaticamente
+
+📦 ESTOQUE
+• Cadastro de produtos e peças com preço, custo e quantidade
+• Aviso automático de produto com estoque baixo
+• Exportação para planilha (CSV)
+
+💰 FINANCEIRO
+• Receitas, despesas e fluxo de caixa
+• Contas a pagar e a receber
+• Resumo do dia no painel inicial
+
+👥 CLIENTES E EQUIPE
+• Cadastro de clientes e fornecedores
+• Usuários com permissões (administrador, vendedor, técnico)
+
+🔒 SEUS DADOS SEGUROS
+• Os dados ficam no seu aparelho
+• Backup para não perder nada
+
+Teste grátis por 17 dias, sem cartão.
+
+Desenvolvido pela LeuName Softwares.
+
+=== NOTAS DA VERSÃO ===
+<pt-BR>
+Primeira versão do Gestacell: gestão completa para lojas de celular e assistência técnica.
+</pt-BR>

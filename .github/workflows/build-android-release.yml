@@ -22,12 +22,32 @@ name: Build Android AAB (Google Play)
 # Para lançar uma atualização depois de já publicado: aumente o
 # versionCode em ANDROID/projeto-instalador-android/versao-release.properties
 # e rode este workflow de novo.
+#
+# Envio automático para a Google Play (opcional): cadastre também o secret
+#   PLAY_SERVICE_ACCOUNT_JSON  (conteúdo do arquivo .json da conta de serviço
+#                               com permissão de lançar versões no Play Console)
+# Sem esse secret o workflow só gera os arquivos, como antes.
 on:
   workflow_dispatch:
+    inputs:
+      trilha:
+        description: 'Para onde enviar na Google Play (precisa do secret PLAY_SERVICE_ACCOUNT_JSON)'
+        type: choice
+        default: production
+        options:
+          - production
+          - alpha
+          - internal
+          - nenhuma
+
+permissions:
+  contents: write
 
 jobs:
   build-android-release:
     runs-on: ubuntu-latest
+    env:
+      PLAY_JSON: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
     steps:
       - name: Baixar código do repositório
         uses: actions/checkout@v4
@@ -89,6 +109,16 @@ jobs:
           echo "android.suppressUnsupportedCompileSdk=36" >> android/gradle.properties
           echo "--- variables.gradle ---"
           cat android/variables.gradle
+
+      - name: Reservar espaço da barra de status (Android 15+)
+        # O Android 15/16 desenha o app atrás do relógio e da barra de navegação.
+        # Substitui o MainActivity gerado pelo Capacitor por um que reserva esse espaço.
+        working-directory: ANDROID/projeto-instalador-android
+        shell: bash
+        run: |
+          DEST=$(find android/app/src/main/java -name MainActivity.java | head -1)
+          echo "Substituindo $DEST"
+          cp nativo/MainActivity.java "$DEST"
 
       - name: Aplicar o ícone oficial da LeuName Softwares
         working-directory: ANDROID/projeto-instalador-android
@@ -181,7 +211,9 @@ jobs:
           KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
-        run: ./gradlew bundleRelease --no-daemon
+        # Gera também o APK assinado com a MESMA chave: quem instala pelo link
+        # atualiza por cima, sem desinstalar.
+        run: ./gradlew bundleRelease assembleRelease --no-daemon
 
       - name: Renomear o AAB final
         working-directory: ANDROID/projeto-instalador-android
@@ -216,3 +248,63 @@ jobs:
             --file ../../ANDROID/projeto-instalador-android/android/app/build/outputs/bundle/release/LeuName-Gestao.aab \
             --content-type application/octet-stream \
             --remote
+
+      - name: Publicar o APK assinado e o aviso de versão (quem instalou pelo link)
+        # leuname-gestao.apk: mesmo link de sempre, agora assinado com a chave fixa
+        # (atualiza por cima). gestacell-versao.json: lido pelo app para mostrar
+        # "Nova versão disponível" a quem não instalou pela Play Store.
+        working-directory: PROJETO/servidor-licencas-cloudflare
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+        shell: bash
+        run: |
+          PROPS=../../ANDROID/projeto-instalador-android/versao-release.properties
+          CODE=$(grep '^versionCode=' "$PROPS" | cut -d= -f2 | tr -d '[:space:]')
+          NAME=$(grep '^versionName=' "$PROPS" | cut -d= -f2 | tr -d '[:space:]')
+          printf '{"versionCode":%s,"versionName":"%s","apk":"https://api.leunamesoftware.com/download/leuname-gestao.apk"}' "$CODE" "$NAME" > /tmp/gestacell-versao.json
+          cat /tmp/gestacell-versao.json
+          npx wrangler@latest r2 object put \
+            leuname-downloads/leuname-gestao.apk \
+            --file ../../ANDROID/projeto-instalador-android/android/app/build/outputs/apk/release/app-release.apk \
+            --content-type application/vnd.android.package-archive \
+            --remote
+          npx wrangler@latest r2 object put \
+            leuname-downloads/gestacell-versao.json \
+            --file /tmp/gestacell-versao.json \
+            --content-type application/json \
+            --remote
+
+      - name: Nomes finais dos arquivos
+        working-directory: ANDROID/projeto-instalador-android/android/app/build/outputs
+        run: |
+          cp bundle/release/LeuName-Gestao.aab bundle/release/Gestacell.aab
+          cp apk/release/app-release.apk apk/release/Gestacell.apk
+
+      - name: Publicar o AAB e o APK no GitHub (download direto, sem zip)
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: gestacell-v${{ github.run_number }}
+          target_commitish: ${{ github.sha }}
+          name: Gestacell — versão ${{ github.run_number }}
+          prerelease: true
+          make_latest: false
+          body: |
+            • Gestacell.aab → enviar no Play Console (Teste / Produção → Criar nova versão).
+            • Gestacell.apk → instalação direta pelo link (atualiza por cima nas próximas versões).
+          files: |
+            ANDROID/projeto-instalador-android/android/app/build/outputs/bundle/release/Gestacell.aab
+            ANDROID/projeto-instalador-android/android/app/build/outputs/apk/release/Gestacell.apk
+
+      - name: Enviar a versão direto para a Google Play
+        # Só roda com o secret PLAY_SERVICE_ACCOUNT_JSON (chave da conta de serviço
+        # convidada no Play Console). A versão vai para revisão do Google; com a
+        # publicação gerenciada ativada, ela só sai para o público quando o dono
+        # tocar em "Publicar" em Visão geral da publicação.
+        if: env.PLAY_JSON != '' && inputs.trilha != 'nenhuma'
+        uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
+          packageName: com.leunamesoftwares.gestacell
+          releaseFiles: ANDROID/projeto-instalador-android/android/app/build/outputs/bundle/release/LeuName-Gestao.aab
+          track: ${{ inputs.trilha }}
+          status: completed
