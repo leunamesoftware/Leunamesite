@@ -8,3 +8,10 @@
 - Imagens/descrições da loja: `ANDROID/materiais-play-store/<app>/`.
 - Evitar o número 13 em textos, exemplos e prints.
 - Toda versão enviada à Play aumenta o versionCode.
+
+## Códigos dos apps (o dono chama por B1, B2, B3…)
+
+| Código | App | Pacote | Situação |
+|---|---|---|---|
+| B1 | Gestacell | com.leunamesoftwares.gestacell | Produção 1.0.4 em análise; 1.0.5 (teste de 7 dias) pronta para subir depois da aprovação |
+| B2 | Radar Preventivo | com.radarpreventivo.app | Teste interno (não lançar até o dono dizer "liberado") |
