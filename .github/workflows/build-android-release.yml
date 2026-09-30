@@ -25,6 +25,9 @@ name: Build Android AAB (Google Play)
 on:
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build-android-release:
     runs-on: ubuntu-latest
@@ -253,3 +256,24 @@ jobs:
             --file /tmp/gestacell-versao.json \
             --content-type application/json \
             --remote
+
+      - name: Nomes finais dos arquivos
+        working-directory: ANDROID/projeto-instalador-android/android/app/build/outputs
+        run: |
+          cp bundle/release/LeuName-Gestao.aab bundle/release/Gestacell.aab
+          cp apk/release/app-release.apk apk/release/Gestacell.apk
+
+      - name: Publicar o AAB e o APK no GitHub (download direto, sem zip)
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: gestacell-v${{ github.run_number }}
+          target_commitish: ${{ github.sha }}
+          name: Gestacell — versão ${{ github.run_number }}
+          prerelease: true
+          make_latest: false
+          body: |
+            • Gestacell.aab → enviar no Play Console (Teste / Produção → Criar nova versão).
+            • Gestacell.apk → instalação direta pelo link (atualiza por cima nas próximas versões).
+          files: |
+            ANDROID/projeto-instalador-android/android/app/build/outputs/bundle/release/Gestacell.aab
+            ANDROID/projeto-instalador-android/android/app/build/outputs/apk/release/Gestacell.apk
