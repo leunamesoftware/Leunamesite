@@ -910,7 +910,7 @@ function renderTrialExpirado(){
   <div class="auth-screen"><div class="auth-card">
     ${authBrandHTML()}
     <h2 style="font-size:17px;text-align:center;margin-top:6px;">Período de teste encerrado</h2>
-    <div class="callout warn" style="margin-top:10px;"><span>${ic('warn',15)}</span><span>Seus ${TRIAL_DIAS} dias de teste do Gestacell terminaram. Gostou do sistema? Fale com a LeuName Softwares pra adquirir a licença completa.</span></div>
+    <div class="callout warn" style="margin-top:10px;"><span>${ic('warn',15)}</span><span>Seu período de teste do Gestacell terminou. Gostou do sistema? Fale com a LeuName Softwares pra adquirir a licença completa.</span></div>
     ${contatoLeuNameHTML('Meu período de teste do Gestacell terminou e quero adquirir a licença completa.')}
     ${authFooterHTML()}
   </div></div>`;
@@ -2714,7 +2714,9 @@ async function isLicenseActivated(){
    depois de TRIAL_DIAS -- usadas pra distribuir o app pra um grupo grande
    de pessoas conhecerem antes de comprar, sem precisar controlar isso na
    mão. Chaves normais (qualquer outro grupo) nunca expiram. */
-const TRIAL_DIAS=17;
+const TRIAL_DIAS=7;
+// Testes iniciados antes da mudança para 7 dias continuam com os 17 dias prometidos.
+const TRIAL_DIAS_ANTIGO=17, TRIAL_MUDOU_EM=Date.UTC(2026,9,1);
 const TRIAL_INICIO_LS_KEY='leuname_trial_iniciado_em';
 function isTrialKey(key){
   const m=/^LEU-([0-9A-Z]{4})-/.exec((key||'').trim().toUpperCase());
@@ -2725,9 +2727,10 @@ function trialExpirado(){
   if(!isTrialKey(key)) return false;
   const inicio=Number(lsGet(TRIAL_INICIO_LS_KEY)||0);
   if(!inicio) return false;
-  return (Date.now()-inicio) > TRIAL_DIAS*86400000;
+  const dias = inicio < TRIAL_MUDOU_EM ? TRIAL_DIAS_ANTIGO : TRIAL_DIAS;
+  return (Date.now()-inicio) > dias*86400000;
 }
-/* Instalação nova, sem nenhuma chave ainda: libera os 17 dias de teste na hora,
+/* Instalação nova, sem nenhuma chave ainda: libera os 7 dias de teste na hora,
    sem pedir nada -- pensado pra quem instala pelo teste fechado da Play Store
    (testadores desconhecidos, inclusive de outros países, que não teriam como
    receber uma chave manualmente). Quem já comprou licença continua podendo

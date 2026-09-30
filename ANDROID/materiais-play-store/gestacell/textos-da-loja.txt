@@ -36,7 +36,7 @@ O Gestacell é o sistema de gestão feito para lojas de celular e assistências 
 • Os dados ficam no seu aparelho
 • Backup para não perder nada
 
-Teste grátis por 17 dias, sem cartão.
+Teste grátis por 7 dias, sem cartão.
 
 Desenvolvido pela LeuName Softwares.
 

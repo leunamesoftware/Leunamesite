@@ -1,0 +1,19 @@
+{
+  "package": "com.leunamesoftwares.gestacell",
+  "language": "pt-BR",
+  "defaultLanguage": "pt-BR",
+  "contactEmail": "leunamesoftware@gmail.com",
+  "contactWebsite": "https://www.leunamesoftware.com.br",
+  "title": "Gestacell: Gestão de Loja",
+  "shortDescription": "Vendas, ordens de serviço, estoque e financeiro da sua loja de celular.",
+  "fullDescription": "O Gestacell é o sistema de gestão feito para lojas de celular e assistências técnicas. Controle vendas, ordens de serviço, estoque e financeiro direto do celular, de forma simples e rápida.\n\n📱 ORDENS DE SERVIÇO\n• Registre o aparelho, o defeito, os acessórios e o estado físico na entrada\n• Checklist do aparelho e senha/padrão de desbloqueio\n• Acompanhe o status: em análise, aguardando peça, em reparo, pronto e entregue\n• Imprima ou compartilhe a OS com o cliente\n\n🛒 VENDAS NO BALCÃO\n• Venda rápida com Pix, cartão ou dinheiro\n• Histórico completo de vendas por cliente\n• Lucro de cada venda calculado automaticamente\n\n📦 ESTOQUE\n• Cadastro de produtos e peças com preço, custo e quantidade\n• Aviso automático de produto com estoque baixo\n• Exportação para planilha (CSV)\n\n💰 FINANCEIRO\n• Receitas, despesas e fluxo de caixa\n• Contas a pagar e a receber\n• Resumo do dia no painel inicial\n\n👥 CLIENTES E EQUIPE\n• Cadastro de clientes e fornecedores\n• Usuários com permissões (administrador, vendedor, técnico)\n\n🔒 SEUS DADOS SEGUROS\n• Os dados ficam no seu aparelho\n• Backup para não perder nada\n\nTeste grátis por 7 dias, sem cartão.\n\nDesenvolvido pela LeuName Softwares.",
+  "icon": "icone-512.png",
+  "featureGraphic": "imagem-destaque-1024x500.png",
+  "phoneScreenshots": [
+    "print-1.png",
+    "print-2.png",
+    "print-3.png",
+    "print-4.png",
+    "print-5.png"
+  ]
+}

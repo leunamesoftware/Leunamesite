@@ -1,0 +1,20 @@
+{
+  "package": "com.radarpreventivo.app",
+  "language": "pt-BR",
+  "defaultLanguage": "pt-BR",
+  "contactEmail": "leunamesoftware@gmail.com",
+  "contactWebsite": "https://www.leunamesoftware.com.br",
+  "title": "Radar Preventivo",
+  "shortDescription": "Controle vencimentos de documentos e prazos e receba alertas antes de vencer.",
+  "fullDescription": "O Radar Preventivo acompanha seus documentos, obrigações e prazos e avisa antes que vençam.\n\nCadastre o que precisa ser renovado ou pago — CNH, IPVA, alvará, contrato, seguro, qualquer prazo — com a data de vencimento. O Radar analisa cada item na hora e todos os dias:\n\n• Mostra no painel o que está vencido, o que é urgente, o que está a vencer e o que já foi pago (em dia).\n• Gera alertas dentro do app quando um item entra em atenção, fica urgente, vence hoje ou vence.\n• Traz uma orientação preventiva com os próximos passos para cada situação.\n• Informe o valor das contas: o Radar soma quanto pagar em cada dia, o que está em atraso e quanto você pagou no mês.\n• Marque como pago informando a data e o valor pago: o Radar mostra se foi pago em dia ou com atraso e guarda o histórico.\n• Permite anexar o documento (PDF, JPG ou PNG) para ter tudo em um lugar só.\n• Radar animado que destaca o que precisa de ação agora.\n\nVocê escolhe com quanta antecedência quer começar a ser avisado. Seus dados ficam na sua conta, os arquivos anexados são privados e você pode excluir sua conta e tudo o que cadastrou a qualquer momento, pelo próprio app.\n\nProtege seu hoje. Evita problemas amanhã.",
+  "icon": "../marca/icone-play-store-512.png",
+  "featureGraphic": "imagem-destaque-1024x500.png",
+  "phoneScreenshots": [
+    "capturas/1-abertura.png",
+    "capturas/2-radar.png",
+    "capturas/3-alertas-radar-vivo.png",
+    "capturas/4-documentos.png",
+    "capturas/5-detalhe.png",
+    "capturas/6-cadastrar.png"
+  ]
+}

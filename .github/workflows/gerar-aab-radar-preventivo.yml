@@ -19,10 +19,21 @@ on:
         description: 'Gerar uma chave de assinatura NOVA (só se ainda não existe nenhuma)'
         type: boolean
         default: false
+      trilha:
+        description: 'Para onde enviar na Google Play (o app precisa já existir no Play Console)'
+        type: choice
+        default: internal
+        options:
+          - internal
+          - alpha
+          - production
+          - nenhuma
 
 jobs:
   aab:
     runs-on: ubuntu-latest
+    env:
+      PLAY_JSON: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
     permissions:
       actions: read
       contents: read
@@ -238,6 +249,15 @@ jobs:
             --content-type application/vnd.android.package-archive --remote
           echo "Link: https://radar-preventivo.emanuelantunes2024.workers.dev/baixar.html"
 
+      - name: Publicar o AAB em link direto (enviar na Play Store pelo celular, sem zip)
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+        run: |
+          npx --yes wrangler@4 r2 object put leuname-downloads/radar-preventivo.aab \
+            --file entrega/RadarPreventivo.aab \
+            --content-type application/octet-stream --remote
+          echo "AAB: https://api.leunamesoftware.com/download/radar-preventivo.aab"
+
       - name: Enviar para download (Artifact)
         uses: actions/upload-artifact@v4
         with:
@@ -245,3 +265,16 @@ jobs:
           path: RADAR-PREVENTIVO/app-android/entrega/
           if-no-files-found: error
           retention-days: 30
+
+      - name: Enviar a versão direto para a Google Play
+        # Só funciona depois que o app existir no Play Console e o primeiro AAB tiver
+        # sido enviado à mão (regra do Google). Até lá, falha sem travar o resto.
+        if: env.PLAY_JSON != '' && inputs.trilha != 'nenhuma'
+        continue-on-error: true
+        uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
+          packageName: com.radarpreventivo.app
+          releaseFiles: RADAR-PREVENTIVO/app-android/entrega/RadarPreventivo.aab
+          track: ${{ inputs.trilha }}
+          status: completed
