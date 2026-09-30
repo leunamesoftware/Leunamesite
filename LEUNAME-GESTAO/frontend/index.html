@@ -75,7 +75,11 @@ body{
 h1,h2,h3,h4{font-family:var(--font-head);margin:0;color:var(--gray-800);}
 a{color:var(--blue);text-decoration:none;}
 button{font-family:var(--font-body);cursor:pointer;}
-input,select,textarea{font-family:var(--font-body);}
+input,select,textarea{font-family:var(--font-body);color:var(--gray-800);}
+/* Campos e listas seguem o tema: no escuro o texto fica claro e a lista nativa também escura. */
+option{background:var(--white);color:var(--gray-800);}
+:root[data-theme="dark"]{color-scheme:dark;}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){color-scheme:dark;}}
 ::-webkit-scrollbar{width:10px;height:10px;}
 ::-webkit-scrollbar-thumb{background:var(--gray-200);border-radius:8px;}
 :focus-visible{outline:2px solid var(--blue);outline-offset:2px;}
