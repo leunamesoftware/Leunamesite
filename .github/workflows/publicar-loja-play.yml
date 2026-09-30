@@ -1,0 +1,28 @@
+name: Atualizar página da loja (Google Play)
+
+# Envia textos, ícone, imagem de destaque e prints de um app para a Google Play,
+# usando a conta de serviço do secret PLAY_SERVICE_ACCOUNT_JSON.
+# Cada app tem um loja.json com os textos e os caminhos das imagens.
+on:
+  workflow_dispatch:
+    inputs:
+      app:
+        description: 'App'
+        type: choice
+        options:
+          - RADAR-PREVENTIVO/loja/loja.json
+          - ANDROID/materiais-play-store/gestacell/loja.json
+
+jobs:
+  loja:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install --quiet google-auth requests
+      - name: Enviar para a Google Play
+        env:
+          PLAY_JSON: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
+        run: python .github/scripts/play_loja.py "${{ inputs.app }}"
