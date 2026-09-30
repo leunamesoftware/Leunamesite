@@ -191,7 +191,9 @@ jobs:
           KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
-        run: ./gradlew bundleRelease --no-daemon
+        # Gera também o APK assinado com a MESMA chave: quem instala pelo link
+        # atualiza por cima, sem desinstalar.
+        run: ./gradlew bundleRelease assembleRelease --no-daemon
 
       - name: Renomear o AAB final
         working-directory: ANDROID/projeto-instalador-android
@@ -225,4 +227,29 @@ jobs:
             leuname-downloads/gestacell.aab \
             --file ../../ANDROID/projeto-instalador-android/android/app/build/outputs/bundle/release/LeuName-Gestao.aab \
             --content-type application/octet-stream \
+            --remote
+
+      - name: Publicar o APK assinado e o aviso de versão (quem instalou pelo link)
+        # leuname-gestao.apk: mesmo link de sempre, agora assinado com a chave fixa
+        # (atualiza por cima). gestacell-versao.json: lido pelo app para mostrar
+        # "Nova versão disponível" a quem não instalou pela Play Store.
+        working-directory: PROJETO/servidor-licencas-cloudflare
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+        shell: bash
+        run: |
+          PROPS=../../ANDROID/projeto-instalador-android/versao-release.properties
+          CODE=$(grep '^versionCode=' "$PROPS" | cut -d= -f2 | tr -d '[:space:]')
+          NAME=$(grep '^versionName=' "$PROPS" | cut -d= -f2 | tr -d '[:space:]')
+          printf '{"versionCode":%s,"versionName":"%s","apk":"https://api.leunamesoftware.com/download/leuname-gestao.apk"}' "$CODE" "$NAME" > /tmp/gestacell-versao.json
+          cat /tmp/gestacell-versao.json
+          npx wrangler@latest r2 object put \
+            leuname-downloads/leuname-gestao.apk \
+            --file ../../ANDROID/projeto-instalador-android/android/app/build/outputs/apk/release/app-release.apk \
+            --content-type application/vnd.android.package-archive \
+            --remote
+          npx wrangler@latest r2 object put \
+            leuname-downloads/gestacell-versao.json \
+            --file /tmp/gestacell-versao.json \
+            --content-type application/json \
             --remote

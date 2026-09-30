@@ -2,7 +2,8 @@ name: Build Android APK
 
 # Depois que este workflow terminar, a versão mais recente do APK fica
 # disponível para baixar direto (sem zip, sem navegar no GitHub) em:
-# https://api.leunamesoftware.com/download/leuname-gestao.apk
+# https://api.leunamesoftware.com/download/leuname-gestao-teste.apk (teste)
+# (o link oficial leuname-gestao.apk vem do workflow "Build Android AAB")
 #
 # (Alternativa, se precisar do arquivo bruto do GitHub: aba Actions →
 # "Build Android APK" → abrir a execução → seção "Artifacts" → baixar
@@ -124,14 +125,16 @@ jobs:
       - name: Publicar o APK no link fixo de download
         # Sobe o APK para o mesmo servidor da Cloudflare que já hospeda as
         # licenças, disponibilizando sempre em
-        # https://api.leunamesoftware.com/download/leuname-gestao.apk
-        # (link permanente, sem precisar navegar no GitHub Actions).
+        # https://api.leunamesoftware.com/download/leuname-gestao-teste.apk
+        # (versão de TESTE, chave de depuração). O link oficial
+        # leuname-gestao.apk é publicado pelo workflow de release, assinado
+        # com a chave fixa, para que os clientes atualizem sem desinstalar.
         working-directory: PROJETO/servidor-licencas-cloudflare
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
         run: |
           npx wrangler@latest r2 object put \
-            leuname-downloads/leuname-gestao.apk \
+            leuname-downloads/leuname-gestao-teste.apk \
             --file ../../ANDROID/projeto-instalador-android/android/app/build/outputs/apk/debug/LeuName-Gestao.apk \
             --content-type application/vnd.android.package-archive \
             --remote
