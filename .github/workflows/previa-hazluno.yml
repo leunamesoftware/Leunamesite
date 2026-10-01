@@ -1,0 +1,79 @@
+name: Prévia do Hazluno (link para o dono ver no celular)
+
+# Publica a versão mais nova do Hazluno (feito pelo Cloud 1) em
+# https://hazluno-previa.leunamesoftware.com.br, com banco e arquivos SEPARADOS
+# da versão oficial. Não altera nada na pasta HAZLUNO/ do repositório.
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '*/30 * * * *'   # confere a cada 30 min se o Cloud 1 enviou algo novo
+
+concurrency: previa-hazluno
+
+jobs:
+  previa:
+    runs-on: ubuntu-latest
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: ci
+
+      - name: Escolher a branch mais nova do Cloud 1
+        id: branch
+        run: |
+          cd ci
+          git fetch -q origin 'refs/heads/cloud1/*:refs/remotes/origin/cloud1/*'
+          B=$(git for-each-ref --sort=-committerdate --format='%(refname:short)' 'refs/remotes/origin/cloud1/*hazluno*' 'refs/remotes/origin/cloud1/*razluno*' | head -1 | sed 's#^origin/##')
+          SHA=$(git rev-parse "origin/$B")
+          echo "branch=$B" >> "$GITHUB_OUTPUT"; echo "sha=$SHA" >> "$GITHUB_OUTPUT"
+          echo "Branch: $B ($SHA)"
+
+      - name: Já publicado? (evita deploy repetido no agendamento)
+        id: ja
+        run: |
+          ATUAL=$(curl -s https://hazluno-previa.leunamesoftware.com.br/versao-previa.txt || true)
+          if [ "${{ github.event_name }}" = "schedule" ] && [ "$ATUAL" = "${{ steps.branch.outputs.sha }}" ]; then echo "pular=sim" >> "$GITHUB_OUTPUT"; echo "Nada novo."; fi
+
+      - uses: actions/checkout@v4
+        if: steps.ja.outputs.pular != 'sim'
+        with:
+          ref: ${{ steps.branch.outputs.branch }}
+          path: app
+
+      - uses: actions/setup-node@v4
+        if: steps.ja.outputs.pular != 'sim'
+        with:
+          node-version: '22'
+
+      - name: Testes do servidor e build do app
+        if: steps.ja.outputs.pular != 'sim'
+        working-directory: app/HAZLUNO
+        run: |
+          (cd backend && npm ci && npm test)
+          (cd frontend && npm ci && npm run build)
+          echo "${{ steps.branch.outputs.sha }}" > frontend/dist/versao-previa.txt
+          cp ../../ci/PREVIAS/hazluno/wrangler.toml wrangler.previa.toml
+
+      - name: Banco da prévia e segredos (só na primeira vez)
+        if: steps.ja.outputs.pular != 'sim'
+        working-directory: app/HAZLUNO
+        run: |
+          npx --yes wrangler@4 d1 migrations apply hazluno-previa --remote --config wrangler.previa.toml
+          npx --yes wrangler@4 deploy --config wrangler.previa.toml
+          EXISTENTES="$(npx --yes wrangler@4 secret list --config wrangler.previa.toml)"
+          for S in PASSWORD_PEPPER IP_HASH_SECRET; do
+            echo "$EXISTENTES" | grep -q "\"$S\"" || openssl rand -hex 32 | tr -d '\n' | npx --yes wrangler@4 secret put $S --config wrangler.previa.toml
+          done
+
+      - name: Testar no ar
+        if: steps.ja.outputs.pular != 'sim'
+        run: |
+          for i in 1 2 3 4 5 6; do
+            if curl -sf https://hazluno-previa.leunamesoftware.com.br/ >/dev/null; then
+              echo "### Prévia do Hazluno: https://hazluno-previa.leunamesoftware.com.br" >> "$GITHUB_STEP_SUMMARY"; exit 0
+            fi
+            sleep 20
+          done
+          exit 1
