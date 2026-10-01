@@ -134,3 +134,9 @@ Regras no código: `shared/certificate.ts` (elegibilidade e formato do ID) e mig
 - Selo/marca-d'água da Hazluno no fundo; a garantia de verdade é a verificação pelo QR/ID.
 - **Privacidade na verificação:** só com o ID, a página confirma que o certificado existe, o curso, a data e o professor, com o nome do aluno abreviado ("Ana T."). Com a chave do QR Code (que só o aluno tem para compartilhar), mostra o nome completo. Assim ninguém consegue listar os alunos tentando IDs em sequência.
 - Referência visual: `brand/certificate-reference-phase5.webp` (ajustar o texto para o modelo acima e incluir carga horária, ID e QR).
+- `review-reference-phase5.webp` ("Evalúa la clase"): nota geral, 4 aspectos (contenido, didáctica, organización, cumplimiento del horario), "¿Qué te gustó más?" e comentário de até 500 caracteres. Banco preparado na migração `0006_review_aspects.sql`.
+  - Só quem participou (uma avaliação por inscrição), depois do último encontro.
+  - **As estrelas começam vazias** (na imagem já vêm todas marcadas, o que puxa a nota para cima e não é justo com os outros alunos).
+  - O que aparece em público: nota geral, aspectos, destaques e comentário, com o nome abreviado ("Pedro S."). O professor pode responder uma vez.
+  - Comentário passa pelo filtro de moderação (denúncia, ocultar); o professor não apaga avaliação, só a moderação.
+  - A nota do curso e do professor é a média das avaliações publicadas; sem avaliações aparece "Nuevo".

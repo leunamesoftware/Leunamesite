@@ -34,4 +34,10 @@ describe('certificate rules (Hazluno issues, teacher answers for the training, s
       'total_minutes', 'completed_on', 'kind', 'verify_key_hash']));
     expect(await t.deps.db.one(`SELECT 1 FROM sqlite_master WHERE name = 'certificate_sequences'`)).toBeTruthy();
   });
+  it('reviews keep the 4 aspects of the owner screen, highlights and the teacher reply', async () => {
+    const t = await setup();
+    const cols = (await t.deps.db.all<{ name: string }>(`SELECT name FROM pragma_table_info('reviews')`)).map((c) => c.name);
+    expect(cols).toEqual(expect.arrayContaining(['rating', 'rating_content', 'rating_teaching', 'rating_organization', 'rating_punctuality',
+      'highlights', 'comment', 'instructor_reply']));
+  });
 });
