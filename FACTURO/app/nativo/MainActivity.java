@@ -2,6 +2,7 @@ package com.leunamesoftwares.facturo;
 
 import android.content.res.Configuration;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import androidx.core.graphics.Insets;
@@ -19,7 +20,15 @@ public class MainActivity extends BridgeActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         boolean escuro = (getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES;
-        getWindow().getDecorView().setBackgroundColor(Color.parseColor(escuro ? "#0C171A" : "#F3F6F6"));
+        int fundo = Color.parseColor(escuro ? "#0C171A" : "#F3F6F6"); // = --fundo do app (claro/escuro)
+        getWindow().getDecorView().setBackgroundColor(fundo);
+        findViewById(android.R.id.content).setBackgroundColor(fundo);
+        getWindow().setStatusBarColor(fundo);
+        getWindow().setNavigationBarColor(fundo);
+        if (Build.VERSION.SDK_INT >= 29) {
+            getWindow().setStatusBarContrastEnforced(false);     // sem faixa cinza por cima
+            getWindow().setNavigationBarContrastEnforced(false); // nem embaixo
+        }
         WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView()).setAppearanceLightStatusBars(!escuro);
         WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView()).setAppearanceLightNavigationBars(!escuro);
 

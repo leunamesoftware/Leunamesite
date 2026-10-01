@@ -54,32 +54,35 @@ adb shell settings put global window_animation_scale 0; adb shell settings put g
 echo "idioma do aparelho: $(adb shell getprop persist.sys.locale)"
 
 adb install -r "$APK"
+adb shell cmd uimode night no
 adb logcat -c
 adb shell monkey -p $PKG -c android.intent.category.LAUNCHER 1 >/dev/null
 sleep 3; foto 00-3s
-sleep 4; foto 00-7s
-sleep 5; foto 01-abriu
-adb shell dumpsys activity activities | grep -iE "facturo|mResumed|topResumed" | head -20
-tocar "Pintor" && foto 02-profissao
-adb shell input text "Pintura%sSilva" && sleep 2 && foto 03-nome
-tocar "Começar" ; sleep 4; foto 04-inicio
-tocar "Novo orçamento" || adb shell input tap $(adb shell wm size | grep -o "[0-9]*x[0-9]*" | tail -1 | awk -Fx '{print int($1*0.75), int($2*0.855)}'); sleep 3; foto 05-novo-orcamento
-adb shell dumpsys input_method | grep -iE "mInputShown|mIsInputViewShown" | head -3
+sleep 7; foto 01-abriu
+# Posições medidas no Pixel 6 (1080x2400); fração da tela para valer em outros tamanhos.
+pos 0.67 0.44; foto 02-profissao            # Pintor
+pos 0.5 0.473                               # campo nome
+adb shell input text "Pintura"; sleep 2; foto 03-nome
+pos 0.5 0.548; sleep 3; foto 04-inicio      # Começar
+pos 0.75 0.855; sleep 2; foto 05-novo-orcamento
 adb shell input swipe 540 1700 540 700 300; sleep 1; foto 06-rolou
-# Clientes → novo cliente com teclado aberto (o caso do print do dono)
 adb shell input keyevent 4; sleep 2
+
+# Clientes → novo cliente com teclado aberto (o caso do print do dono)
 pos 0.62 0.94; foto 07-clientes
-pos 0.75 0.855; sleep 1; foto 08-novo-cliente
-adb shell input text "Maria%sSouza"; sleep 1; foto 09-digitando
-pos 0.5 0.33; sleep 1; foto 10-telefone
+pos 0.75 0.855; sleep 2; foto 08-novo-cliente
+adb shell input text "Maria"; sleep 1; foto 09-digitando
+adb shell input keyevent 61; sleep 1; foto 10-proximo-campo   # Tab = próximo campo
+adb shell input keyevent 4; sleep 1; adb shell input keyevent 4; sleep 1
 
 # Tema escuro
-adb shell cmd uimode night yes; adb shell am force-stop $PKG; sleep 1
-adb shell monkey -p $PKG -c android.intent.category.LAUNCHER 1 >/dev/null; sleep 6; foto 11-escuro-inicio
+adb shell cmd uimode night yes; sleep 3
+adb shell am force-stop $PKG; sleep 1
+adb shell monkey -p $PKG -c android.intent.category.LAUNCHER 1 >/dev/null; sleep 7; foto 11-escuro-inicio
 pos 0.87 0.94; foto 12-escuro-mais
 pos 0.37 0.94; foto 13-escuro-documentos
-pos 0.75 0.855; sleep 1; foto 14-escuro-editor
-arvore
+pos 0.75 0.855; sleep 2; foto 14-escuro-editor
+pos 0.5 0.19; sleep 2; foto 15-escuro-escolher-cliente
 adb logcat -d > "$OUT/log-completo.txt"
 grep -iE "facturo|Capacitor|Console|FATAL|AndroidRuntime: (FATAL|java)|ActivityTaskManager|ActivityManager.*(Kill|died|crash)|cr_AwContents" "$OUT/log-completo.txt" | grep -v nativeloader | tail -250 > "$OUT/log.txt"
 echo "===== LOG ====="; cat "$OUT/log.txt"

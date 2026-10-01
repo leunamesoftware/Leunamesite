@@ -12,6 +12,9 @@
   --perigo: #C2410C;
   --aviso: #B7791F;
   --info: #1D6FA5;
+  --verde-suave: #E3F6EE;
+  --selo-info: #E3F0FA; --selo-ok: #DDF5EA; --selo-erro: #FDE8DD; --selo-aviso: #FBF0D9;
+  --aviso-fundo: #10262C;
   --raio: 16px;
   --sombra: 0 1px 2px rgba(16, 38, 44, 0.06), 0 6px 18px rgba(16, 38, 44, 0.06);
   --fonte: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
@@ -20,7 +23,11 @@
 @media (prefers-color-scheme: dark) {
   :root {
     --fundo: #0C171A; --superficie: #13242A; --texto: #E6F0EF; --suave: #93A8AC; --linha: #22383E;
-    --verde: #2BC48A; --verde-forte: #22A877; --petroleo: #4FA3C7; color-scheme: dark;
+    --verde: #1FA97A; --verde-forte: #3DD39B; --petroleo: #1C6E8F; color-scheme: dark;
+    --verde-suave: rgba(61, 211, 155, 0.13);
+    --selo-info: rgba(79, 163, 199, 0.16); --selo-ok: rgba(61, 211, 155, 0.15); --selo-erro: rgba(234, 88, 12, 0.18); --selo-aviso: rgba(234, 179, 8, 0.16);
+    --perigo: #F07A45; --aviso: #E3B341; --info: #6CB6DA; --aviso-fundo: #E6F0EF;
+    --sombra: 0 1px 2px rgba(0, 0, 0, 0.3);
   }
 }
 * { box-sizing: border-box; }
@@ -86,17 +93,17 @@ textarea.entrada { min-height: 84px; resize: vertical; }
 .item-lista .valor { font-weight: 800; font-variant-numeric: tabular-nums; white-space: nowrap; }
 
 .selo { display: inline-block; font-size: 12px; font-weight: 700; padding: 3px 9px; border-radius: 999px; background: var(--linha); color: var(--suave); }
-.selo.enviado { background: #E3F0FA; color: var(--info); }
-.selo.aprovado, .selo.pago { background: #DDF5EA; color: var(--verde-forte); }
-.selo.vencido, .selo.recusado { background: #FDE8DD; color: var(--perigo); }
-.selo.aberto { background: #FBF0D9; color: var(--aviso); }
+.selo.enviado { background: var(--selo-info); color: var(--info); }
+.selo.aprovado, .selo.pago { background: var(--selo-ok); color: var(--verde-forte); }
+.selo.vencido, .selo.recusado { background: var(--selo-erro); color: var(--perigo); }
+.selo.aberto { background: var(--selo-aviso); color: var(--aviso); }
 
 .chips { display: flex; flex-wrap: wrap; gap: 8px; }
 .chip {
   border: 1.5px solid var(--linha); background: var(--superficie); border-radius: 999px; padding: 10px 14px;
   font-size: 15px; font-weight: 600; min-height: 44px;
 }
-.chip.ativo { border-color: var(--verde); background: #E3F6EE; color: var(--verde-forte); }
+.chip.ativo { border-color: var(--verde); background: var(--verde-suave); color: var(--verde-forte); }
 .chip .preco { color: var(--suave); font-weight: 500; margin-left: 6px; }
 
 .linha-doc { display: grid; grid-template-columns: 1fr auto; gap: 6px 10px; padding: 12px 0; border-bottom: 1px solid var(--linha); }
@@ -125,7 +132,7 @@ textarea.entrada { min-height: 84px; resize: vertical; }
 
 .aviso-flutuante {
   position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(150px + env(safe-area-inset-bottom)); z-index: 9;
-  background: #10262C; color: #fff; padding: 12px 18px; border-radius: 12px; font-weight: 600; max-width: 90vw;
+  background: var(--aviso-fundo); color: var(--fundo); padding: 12px 18px; border-radius: 12px; font-weight: 600; max-width: 90vw;
 }
 .vazio { text-align: center; color: var(--suave); padding: 28px 12px; }
 .vazio strong { display: block; color: var(--texto); font-size: 18px; margin-bottom: 6px; }
@@ -134,7 +141,7 @@ textarea.entrada { min-height: 84px; resize: vertical; }
 .profissoes { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
 .profissao { border: 1.5px solid var(--linha); background: var(--superficie); border-radius: 14px; padding: 12px; text-align: left; font-weight: 700; min-height: 64px; display: flex; gap: 10px; align-items: center; }
 .profissao .e { font-size: 24px; }
-.profissao.ativo { border-color: var(--verde); background: #E3F6EE; color: var(--verde-forte); }
+.profissao.ativo { border-color: var(--verde); background: var(--verde-suave); color: var(--verde-forte); }
 .acoes { display: flex; flex-direction: column; gap: 10px; }
 .cabecalho-doc { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
 .cabecalho-doc .codigo { font-size: 13px; color: var(--suave); font-weight: 700; letter-spacing: 0.03em; }
