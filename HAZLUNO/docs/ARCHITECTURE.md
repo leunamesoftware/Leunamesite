@@ -113,3 +113,24 @@ Transcrição, legendas, resumo e capítulos vão se ligar às `recordings`; tra
   - Tipo (PDF, vídeo, imagem) detectado pelo arquivo real, como já é feito com as fotos; limite de tamanho por tipo.
   - PDF e imagem podem ser baixados (o professor decidiu compartilhar); vídeo complementar só por streaming, como a gravação.
   - Link externo abre com aviso de saída do app; links entram na moderação (denúncia).
+
+## Certificados — quem responde por quê (regra do dono, vale desde já)
+| Quem | Responsabilidade |
+|---|---|
+| **Hazluno** | Emite e registra o certificado digital: ID único (`HZ-AAAA-NNNNNN`), QR Code e página pública de verificação. Aparece como **plataforma emissora**. |
+| **Professor** | Responsável pela formação. Aparece como **professor responsável** e **aprova a emissão** (`instructor_approved_at`). |
+| **Aluno** | Recebe o certificado só depois de cumprir os critérios da turma: todos os encontros encerrados + presença mínima do curso (padrão 80%) + aprovação do professor. |
+| **Curso/turma** | O certificado diz exatamente qual formação, a **carga horária real** (soma dos encontros), a data de conclusão e o professor. |
+| **Quem recebe o certificado** | Confere a autenticidade na Hazluno pelo QR Code ou pelo ID. |
+
+Regras no código: `shared/certificate.ts` (elegibilidade e formato do ID) e migração `0005_certificate_responsibilities.sql`; testes em `backend/test/certificate.test.ts`.
+
+**Texto do certificado** (nos 6 idiomas; exemplo em espanhol):
+> CERTIFICADO DE CONCLUSIÓN — Certificamos que **Ana Torres** concluyó la formación **Pintura creativa para principiantes** (6 h), impartida por **Laura Méndez**, a través de la plataforma Hazluno.
+> Rodapé: *Laura Méndez — Profesora / responsable de la formación* · *Hazluno — Plataforma emisora* · *ID HZ-2026-000123* · QR Code + "Verificar certificado".
+
+- Nunca "qualificação profissional" ou "reconhecimento oficial", a não ser que aquela formação tenha essa validade comprovada.
+- A "assinatura" do professor é o nome dele em letra cursiva marcando a **aprovação feita na plataforma**; não é assinatura eletrônica qualificada.
+- Selo/marca-d'água da Hazluno no fundo; a garantia de verdade é a verificação pelo QR/ID.
+- **Privacidade na verificação:** só com o ID, a página confirma que o certificado existe, o curso, a data e o professor, com o nome do aluno abreviado ("Ana T."). Com a chave do QR Code (que só o aluno tem para compartilhar), mostra o nome completo. Assim ninguém consegue listar os alunos tentando IDs em sequência.
+- Referência visual: `brand/certificate-reference-phase5.webp` (ajustar o texto para o modelo acima e incluir carga horária, ID e QR).

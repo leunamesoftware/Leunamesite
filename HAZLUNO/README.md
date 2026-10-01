@@ -24,6 +24,7 @@ O nome da marca fica em um lugar só: `frontend/src/brand.ts` (e `{brand}` nos t
 | 6 | Painel administrativo | — |
 | 7 | Segurança, GDPR e testes | — |
 | 8 | Preparação para publicação | — |
+| 9 | **Hazluno Empleo** (ideia do dono): empresas verificadas encontram quem concluiu cursos (só quem autorizar), convidam para a vaga e, na contratação, o aluno confirma com a checagem facial; a empresa recebe "identidade e certificado verificados". Precisa de consulta jurídica sobre intermediação de emprego em cada país. | Depois da publicação |
 
 ### Fase 1 — o que foi entregue
 - Banco com **todas** as entidades do prompt mestre (37 tabelas), os 8 estados da turma e regras protegidas pelo próprio banco (vagas nunca passam da capacidade, inscrição fecha antes do início, divisão do pagamento sempre fecha com o valor pago).
