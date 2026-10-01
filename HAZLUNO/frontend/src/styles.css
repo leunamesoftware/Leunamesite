@@ -618,3 +618,11 @@ button, input, select { font: inherit; color: inherit; }
 .kv dd { margin: 0; font-weight: 500; overflow-wrap: anywhere; }
 .mine { min-height: 100%; background: var(--soft); }
 .lfield input[type='checkbox'], .lfield input[type='radio'] { width: 20px; height: 20px; padding: 0; flex: none; accent-color: var(--orange-600); }
+.searchbar-light { margin-top: 0; height: 50px; box-shadow: none; border: 1.5px solid var(--line); }
+.progress { display: flex; flex-direction: column; gap: 4px; margin-top: 4px; }
+.progress-bar { height: 8px; border-radius: 999px; background: #e7ebf3; overflow: hidden; }
+.progress-bar span { display: block; height: 100%; border-radius: 999px; background: var(--orange-500); }
+.progress-bar span.done { background: #1fa64a; }
+.progress small { color: var(--ink-2); font-size: 13px; }
+.btn-blue-solid { background: var(--blue-700); color: var(--white); }
+.btn-small:disabled { opacity: 0.55; cursor: default; }

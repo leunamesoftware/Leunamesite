@@ -140,3 +140,4 @@ Regras no código: `shared/certificate.ts` (elegibilidade e formato do ID) e mig
   - O que aparece em público: nota geral, aspectos, destaques e comentário, com o nome abreviado ("Pedro S."). O professor pode responder uma vez.
   - Comentário passa pelo filtro de moderação (denúncia, ocultar); o professor não apaga avaliação, só a moderação.
   - A nota do curso e do professor é a média das avaliações publicadas; sem avaliações aparece "Nuevo".
+- `my-classes-history-reference.webp` ("Mis clases" com histórico): adaptado ao modelo **ao vivo**. Abas Próximas / En curso / Completadas / Favoritas, busca, progresso = **encontros já realizados** ("2 de 3 encuentros"), não "vídeo assistido". Não existe "Comenzar" (a aula começa na data marcada). "Ver de nuevo" = gravação (30 dias) e "Certificado" só depois de concluir (Fase 5). A barra de baixo continua com 5 itens; notificações ficam no sino do topo (6 itens não cabem bem no celular).
