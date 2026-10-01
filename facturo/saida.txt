@@ -1,3 +1,58 @@
+idioma do aparelho: pt-BR
+Performing Streamed Install
+Success
+args: [-p, com.leunamesoftwares.facturo.previa, -c, android.intent.category.LAUNCHER, 1]
+ arg: "-p"
+ arg: "com.leunamesoftwares.facturo.previa"
+ arg: "-c"
+ arg: "android.intent.category.LAUNCHER"
+ arg: "1"
+data="com.leunamesoftwares.facturo.previa"
+data="android.intent.category.LAUNCHER"
+foto: 00-3s
+foto: 00-7s
+foto: 01-abriu
+  * Task{bc7bec1 #7 type=standard A=10192:com.leunamesoftwares.facturo.previa U=0 visible=true visibleRequested=true mode=fullscreen translucent=false sz=1}
+    topResumedActivity=ActivityRecord{5da13a8 u0 com.leunamesoftwares.facturo.previa/com.leunamesoftwares.facturo.MainActivity t7}
+    * Hist  #0: ActivityRecord{5da13a8 u0 com.leunamesoftwares.facturo.previa/com.leunamesoftwares.facturo.MainActivity t7}
+      packageName=com.leunamesoftwares.facturo.previa processName=com.leunamesoftwares.facturo.previa
+      app=ProcessRecord{9e6f495 6366:com.leunamesoftwares.facturo.previa/u0a192}
+      Intent { act=android.intent.action.MAIN cat=[android.intent.category.LAUNCHER] flg=0x10200000 cmp=com.leunamesoftwares.facturo.previa/com.leunamesoftwares.facturo.MainActivity }
+      rootOfTask=true task=Task{bc7bec1 #7 type=standard A=10192:com.leunamesoftwares.facturo.previa}
+      taskAffinity=10192:com.leunamesoftwares.facturo.previa
+      mActivityComponent=com.leunamesoftwares.facturo.previa/com.leunamesoftwares.facturo.MainActivity
+      baseDir=/data/app/~~OoWgUg2q21a5Yc64ESvIog==/com.leunamesoftwares.facturo.previa-7E277IC9iOcPwf5xCPzuhg==/base.apk
+      dataDir=/data/user/0/com.leunamesoftwares.facturo.previa
+      windows=[Window{cfa5ef5 u0 com.leunamesoftwares.facturo.previa/com.leunamesoftwares.facturo.MainActivity}]
+    Resumed: ActivityRecord{5da13a8 u0 com.leunamesoftwares.facturo.previa/com.leunamesoftwares.facturo.MainActivity t7}
+  ResumedActivity: ActivityRecord{5da13a8 u0 com.leunamesoftwares.facturo.previa/com.leunamesoftwares.facturo.MainActivity t7}
+  topDisplayFocusedRootTask=Task{bc7bec1 #7 type=standard A=10192:com.leunamesoftwares.facturo.previa}
+  deepestLastOrientationSource=ActivityRecord{5da13a8 u0 com.leunamesoftwares.facturo.previa/com.leunamesoftwares.facturo.MainActivity t7}
+  mCurrentFocus=Window{cfa5ef5 u0 com.leunamesoftwares.facturo.previa/com.leunamesoftwares.facturo.MainActivity}
+  mFocusedApp=ActivityRecord{5da13a8 u0 com.leunamesoftwares.facturo.previa/com.leunamesoftwares.facturo.MainActivity t7}
+  mObscuringWindow=Window{cfa5ef5 u0 com.leunamesoftwares.facturo.previa/com.leunamesoftwares.facturo.MainActivity}
+      mPreferredTopFocusableRootTask=Task{bc7bec1 #7 type=standard A=10192:com.leunamesoftwares.facturo.previa}
+tocar 'Pintor' em 797 1058
+foto: 02-profissao
+foto: 03-nome
+tocar 'Começar' em 542 1315
+foto: 04-inicio
+Traceback (most recent call last):
+  File "<stdin>", line 7, in <module>
+AttributeError: 'NoneType' object has no attribute 'group'
+Traceback (most recent call last):
+  File "<stdin>", line 7, in <module>
+AttributeError: 'NoneType' object has no attribute 'group'
+Traceback (most recent call last):
+  File "<stdin>", line 7, in <module>
+AttributeError: 'NoneType' object has no attribute 'group'
+NÃO ACHEI: Novo orçamento
+foto: 05-novo-orcamento
+foto: 05c-toque-meio
+  mInputShown=false
+  mIsInputViewShown=true mStatusIcon=0
+foto: 06-rolou
+===== LOG =====
 10-01 03:23:03.029  3271  5050 I AppsFilter: interaction: PackageSetting{59b0c55 com.leunamesoftwares.facturo.previa/10192} -> PackageSetting{ed87f6c com.android.internal.emulation.pixel_4a/10011} BLOCKED
 10-01 03:23:03.029  3271  5050 I AppsFilter: interaction: PackageSetting{59b0c55 com.leunamesoftwares.facturo.previa/10192} -> PackageSetting{2895935 com.android.internal.emulation.pixel_6a/10023} BLOCKED
 10-01 03:23:03.029  3271  5050 I AppsFilter: interaction: PackageSetting{59b0c55 com.leunamesoftwares.facturo.previa/10192} -> PackageSetting{1a751ca com.android.internal.emulation.pixel_7a/10033} BLOCKED
@@ -248,3 +303,16 @@
 10-01 03:23:56.895  6366  6366 I Capacitor/Console: File: https://localhost/assets/index-8EyCANM8.js - Line 97 - Msg: CLIQUE mini
 10-01 03:23:59.447  3271  3327 I AppsFilter: interaction: PackageSetting{59b0c55 com.leunamesoftwares.facturo.previa/10192} -> PackageSetting{48b1648 com.google.android.googlequicksearchbox/10132} BLOCKED
 10-01 03:23:59.547  6366  6366 I Capacitor/Console: File: https://localhost/assets/index-8EyCANM8.js - Line 97 - Msg: TOQUE 206 599 conteudo 412 842
+===== TEXTOS NA TELA =====
+ text="Facturo"
+ text="Documentos"
+ text="Orçamentos"
+ text="Faturas"
+ text="Recibos"
+ text="—"
+ text="＋ Novo orçamento"
+ text="Início"
+ text="Documentos"
+ text="Clientes"
+ text="Mais"
+===== FALHAS:  Novo orçamento =====
