@@ -33,12 +33,16 @@ echo "idioma do aparelho: $(adb shell getprop persist.sys.locale)"
 adb install -r "$APK"
 adb logcat -c
 adb shell monkey -p $PKG -c android.intent.category.LAUNCHER 1 >/dev/null
-sleep 12; foto 01-abriu
+sleep 3; foto 00-3s
+sleep 4; foto 00-7s
+sleep 5; foto 01-abriu
+adb shell dumpsys activity activities | grep -iE "facturo|mResumed|topResumed" | head -20
 tocar "Pintor" && foto 02-profissao
-tocar "Nome do seu" && adb shell input text "Pintura%sSilva" && sleep 1 && adb shell input keyevent 111 && sleep 1 && foto 03-nome
+tocar "Nome do seu" && adb shell input text "Pintura%sSilva" && sleep 2 && foto 03-nome
 tocar "Começar" ; sleep 3; foto 04-inicio
 adb shell input swipe 500 1500 500 600 300; sleep 1; foto 05-rolou
 arvore
-adb logcat -d | grep -E "Capacitor|chromium|Console|AndroidRuntime|FATAL|WebView" | tail -200 > "$OUT/log.txt"
+adb logcat -d > "$OUT/log-completo.txt"
+grep -iE "facturo|Capacitor|Console|FATAL|AndroidRuntime: (FATAL|java)|ActivityTaskManager|ActivityManager.*(Kill|died|crash)|cr_AwContents" "$OUT/log-completo.txt" | grep -v nativeloader | tail -250 > "$OUT/log.txt"
 echo "===== LOG ====="; cat "$OUT/log.txt"
 echo "===== TEXTOS NA TELA ====="; grep -o ' text="[^"]\+"' "$OUT/tela.xml" | head -60
