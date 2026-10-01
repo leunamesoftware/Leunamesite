@@ -23,3 +23,15 @@ export const requireRole = (...roles: Role[]) =>
     if (!c.get('me').roles.some((r) => roles.includes(r))) throw errors.forbidden();
     await next();
   });
+
+/** Signed-in users are recognized (favorites, enrolled classes); visitors pass through. */
+export const optionalAuth = (deps: Deps) =>
+  createMiddleware<AppEnv>(async (c, next) => {
+    const token = bearerToken(c.req.header('authorization'));
+    const found = token ? await resolveSession(deps, token) : null;
+    if (found) {
+      c.set('me', found.me);
+      c.set('sessionTokenHash', found.tokenHash);
+    }
+    await next();
+  });

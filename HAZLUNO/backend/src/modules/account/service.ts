@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import type { Me, SessionInfo } from '../../../../shared/contracts.js';
+import type { Me, MyClass, SessionInfo } from '../../../../shared/contracts.js';
 import type { Deps } from '../../common/env.js';
 import { AppError, errors } from '../../common/errors.js';
 import { hashPassword, verifyPassword } from '../../common/security.js';
@@ -8,6 +8,9 @@ import { auditStatement } from '../audit/audit.js';
 import { authRepo } from '../auth/repository.js';
 import { countrySchema, languageSchema, nameSchema, passwordSchema, timezoneSchema } from '../auth/schemas.js';
 import { instructorStatements, type RequestMeta } from '../auth/service.js';
+import { placeholders } from '../../common/sql.js';
+import { instructorMinis, loadClasses, loadCourseCards } from '../explore/queries.js';
+import { publicUrl, storeImage } from '../files/images.js';
 
 const profileSchema = z.object({
   displayName: nameSchema.optional(),
@@ -75,4 +78,48 @@ export async function becomeInstructor(deps: Deps, me: Me, meta: RequestMeta): P
     auditStatement(deps, { actorId: me.id, action: 'account.instructor_applied', ipHash: meta.ipHash, userAgent: meta.userAgent }),
   ]);
   return reload(deps, me.id);
+}
+
+// ---------- favorites, avatar, my classes ----------
+
+export async function listFavorites(deps: Deps, me: Me) {
+  const ids = (await deps.db.all<{ course_id: string }>(
+    `SELECT f.course_id FROM favorites f JOIN courses c ON c.id = f.course_id WHERE f.user_id = ? AND c.status = 'published' ORDER BY f.created_at DESC`,
+    [me.id])).map((r) => r.course_id);
+  return loadCourseCards(deps.db, ids, me.id, deps.clock.now());
+}
+
+export async function setFavorite(deps: Deps, me: Me, courseId: string, on: boolean) {
+  if (on) {
+    if (!(await deps.db.one(`SELECT 1 FROM courses WHERE id = ? AND status = 'published'`, [courseId]))) throw errors.notFound('Course');
+    await deps.db.run('INSERT OR IGNORE INTO favorites (user_id, course_id, created_at) VALUES (?, ?, ?)', [me.id, courseId, deps.clock.now().toISOString()]);
+  } else {
+    await deps.db.run('DELETE FROM favorites WHERE user_id = ? AND course_id = ?', [me.id, courseId]);
+  }
+}
+
+export async function setAvatar(deps: Deps, me: Me, request: Request): Promise<Me> {
+  const old = await deps.db.one<{ avatar_key: string | null }>('SELECT avatar_key FROM users WHERE id = ?', [me.id]);
+  const key = await storeImage(deps, request, 'avatars');
+  await deps.db.run('UPDATE users SET avatar_key = ?, updated_at = ? WHERE id = ?', [key, deps.clock.now().toISOString(), me.id]);
+  if (old?.avatar_key) await deps.storage.delete(old.avatar_key);
+  return reload(deps, me.id);
+}
+
+/** Tela 10: classes the student is enrolled in (filled by Phase 3 enrollments). */
+export async function myClasses(deps: Deps, me: Me): Promise<MyClass[]> {
+  const ids = (await deps.db.all<{ id: string }>(
+    `SELECT cs.id FROM enrollments e JOIN class_sessions cs ON cs.id = e.class_session_id
+     WHERE e.student_id = ? AND e.status IN ('confirmed', 'completed') ORDER BY cs.starts_at`, [me.id])).map((r) => r.id);
+  const classes = await loadClasses(deps.db, { classIds: ids, viewerId: me.id, now: deps.clock.now() });
+  if (!classes.length) return [];
+  const courses = await deps.db.all<{ id: string; title: string; cover_key: string | null; instructor_id: string; name: string; avatar: string | null; country: string }>(
+    `SELECT c.id, c.title, c.cover_key, c.instructor_id, u.display_name AS name, u.avatar_key AS avatar, u.country_code AS country
+     FROM courses c JOIN users u ON u.id = c.instructor_id WHERE c.id IN (${placeholders(new Set(classes.map((k) => k.courseId)).size)})`,
+    [...new Set(classes.map((k) => k.courseId))]);
+  const minis = await instructorMinis(deps.db, courses.map((c) => ({ id: c.instructor_id, name: c.name, avatar: c.avatar, country: c.country })));
+  return classes.map((k) => {
+    const c = courses.find((x) => x.id === k.courseId)!;
+    return { ...k, courseTitle: c.title, coverUrl: publicUrl(c.cover_key), instructor: minis.get(c.instructor_id)! };
+  });
 }

@@ -4,7 +4,11 @@ import { secureHeaders } from 'hono/secure-headers';
 import type { AppEnv, Deps } from './common/env.js';
 import { AppError } from './common/errors.js';
 import { accountRoutes } from './modules/account/routes.js';
-import { requireAuth } from './modules/auth/middleware.js';
+import { adminRoutes } from './modules/admin/routes.js';
+import { requireAuth, requireRole } from './modules/auth/middleware.js';
+import { exploreRoutes } from './modules/explore/routes.js';
+import { fileRoutes } from './modules/files/routes.js';
+import { instructorRoutes } from './modules/instructor/routes.js';
 import { authRoutes } from './modules/auth/routes.js';
 import { catalogRoutes } from './modules/catalog/routes.js';
 
@@ -34,11 +38,19 @@ export function createApp(deps: Deps) {
   // Public
   app.route('/api/auth', authRoutes(deps));
   app.route('/api/public', catalogRoutes(deps));
+  app.route('/api/public', exploreRoutes(deps));
+  app.route('/api/files', fileRoutes(deps));
 
   // Signed in
   app.use('/api/me', requireAuth(deps));
   app.use('/api/me/*', requireAuth(deps));
   app.route('/api/me', accountRoutes(deps));
+
+  app.use('/api/instructor/*', requireAuth(deps), requireRole('instructor'));
+  app.route('/api/instructor', instructorRoutes(deps));
+
+  app.use('/api/admin/*', requireAuth(deps), requireRole('admin', 'moderator'));
+  app.route('/api/admin', adminRoutes(deps));
 
   return app;
 }

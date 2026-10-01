@@ -74,3 +74,13 @@ Transcrição, legendas, resumo e capítulos vão se ligar às `recordings`; tra
   - **Materiais necessários e recomendados** em lista (a imagem só mostra "opcionales").
   - Antes de pagar: aviso da **regra de desistência** (perde 50%) e, em curso com risco físico, aviso de segurança; os dois com aceite.
   - Opiniões só de quem fez o curso de verdade (ligadas a uma inscrição).
+- `choose-class-reference-phase2.webp` ("Elige tu clase"): passo entre o detalhe e o pagamento, com os grupos do curso (Mañana / Tarde / Noche), data, horário, vagas, preço, "Elegir", resumo do grupo escolhido e "Continuar".
+  - Manhã/tarde/noite calculados pela hora local de quem vê (antes das 12h, 12h–18h, depois das 18h), com aviso "Hora local".
+  - Inscrição fecha no início da aula (padrão do prazo = início do 1º encontro), como diz a tela.
+  - Grupo lotado, encerrado ou já começado aparece apagado ("Completo", "Cerrado", "En curso") e não pode ser escolhido.
+  - Preço é "por grupo" (vale para todos os encontros da turma), não "por clase".
+  - Curso de vários encontros mostra o período ("15–21 de octubre · 7 encuentros").
+- `my-classes-reference-phase2.webp` ("Mis clases"): abas Próximas / Pasadas / Favoritos, cartão com selo (EN VIVO / CONFIRMADA), professor, data, horário, turno, "Entrar a la clase" e "Ver detalles".
+  - "Entrar a la clase" só no cartão ao vivo (regra da turma); entrada sempre pelo app, com verificação facial (Fase 4).
+  - Para quem já comprou, no lugar de "plazas disponibles": progresso da turma ("Encuentro 2 de 7 · jueves 09:00").
+  - "Clases pasadas": gravação (só para inscritos) e certificado quando houver (Fase 5).

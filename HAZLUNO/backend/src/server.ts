@@ -7,6 +7,7 @@ import type { Deps } from './common/env.js';
 import { loadConfig } from './config.js';
 import { migrate } from './db/migrate.js';
 import { createSqliteDb } from './infra/db/sqlite.js';
+import { createDiskStorage } from './infra/storage/disk.js';
 
 /** Local Node server (development). */
 export async function createDeps(): Promise<Deps> {
@@ -14,7 +15,7 @@ export async function createDeps(): Promise<Deps> {
   await mkdir(dirname(config.dbPath), { recursive: true });
   const db = createSqliteDb(config.dbPath);
   await migrate(db);
-  return { db, config, clock: systemClock, mailer: null };
+  return { db, config, clock: systemClock, storage: createDiskStorage(process.env.FILES_DIR ?? './data/files'), mailer: null };
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) {

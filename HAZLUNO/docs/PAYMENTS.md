@@ -19,3 +19,24 @@
 1. Qual provedor (sugestão: Stripe Connect, por ter a melhor documentação e sandbox).
 2. Conta da empresa no provedor e chaves de teste.
 3. Revisão jurídica da regra de desistência para os países de lançamento (direito do consumidor da UE).
+
+## Tela de pagamento (referência `brand/payment-reference-phase3.webp`)
+Resumo do curso, resumo da reserva, escolha do método e "Confirmar y reservar mi plaza". Ajustes obrigatórios:
+- **Vaga segurada por 15 minutos** (`enrollment.seat_hold_minutes`) a partir do "Continuar", com contador na tela. Passou o tempo sem pagamento confirmado, a vaga volta.
+- **Resumo completo:** todos os encontros (datas no fuso de quem vê), preço **por grupo** e total.
+- **Antes do botão:** caixa de aceite da regra de desistência ("si cancelas, pierdes el 50 %") e, em curso com risco, do aviso de segurança. Sem aceite, o botão fica desativado.
+- **Cartão:** os dados são digitados no componente do provedor, nunca no app.
+- **PayPal:** possível pelo próprio provedor (Stripe oferece na Europa).
+- **Transferência bancária: não recomendo.** Demora de 1 a 3 dias para confirmar, e a vaga não pode ficar presa esse tempo, nem a aula começar sem o pagamento confirmado. Para a Espanha, o método rápido mais usado é o **Bizum** (exige um provedor que o aceite, como Redsys); na Holanda, iDEAL; na Bélgica, Bancontact. A lista de métodos sai do provedor escolhido.
+- "Tu pago es seguro" só aparece com o provedor real ligado.
+
+## Tela "¡Tu plaza está confirmada!" (referência `brand/confirmation-reference-phase3.webp`)
+Só aparece depois que o provedor confirmou o pagamento (webhook), nunca ao clicar em pagar. Ajustes obrigatórios:
+- **Sem link da aula por e-mail.** Link pode ser repassado e outra pessoa entraria no lugar do aluno. O e-mail leva só a confirmação e o recibo; a entrada é **somente pelo app** ("Mis clases" → "Entrar"), com a verificação facial.
+- Trocar "Recibirás el enlace unos minutos antes" por "Entrarás desde la app, en Mis clases, con verificación facial".
+- O selo do cartão mostra "Inicia el miércoles 15 · 09:00" (não "EN VIVO", que é só para aula acontecendo agora).
+- No lugar de "18 plazas disponibles": "Tu plaza: confirmada".
+- "Agregar al calendario": arquivo .ics com **todos** os encontros da turma.
+- Final do cartão (•••• 4582) vem do provedor; o Hazluno não guarda o cartão.
+- Lembrete discreto da regra de desistência e link para o recibo.
+- "Te hemos enviado los detalles a tu correo" só aparece se o e-mail realmente foi enviado.

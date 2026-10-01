@@ -4,6 +4,7 @@ import { loadConfig } from '../src/config.js';
 import { migrate } from '../src/db/migrate.js';
 import { createSqliteDb } from '../src/infra/db/sqlite.js';
 import type { Mailer } from '../src/infra/mailer.js';
+import { createMemoryStorage } from '../src/infra/storage/memory.js';
 
 export interface TestCtx {
   deps: Deps;
@@ -27,6 +28,7 @@ export async function setup(opts: { withMailer?: boolean; env?: Record<string, s
     db,
     config: loadConfig({ PASSWORD_PEPPER: 'test-pepper-0123456789', IP_HASH_SECRET: 'test-ip-secret-0123456789', ...opts.env }),
     clock: { now: () => clock.at },
+    storage: createMemoryStorage(),
     mailer: opts.withMailer ? mailer : null,
   };
   const app = createApp(deps);
