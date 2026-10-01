@@ -63,3 +63,14 @@ Transcrição, legendas, resumo e capítulos vão se ligar às `recordings`; tra
   - Nota (4,9 etc.) só aparece com avaliações reais; professor sem avaliação aparece como "Nuevo".
   - Contagem "124 clases" e qualquer número da tela vêm do banco; nada de número de exemplo.
   - Fotos dos cartões são as que o professor envia; sem fotos de banco de imagens se passando por professores.
+- `class-detail-reference-phase2.webp` (detalhe da aula/curso): foto ou vídeo de apresentação, título, professor, nota, alunos, data/hora, duração, nível, abas Informação / Comentários / Professor / Aulas parecidas, "Sobre esta clase", "Sobre la profesora", opiniões, favoritar, compartilhar e botão fixo embaixo.
+- Ajustes obrigatórios em relação a essa imagem:
+  - **O botão de baixo segue a regra da turma:** quem está de fora e a turma não começou vê "Reservar plaza · €20"; turma ao vivo para quem está de fora fica desativada ("Clase en curso · inscripciones cerradas") com o próximo grupo, se houver; inscrito com aula ao vivo vê "Entrar a la clase"; inscrito depois do fim vê "Ver grabación".
+  - **Preço, vagas e prazo** aparecem antes de comprar: "€20 · Quedan 8 plazas · Inscripción hasta el lunes 08:00". A imagem não mostra preço nem vagas.
+  - **Próximos grupos** (manhã, tarde, noite e outros dias) em lista, cada um com sua data, vagas e preço, como pede o prompt mestre.
+  - **Curso de vários dias:** "7 encuentros · 1 h 30 cada uno", com a lista de datas, sempre no fuso de quem está vendo.
+  - O **play** no topo só aparece se o professor enviar um vídeo de apresentação. Gravação de aula nunca é pública.
+  - "320 alumnos" (deste curso) e "3,2 mil alumnos" (total do professor) precisam dizer claramente a que se referem.
+  - **Materiais necessários e recomendados** em lista (a imagem só mostra "opcionales").
+  - Antes de pagar: aviso da **regra de desistência** (perde 50%) e, em curso com risco físico, aviso de segurança; os dois com aceite.
+  - Opiniões só de quem fez o curso de verdade (ligadas a uma inscrição).
