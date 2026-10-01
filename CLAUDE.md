@@ -15,3 +15,4 @@
 |---|---|---|---|
 | B1 | Gestacell | com.leunamesoftwares.gestacell | Produção 1.0.4 em análise; 1.0.5 (teste de 7 dias) pronta para subir depois da aprovação |
 | B2 | Radar Preventivo | com.radarpreventivo.app | Teste interno (não lançar até o dono dizer "liberado") |
+| B3 | Razluno (Europa, aulas ao vivo) | a definir | Em construção: Fase 1 de 8 concluída (`RAZLUNO/`). Nome Razluno × Hazluno aguardando o dono |
