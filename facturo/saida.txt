@@ -1,6 +1,7 @@
 idioma do aparelho: pt-BR
 Performing Streamed Install
 Success
+Night mode: no
 args: [-p, com.leunamesoftwares.facturo.previa, -c, android.intent.category.LAUNCHER, 1]
  arg: "-p"
  arg: "com.leunamesoftwares.facturo.previa"
@@ -10,251 +11,22 @@ args: [-p, com.leunamesoftwares.facturo.previa, -c, android.intent.category.LAUN
 data="com.leunamesoftwares.facturo.previa"
 data="android.intent.category.LAUNCHER"
 foto: 00-3s
-foto: 00-7s
 foto: 01-abriu
-  * Task{e155353 #8 type=standard A=10209:com.leunamesoftwares.facturo.previa U=0 visible=true visibleRequested=true mode=fullscreen translucent=false sz=1}
-    topResumedActivity=ActivityRecord{84443db u0 com.leunamesoftwares.facturo.previa/com.leunamesoftwares.facturo.MainActivity t8}
-    * Hist  #0: ActivityRecord{84443db u0 com.leunamesoftwares.facturo.previa/com.leunamesoftwares.facturo.MainActivity t8}
-      packageName=com.leunamesoftwares.facturo.previa processName=com.leunamesoftwares.facturo.previa
-      app=ProcessRecord{bc80f49 4248:com.leunamesoftwares.facturo.previa/u0a209}
-      Intent { act=android.intent.action.MAIN cat=[android.intent.category.LAUNCHER] flg=0x10200000 cmp=com.leunamesoftwares.facturo.previa/com.leunamesoftwares.facturo.MainActivity }
-      rootOfTask=true task=Task{e155353 #8 type=standard A=10209:com.leunamesoftwares.facturo.previa}
-      taskAffinity=10209:com.leunamesoftwares.facturo.previa
-      mActivityComponent=com.leunamesoftwares.facturo.previa/com.leunamesoftwares.facturo.MainActivity
-      baseDir=/data/app/~~4hXse16b6wrPa24rS5UFAA==/com.leunamesoftwares.facturo.previa-M5ucckMAOGdg4jG6xm-7KQ==/base.apk
-      dataDir=/data/user/0/com.leunamesoftwares.facturo.previa
-      windows=[Window{d3b5255 u0 com.leunamesoftwares.facturo.previa/com.leunamesoftwares.facturo.MainActivity}]
-    Resumed: ActivityRecord{84443db u0 com.leunamesoftwares.facturo.previa/com.leunamesoftwares.facturo.MainActivity t8}
-  ResumedActivity: ActivityRecord{84443db u0 com.leunamesoftwares.facturo.previa/com.leunamesoftwares.facturo.MainActivity t8}
-  topDisplayFocusedRootTask=Task{e155353 #8 type=standard A=10209:com.leunamesoftwares.facturo.previa}
-  deepestLastOrientationSource=ActivityRecord{84443db u0 com.leunamesoftwares.facturo.previa/com.leunamesoftwares.facturo.MainActivity t8}
-  mCurrentFocus=Window{d3b5255 u0 com.leunamesoftwares.facturo.previa/com.leunamesoftwares.facturo.MainActivity}
-  mFocusedApp=ActivityRecord{84443db u0 com.leunamesoftwares.facturo.previa/com.leunamesoftwares.facturo.MainActivity t8}
-  mObscuringWindow=Window{d3b5255 u0 com.leunamesoftwares.facturo.previa/com.leunamesoftwares.facturo.MainActivity}
-      mPreferredTopFocusableRootTask=Task{e155353 #8 type=standard A=10209:com.leunamesoftwares.facturo.previa}
-toque em 0.62,0.94
-foto: 07-clientes
-toque em 0.75,0.855
-foto: 08-novo-cliente
-foto: 09-digitando
-toque em 0.5,0.33
-foto: 10-telefone
-Night mode: yes
-args: [-p, com.leunamesoftwares.facturo.previa, -c, android.intent.category.LAUNCHER, 1]
- arg: "-p"
- arg: "com.leunamesoftwares.facturo.previa"
- arg: "-c"
- arg: "android.intent.category.LAUNCHER"
- arg: "1"
-data="com.leunamesoftwares.facturo.previa"
-data="android.intent.category.LAUNCHER"
-foto: 11-escuro-inicio
-toque em 0.87,0.94
-foto: 12-escuro-mais
-toque em 0.37,0.94
-foto: 13-escuro-documentos
-toque em 0.75,0.855
-foto: 14-escuro-editor
-toque em 0.62,0.94
-foto: 07-clientes
-toque em 0.75,0.855
-foto: 08-novo-cliente
-foto: 09-digitando
-toque em 0.5,0.33
-foto: 10-telefone
-Night mode: yes
-args: [-p, com.leunamesoftwares.facturo.previa, -c, android.intent.category.LAUNCHER, 1]
- arg: "-p"
- arg: "com.leunamesoftwares.facturo.previa"
- arg: "-c"
- arg: "android.intent.category.LAUNCHER"
- arg: "1"
-data="com.leunamesoftwares.facturo.previa"
-data="android.intent.category.LAUNCHER"
-foto: 11-escuro-inicio
-toque em 0.87,0.94
-foto: 12-escuro-mais
-toque em 0.37,0.94
-foto: 13-escuro-documentos
-toque em 0.75,0.855
-foto: 14-escuro-editor
-toque em 0.62,0.94
-foto: 07-clientes
-toque em 0.75,0.855
-foto: 08-novo-cliente
-foto: 09-digitando
-toque em 0.5,0.33
-foto: 10-telefone
-Night mode: yes
-args: [-p, com.leunamesoftwares.facturo.previa, -c, android.intent.category.LAUNCHER, 1]
- arg: "-p"
- arg: "com.leunamesoftwares.facturo.previa"
- arg: "-c"
- arg: "android.intent.category.LAUNCHER"
- arg: "1"
-data="com.leunamesoftwares.facturo.previa"
-data="android.intent.category.LAUNCHER"
-foto: 11-escuro-inicio
-toque em 0.87,0.94
-foto: 12-escuro-mais
-toque em 0.37,0.94
-foto: 13-escuro-documentos
-toque em 0.75,0.855
-foto: 14-escuro-editor
-NÃO ACHEI: Pintor
+toque em 0.67,0.44
+foto: 02-profissao
+toque em 0.5,0.473
 foto: 03-nome
-toque em 0.62,0.94
-foto: 07-clientes
-toque em 0.75,0.855
-foto: 08-novo-cliente
-foto: 09-digitando
-toque em 0.5,0.33
-foto: 10-telefone
-Night mode: yes
-args: [-p, com.leunamesoftwares.facturo.previa, -c, android.intent.category.LAUNCHER, 1]
- arg: "-p"
- arg: "com.leunamesoftwares.facturo.previa"
- arg: "-c"
- arg: "android.intent.category.LAUNCHER"
- arg: "1"
-data="com.leunamesoftwares.facturo.previa"
-data="android.intent.category.LAUNCHER"
-foto: 11-escuro-inicio
-toque em 0.87,0.94
-foto: 12-escuro-mais
-toque em 0.37,0.94
-foto: 13-escuro-documentos
-toque em 0.75,0.855
-foto: 14-escuro-editor
-toque em 0.62,0.94
-foto: 07-clientes
-toque em 0.75,0.855
-foto: 08-novo-cliente
-foto: 09-digitando
-toque em 0.5,0.33
-foto: 10-telefone
-Night mode: yes
-args: [-p, com.leunamesoftwares.facturo.previa, -c, android.intent.category.LAUNCHER, 1]
- arg: "-p"
- arg: "com.leunamesoftwares.facturo.previa"
- arg: "-c"
- arg: "android.intent.category.LAUNCHER"
- arg: "1"
-data="com.leunamesoftwares.facturo.previa"
-data="android.intent.category.LAUNCHER"
-foto: 11-escuro-inicio
-toque em 0.87,0.94
-foto: 12-escuro-mais
-toque em 0.37,0.94
-foto: 13-escuro-documentos
-toque em 0.75,0.855
-foto: 14-escuro-editor
-toque em 0.62,0.94
-foto: 07-clientes
-toque em 0.75,0.855
-foto: 08-novo-cliente
-foto: 09-digitando
-toque em 0.5,0.33
-foto: 10-telefone
-Night mode: yes
-args: [-p, com.leunamesoftwares.facturo.previa, -c, android.intent.category.LAUNCHER, 1]
- arg: "-p"
- arg: "com.leunamesoftwares.facturo.previa"
- arg: "-c"
- arg: "android.intent.category.LAUNCHER"
- arg: "1"
-data="com.leunamesoftwares.facturo.previa"
-data="android.intent.category.LAUNCHER"
-foto: 11-escuro-inicio
-toque em 0.87,0.94
-foto: 12-escuro-mais
-toque em 0.37,0.94
-foto: 13-escuro-documentos
-toque em 0.75,0.855
-foto: 14-escuro-editor
-NÃO ACHEI: Começar
+toque em 0.5,0.548
 foto: 04-inicio
-toque em 0.62,0.94
-foto: 07-clientes
 toque em 0.75,0.855
-foto: 08-novo-cliente
-foto: 09-digitando
-toque em 0.5,0.33
-foto: 10-telefone
-Night mode: yes
-args: [-p, com.leunamesoftwares.facturo.previa, -c, android.intent.category.LAUNCHER, 1]
- arg: "-p"
- arg: "com.leunamesoftwares.facturo.previa"
- arg: "-c"
- arg: "android.intent.category.LAUNCHER"
- arg: "1"
-data="com.leunamesoftwares.facturo.previa"
-data="android.intent.category.LAUNCHER"
-foto: 11-escuro-inicio
-toque em 0.87,0.94
-foto: 12-escuro-mais
-toque em 0.37,0.94
-foto: 13-escuro-documentos
-toque em 0.75,0.855
-foto: 14-escuro-editor
-toque em 0.62,0.94
-foto: 07-clientes
-toque em 0.75,0.855
-foto: 08-novo-cliente
-foto: 09-digitando
-toque em 0.5,0.33
-foto: 10-telefone
-Night mode: yes
-args: [-p, com.leunamesoftwares.facturo.previa, -c, android.intent.category.LAUNCHER, 1]
- arg: "-p"
- arg: "com.leunamesoftwares.facturo.previa"
- arg: "-c"
- arg: "android.intent.category.LAUNCHER"
- arg: "1"
-data="com.leunamesoftwares.facturo.previa"
-data="android.intent.category.LAUNCHER"
-foto: 11-escuro-inicio
-toque em 0.87,0.94
-foto: 12-escuro-mais
-toque em 0.37,0.94
-foto: 13-escuro-documentos
-toque em 0.75,0.855
-foto: 14-escuro-editor
-toque em 0.62,0.94
-foto: 07-clientes
-toque em 0.75,0.855
-foto: 08-novo-cliente
-foto: 09-digitando
-toque em 0.5,0.33
-foto: 10-telefone
-Night mode: yes
-args: [-p, com.leunamesoftwares.facturo.previa, -c, android.intent.category.LAUNCHER, 1]
- arg: "-p"
- arg: "com.leunamesoftwares.facturo.previa"
- arg: "-c"
- arg: "android.intent.category.LAUNCHER"
- arg: "1"
-data="com.leunamesoftwares.facturo.previa"
-data="android.intent.category.LAUNCHER"
-foto: 11-escuro-inicio
-toque em 0.87,0.94
-foto: 12-escuro-mais
-toque em 0.37,0.94
-foto: 13-escuro-documentos
-toque em 0.75,0.855
-foto: 14-escuro-editor
-NÃO ACHEI: Novo orçamento
 foto: 05-novo-orcamento
-  mInputShown=true
-  mIsInputViewShown=true mStatusIcon=0
 foto: 06-rolou
 toque em 0.62,0.94
 foto: 07-clientes
 toque em 0.75,0.855
 foto: 08-novo-cliente
 foto: 09-digitando
-toque em 0.5,0.33
-foto: 10-telefone
+foto: 10-proximo-campo
 Night mode: yes
 args: [-p, com.leunamesoftwares.facturo.previa, -c, android.intent.category.LAUNCHER, 1]
  arg: "-p"
@@ -271,256 +43,259 @@ toque em 0.37,0.94
 foto: 13-escuro-documentos
 toque em 0.75,0.855
 foto: 14-escuro-editor
+toque em 0.5,0.19
+foto: 15-escuro-escolher-cliente
 ===== LOG =====
-10-01 14:24:29.547  8154  8166 E AndroidRuntime: java.lang.RuntimeException: Bad file descriptor
-10-01 14:24:35.932  8032  8032 E FrameTracker: force finish cuj, time out: J<IME_INSETS_SHOW_ANIMATION::0@0@com.leunamesoftwares.facturo.previa>
-10-01 14:24:37.262  8032  8032 I ImeTracker: com.leunamesoftwares.facturo.previa:340bc23: onRequestHide at ORIGIN_CLIENT reason HIDE_SOFT_INPUT_ON_ANIMATION_STATE_CHANGED fromUser false
-10-01 14:24:37.266  1923  2032 I ImeTracker: com.leunamesoftwares.facturo.previa:340bc23: onCancelled at PHASE_SERVER_SHOULD_HIDE
-10-01 14:24:39.257  8032  8032 I ImeTracker: com.leunamesoftwares.facturo.previa:fe778980: onRequestHide at ORIGIN_CLIENT reason HIDE_SOFT_INPUT fromUser false
-10-01 14:24:39.258  1923  2032 I ImeTracker: com.leunamesoftwares.facturo.previa:fe778980: onCancelled at PHASE_SERVER_SHOULD_HIDE
-10-01 14:24:39.260  2625  2625 I GoogleInputMethodService: GoogleInputMethodService.onStartInput():1986 onStartInput(EditorInfo{EditorInfo{packageName=com.leunamesoftwares.facturo.previa, inputType=0, inputTypeString=NULL, enableLearning=false, autoCorrection=false, autoComplete=false, imeOptions=12000000, privateImeOptions=null, actionName=UNSPECIFIED, actionLabel=null, initialSelStart=-1, initialSelEnd=-1, initialCapsMode=0, label=null, fieldId=0, fieldName=null, extras=null, hintText=null, hintLocales=[]}}, true)
-10-01 14:24:39.261  1923  2286 W PackageConfigPersister: App-specific configuration not found for packageName: com.leunamesoftwares.facturo.previa and userId: 0
-10-01 14:24:47.574  8032  8032 E FrameTracker: force finish cuj, time out: J<IME_INSETS_HIDE_ANIMATION::1@0@com.leunamesoftwares.facturo.previa>
-10-01 14:24:49.442  1923  2286 I ActivityManager: Force stopping com.leunamesoftwares.facturo.previa appid=10209 user=0: from pid 8254
-10-01 14:24:49.447  1923  2286 I ActivityManager: Killing 8032:com.leunamesoftwares.facturo.previa/u0a209 (adj 0): stop com.leunamesoftwares.facturo.previa due to from pid 8254
-10-01 14:24:49.450  1923  2286 W ActivityTaskManager: Force removing ActivityRecord{e6e13dc u0 com.leunamesoftwares.facturo.previa/com.leunamesoftwares.facturo.MainActivity t18 f}}: app died, no saved state
-10-01 14:24:49.451  2140  2203 V WindowManagerShell: Transition requested (#46): android.os.BinderProxy@a860515 TransitionRequestInfo { type = CLOSE, triggerTask = TaskInfo{userId=0 taskId=18 displayId=0 isRunning=false baseIntent=Intent { act=android.intent.action.MAIN cat=[android.intent.category.LAUNCHER] flg=0x10200000 cmp=com.leunamesoftwares.facturo.previa/com.leunamesoftwares.facturo.MainActivity } baseActivity=null topActivity=null origActivity=null realActivity=ComponentInfo{com.leunamesoftwares.facturo.previa/com.leunamesoftwares.facturo.MainActivity} numActivities=0 lastActiveTime=365146 supportsMultiWindow=true resizeMode=1 isResizeable=true minWidth=-1 minHeight=-1 defaultMinSize=220 token=WCT{android.window.IWindowContainerToken$Stub$Proxy@3dac02a} topActivityType=1 pictureInPictureParams=null shouldDockBigOverlays=false launchIntoPipHostTaskId=-1 lastParentTaskIdBeforePip=-1 displayCutoutSafeInsets=null topActivityInfo=null launchCookies=[] positionInParent=Point(0, 0) parentTaskId=-1 isFocused=true isVisible=true isVisibleRequested=true isSleeping=false locusId=null displayAreaFeatureId=1 isTopActivityTransparent=false appCompatTaskInfo=AppCompatTaskInfo { topActivityInSizeCompat=false topActivityEligibleForLetterboxEducation= falseisLetterboxEducationEnabled= false isLetterboxDoubleTapEnabled= false topActivityEligibleForUserAspectRatioButton= false topActivityBoundsLetterboxed= false isFromLetterboxDoubleTap= false topActivityLetterboxVerticalPosition= -1 topActivityLetterboxHorizontalPosition= -1 topActivityLetterboxWidth=-1 topActivityLetterboxHeight=-1 isUserFullscreenOverrideEnabled=false isSystemFullscreenOverrideEnabled=false cameraCompatTaskInfo=CameraCompatTaskInfo { cameraCompatControlState=hidden freeformCameraCompatMode=inactive}}}, pipTask = null, remoteTransition = null, displayChange = null, flags = 0, debugId = 46 }
-10-01 14:24:49.459  1923  2286 I ActivityManager: Killing 8063:com.google.android.webview:sandboxed_process0:org.chromium.content.app.SandboxedProcessService0:0/u0a209i10 (adj 0): isolated not needed
-10-01 14:24:49.469  1923  2286 I AppsFilter: interaction: PackageSetting{a7dfd4d com.android.microdroid.empty_payload/10192} -> PackageSetting{d8c11a0 com.leunamesoftwares.facturo.previa/10209} BLOCKED
-10-01 14:24:49.492  1923  2097 I AppWidgetServiceImpl: Updating package stopped masked state for uid 10209 package com.leunamesoftwares.facturo.previa isStopped true
-10-01 14:24:49.492  2327  2327 D CarrierSvcBindHelper: onHandleForceStop: [com.leunamesoftwares.facturo.previa]
-10-01 14:24:49.536  1923  2286 I ImeTracker: com.leunamesoftwares.facturo.previa:781b3cc5: onRequestHide at ORIGIN_SERVER reason HIDE_REMOVE_CLIENT fromUser false
-10-01 14:24:49.536  1923  2286 I ImeTracker: com.leunamesoftwares.facturo.previa:781b3cc5: onCancelled at PHASE_SERVER_SHOULD_HIDE
-10-01 14:24:49.537  1923  3157 I WindowManager: WIN DEATH: Window{a30c3fb u0 com.leunamesoftwares.facturo.previa/com.leunamesoftwares.facturo.MainActivity}
-10-01 14:24:49.537  1923  3157 W InputManager-JNI: Input channel object 'a30c3fb com.leunamesoftwares.facturo.previa/com.leunamesoftwares.facturo.MainActivity (client)' was disposed without first being removed with the input manager!
-10-01 14:24:49.538  1923  2286 V ActivityManager: Got obituary of 8032:com.leunamesoftwares.facturo.previa
-10-01 14:24:49.548  1923  1949 W ActivityTaskManager: Unable to send transaction to client proc com.leunamesoftwares.facturo.previa: no app thread
-10-01 14:24:49.943  1923  1945 V WindowManager: Sent Transition (#46) createdAt=10-01 14:24:49.450 via request=TransitionRequestInfo { type = CLOSE, triggerTask = TaskInfo{userId=0 taskId=18 displayId=0 isRunning=false baseIntent=Intent { act=android.intent.action.MAIN cat=[android.intent.category.LAUNCHER] flg=0x10200000 cmp=com.leunamesoftwares.facturo.previa/com.leunamesoftwares.facturo.MainActivity } baseActivity=null topActivity=null origActivity=null realActivity=ComponentInfo{com.leunamesoftwares.facturo.previa/com.leunamesoftwares.facturo.MainActivity} numActivities=0 lastActiveTime=365146 supportsMultiWindow=true resizeMode=1 isResizeable=true minWidth=-1 minHeight=-1 defaultMinSize=220 token=WCT{RemoteToken{615fcf8 Task{713ace5 #18 type=standard A=10209:com.leunamesoftwares.facturo.previa}}} topActivityType=1 pictureInPictureParams=null shouldDockBigOverlays=false launchIntoPipHostTaskId=-1 lastParentTaskIdBeforePip=-1 displayCutoutSafeInsets=null topActivityInfo=null launchCookies=[] positionInParent=Point(0, 0) parentTaskId=-1 isFocused=true isVisible=true isVisibleRequested=true isSleeping=false locusId=null displayAreaFeatureId=1 isTopActivityTransparent=false appCompatTaskInfo=AppCompatTaskInfo { topActivityInSizeCompat=false topActivityEligibleForLetterboxEducation= falseisLetterboxEducationEnabled= false isLetterboxDoubleTapEnabled= false topActivityEligibleForUserAspectRatioButton= false topActivityBoundsLetterboxed= false isFromLetterboxDoubleTap= false topActivityLetterboxVerticalPosition= -1 topActivityLetterboxHorizontalPosition= -1 topActivityLetterboxWidth=-1 topActivityLetterboxHeight=-1 isUserFullscreenOverrideEnabled=false isSystemFullscreenOverrideEnabled=false cameraCompatTaskInfo=CameraCompatTaskInfo { cameraCompatControlState=hidden freeformCameraCompatMode=inactive}}}, pipTask = null, remoteTransition = null, displayChange = null, flags = 0, debugId = 46 }
-10-01 14:24:49.945  1923  1945 V WindowManager:         {WCT{RemoteToken{615fcf8 Task{713ace5 #18 type=standard A=10209:com.leunamesoftwares.facturo.previa}}} m=CLOSE f=NONE leash=Surface(name=Task=18)/@0x9b15f6a sb=Rect(0, 0 - 1080, 2400) eb=Rect(0, 0 - 1080, 2400) d=0 taskParent=-1}
-10-01 14:24:49.962  1923  2873 W WindowManager: Exception thrown during dispatchAppVisibility Window{a30c3fb u0 com.leunamesoftwares.facturo.previa/com.leunamesoftwares.facturo.MainActivity EXITING}
-10-01 14:24:50.693  8275  8275 W Monkey  : args: [-p, com.leunamesoftwares.facturo.previa, -c, android.intent.category.LAUNCHER, 1]
-10-01 14:24:50.693  8275  8275 W Monkey  :  arg: "com.leunamesoftwares.facturo.previa"
-10-01 14:24:50.693  8275  8275 W Monkey  : data="com.leunamesoftwares.facturo.previa"
-10-01 14:24:50.713  1923  2241 W ActivityTaskManager: callingPackage for (uid=0, pid=8275) has no WPC
-10-01 14:24:50.723  2140  2203 V WindowManagerShell: Transition requested (#47): android.os.BinderProxy@63a5983 TransitionRequestInfo { type = OPEN, triggerTask = TaskInfo{userId=0 taskId=19 displayId=0 isRunning=true baseIntent=Intent { act=android.intent.action.MAIN cat=[android.intent.category.LAUNCHER] flg=0x10200000 cmp=com.leunamesoftwares.facturo.previa/com.leunamesoftwares.facturo.MainActivity } baseActivity=ComponentInfo{com.leunamesoftwares.facturo.previa/com.leunamesoftwares.facturo.MainActivity} topActivity=ComponentInfo{com.leunamesoftwares.facturo.previa/com.leunamesoftwares.facturo.MainActivity} origActivity=null realActivity=ComponentInfo{com.leunamesoftwares.facturo.previa/com.leunamesoftwares.facturo.MainActivity} numActivities=1 lastActiveTime=401253 supportsMultiWindow=true resizeMode=1 isResizeable=true minWidth=-1 minHeight=-1 defaultMinSize=220 token=WCT{android.window.IWindowContainerToken$Stub$Proxy@c703700} topActivityType=1 pictureInPictureParams=null shouldDockBigOverlays=false launchIntoPipHostTaskId=-1 lastParentTaskIdBeforePip=-1 displayCutoutSafeInsets=Rect(0, 128 - 0, 0) topActivityInfo=ActivityInfo{6899b39 com.leunamesoftwares.facturo.MainActivity} launchCookies=[] positionInParent=Point(0, 0) parentTaskId=-1 isFocused=false isVisible=false isVisibleRequested=false isSleeping=false locusId=null displayAreaFeatureId=1 isTopActivityTransparent=false appCompatTaskInfo=AppCompatTaskInfo { topActivityInSizeCompat=false topActivityEligibleForLetterboxEducation= falseisLetterboxEducationEnabled= true isLetterboxDoubleTapEnabled= false topActivityEligibleForUserAspectRatioButton= false topActivityBoundsLetterboxed= false isFromLetterboxDoubleTap= false topActivityLetterboxVerticalPosition= -1 topActivityLetterboxHorizontalPosition= -1 topActivityLetterboxWidth=1080 topActivityLetterboxHeight=2400 isUserFullscreenOverrideEnabled=false isSystemFullscreenOverrideEnabled=false cameraCompatTaskInfo=CameraCompatTaskInfo { cameraCompatControlState=hidden freeformCameraCompatMode=inactive}}}, pipTask = null, remoteTransition = null, displayChange = null, flags = 0, debugId = 47 }
-10-01 14:24:50.725  1923  2241 I ActivityTaskManager: START u0 {act=android.intent.action.MAIN cat=[android.intent.category.LAUNCHER] flg=0x10200000 cmp=com.leunamesoftwares.facturo.previa/com.leunamesoftwares.facturo.MainActivity} with LAUNCH_SINGLE_TASK from uid 0 (BAL_ALLOW_ALLOWLISTED_UID) result code=0
-10-01 14:24:50.726  2503  2503 I TopTaskTracker: onTaskMovedToFront: (moved taskInfo to front) taskId=19, baseIntent=Intent { act=android.intent.action.MAIN cat=[android.intent.category.LAUNCHER] flg=0x10200000 cmp=com.leunamesoftwares.facturo.previa/com.leunamesoftwares.facturo.MainActivity }
-10-01 14:24:50.758  1923  2293 D CoreBackPreview: Window{a5b12fa u0 Splash Screen com.leunamesoftwares.facturo.previa}: Setting back callback OnBackInvokedCallbackInfo{mCallback=android.window.IOnBackInvokedCallback$Stub$Proxy@2b764c6, mPriority=0, mIsAnimationCallback=false}
-10-01 14:24:50.759  1923  2873 I AppsFilter: interaction: PackageSetting{a7dfd4d com.android.microdroid.empty_payload/10192} -> PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} BLOCKED
-10-01 14:24:50.760  1923  1956 I ActivityManager: Start proc 8287:com.leunamesoftwares.facturo.previa/u0a209 for next-top-activity {com.leunamesoftwares.facturo.previa/com.leunamesoftwares.facturo.MainActivity}
-10-01 14:24:50.768  8287  8287 I .facturo.previa: Late-enabling -Xcheck:jni
-10-01 14:24:50.793  1923  2097 I AppWidgetServiceImpl: Updating package stopped masked state for uid 10209 package com.leunamesoftwares.facturo.previa isStopped false
-10-01 14:24:50.828  8287  8287 I .facturo.previa: Using CollectorTypeCMC GC.
-10-01 14:24:50.830  8287  8287 W .facturo.previa: Unexpected CPU variant for x86: x86_64.
-10-01 14:24:50.830  8287  8287 W .facturo.previa: Known variants: atom, sandybridge, silvermont, goldmont, goldmont-plus, goldmont-without-sha-xsaves, tremont, kabylake, default
-10-01 14:24:50.884  1923  1945 V WindowManager: Sent Transition (#47) createdAt=10-01 14:24:50.716 via request=TransitionRequestInfo { type = OPEN, triggerTask = TaskInfo{userId=0 taskId=19 displayId=0 isRunning=true baseIntent=Intent { act=android.intent.action.MAIN cat=[android.intent.category.LAUNCHER] flg=0x10200000 cmp=com.leunamesoftwares.facturo.previa/com.leunamesoftwares.facturo.MainActivity } baseActivity=ComponentInfo{com.leunamesoftwares.facturo.previa/com.leunamesoftwares.facturo.MainActivity} topActivity=ComponentInfo{com.leunamesoftwares.facturo.previa/com.leunamesoftwares.facturo.MainActivity} origActivity=null realActivity=ComponentInfo{com.leunamesoftwares.facturo.previa/com.leunamesoftwares.facturo.MainActivity} numActivities=1 lastActiveTime=401253 supportsMultiWindow=true resizeMode=1 isResizeable=true minWidth=-1 minHeight=-1 defaultMinSize=220 token=WCT{RemoteToken{a888b76 Task{ca3f769 #19 type=standard A=10209:com.leunamesoftwares.facturo.previa}}} topActivityType=1 pictureInPictureParams=null shouldDockBigOverlays=false launchIntoPipHostTaskId=-1 lastParentTaskIdBeforePip=-1 displayCutoutSafeInsets=Rect(0, 128 - 0, 0) topActivityInfo=ActivityInfo{9e58577 com.leunamesoftwares.facturo.MainActivity} launchCookies=[] positionInParent=Point(0, 0) parentTaskId=-1 isFocused=false isVisible=false isVisibleRequested=false isSleeping=false locusId=null displayAreaFeatureId=1 isTopActivityTransparent=false appCompatTaskInfo=AppCompatTaskInfo { topActivityInSizeCompat=false topActivityEligibleForLetterboxEducation= falseisLetterboxEducationEnabled= true isLetterboxDoubleTapEnabled= false topActivityEligibleForUserAspectRatioButton= false topActivityBoundsLetterboxed= false isFromLetterboxDoubleTap= false topActivityLetterboxVerticalPosition= -1 topActivityLetterboxHorizontalPosition= -1 topActivityLetterboxWidth=1080 topActivityLetterboxHeight=2400 isUserFullscreenOverrideEnabled=false isSystemFullscreenOverrideEnabled=false cameraCompatTaskInfo=CameraCompatTaskInfo { cameraCompatControlState=hidden freeformCameraCompatMode=inactive}}}, pipTask = null, remoteTransition = null, displayChange = null, flags = 0, debugId = 47 }
-10-01 14:24:50.884  1923  1945 V WindowManager:         {WCT{RemoteToken{a888b76 Task{ca3f769 #19 type=standard A=10209:com.leunamesoftwares.facturo.previa}}} m=OPEN f=NONE leash=Surface(name=Task=19)/@0xb101d95 sb=Rect(0, 0 - 1080, 2400) eb=Rect(0, 0 - 1080, 2400) d=0 taskParent=-1},
-10-01 14:24:51.077  8287  8287 W ziparchive: Unable to open '/data/app/~~4hXse16b6wrPa24rS5UFAA==/com.leunamesoftwares.facturo.previa-M5ucckMAOGdg4jG6xm-7KQ==/base.dm': No such file or directory
-10-01 14:24:51.077  8287  8287 W ziparchive: Unable to open '/data/app/~~4hXse16b6wrPa24rS5UFAA==/com.leunamesoftwares.facturo.previa-M5ucckMAOGdg4jG6xm-7KQ==/base.dm': No such file or directory
-10-01 14:24:51.277  8287  8287 W .facturo.previa: Accessing hidden method Landroid/view/ViewGroup;->makeOptionalFitsSystemWindows()V (unsupported, reflection, allowed)
-10-01 14:24:51.290  8287  8287 W .facturo.previa: Entry not found
-10-01 14:24:51.293  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{2f0bedd com.android.cts.priv.ctsshim/10189} BLOCKED
-10-01 14:24:51.293  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{aa749c7 com.google.android.youtube/10167} BLOCKED
-10-01 14:24:51.293  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{d455123 com.android.internal.display.cutout.emulation.corner/10008} BLOCKED
-10-01 14:24:51.293  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{94e6620 com.android.internal.display.cutout.emulation.double/10084} BLOCKED
-10-01 14:24:51.293  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{8091742 com.google.android.googlequicksearchbox/10144} BLOCKED
-10-01 14:24:51.294  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{63f6bd9 com.google.android.onetimeinitializer/10128} BLOCKED
-10-01 14:24:51.294  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{eb3399e com.google.android.ext.shared/10117} BLOCKED
-10-01 14:24:51.294  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{c11dc7f com.android.virtualmachine.res/10191} BLOCKED
-10-01 14:24:51.294  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{e03c44c com.android.managedprovisioning.auto_generated_rro_product__/10021} BLOCKED
-10-01 14:24:51.294  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{c31ec95 com.android.carrierconfig.auto_generated_rro_vendor__/10086} BLOCKED
-10-01 14:24:51.294  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{79551aa com.google.android.server.deviceconfig.resources/10196} BLOCKED
-10-01 14:24:51.294  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{cf1c19b com.android.systemui.emulation.pixel_3_xl/10044} BLOCKED
-10-01 14:24:51.296  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{4ced938 com.android.systemui.emulation.pixel_4_xl/10067} BLOCKED
-10-01 14:24:51.296  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{b91bd11 com.android.systemui.emulation.pixel_fold/10019} BLOCKED
-10-01 14:24:51.296  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{cede76 com.android.providers.telephony.auto_generated_characteristics_rro/10020} BLOCKED
-10-01 14:24:51.296  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{520dc77 com.android.simappdialog.auto_generated_rro_product__/10015} BLOCKED
-10-01 14:24:51.296  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{d3450e4 com.android.htmlviewer/10116} BLOCKED
-10-01 14:24:51.296  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{444194d com.google.android.health.connect.backuprestore/10185} BLOCKED
-10-01 14:24:51.296  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{f426c02 com.android.systemui.auto_generated_rro_product__/10040} BLOCKED
-10-01 14:24:51.296  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{1914b46 com.google.android.apps.messaging/10135} BLOCKED
-10-01 14:24:51.296  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{8579750 com.google.android.soundpicker/10163} BLOCKED
-10-01 14:24:51.296  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{545fd49 com.google.android.marvin.talkbackoverlay/10089} BLOCKED
-10-01 14:24:51.296  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{16f464e com.google.android.configupdater/10136} BLOCKED
-10-01 14:24:51.296  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{220e36f com.android.internal.emulation.pixel_3a_xl/10033} BLOCKED
-10-01 14:24:51.296  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{426d87c com.android.internal.emulation.pixel_6_pro/10064} BLOCKED
-10-01 14:24:51.296  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{6682505 com.android.internal.emulation.pixel_7_pro/10077} BLOCKED
-10-01 14:24:51.296  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{c7d795a com.android.internal.emulation.pixel_8_pro/10050} BLOCKED
-10-01 14:24:51.296  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{202478b com.android.internal.emulation.pixel_9_pro/10011} BLOCKED
-10-01 14:24:51.297  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{d470068 com.android.internal.emulation.pixel_3a/10009} BLOCKED
-10-01 14:24:51.297  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{1cb0c81 com.android.internal.emulation.pixel_4a/10039} BLOCKED
-10-01 14:24:51.297  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{e09d126 com.android.internal.emulation.pixel_6a/10075} BLOCKED
-10-01 14:24:51.297  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{14bd167 com.android.internal.emulation.pixel_7a/10073} BLOCKED
-10-01 14:24:51.297  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{3bfbb14 com.android.internal.emulation.pixel_8a/10006} BLOCKED
-10-01 14:24:51.297  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{91aefbd com.google.android.overlay.googlewebview/10049} BLOCKED
-10-01 14:24:51.297  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{2c90f1d com.google.android.apps.safetyhub/10129} BLOCKED
-10-01 14:24:51.297  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{3ba1d03 com.google.android.hotspot2.osulogin/10207} BLOCKED
-10-01 14:24:51.297  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{e677480 com.android.simappdialog/10121} BLOCKED
-10-01 14:24:51.297  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{28bcab9 com.android.internal.display.cutout.emulation.hole/10052} BLOCKED
-10-01 14:24:51.297  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{15fdefe com.android.internal.display.cutout.emulation.tall/10024} BLOCKED
-10-01 14:24:51.297  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{237865f com.android.internal.systemui.navbar.threebutton/10061} BLOCKED
-10-01 14:24:51.297  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{5402cc8 com.android.camera2/10157} BLOCKED
-10-01 14:24:51.297  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{90f58ac com.android.internal.ranchu.commonoverlay/10054} BLOCKED
-10-01 14:24:51.297  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{9955975 com.android.systemui.auto_generated_rro_vendor__/10087} BLOCKED
-10-01 14:24:51.297  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{b56ed0a com.google.android.deskclock/10148} BLOCKED
-10-01 14:24:51.297  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{ff8297b com.android.internal.systemui.navbar.twobutton/10001} BLOCKED
-10-01 14:24:51.297  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{df09107 com.google.android.as/10137} BLOCKED
-10-01 14:24:51.297  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{f6f17f1 com.google.android.gm/10164} BLOCKED
-10-01 14:24:51.297  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{fecfd6 com.android.compos.payload/10199} BLOCKED
-10-01 14:24:51.297  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{555e257 com.android.systemui.emulation.pixel_3/10036} BLOCKED
-10-01 14:24:51.297  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{6d21144 com.android.systemui.emulation.pixel_4/10031} BLOCKED
-10-01 14:24:51.297  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{74c422d com.android.systemui.emulation.pixel_5/10071} BLOCKED
-10-01 14:24:51.297  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{3701362 com.android.systemui.emulation.pixel_6/10038} BLOCKED
-10-01 14:24:51.297  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{c6c4cf3 com.android.systemui.emulation.pixel_7/10032} BLOCKED
-10-01 14:24:51.297  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{80fdb0 com.android.systemui.emulation.pixel_8/10055} BLOCKED
-10-01 14:24:51.297  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{a57d429 com.android.systemui.emulation.pixel_9/10034} BLOCKED
-10-01 14:24:51.297  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{ac003ae com.android.printspooler/10127} BLOCKED
-10-01 14:24:51.297  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{b74c54f com.google.android.connectivity.resources.goldfish.overlay/10090} BLOCKED
-10-01 14:24:51.297  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{ef044dc com.android.dreams.basic/10114} BLOCKED
-10-01 14:24:51.297  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{f7089e5 com.google.android.networkstack.tethering.emulator/10029} BLOCKED
-10-01 14:24:51.297  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{90cacba com.android.providers.settings.auto_generated_rro_product__/10080} BLOCKED
-10-01 14:24:51.297  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{8e2676b com.google.android.as.oss/10132} BLOCKED
-10-01 14:24:51.297  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{baad2c8 com.android.traceur.auto_generated_rro_product__/10028} BLOCKED
-10-01 14:24:51.297  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{2a4df61 com.android.internal.emulation.pixel_9_pro_fold/10056} BLOCKED
-10-01 14:24:51.297  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{248da86 com.google.android.devicelockcontroller/10188} BLOCKED
-10-01 14:24:51.297  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{53e0f47 com.google.android.dialer/10130} BLOCKED
-10-01 14:24:51.297  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{bfe5374 com.android.internal.emulation.pixel_3/10014} BLOCKED
-10-01 14:24:51.297  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{86f109d com.android.internal.emulation.pixel_4/10058} BLOCKED
-10-01 14:24:51.297  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{4c81912 com.android.internal.emulation.pixel_5/10065} BLOCKED
-10-01 14:24:51.297  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{6c258e3 com.android.internal.emulation.pixel_6/10023} BLOCKED
-10-01 14:24:51.297  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{a6732e0 com.android.internal.emulation.pixel_7/10030} BLOCKED
-10-01 14:24:51.297  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{8b11999 com.android.internal.emulation.pixel_8/10046} BLOCKED
-10-01 14:24:51.297  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{e8ab45e com.android.internal.emulation.pixel_9/10059} BLOCKED
-10-01 14:24:51.297  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{2b7a03f com.google.android.captiveportallogin/10118} BLOCKED
-10-01 14:24:51.297  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{abc9d0c android.auto_generated_characteristics_rro/10053} BLOCKED
-10-01 14:24:51.297  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{d70b655 com.google.android.appsearch.apk/10186} BLOCKED
-10-01 14:24:51.297  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{b49b86a com.android.musicfx/10093} BLOCKED
-10-01 14:24:51.297  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{90015b com.google.android.apps.docs/10161} BLOCKED
-10-01 14:24:51.297  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{cce2429 com.google.android.apps.maps/10152} BLOCKED
-10-01 14:24:51.297  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{51c7df8 com.google.android.markup/10150} BLOCKED
-10-01 14:24:51.297  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{caec486 com.google.android.rkpdapp/10197} BLOCKED
-10-01 14:24:51.297  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{15362d1 com.google.android.contacts/10158} BLOCKED
-10-01 14:24:51.297  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{742f136 com.android.server.telecom.auto_generated_rro_product__/10037} BLOCKED
-10-01 14:24:51.297  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{2c35837 com.android.phone.auto_generated_characteristics_rro/10017} BLOCKED
-10-01 14:24:51.297  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{39781a4 com.google.android.overlay.googleconfig/10082} BLOCKED
-10-01 14:24:51.297  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{9da5b0d com.android.chrome/10146} BLOCKED
-10-01 14:24:51.297  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{2c4eac2 com.android.bips.auto_generated_rro_product__/10048} BLOCKED
-10-01 14:24:51.297  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{16b40d3 com.google.android.apps.customization.pixel/10149} BLOCKED
-10-01 14:24:51.297  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{e9d1410 com.google.android.tag/10100} BLOCKED
-10-01 14:24:51.297  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{95e9b09 com.google.android.overlay.permissioncontroller/10060} BLOCKED
-10-01 14:24:51.297  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{27af10e com.google.android.partnersetup/10131} BLOCKED
-10-01 14:24:51.297  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{29f172f com.google.android.apps.wallpaper.nexus/10159} BLOCKED
-10-01 14:24:51.297  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{427613c com.google.android.apps.nexuslauncher/10178} BLOCKED
-10-01 14:24:51.297  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{4ccdec5 com.android.theme.font.notoserifsource/10047} BLOCKED
-10-01 14:24:51.297  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{879101a com.google.android.safetycenter.resources/10194} BLOCKED
-10-01 14:24:51.297  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{c8ff74b com.android.internal.display.cutout.emulation.waterfall/10025} BLOCKED
-10-01 14:24:51.297  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{5a75528 com.android.internal.systemui.navbar.transparent/10069} BLOCKED
-10-01 14:24:51.297  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{921a241 com.google.android.connectivity.resources/10198} BLOCKED
-10-01 14:24:51.297  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{20813e6 com.android.providers.contacts.auto_generated_rro_product__/10007} BLOCKED
-10-01 14:24:51.297  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{d64bd27 com.google.android.feedback/10174} BLOCKED
-10-01 14:24:51.297  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{8b09bd4 com.google.android.printservice.recommendation/10120} BLOCKED
-10-01 14:24:51.297  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{ca5217d com.google.android.apps.photos/10168} BLOCKED
-10-01 14:24:51.297  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{6d95bcb com.google.android.calendar/10162} BLOCKED
-10-01 14:24:51.297  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{6318872 com.google.android.documentsui/10096} BLOCKED
-10-01 14:24:51.297  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{4d604c3 com.android.systemui.emulation.pixel_3a_xl/10078} BLOCKED
-10-01 14:24:51.297  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{665a140 com.android.systemui.emulation.pixel_6_pro/10035} BLOCKED
-10-01 14:24:51.297  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{7e75879 com.android.systemui.emulation.pixel_7_pro/10066} BLOCKED
-10-01 14:24:51.297  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{10bb9be com.android.systemui.emulation.pixel_8_pro/10079} BLOCKED
-10-01 14:24:51.297  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{b8a2a1f com.android.systemui.emulation.pixel_9_pro/10022} BLOCKED
-10-01 14:24:51.297  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{5a3916c com.android.carrierconfig.auto_generated_rro_product__/10005} BLOCKED
-10-01 14:24:51.297  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{27c0335 com.android.devicediagnostics.auto_generated_rro_product__/10068} BLOCKED
-10-01 14:24:51.297  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{7c5b3ca com.android.providers.partnerbookmarks/10113} BLOCKED
-10-01 14:24:51.297  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{431493b com.android.wallpaper.livepicker/10097} BLOCKED
-10-01 14:24:51.297  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{bee5858 com.android.providers.telephony.auto_generated_rro_product__/10045} BLOCKED
-10-01 14:24:51.297  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{f769db1 com.android.phone.auto_generated_rro_vendor__/10088} BLOCKED
-10-01 14:24:51.297  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{1734296 com.android.imsserviceentitlement/10138} BLOCKED
-10-01 14:24:51.297  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{2613e17 com.android.internal.emulation.pixel_9_pro_xl/10010} BLOCKED
-10-01 14:24:51.297  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{11ca204 com.google.android.healthconnect.controller/10184} BLOCKED
-10-01 14:24:51.297  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{5a663ed com.android.internal.emulation.pixel_2_xl/10000} BLOCKED
-10-01 14:24:51.297  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{98f222 com.android.internal.emulation.pixel_3_xl/10083} BLOCKED
-10-01 14:24:51.297  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{331a4b3 com.android.internal.emulation.pixel_4_xl/10043} BLOCKED
-10-01 14:24:51.297  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{1c3da70 com.android.internal.emulation.pixel_fold/10013} BLOCKED
-10-01 14:24:51.297  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{f9251e9 com.android.bookmarkprovider/10112} BLOCKED
-10-01 14:24:51.297  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{9780e6e com.google.android.overlay.pixelconfigcommon/10003} BLOCKED
-10-01 14:24:51.297  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{397d90f com.android.systemui.accessibility.accessibilitymenu.auto_generated_rro_product__/10041} BLOCKED
-10-01 14:24:51.297  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{c642d9c com.android.systemui.emulation.pixel_3a/10074} BLOCKED
-10-01 14:24:51.297  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{f3523a5 com.android.systemui.emulation.pixel_4a/10042} BLOCKED
-10-01 14:24:51.297  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{11aa37a com.android.systemui.emulation.pixel_6a/10076} BLOCKED
-10-01 14:24:51.297  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{82f72b com.android.systemui.emulation.pixel_7a/10081} BLOCKED
-10-01 14:24:51.297  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{5548788 com.android.systemui.emulation.pixel_8a/10072} BLOCKED
-10-01 14:24:51.297  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{bb0d50a com.google.android.settings.intelligence/10140} BLOCKED
-10-01 14:24:51.297  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{a589bab com.google.android.projection.gearhead/10134} BLOCKED
-10-01 14:24:51.298  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{1795521 com.google.android.uwb.resources/10193} BLOCKED
-10-01 14:24:51.298  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{86a9208 com.android.cts.ctsshim/10190} BLOCKED
-10-01 14:24:51.298  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{11f7d46 com.google.android.wifi.resources/10206} BLOCKED
-10-01 14:24:51.298  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{cb7db07 com.google.android.wifi.dialog/10208} BLOCKED
-10-01 14:24:51.298  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{d75225d com.android.wallpaper/10176} BLOCKED
-10-01 14:24:51.298  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{a7dfd4d com.android.microdroid.empty_payload/10192} BLOCKED
-10-01 14:24:51.298  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{c4627d2 com.google.android.apps.wallpaper/10177} BLOCKED
-10-01 14:24:51.298  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{86d20a3 com.google.android.odad/10133} BLOCKED
-10-01 14:24:51.298  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{77abfa0 com.android.settings.auto_generated_rro_product__/10062} BLOCKED
-10-01 14:24:51.298  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{b668759 com.android.systemui.emulation.pixel_9_pro_xl/10027} BLOCKED
-10-01 14:24:51.298  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{fbaef1e com.android.companiondevicemanager.auto_generated_characteristics_rro/10057} BLOCKED
-10-01 14:24:51.298  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{6a723ff com.android.internal.systemui.navbar.gestural/10012} BLOCKED
-10-01 14:24:51.298  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{85c35cc com.google.android.apps.youtube.music/10154} BLOCKED
-10-01 14:24:51.298  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{f6f4015 com.android.bluetoothmidiservice/10115} BLOCKED
-10-01 14:24:51.298  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{d22df2a com.android.storagemanager.auto_generated_rro_product__/10018} BLOCKED
-10-01 14:24:51.298  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{c54011b com.google.android.cellbroadcastreceiver/10205} BLOCKED
-10-01 14:24:51.298  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{dfce2b8 com.android.phone.auto_generated_rro_product__/10016} BLOCKED
-10-01 14:24:51.298  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{410c891 com.android.systemui.emulation.pixel_9_pro_fold/10026} BLOCKED
-10-01 14:24:51.298  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{967c3f6 android.auto_generated_rro_product__/10002} BLOCKED
-10-01 14:24:51.298  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{52793f7 com.google.android.inputmethod.latin/10156} BLOCKED
-10-01 14:24:51.298  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{8f97264 android.auto_generated_rro_vendor__/10085} BLOCKED
-10-01 14:24:51.298  1923  1941 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{685ccd com.google.android.apps.restore/10139} BLOCKED
-10-01 14:24:51.335  8287  8308 I cr_VariationsUtils: Failed reading seed file "/data/user/0/com.leunamesoftwares.facturo.previa/app_webview/variations_seed_new"
-10-01 14:24:51.336  8287  8308 I cr_VariationsUtils: Failed reading seed file "/data/user/0/com.leunamesoftwares.facturo.previa/app_webview/variations_seed"
-10-01 14:24:51.368  1923  2873 I ActivityManager: Start proc 8311:com.google.android.webview:sandboxed_process0:org.chromium.content.app.SandboxedProcessService0:0/u0i11 for  {com.leunamesoftwares.facturo.previa/org.chromium.content.app.SandboxedProcessService0:0}
-10-01 14:24:51.440  8287  8287 D Capacitor: Starting BridgeActivity
-10-01 14:24:51.454  8287  8287 D Capacitor: Registering plugin instance: CapacitorCookies
-10-01 14:24:51.457  8287  8287 D Capacitor: Registering plugin instance: WebView
-10-01 14:24:51.458  8287  8287 D Capacitor: Registering plugin instance: CapacitorHttp
-10-01 14:24:51.460  8287  8287 D Capacitor: Registering plugin instance: SystemBars
-10-01 14:24:51.462  8287  8287 D Capacitor: Registering plugin instance: App
-10-01 14:24:51.463  8287  8287 D Capacitor: Registering plugin instance: Filesystem
-10-01 14:24:51.465  8287  8287 D Capacitor: Registering plugin instance: Share
-10-01 14:24:51.485  8287  8287 W Capacitor: Unable to read file at path public/plugins
-10-01 14:24:51.488  8287  8287 D Capacitor: Loading app at https://localhost
-10-01 14:24:51.513  8287  8287 D Capacitor: App started
-10-01 14:24:51.515  8287  8287 D Capacitor/AppPlugin: Firing change: true
-10-01 14:24:51.516  8287  8287 V Capacitor/AppPlugin: Notifying listeners for event appStateChange
-10-01 14:24:51.516  8287  8287 D Capacitor/AppPlugin: No listeners found for event appStateChange
-10-01 14:24:51.516  8287  8287 D Capacitor: App resumed
-10-01 14:24:51.536  8287  8350 D Capacitor: Handling local request: https://localhost/
-10-01 14:24:51.557  1923  1941 D CoreBackPreview: Window{b73666c u0 com.leunamesoftwares.facturo.previa/com.leunamesoftwares.facturo.MainActivity}: Setting back callback OnBackInvokedCallbackInfo{mCallback=android.window.IOnBackInvokedCallback$Stub$Proxy@907ef22, mPriority=0, mIsAnimationCallback=false}
-10-01 14:24:51.742  1923  1945 W ziparchive: Unable to open '/data/app/~~4hXse16b6wrPa24rS5UFAA==/com.leunamesoftwares.facturo.previa-M5ucckMAOGdg4jG6xm-7KQ==/base.dm': No such file or directory
-10-01 14:24:51.746  1923  1945 I ActivityTaskManager: Displayed com.leunamesoftwares.facturo.previa/com.leunamesoftwares.facturo.MainActivity for user 0: +1s25ms
-10-01 14:24:51.752  1923  1941 D CoreBackPreview: Window{a5b12fa u0 Splash Screen com.leunamesoftwares.facturo.previa EXITING}: Setting back callback null
-10-01 14:24:51.754  1923  2241 W InputManager-JNI: Input channel object 'a5b12fa Splash Screen com.leunamesoftwares.facturo.previa (client)' was disposed without first being removed with the input manager!
-10-01 14:24:51.809  8287  8326 D Capacitor: Handling local request: https://localhost/assets/index-Bg33tbXV.js
-10-01 14:24:51.827  8287  8327 D Capacitor: Handling local request: https://localhost/assets/index-CFBit1Tk.css
-10-01 14:24:51.875  8287  8287 E Capacitor/Console: File:  - Line 6 - Msg: Error injecting safe area CSS: TypeError: Cannot read properties of null (reading 'style')
-10-01 14:24:51.890  1923  2032 I ImeTracker: com.leunamesoftwares.facturo.previa:c89fccf8: onRequestHide at ORIGIN_SERVER reason HIDE_UNSPECIFIED_WINDOW fromUser false
-10-01 14:24:51.892  1923  2032 I ImeTracker: com.leunamesoftwares.facturo.previa:c89fccf8: onCancelled at PHASE_SERVER_SHOULD_HIDE
-10-01 14:24:51.946  2625  2625 I GoogleInputMethodService: GoogleInputMethodService.onStartInput():1986 onStartInput(EditorInfo{EditorInfo{packageName=com.leunamesoftwares.facturo.previa, inputType=0, inputTypeString=NULL, enableLearning=false, autoCorrection=false, autoComplete=false, imeOptions=12000000, privateImeOptions=null, actionName=UNSPECIFIED, actionLabel=null, initialSelStart=-1, initialSelEnd=-1, initialCapsMode=0, label=null, fieldId=0, fieldName=null, extras=null, hintText=null, hintLocales=[]}}, false)
-10-01 14:24:51.981  1923  2241 W PackageConfigPersister: App-specific configuration not found for packageName: com.leunamesoftwares.facturo.previa and userId: 0
-10-01 14:24:52.304  8287  8287 I Capacitor/Console: File:  - Line 349 - Msg: [object Object]
-10-01 14:24:52.305  8287  8287 V Capacitor/Plugin: To native (Capacitor plugin): callbackId: 45894970, pluginId: App, methodName: addListener
-10-01 14:24:52.306  8287  8287 V Capacitor: callback: 45894970, pluginId: App, methodName: addListener, methodData: {"eventName":"backButton"}
-10-01 14:24:52.306  8287  8313 D Capacitor: Handling local request: https://localhost/icone.png
-10-01 14:24:52.323  8287  8313 D Capacitor: Handling local request: https://localhost/icone.png
-10-01 14:24:52.628  8287  8292 I .facturo.previa: Compiler allocated 5174KB to compile void android.view.ViewRootImpl.performTraversals()
-10-01 14:24:56.924  8287  8370 D ProfileInstaller: Installing profile for com.leunamesoftwares.facturo.previa
-10-01 14:24:59.763  1923  2873 I ActivityManager: Process com.google.android.apps.maps:server_recovery_process_scheduled (pid 8386) has died: cch+5 CEM 
-10-01 14:25:01.746  1923  2873 I AppsFilter: interaction: PackageSetting{fee6c87 com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{52793f7 com.google.android.inputmethod.latin/10156} BLOCKED
-10-01 14:25:01.754  8287  8287 I ImeTracker: com.leunamesoftwares.facturo.previa:d3c2a28c: onRequestShow at ORIGIN_CLIENT reason SHOW_SOFT_INPUT fromUser false
-10-01 14:25:01.754  8287  8287 D InputMethodManager: showSoftInput() view=com.getcapacitor.CapacitorWebView{761a081 VFEDHVC.. .F...... 0,0-1080,2209 #7f0800c2 app:id/webview aid=1073741824} flags=0 reason=SHOW_SOFT_INPUT
-10-01 14:25:01.758  2625  2625 I GoogleInputMethodService: GoogleInputMethodService.onStartInput():1986 onStartInput(EditorInfo{EditorInfo{packageName=com.leunamesoftwares.facturo.previa, inputType=c0a1, inputTypeString=WebEditText, enableLearning=true, autoCorrection=true, autoComplete=true, imeOptions=12000002, privateImeOptions=null, actionName=GO, actionLabel=null, initialSelStart=0, initialSelEnd=0, initialCapsMode=0, label=null, fieldId=2131230914, fieldName=null, extras=null, hintText=null, hintLocales=[]}}, true)
-10-01 14:25:01.759  1923  2873 W PackageConfigPersister: App-specific configuration not found for packageName: com.leunamesoftwares.facturo.previa and userId: 0
-10-01 14:25:01.759  1923  2286 D ContentCapturePerUserService: Notified activity assist data for activity: Token{b6885ee ActivityRecord{626a5f0 u0 com.leunamesoftwares.facturo.previa/com.leunamesoftwares.facturo.MainActivity t19}} without a session Id
-10-01 14:25:01.762  2625  2625 I GoogleInputMethodService: GoogleInputMethodService.onStartInputView():2098 onStartInputView(EditorInfo{EditorInfo{packageName=com.leunamesoftwares.facturo.previa, inputType=c0a1, inputTypeString=WebEditText, enableLearning=true, autoCorrection=true, autoComplete=true, imeOptions=12000002, privateImeOptions=null, actionName=GO, actionLabel=null, initialSelStart=0, initialSelEnd=0, initialCapsMode=0, label=null, fieldId=2131230914, fieldName=null, extras=null, hintText=null, hintLocales=[]}}, false)
-10-01 14:25:01.837  2625  2625 I AndroidIME: AbstractIme.onActivate():89 LatinIme.onActivate() : EditorInfo = EditorInfo{packageName=com.leunamesoftwares.facturo.previa, inputType=c0a1, inputTypeString=WebEditText, enableLearning=true, autoCorrection=true, autoComplete=true, imeOptions=12000002, privateImeOptions=null, actionName=GO, actionLabel=null, initialSelStart=0, initialSelEnd=0, initialCapsMode=0, label=null, fieldId=2131230914, fieldName=null, extras=null, hintText=null, hintLocales=[]}, IncognitoMode = false, DeviceLocked = false
-10-01 14:25:01.854  8287  8295 W .facturo.previa: ApkAssets: Deleting an ApkAssets object '<empty> and /data/app/~~t30FkhYYXTI84tGIoqB9NA==/com.google.android.webview-HuewRuLoZ0sivxqvfoPQmA==/WebViewGoogle.apk' with 2 weak references
-10-01 14:25:02.114  8287  8419 W InteractionJankMonitor: Initializing without READ_DEVICE_CONFIG permission. enabled=true, interval=1, missedFrameThreshold=3, frameTimeThreshold=64, package=com.leunamesoftwares.facturo.previa
-10-01 14:25:02.279  8287  8287 I ImeTracker: com.leunamesoftwares.facturo.previa:d3c2a28c: onShown
+10-01 14:33:20.732  5114  5114 I ImeTracker: com.leunamesoftwares.facturo.previa:8f4c317: onRequestHide at ORIGIN_CLIENT reason HIDE_SOFT_INPUT fromUser false
+10-01 14:33:20.732  2668  2776 I ImeTracker: com.leunamesoftwares.facturo.previa:8f4c317: onCancelled at PHASE_SERVER_SHOULD_HIDE
+10-01 14:33:20.737  3309  3309 I GoogleInputMethodService: GoogleInputMethodService.onStartInput():1986 onStartInput(EditorInfo{EditorInfo{packageName=com.leunamesoftwares.facturo.previa, inputType=0, inputTypeString=NULL, enableLearning=false, autoCorrection=false, autoComplete=false, imeOptions=12000000, privateImeOptions=null, actionName=UNSPECIFIED, actionLabel=null, initialSelStart=-1, initialSelEnd=-1, initialCapsMode=0, label=null, fieldId=0, fieldName=null, extras=null, hintText=null, hintLocales=[]}}, true)
+10-01 14:33:20.740  2668  2740 W PackageConfigPersister: App-specific configuration not found for packageName: com.leunamesoftwares.facturo.previa and userId: 0
+10-01 14:33:21.741  2668  2907 I ActivityTaskManager: Config changes=200 {1.0 310mcc260mnc [pt_BR] ldltr sw411dp w411dp h914dp 420dpi nrml long port night finger qwerty/v/v -nav/h winConfig={ mBounds=Rect(0, 0 - 1080, 2400) mAppBounds=Rect(0, 0 - 1080, 2400) mMaxBounds=Rect(0, 0 - 1080, 2400) mDisplayRotation=ROTATION_0 mWindowingMode=fullscreen mActivityType=undefined mAlwaysOnTop=undefined mRotation=ROTATION_0} as.2 s.57 fontWeightAdjustment=0}
+10-01 14:33:21.756  2668  2907 V ActivityTaskManager: Sending to IME proc com.google.android.inputmethod.latin new config {1.0 310mcc260mnc [pt_BR] ldltr sw411dp w411dp h842dp 420dpi nrml long port night finger qwerty/v/v -nav/h winConfig={ mBounds=Rect(0, 0 - 1080, 2400) mAppBounds=Rect(0, 128 - 1080, 2337) mMaxBounds=Rect(0, 0 - 1080, 2400) mDisplayRotation=ROTATION_0 mWindowingMode=fullscreen mActivityType=undefined mAlwaysOnTop=undefined mRotation=ROTATION_0} as.2 s.103 fontWeightAdjustment=0}
+10-01 14:33:21.850  3309  3309 I GoogleInputMethodService: GoogleInputMethodService.onStartInput():1986 onStartInput(EditorInfo{EditorInfo{packageName=com.leunamesoftwares.facturo.previa, inputType=0, inputTypeString=NULL, enableLearning=false, autoCorrection=false, autoComplete=false, imeOptions=12000000, privateImeOptions=null, actionName=UNSPECIFIED, actionLabel=null, initialSelStart=-1, initialSelEnd=-1, initialCapsMode=0, label=null, fieldId=0, fieldName=null, extras=null, hintText=null, hintLocales=[]}}, true)
+10-01 14:33:21.861  2668  2907 W PackageConfigPersister: App-specific configuration not found for packageName: com.leunamesoftwares.facturo.previa and userId: 0
+10-01 14:33:22.109  2668  3647 D ActivityTaskManager: Remove task fragment: deleteTaskFragment
+10-01 14:33:24.130  2668  2680 W system_server: ApkAssets: Deleting an ApkAssets object '<empty> and /data/app/~~DjSNBnj-ItUXEjHTxx8X_g==/com.leunamesoftwares.facturo.previa-f3P4nrGu7tC_YoRJJo2ZTw==/base.apk' with 1 weak references
+10-01 14:33:24.846  2668  2933 I ActivityManager: Force stopping com.leunamesoftwares.facturo.previa appid=10209 user=0: from pid 6014
+10-01 14:33:24.849  2668  2933 I ActivityManager: Killing 5114:com.leunamesoftwares.facturo.previa/u0a209 (adj 0): stop com.leunamesoftwares.facturo.previa due to from pid 6014
+10-01 14:33:24.852  2668  2933 W ActivityTaskManager: Force removing ActivityRecord{9a25094 u0 com.leunamesoftwares.facturo.previa/com.leunamesoftwares.facturo.MainActivity t7 f}}: app died, no saved state
+10-01 14:33:24.854  2881  2927 V WindowManagerShell: Transition requested (#24): android.os.BinderProxy@5b5f638 TransitionRequestInfo { type = CLOSE, triggerTask = TaskInfo{userId=0 taskId=7 displayId=0 isRunning=false baseIntent=Intent { act=android.intent.action.MAIN cat=[android.intent.category.LAUNCHER] flg=0x10200000 cmp=com.leunamesoftwares.facturo.previa/com.leunamesoftwares.facturo.MainActivity } baseActivity=null topActivity=null origActivity=null realActivity=ComponentInfo{com.leunamesoftwares.facturo.previa/com.leunamesoftwares.facturo.MainActivity} numActivities=0 lastActiveTime=78024 supportsMultiWindow=true resizeMode=1 isResizeable=true minWidth=-1 minHeight=-1 defaultMinSize=220 token=WCT{android.window.IWindowContainerToken$Stub$Proxy@6cf1611} topActivityType=1 pictureInPictureParams=null shouldDockBigOverlays=false launchIntoPipHostTaskId=-1 lastParentTaskIdBeforePip=-1 displayCutoutSafeInsets=null topActivityInfo=null launchCookies=[] positionInParent=Point(0, 0) parentTaskId=-1 isFocused=true isVisible=true isVisibleRequested=true isSleeping=false locusId=null displayAreaFeatureId=1 isTopActivityTransparent=false appCompatTaskInfo=AppCompatTaskInfo { topActivityInSizeCompat=false topActivityEligibleForLetterboxEducation= falseisLetterboxEducationEnabled= false isLetterboxDoubleTapEnabled= false topActivityEligibleForUserAspectRatioButton= false topActivityBoundsLetterboxed= false isFromLetterboxDoubleTap= false topActivityLetterboxVerticalPosition= -1 topActivityLetterboxHorizontalPosition= -1 topActivityLetterboxWidth=-1 topActivityLetterboxHeight=-1 isUserFullscreenOverrideEnabled=false isSystemFullscreenOverrideEnabled=false cameraCompatTaskInfo=CameraCompatTaskInfo { cameraCompatControlState=hidden freeformCameraCompatMode=inactive}}}, pipTask = null, remoteTransition = null, displayChange = null, flags = 0, debugId = 24 }
+10-01 14:33:24.869  2668  3092 I WindowManager: WIN DEATH: Window{f815ebc u0 com.leunamesoftwares.facturo.previa/com.leunamesoftwares.facturo.MainActivity}
+10-01 14:33:24.869  2668  3092 W InputManager-JNI: Input channel object 'f815ebc com.leunamesoftwares.facturo.previa/com.leunamesoftwares.facturo.MainActivity (client)' was disposed without first being removed with the input manager!
+10-01 14:33:24.870  2668  4388 I ImeTracker: com.leunamesoftwares.facturo.previa:d2cf8c00: onRequestHide at ORIGIN_SERVER reason HIDE_REMOVE_CLIENT fromUser false
+10-01 14:33:24.870  2668  4388 I ImeTracker: com.leunamesoftwares.facturo.previa:d2cf8c00: onCancelled at PHASE_SERVER_SHOULD_HIDE
+10-01 14:33:24.885  2668  2933 I ActivityManager: Killing 5171:com.google.android.webview:sandboxed_process0:org.chromium.content.app.SandboxedProcessService0:0/u0a209i1 (adj 0): isolated not needed
+10-01 14:33:24.924  2668  2933 I AppsFilter: interaction: PackageSetting{4992dbe com.android.microdroid.empty_payload/10201} -> PackageSetting{92b636d com.leunamesoftwares.facturo.previa/10209} BLOCKED
+10-01 14:33:24.924  2668  2691 W ActivityTaskManager: Unable to send transaction to client proc com.leunamesoftwares.facturo.previa: no app thread
+10-01 14:33:24.925  2668  3656 V ActivityManager: Got obituary of 5114:com.leunamesoftwares.facturo.previa
+10-01 14:33:24.983  2668  2835 I AppWidgetServiceImpl: Updating package stopped masked state for uid 10209 package com.leunamesoftwares.facturo.previa isStopped true
+10-01 14:33:25.000  3013  3022 W ndroid.settings: ApkAssets: Deleting an ApkAssets object '<empty> and /data/app/~~DjSNBnj-ItUXEjHTxx8X_g==/com.leunamesoftwares.facturo.previa-f3P4nrGu7tC_YoRJJo2ZTw==/base.apk' with 1 weak references
+10-01 14:33:25.035  2999  2999 D CarrierSvcBindHelper: onHandleForceStop: [com.leunamesoftwares.facturo.previa]
+10-01 14:33:25.287  2668  2687 V WindowManager: Sent Transition (#24) createdAt=10-01 14:33:24.852 via request=TransitionRequestInfo { type = CLOSE, triggerTask = TaskInfo{userId=0 taskId=7 displayId=0 isRunning=false baseIntent=Intent { act=android.intent.action.MAIN cat=[android.intent.category.LAUNCHER] flg=0x10200000 cmp=com.leunamesoftwares.facturo.previa/com.leunamesoftwares.facturo.MainActivity } baseActivity=null topActivity=null origActivity=null realActivity=ComponentInfo{com.leunamesoftwares.facturo.previa/com.leunamesoftwares.facturo.MainActivity} numActivities=0 lastActiveTime=78024 supportsMultiWindow=true resizeMode=1 isResizeable=true minWidth=-1 minHeight=-1 defaultMinSize=220 token=WCT{RemoteToken{f110812 Task{521973d #7 type=standard A=10209:com.leunamesoftwares.facturo.previa}}} topActivityType=1 pictureInPictureParams=null shouldDockBigOverlays=false launchIntoPipHostTaskId=-1 lastParentTaskIdBeforePip=-1 displayCutoutSafeInsets=null topActivityInfo=null launchCookies=[] positionInParent=Point(0, 0) parentTaskId=-1 isFocused=true isVisible=true isVisibleRequested=true isSleeping=false locusId=null displayAreaFeatureId=1 isTopActivityTransparent=false appCompatTaskInfo=AppCompatTaskInfo { topActivityInSizeCompat=false topActivityEligibleForLetterboxEducation= falseisLetterboxEducationEnabled= false isLetterboxDoubleTapEnabled= false topActivityEligibleForUserAspectRatioButton= false topActivityBoundsLetterboxed= false isFromLetterboxDoubleTap= false topActivityLetterboxVerticalPosition= -1 topActivityLetterboxHorizontalPosition= -1 topActivityLetterboxWidth=-1 topActivityLetterboxHeight=-1 isUserFullscreenOverrideEnabled=false isSystemFullscreenOverrideEnabled=false cameraCompatTaskInfo=CameraCompatTaskInfo { cameraCompatControlState=hidden freeformCameraCompatMode=inactive}}}, pipTask = null, remoteTransition = null, displayChange = null, flags = 0, debugId = 24 }
+10-01 14:33:25.291  2668  2687 V WindowManager:         {WCT{RemoteToken{f110812 Task{521973d #7 type=standard A=10209:com.leunamesoftwares.facturo.previa}}} m=CLOSE f=NONE leash=Surface(name=Task=7)/@0x197a247 sb=Rect(0, 0 - 1080, 2400) eb=Rect(0, 0 - 1080, 2400) d=0 taskParent=-1},
+10-01 14:33:25.436  2668  3961 W WindowManager: Exception thrown during dispatchAppVisibility Window{f815ebc u0 com.leunamesoftwares.facturo.previa/com.leunamesoftwares.facturo.MainActivity EXITING}
+10-01 14:33:26.293  6029  6029 W Monkey  : args: [-p, com.leunamesoftwares.facturo.previa, -c, android.intent.category.LAUNCHER, 1]
+10-01 14:33:26.293  6029  6029 W Monkey  :  arg: "com.leunamesoftwares.facturo.previa"
+10-01 14:33:26.293  6029  6029 W Monkey  : data="com.leunamesoftwares.facturo.previa"
+10-01 14:33:26.331  2668  3958 W ActivityTaskManager: callingPackage for (uid=0, pid=6029) has no WPC
+10-01 14:33:26.340  2881  2927 V WindowManagerShell: Transition requested (#25): android.os.BinderProxy@82118bd TransitionRequestInfo { type = OPEN, triggerTask = TaskInfo{userId=0 taskId=8 displayId=0 isRunning=true baseIntent=Intent { act=android.intent.action.MAIN cat=[android.intent.category.LAUNCHER] flg=0x10200000 cmp=com.leunamesoftwares.facturo.previa/com.leunamesoftwares.facturo.MainActivity } baseActivity=ComponentInfo{com.leunamesoftwares.facturo.previa/com.leunamesoftwares.facturo.MainActivity} topActivity=ComponentInfo{com.leunamesoftwares.facturo.previa/com.leunamesoftwares.facturo.MainActivity} origActivity=null realActivity=ComponentInfo{com.leunamesoftwares.facturo.previa/com.leunamesoftwares.facturo.MainActivity} numActivities=1 lastActiveTime=126997 supportsMultiWindow=true resizeMode=1 isResizeable=true minWidth=-1 minHeight=-1 defaultMinSize=220 token=WCT{android.window.IWindowContainerToken$Stub$Proxy@acf4eb2} topActivityType=1 pictureInPictureParams=null shouldDockBigOverlays=false launchIntoPipHostTaskId=-1 lastParentTaskIdBeforePip=-1 displayCutoutSafeInsets=Rect(0, 128 - 0, 0) topActivityInfo=ActivityInfo{3eaee03 com.leunamesoftwares.facturo.MainActivity} launchCookies=[] positionInParent=Point(0, 0) parentTaskId=-1 isFocused=false isVisible=false isVisibleRequested=false isSleeping=false locusId=null displayAreaFeatureId=1 isTopActivityTransparent=false appCompatTaskInfo=AppCompatTaskInfo { topActivityInSizeCompat=false topActivityEligibleForLetterboxEducation= falseisLetterboxEducationEnabled= true isLetterboxDoubleTapEnabled= false topActivityEligibleForUserAspectRatioButton= false topActivityBoundsLetterboxed= false isFromLetterboxDoubleTap= false topActivityLetterboxVerticalPosition= -1 topActivityLetterboxHorizontalPosition= -1 topActivityLetterboxWidth=1080 topActivityLetterboxHeight=2400 isUserFullscreenOverrideEnabled=false isSystemFullscreenOverrideEnabled=false cameraCompatTaskInfo=CameraCompatTaskInfo { cameraCompatControlState=hidden freeformCameraCompatMode=inactive}}}, pipTask = null, remoteTransition = null, displayChange = null, flags = 0, debugId = 25 }
+10-01 14:33:26.342  2668  3958 I ActivityTaskManager: START u0 {act=android.intent.action.MAIN cat=[android.intent.category.LAUNCHER] flg=0x10200000 cmp=com.leunamesoftwares.facturo.previa/com.leunamesoftwares.facturo.MainActivity} with LAUNCH_SINGLE_TASK from uid 0 (BAL_ALLOW_ALLOWLISTED_UID) result code=0
+10-01 14:33:26.355  2668  2740 D CoreBackPreview: Window{c038040 u0 Splash Screen com.leunamesoftwares.facturo.previa}: Setting back callback OnBackInvokedCallbackInfo{mCallback=android.window.IOnBackInvokedCallback$Stub$Proxy@6ecd51f, mPriority=0, mIsAnimationCallback=false}
+10-01 14:33:26.359  2668  2933 I AppsFilter: interaction: PackageSetting{4992dbe com.android.microdroid.empty_payload/10201} -> PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} BLOCKED
+10-01 14:33:26.361  3177  3177 I TopTaskTracker: onTaskMovedToFront: (moved taskInfo to front) taskId=8, baseIntent=Intent { act=android.intent.action.MAIN cat=[android.intent.category.LAUNCHER] flg=0x10200000 cmp=com.leunamesoftwares.facturo.previa/com.leunamesoftwares.facturo.MainActivity }
+10-01 14:33:26.373  2668  2835 I AppWidgetServiceImpl: Updating package stopped masked state for uid 10209 package com.leunamesoftwares.facturo.previa isStopped false
+10-01 14:33:26.441  2668  2687 V WindowManager: Sent Transition (#25) createdAt=10-01 14:33:26.334 via request=TransitionRequestInfo { type = OPEN, triggerTask = TaskInfo{userId=0 taskId=8 displayId=0 isRunning=true baseIntent=Intent { act=android.intent.action.MAIN cat=[android.intent.category.LAUNCHER] flg=0x10200000 cmp=com.leunamesoftwares.facturo.previa/com.leunamesoftwares.facturo.MainActivity } baseActivity=ComponentInfo{com.leunamesoftwares.facturo.previa/com.leunamesoftwares.facturo.MainActivity} topActivity=ComponentInfo{com.leunamesoftwares.facturo.previa/com.leunamesoftwares.facturo.MainActivity} origActivity=null realActivity=ComponentInfo{com.leunamesoftwares.facturo.previa/com.leunamesoftwares.facturo.MainActivity} numActivities=1 lastActiveTime=126997 supportsMultiWindow=true resizeMode=1 isResizeable=true minWidth=-1 minHeight=-1 defaultMinSize=220 token=WCT{RemoteToken{2245fb3 Task{7de8ad4 #8 type=standard A=10209:com.leunamesoftwares.facturo.previa}}} topActivityType=1 pictureInPictureParams=null shouldDockBigOverlays=false launchIntoPipHostTaskId=-1 lastParentTaskIdBeforePip=-1 displayCutoutSafeInsets=Rect(0, 128 - 0, 0) topActivityInfo=ActivityInfo{6177970 com.leunamesoftwares.facturo.MainActivity} launchCookies=[] positionInParent=Point(0, 0) parentTaskId=-1 isFocused=false isVisible=false isVisibleRequested=false isSleeping=false locusId=null displayAreaFeatureId=1 isTopActivityTransparent=false appCompatTaskInfo=AppCompatTaskInfo { topActivityInSizeCompat=false topActivityEligibleForLetterboxEducation= falseisLetterboxEducationEnabled= true isLetterboxDoubleTapEnabled= false topActivityEligibleForUserAspectRatioButton= false topActivityBoundsLetterboxed= false isFromLetterboxDoubleTap= false topActivityLetterboxVerticalPosition= -1 topActivityLetterboxHorizontalPosition= -1 topActivityLetterboxWidth=1080 topActivityLetterboxHeight=2400 isUserFullscreenOverrideEnabled=false isSystemFullscreenOverrideEnabled=false cameraCompatTaskInfo=CameraCompatTaskInfo { cameraCompatControlState=hidden freeformCameraCompatMode=inactive}}}, pipTask = null, remoteTransition = null, displayChange = null, flags = 0, debugId = 25 }
+10-01 14:33:26.441  2668  2687 V WindowManager:         {WCT{RemoteToken{2245fb3 Task{7de8ad4 #8 type=standard A=10209:com.leunamesoftwares.facturo.previa}}} m=OPEN f=NONE leash=Surface(name=Task=8)/@0xc3de6ed sb=Rect(0, 0 - 1080, 2400) eb=Rect(0, 0 - 1080, 2400) d=0 taskParent=-1},
+10-01 14:33:26.459  6045  6045 I .facturo.previa: Late-enabling -Xcheck:jni
+10-01 14:33:26.480  2668  2705 I ActivityManager: Start proc 6045:com.leunamesoftwares.facturo.previa/u0a209 for next-top-activity {com.leunamesoftwares.facturo.previa/com.leunamesoftwares.facturo.MainActivity}
+10-01 14:33:26.497  6045  6045 I .facturo.previa: Using CollectorTypeCMC GC.
+10-01 14:33:26.498  6045  6045 W .facturo.previa: Unexpected CPU variant for x86: x86_64.
+10-01 14:33:26.498  6045  6045 W .facturo.previa: Known variants: atom, sandybridge, silvermont, goldmont, goldmont-plus, goldmont-without-sha-xsaves, tremont, kabylake, default
+10-01 14:33:26.782  6045  6045 W ziparchive: Unable to open '/data/app/~~DjSNBnj-ItUXEjHTxx8X_g==/com.leunamesoftwares.facturo.previa-f3P4nrGu7tC_YoRJJo2ZTw==/base.dm': No such file or directory
+10-01 14:33:26.783  6045  6045 W ziparchive: Unable to open '/data/app/~~DjSNBnj-ItUXEjHTxx8X_g==/com.leunamesoftwares.facturo.previa-f3P4nrGu7tC_YoRJJo2ZTw==/base.dm': No such file or directory
+10-01 14:33:27.086  6045  6045 W .facturo.previa: Accessing hidden method Landroid/view/ViewGroup;->makeOptionalFitsSystemWindows()V (unsupported, reflection, allowed)
+10-01 14:33:27.099  6045  6045 W .facturo.previa: Entry not found
+10-01 14:33:27.103  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{1155147 com.android.cts.priv.ctsshim/10189} BLOCKED
+10-01 14:33:27.103  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{c3e7a83 com.google.android.youtube/10167} BLOCKED
+10-01 14:33:27.103  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{56d229d com.android.internal.display.cutout.emulation.corner/10006} BLOCKED
+10-01 14:33:27.103  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{271c312 com.android.internal.display.cutout.emulation.double/10084} BLOCKED
+10-01 14:33:27.103  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{cfe7c46 com.google.android.googlequicksearchbox/10144} BLOCKED
+10-01 14:33:27.103  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{5cbbae3 com.google.android.onetimeinitializer/10128} BLOCKED
+10-01 14:33:27.103  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{941ece0 com.google.android.ext.shared/10118} BLOCKED
+10-01 14:33:27.104  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{c7e4b99 com.android.virtualmachine.res/10200} BLOCKED
+10-01 14:33:27.104  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{e24fe5e com.android.managedprovisioning.auto_generated_rro_product__/10021} BLOCKED
+10-01 14:33:27.104  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{5f5223f com.android.carrierconfig.auto_generated_rro_vendor__/10089} BLOCKED
+10-01 14:33:27.104  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{588f70c com.google.android.server.deviceconfig.resources/10191} BLOCKED
+10-01 14:33:27.104  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{5df0855 com.android.systemui.emulation.pixel_3_xl/10043} BLOCKED
+10-01 14:33:27.104  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{b3ea26a com.android.systemui.emulation.pixel_4_xl/10068} BLOCKED
+10-01 14:33:27.104  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{723a35b com.android.systemui.emulation.pixel_fold/10038} BLOCKED
+10-01 14:33:27.104  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{95477f8 com.android.providers.telephony.auto_generated_characteristics_rro/10017} BLOCKED
+10-01 14:33:27.104  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{754d4d1 com.android.simappdialog.auto_generated_rro_product__/10009} BLOCKED
+10-01 14:33:27.104  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{29c7b36 com.android.htmlviewer/10117} BLOCKED
+10-01 14:33:27.104  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{bef1a37 com.google.android.health.connect.backuprestore/10193} BLOCKED
+10-01 14:33:27.104  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{c551ba4 com.android.systemui.auto_generated_rro_product__/10040} BLOCKED
+10-01 14:33:27.104  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{a574578 com.google.android.apps.messaging/10138} BLOCKED
+10-01 14:33:27.104  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{380ed0d com.google.android.soundpicker/10164} BLOCKED
+10-01 14:33:27.105  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{b2d14c2 com.google.android.marvin.talkbackoverlay/10085} BLOCKED
+10-01 14:33:27.105  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{e9122d3 com.google.android.configupdater/10135} BLOCKED
+10-01 14:33:27.105  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{e9a4e10 com.android.internal.emulation.pixel_3a_xl/10020} BLOCKED
+10-01 14:33:27.105  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{bdc4d09 com.android.internal.emulation.pixel_6_pro/10067} BLOCKED
+10-01 14:33:27.105  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{a3bbb0e com.android.internal.emulation.pixel_7_pro/10074} BLOCKED
+10-01 14:33:27.105  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{941192f com.android.internal.emulation.pixel_8_pro/10050} BLOCKED
+10-01 14:33:27.105  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{fbe3b3c com.android.internal.emulation.pixel_9_pro/10022} BLOCKED
+10-01 14:33:27.105  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{673b0c5 com.android.internal.emulation.pixel_3a/10015} BLOCKED
+10-01 14:33:27.105  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{c7c7a1a com.android.internal.emulation.pixel_4a/10039} BLOCKED
+10-01 14:33:27.105  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{850194b com.android.internal.emulation.pixel_6a/10083} BLOCKED
+10-01 14:33:27.105  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{cd1cf28 com.android.internal.emulation.pixel_7a/10073} BLOCKED
+10-01 14:33:27.105  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{3639441 com.android.internal.emulation.pixel_8a/10005} BLOCKED
+10-01 14:33:27.105  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{3d81de6 com.google.android.overlay.googlewebview/10047} BLOCKED
+10-01 14:33:27.105  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{c152439 com.google.android.apps.safetyhub/10129} BLOCKED
+10-01 14:33:27.105  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{204ff27 com.google.android.hotspot2.osulogin/10185} BLOCKED
+10-01 14:33:27.105  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{108b5d4 com.android.simappdialog/10122} BLOCKED
+10-01 14:33:27.105  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{e14337d com.android.internal.display.cutout.emulation.hole/10052} BLOCKED
+10-01 14:33:27.105  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{5f83272 com.android.internal.display.cutout.emulation.tall/10011} BLOCKED
+10-01 14:33:27.105  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{3866c3 com.android.internal.systemui.navbar.threebutton/10066} BLOCKED
+10-01 14:33:27.105  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{5255b40 com.android.camera2/10157} BLOCKED
+10-01 14:33:27.105  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{6358a79 com.android.internal.ranchu.commonoverlay/10054} BLOCKED
+10-01 14:33:27.105  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{79303be com.android.systemui.auto_generated_rro_vendor__/10088} BLOCKED
+10-01 14:33:27.105  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{7b0ac1f com.google.android.deskclock/10148} BLOCKED
+10-01 14:33:27.105  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{9a4eb6c com.android.internal.systemui.navbar.twobutton/10001} BLOCKED
+10-01 14:33:27.105  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{1235451 com.google.android.as/10136} BLOCKED
+10-01 14:33:27.105  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{779dca com.google.android.gm/10158} BLOCKED
+10-01 14:33:27.105  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{93deb3b com.android.compos.payload/10207} BLOCKED
+10-01 14:33:27.105  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{7ab5258 com.android.systemui.emulation.pixel_3/10036} BLOCKED
+10-01 14:33:27.105  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{f190fb1 com.android.systemui.emulation.pixel_4/10031} BLOCKED
+10-01 14:33:27.105  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{459cc96 com.android.systemui.emulation.pixel_5/10071} BLOCKED
+10-01 14:33:27.105  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{8960017 com.android.systemui.emulation.pixel_6/10044} BLOCKED
+10-01 14:33:27.105  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{4af3c04 com.android.systemui.emulation.pixel_7/10032} BLOCKED
+10-01 14:33:27.105  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{1fdf5ed com.android.systemui.emulation.pixel_8/10055} BLOCKED
+10-01 14:33:27.105  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{c5e1c22 com.android.systemui.emulation.pixel_9/10034} BLOCKED
+10-01 14:33:27.105  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{4f086b3 com.android.printspooler/10127} BLOCKED
+10-01 14:33:27.105  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{4e61470 com.google.android.connectivity.resources.goldfish.overlay/10090} BLOCKED
+10-01 14:33:27.105  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{ed103e9 com.android.dreams.basic/10113} BLOCKED
+10-01 14:33:27.105  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{d65d86e com.google.android.networkstack.tethering.emulator/10029} BLOCKED
+10-01 14:33:27.105  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{f62db0f com.android.providers.settings.auto_generated_rro_product__/10077} BLOCKED
+10-01 14:33:27.105  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{870079c com.google.android.as.oss/10130} BLOCKED
+10-01 14:33:27.105  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{8acf5a5 com.android.traceur.auto_generated_rro_product__/10028} BLOCKED
+10-01 14:33:27.105  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{71b0d7a com.android.internal.emulation.pixel_9_pro_fold/10059} BLOCKED
+10-01 14:33:27.105  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{8636d5d com.google.android.devicelockcontroller/10194} BLOCKED
+10-01 14:33:27.105  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{afc192b com.google.android.dialer/10131} BLOCKED
+10-01 14:33:27.105  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{f440188 com.android.internal.emulation.pixel_3/10014} BLOCKED
+10-01 14:33:27.105  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{f9c4721 com.android.internal.emulation.pixel_4/10061} BLOCKED
+10-01 14:33:27.105  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{7bc8746 com.android.internal.emulation.pixel_5/10058} BLOCKED
+10-01 14:33:27.105  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{2a11d07 com.android.internal.emulation.pixel_6/10023} BLOCKED
+10-01 14:33:27.105  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{fdbae34 com.android.internal.emulation.pixel_7/10030} BLOCKED
+10-01 14:33:27.105  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{fd5345d com.android.internal.emulation.pixel_8/10042} BLOCKED
+10-01 14:33:27.105  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{a9d1d2 com.android.internal.emulation.pixel_9/10056} BLOCKED
+10-01 14:33:27.105  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{a882a3 com.google.android.captiveportallogin/10119} BLOCKED
+10-01 14:33:27.105  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{c9f79a0 android.auto_generated_characteristics_rro/10053} BLOCKED
+10-01 14:33:27.105  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{8b5b959 com.google.android.appsearch.apk/10202} BLOCKED
+10-01 14:33:27.105  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{7af391e com.android.musicfx/10094} BLOCKED
+10-01 14:33:27.105  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{436a5ff com.google.android.apps.docs/10163} BLOCKED
+10-01 14:33:27.105  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{7ef71ba com.google.android.apps.maps/10153} BLOCKED
+10-01 14:33:27.105  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{4128fcc com.google.android.markup/10150} BLOCKED
+10-01 14:33:27.105  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{9616d2 com.google.android.rkpdapp/10203} BLOCKED
+10-01 14:33:27.105  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{77f9215 com.google.android.contacts/10160} BLOCKED
+10-01 14:33:27.105  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{111c92a com.android.server.telecom.auto_generated_rro_product__/10037} BLOCKED
+10-01 14:33:27.105  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{59a31b com.android.phone.auto_generated_characteristics_rro/10016} BLOCKED
+10-01 14:33:27.105  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{7bedcb8 com.google.android.overlay.googleconfig/10076} BLOCKED
+10-01 14:33:27.105  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{1d43a91 com.android.chrome/10145} BLOCKED
+10-01 14:33:27.105  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{e5b4df6 com.android.bips.auto_generated_rro_product__/10046} BLOCKED
+10-01 14:33:27.105  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{e555f7 com.google.android.apps.customization.pixel/10149} BLOCKED
+10-01 14:33:27.105  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{5e10c64 com.google.android.tag/10099} BLOCKED
+10-01 14:33:27.105  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{bf0eecd com.google.android.overlay.permissioncontroller/10063} BLOCKED
+10-01 14:33:27.105  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{de65382 com.google.android.partnersetup/10132} BLOCKED
+10-01 14:33:27.105  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{10f5a93 com.google.android.apps.wallpaper.nexus/10159} BLOCKED
+10-01 14:33:27.105  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{1d48ad0 com.google.android.apps.nexuslauncher/10179} BLOCKED
+10-01 14:33:27.105  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{6aaaac9 com.android.theme.font.notoserifsource/10049} BLOCKED
+10-01 14:33:27.105  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{72a25ce com.google.android.safetycenter.resources/10195} BLOCKED
+10-01 14:33:27.105  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{fcb0cef com.android.internal.display.cutout.emulation.waterfall/10025} BLOCKED
+10-01 14:33:27.105  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{73f83fc com.android.internal.systemui.navbar.transparent/10069} BLOCKED
+10-01 14:33:27.105  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{12a2a85 com.google.android.connectivity.resources/10197} BLOCKED
+10-01 14:33:27.105  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{fc6d0da com.android.providers.contacts.auto_generated_rro_product__/10007} BLOCKED
+10-01 14:33:27.105  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{de5890b com.google.android.feedback/10175} BLOCKED
+10-01 14:33:27.105  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{3fee3e8 com.google.android.printservice.recommendation/10121} BLOCKED
+10-01 14:33:27.105  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{a67ea01 com.google.android.apps.photos/10168} BLOCKED
+10-01 14:33:27.105  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{429ea1d com.google.android.calendar/10161} BLOCKED
+10-01 14:33:27.105  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{55120a6 com.google.android.documentsui/10096} BLOCKED
+10-01 14:33:27.105  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{1e1aae7 com.android.systemui.emulation.pixel_3a_xl/10079} BLOCKED
+10-01 14:33:27.105  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{4d25694 com.android.systemui.emulation.pixel_6_pro/10035} BLOCKED
+10-01 14:33:27.105  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{e68253d com.android.systemui.emulation.pixel_7_pro/10062} BLOCKED
+10-01 14:33:27.105  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{7dea132 com.android.systemui.emulation.pixel_8_pro/10075} BLOCKED
+10-01 14:33:27.105  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{d940e83 com.android.systemui.emulation.pixel_9_pro/10024} BLOCKED
+10-01 14:33:27.105  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{c84800 com.android.carrierconfig.auto_generated_rro_product__/10004} BLOCKED
+10-01 14:33:27.105  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{b36d839 com.android.devicediagnostics.auto_generated_rro_product__/10064} BLOCKED
+10-01 14:33:27.105  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{1519e7e com.android.providers.partnerbookmarks/10114} BLOCKED
+10-01 14:33:27.105  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{17f0fdf com.android.wallpaper.livepicker/10097} BLOCKED
+10-01 14:33:27.105  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{f69e42c com.android.providers.telephony.auto_generated_rro_product__/10033} BLOCKED
+10-01 14:33:27.105  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{9a3bef5 com.android.phone.auto_generated_rro_vendor__/10087} BLOCKED
+10-01 14:33:27.105  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{565248a com.android.imsserviceentitlement/10139} BLOCKED
+10-01 14:33:27.105  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{9eecafb com.android.internal.emulation.pixel_9_pro_xl/10010} BLOCKED
+10-01 14:33:27.105  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{5a71718 com.google.android.healthconnect.controller/10192} BLOCKED
+10-01 14:33:27.105  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{5be5571 com.android.internal.emulation.pixel_2_xl/10000} BLOCKED
+10-01 14:33:27.105  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{678ff56 com.android.internal.emulation.pixel_3_xl/10080} BLOCKED
+10-01 14:33:27.105  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{1d51bd7 com.android.internal.emulation.pixel_4_xl/10045} BLOCKED
+10-01 14:33:27.105  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{5828cc4 com.android.internal.emulation.pixel_fold/10013} BLOCKED
+10-01 14:33:27.105  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{311d7ad com.android.bookmarkprovider/10112} BLOCKED
+10-01 14:33:27.105  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{b1dbae2 com.google.android.overlay.pixelconfigcommon/10008} BLOCKED
+10-01 14:33:27.105  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{7659e73 com.android.systemui.accessibility.accessibilitymenu.auto_generated_rro_product__/10041} BLOCKED
+10-01 14:33:27.105  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{c7db130 com.android.systemui.emulation.pixel_3a/10082} BLOCKED
+10-01 14:33:27.105  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{8a141a9 com.android.systemui.emulation.pixel_4a/10048} BLOCKED
+10-01 14:33:27.105  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{60a32e com.android.systemui.emulation.pixel_6a/10078} BLOCKED
+10-01 14:33:27.105  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{e71aecf com.android.systemui.emulation.pixel_7a/10081} BLOCKED
+10-01 14:33:27.105  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{cc4b05c com.android.systemui.emulation.pixel_8a/10072} BLOCKED
+10-01 14:33:27.105  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{6440d85 com.google.android.settings.intelligence/10140} BLOCKED
+10-01 14:33:27.105  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{3cabafd com.google.android.projection.gearhead/10134} BLOCKED
+10-01 14:33:27.105  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{4d7c43a com.google.android.uwb.resources/10199} BLOCKED
+10-01 14:33:27.105  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{ef8e3f2 com.android.cts.ctsshim/10190} BLOCKED
+10-01 14:33:27.105  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{c8468eb com.google.android.wifi.resources/10184} BLOCKED
+10-01 14:33:27.105  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{d1a7648 com.google.android.wifi.dialog/10186} BLOCKED
+10-01 14:33:27.105  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{7fe7ce1 com.android.wallpaper/10177} BLOCKED
+10-01 14:33:27.106  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{4992dbe com.android.microdroid.empty_payload/10201} BLOCKED
+10-01 14:33:27.106  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{86dea06 com.google.android.apps.wallpaper/10176} BLOCKED
+10-01 14:33:27.106  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{abea8c7 com.google.android.odad/10133} BLOCKED
+10-01 14:33:27.106  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{b84aef4 com.android.settings.auto_generated_rro_product__/10060} BLOCKED
+10-01 14:33:27.106  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{985061d com.android.systemui.emulation.pixel_9_pro_xl/10027} BLOCKED
+10-01 14:33:27.106  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{ceea092 com.android.companiondevicemanager.auto_generated_characteristics_rro/10057} BLOCKED
+10-01 14:33:27.106  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{9730a63 com.android.internal.systemui.navbar.gestural/10012} BLOCKED
+10-01 14:33:27.106  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{eb7c660 com.google.android.apps.youtube.music/10154} BLOCKED
+10-01 14:33:27.106  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{f0e719 com.android.bluetoothmidiservice/10115} BLOCKED
+10-01 14:33:27.106  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{35233de com.android.storagemanager.auto_generated_rro_product__/10018} BLOCKED
+10-01 14:33:27.106  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{181e9bf com.google.android.cellbroadcastreceiver/10208} BLOCKED
+10-01 14:33:27.106  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{242e88c com.android.phone.auto_generated_rro_product__/10019} BLOCKED
+10-01 14:33:27.106  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{19fdbd5 com.android.systemui.emulation.pixel_9_pro_fold/10026} BLOCKED
+10-01 14:33:27.106  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{1c9afea android.auto_generated_rro_product__/10002} BLOCKED
+10-01 14:33:27.106  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{f7562db com.google.android.inputmethod.latin/10152} BLOCKED
+10-01 14:33:27.106  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{97c0178 android.auto_generated_rro_vendor__/10086} BLOCKED
+10-01 14:33:27.106  2668  2832 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{d0f6051 com.google.android.apps.restore/10137} BLOCKED
+10-01 14:33:27.244  2668  2705 I ActivityManager: Start proc 6074:com.google.android.webview:sandboxed_process0:org.chromium.content.app.SandboxedProcessService0:0/u0i2 for  {com.leunamesoftwares.facturo.previa/org.chromium.content.app.SandboxedProcessService0:0}
+10-01 14:33:27.345  6045  6089 E chromium: [ERROR:simple_backend_impl.cc(762)] Simple Cache Backend: cache directory inaccessible right after creation; path: /data/user/0/com.leunamesoftwares.facturo.previa/cache/WebView/Default/HTTP Cache/Code Cache/js
+10-01 14:33:27.448  6045  6045 D Capacitor: Starting BridgeActivity
+10-01 14:33:27.483  6045  6045 D Capacitor: Registering plugin instance: CapacitorCookies
+10-01 14:33:27.491  6045  6045 D Capacitor: Registering plugin instance: WebView
+10-01 14:33:27.495  6045  6045 D Capacitor: Registering plugin instance: CapacitorHttp
+10-01 14:33:27.499  6045  6045 D Capacitor: Registering plugin instance: SystemBars
+10-01 14:33:27.502  6045  6045 D Capacitor: Registering plugin instance: App
+10-01 14:33:27.508  6045  6045 D Capacitor: Registering plugin instance: Filesystem
+10-01 14:33:27.511  6045  6045 D Capacitor: Registering plugin instance: Share
+10-01 14:33:27.536  6045  6045 W Capacitor: Unable to read file at path public/plugins
+10-01 14:33:27.548  6045  6045 D Capacitor: Loading app at https://localhost
+10-01 14:33:27.593  6045  6045 D Capacitor: App started
+10-01 14:33:27.604  6045  6045 D Capacitor/AppPlugin: Firing change: true
+10-01 14:33:27.604  6045  6045 V Capacitor/AppPlugin: Notifying listeners for event appStateChange
+10-01 14:33:27.607  6045  6045 D Capacitor/AppPlugin: No listeners found for event appStateChange
+10-01 14:33:27.609  6045  6045 D Capacitor: App resumed
+10-01 14:33:27.661  6045  6086 D Capacitor: Handling local request: https://localhost/
+10-01 14:33:27.725  2668  3958 D CoreBackPreview: Window{3bba598 u0 com.leunamesoftwares.facturo.previa/com.leunamesoftwares.facturo.MainActivity}: Setting back callback OnBackInvokedCallbackInfo{mCallback=android.window.IOnBackInvokedCallback$Stub$Proxy@25caeba, mPriority=0, mIsAnimationCallback=false}
+10-01 14:33:27.777  6045  6084 D Capacitor: Handling local request: https://localhost/assets/index-B9u6sLwy.js
+10-01 14:33:27.821  6045  6085 D Capacitor: Handling local request: https://localhost/assets/index-CGc6subW.css
+10-01 14:33:27.896  6045  6049 I .facturo.previa: Compiler allocated 5174KB to compile void android.view.ViewRootImpl.performTraversals()
+10-01 14:33:27.994  2668  2687 W ziparchive: Unable to open '/data/app/~~DjSNBnj-ItUXEjHTxx8X_g==/com.leunamesoftwares.facturo.previa-f3P4nrGu7tC_YoRJJo2ZTw==/base.dm': No such file or directory
+10-01 14:33:27.995  2668  2687 I ActivityTaskManager: Displayed com.leunamesoftwares.facturo.previa/com.leunamesoftwares.facturo.MainActivity for user 0: +1s663ms
+10-01 14:33:28.092  2668  3958 D CoreBackPreview: Window{c038040 u0 Splash Screen com.leunamesoftwares.facturo.previa EXITING}: Setting back callback null
+10-01 14:33:28.093  2668  3958 W InputManager-JNI: Input channel object 'c038040 Splash Screen com.leunamesoftwares.facturo.previa (client)' was disposed without first being removed with the input manager!
+10-01 14:33:28.104  2668  2776 I ImeTracker: com.leunamesoftwares.facturo.previa:de3e9f8a: onRequestHide at ORIGIN_SERVER reason HIDE_UNSPECIFIED_WINDOW fromUser false
+10-01 14:33:28.104  2668  2776 I ImeTracker: com.leunamesoftwares.facturo.previa:de3e9f8a: onCancelled at PHASE_SERVER_SHOULD_HIDE
+10-01 14:33:28.154  3309  3309 I GoogleInputMethodService: GoogleInputMethodService.onStartInput():1986 onStartInput(EditorInfo{EditorInfo{packageName=com.leunamesoftwares.facturo.previa, inputType=0, inputTypeString=NULL, enableLearning=false, autoCorrection=false, autoComplete=false, imeOptions=12000000, privateImeOptions=null, actionName=UNSPECIFIED, actionLabel=null, initialSelStart=-1, initialSelEnd=-1, initialCapsMode=0, label=null, fieldId=0, fieldName=null, extras=null, hintText=null, hintLocales=[]}}, false)
+10-01 14:33:28.160  2668  3656 W PackageConfigPersister: App-specific configuration not found for packageName: com.leunamesoftwares.facturo.previa and userId: 0
+10-01 14:33:28.669  6045  6085 W .facturo.previa: Long monitor contention with owner ThreadPoolForeg (6084) at java.lang.Object libcore.content.type.MimeMap$MemoizingSupplier.get()(MimeMap.java:475) waiters=0 in java.lang.Object libcore.content.type.MimeMap$MemoizingSupplier.get() for 806ms
+10-01 14:33:28.749  6045  6045 I Capacitor/Console: File:  - Line 349 - Msg: [object Object]
+10-01 14:33:28.751  6045  6045 V Capacitor/Plugin: To native (Capacitor plugin): callbackId: 49374149, pluginId: App, methodName: addListener
+10-01 14:33:28.751  6045  6045 V Capacitor: callback: 49374149, pluginId: App, methodName: addListener, methodData: {"eventName":"backButton"}
+10-01 14:33:28.752  6045  6082 D Capacitor: Handling local request: https://localhost/icone.png
+10-01 14:33:32.915  6045  6140 D ProfileInstaller: Installing profile for com.leunamesoftwares.facturo.previa
+10-01 14:33:42.690  3309  3309 I GoogleInputMethodService: GoogleInputMethodService.onStartInput():1986 onStartInput(EditorInfo{EditorInfo{packageName=com.leunamesoftwares.facturo.previa, inputType=c0a1, inputTypeString=WebEditText, enableLearning=true, autoCorrection=true, autoComplete=true, imeOptions=12000002, privateImeOptions=null, actionName=GO, actionLabel=null, initialSelStart=0, initialSelEnd=0, initialCapsMode=0, label=null, fieldId=2131230914, fieldName=null, extras=null, hintText=null, hintLocales=[]}}, true)
+10-01 14:33:42.690  6045  6045 I ImeTracker: com.leunamesoftwares.facturo.previa:24f9eaac: onRequestShow at ORIGIN_CLIENT reason SHOW_SOFT_INPUT fromUser false
+10-01 14:33:42.691  2668  2832 W PackageConfigPersister: App-specific configuration not found for packageName: com.leunamesoftwares.facturo.previa and userId: 0
+10-01 14:33:42.691  6045  6045 D InputMethodManager: showSoftInput() view=com.getcapacitor.CapacitorWebView{beb776b VFEDHVC.. .F...... 0,0-1080,2209 #7f0800c2 app:id/webview aid=1073741824} flags=0 reason=SHOW_SOFT_INPUT
+10-01 14:33:42.694  2668  3647 I AppsFilter: interaction: PackageSetting{c0606c com.leunamesoftwares.facturo.previa/10209} -> PackageSetting{f7562db com.google.android.inputmethod.latin/10152} BLOCKED
+10-01 14:33:42.694  3309  3309 I GoogleInputMethodService: GoogleInputMethodService.onStartInputView():2098 onStartInputView(EditorInfo{EditorInfo{packageName=com.leunamesoftwares.facturo.previa, inputType=c0a1, inputTypeString=WebEditText, enableLearning=true, autoCorrection=true, autoComplete=true, imeOptions=12000002, privateImeOptions=null, actionName=GO, actionLabel=null, initialSelStart=0, initialSelEnd=0, initialCapsMode=0, label=null, fieldId=2131230914, fieldName=null, extras=null, hintText=null, hintLocales=[]}}, false)
+10-01 14:33:42.698  2668  3647 D ContentCapturePerUserService: Notified activity assist data for activity: Token{c05e47d ActivityRecord{be90827 u0 com.leunamesoftwares.facturo.previa/com.leunamesoftwares.facturo.MainActivity t8}} without a session Id
+10-01 14:33:42.705  3309  3309 I AndroidIME: AbstractIme.onActivate():89 LatinIme.onActivate() : EditorInfo = EditorInfo{packageName=com.leunamesoftwares.facturo.previa, inputType=c0a1, inputTypeString=WebEditText, enableLearning=true, autoCorrection=true, autoComplete=true, imeOptions=12000002, privateImeOptions=null, actionName=GO, actionLabel=null, initialSelStart=0, initialSelEnd=0, initialCapsMode=0, label=null, fieldId=2131230914, fieldName=null, extras=null, hintText=null, hintLocales=[]}, IncognitoMode = false, DeviceLocked = false
+10-01 14:33:42.875  6045  6050 I .facturo.previa: Background concurrent mark compact GC freed 4714KB AllocSpace bytes, 29(1044KB) LOS objects, 49% free, 4225KB/8451KB, paused 524us,14.337ms total 189.286ms
+10-01 14:33:42.914  6045  6052 W .facturo.previa: ApkAssets: Deleting an ApkAssets object '<empty> and /data/app/~~kIB7zsw4QnzVCh774BnUng==/com.google.android.webview-5Fd9oPIm54Sl5mzwXeVN5A==/WebViewGoogle.apk' with 2 weak references
+10-01 14:33:43.579  6045  6221 W InteractionJankMonitor: Initializing without READ_DEVICE_CONFIG permission. enabled=true, interval=1, missedFrameThreshold=3, frameTimeThreshold=64, package=com.leunamesoftwares.facturo.previa
+10-01 14:33:43.859  6045  6045 I ImeTracker: com.leunamesoftwares.facturo.previa:24f9eaac: onShown
 ===== TEXTOS NA TELA =====
-===== FALHAS:  Pintor Começar Novo orçamento =====
+grep: resultado/tela.xml: No such file or directory
+===== FALHAS: nenhuma =====
