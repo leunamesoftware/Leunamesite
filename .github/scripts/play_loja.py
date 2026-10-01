@@ -46,8 +46,11 @@ for kind in ("icon", "featureGraphic", "phoneScreenshots"):
                       data=fh.read(), headers={"Content-Type": "image/png"}))
         print("imagem enviada:", kind, f)
 
-r = s.post(f"{api}/edits/{edit}:commit")
-if r.status_code >= 300 and "changesNotSentForReview" in r.text:
-    r = s.post(f"{api}/edits/{edit}:commit?changesNotSentForReview=true")
+# Publicação gerenciada: as mudanças ficam prontas no Play Console e o dono toca em "Enviar para revisão".
+# Se a conta não exigir isso, o Google recusa o parâmetro e enviamos direto.
+r = s.post(f"{api}/edits/{edit}:commit?changesNotSentForReview=true")
+if r.status_code >= 300 and r.status_code != 403:
+    print("Commit sem envio para revisão recusado, tentando o envio direto:", r.status_code)
+    r = s.post(f"{api}/edits/{edit}:commit")
 ok(r)
-print("Página da loja atualizada:", pkg)
+print("Página da loja atualizada:", pkg, "(confira em Visão geral da publicação → Enviar para revisão)")
