@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import type { Me, MyClass, SessionInfo } from '../../../../shared/contracts.js';
+import type { Me, MyClass, MyStats, SessionInfo } from '../../../../shared/contracts.js';
 import type { Deps } from '../../common/env.js';
 import { AppError, errors } from '../../common/errors.js';
 import { hashPassword, verifyPassword } from '../../common/security.js';
@@ -17,6 +17,7 @@ const profileSchema = z.object({
   countryCode: countrySchema.optional(),
   languageCode: languageSchema.optional(),
   timezone: timezoneSchema.optional(),
+  interests: z.array(z.string().trim().min(1).max(40)).max(20, 'too_many').optional(),
 });
 const passwordChangeSchema = z.object({ currentPassword: z.string().min(1, 'required'), newPassword: passwordSchema });
 
@@ -29,7 +30,12 @@ export async function updateProfile(deps: Deps, me: Me, input: unknown): Promise
   if (d.countryCode && !(await deps.db.one('SELECT 1 FROM countries WHERE code = ? AND is_active = 1', [d.countryCode]))) {
     throw errors.invalid({ countryCode: 'invalid_option' });
   }
+  if (d.interests?.length) {
+    const known = new Set((await deps.db.all<{ id: string }>('SELECT id FROM categories WHERE is_active = 1')).map((c) => c.id));
+    if (d.interests.some((i) => !known.has(i))) throw errors.invalid({ interests: 'invalid_option' });
+  }
   const now = deps.clock.now().toISOString();
+  if (d.interests) await deps.db.run('UPDATE users SET interests = ? WHERE id = ?', [JSON.stringify([...new Set(d.interests)]), me.id]);
   await deps.db.run(
     `UPDATE users SET display_name = COALESCE(?, display_name), country_code = COALESCE(?, country_code),
        language_code = COALESCE(?, language_code), timezone = COALESCE(?, timezone), updated_at = ? WHERE id = ?`,
@@ -122,4 +128,17 @@ export async function myClasses(deps: Deps, me: Me): Promise<MyClass[]> {
     const c = courses.find((x) => x.id === k.courseId)!;
     return { ...k, courseTitle: c.title, coverUrl: publicUrl(c.cover_key), instructor: minis.get(c.instructor_id)! };
   });
+}
+
+/** Numbers at the top of the profile. Every count comes from real enrolments and certificates. */
+export async function myStats(deps: Deps, me: Me): Promise<MyStats> {
+  const now = deps.clock.now().toISOString();
+  const n = async (sql: string, p: (string | number)[]) => Number((await deps.db.one<{ n: number }>(sql, p))?.n ?? 0);
+  return {
+    completedClasses: await n(`SELECT COUNT(*) AS n FROM enrollments e JOIN class_sessions cs ON cs.id = e.class_session_id
+      WHERE e.student_id = ? AND e.status IN ('confirmed', 'completed') AND cs.status != 'canceled' AND cs.ends_at <= ?`, [me.id, now]),
+    certificates: await n(`SELECT COUNT(*) AS n FROM certificates WHERE student_id = ? AND revoked_at IS NULL`, [me.id]),
+    inProgress: await n(`SELECT COUNT(*) AS n FROM enrollments e JOIN class_sessions cs ON cs.id = e.class_session_id
+      WHERE e.student_id = ? AND e.status = 'confirmed' AND cs.status != 'canceled' AND cs.starts_at <= ? AND cs.ends_at > ?`, [me.id, now, now]),
+  };
 }

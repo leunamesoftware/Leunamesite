@@ -626,3 +626,25 @@ button, input, select { font: inherit; color: inherit; }
 .progress small { color: var(--ink-2); font-size: 13px; }
 .btn-blue-solid { background: var(--blue-700); color: var(--white); }
 .btn-small:disabled { opacity: 0.55; cursor: default; }
+.profile-card { display: flex; flex-direction: column; gap: 14px; }
+@media (min-width: 760px) { .profile-card { flex-direction: row; align-items: center; justify-content: space-between; } }
+.stats { display: grid; grid-template-columns: repeat(3, 1fr); margin: 0; background: rgba(255, 255, 255, 0.12); border-radius: 18px; padding: 12px 6px; }
+.stats > div { display: flex; flex-direction: column-reverse; align-items: center; text-align: center; gap: 2px; padding: 0 6px; }
+.stats > div + div { border-left: 1px solid rgba(255, 255, 255, 0.25); }
+.stats dd { margin: 0; font-family: var(--display); font-weight: 700; font-size: 28px; line-height: 1; }
+.stats dt { font-size: 13px; color: rgba(255, 255, 255, 0.88); line-height: 1.2; }
+.list-panel { gap: 0; padding-bottom: 8px; }
+.list-panel h2 { margin-bottom: 6px; }
+.info-row { display: grid; grid-template-columns: 24px 1fr auto; gap: 14px; align-items: center; padding: 12px 2px; border-top: 1px solid var(--line); }
+.info-row svg { color: var(--blue-800); }
+.info-row span { color: var(--ink-2); }
+.info-row strong { font-weight: 500; text-align: right; overflow-wrap: anywhere; max-width: 60vw; }
+.link-row span { display: flex; flex-direction: column; }
+.link-row b { font-weight: 600; }
+.link-row small { color: var(--ink-2); font-size: 13px; font-weight: 400; }
+.link-danger, .link-danger svg:first-child { color: var(--danger) !important; }
+.interest-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+.interest { display: inline-flex; align-items: center; gap: 8px; height: 42px; padding: 0 14px; border-radius: 999px; border: 1.5px solid var(--line); background: var(--white); color: var(--ink); font-weight: 500; cursor: pointer; }
+.interest svg { color: var(--blue-700); }
+.interest-on { background: var(--blue-700); border-color: var(--blue-700); color: var(--white); }
+.interest-on svg { color: var(--white); }

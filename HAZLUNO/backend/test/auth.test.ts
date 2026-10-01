@@ -144,6 +144,14 @@ describe('account', () => {
     expect((await t.call('GET', '/api/me', { token: marco })).status).toBe(200);
   });
 
+  it('saves areas of interest (only real categories) and shows real counters', async () => {
+    const token = (await signup()).json.data.token;
+    const r = await t.call<Me>('PATCH', '/api/me', { token, body: { interests: ['art', 'music', 'art'] } });
+    expect(r.json.data.interests).toEqual(['art', 'music']);
+    expect((await t.call('PATCH', '/api/me', { token, body: { interests: ['astrology'] } })).json.fields).toEqual({ interests: 'invalid_option' });
+    expect((await t.call('GET', '/api/me/stats', { token })).json.data).toEqual({ completedClasses: 0, certificates: 0, inProgress: 0 });
+  });
+
   it('a student can apply to teach later', async () => {
     const token = (await signup()).json.data.token;
     const r = await t.call<Me>('POST', '/api/me/instructor', { token });

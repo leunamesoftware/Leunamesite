@@ -2,7 +2,7 @@ import { Hono } from 'hono';
 import type { AppEnv, Deps } from '../../common/env.js';
 import { readJson } from '../../common/validation.js';
 import { requestMeta } from '../auth/routes.js';
-import { becomeInstructor, changePassword, listFavorites, listSessions, myClasses, revokeSession, setAvatar, setFavorite, updateProfile } from './service.js';
+import { becomeInstructor, changePassword, listFavorites, listSessions, myClasses, myStats, revokeSession, setAvatar, setFavorite, updateProfile } from './service.js';
 
 export function accountRoutes(deps: Deps) {
   const r = new Hono<AppEnv>();
@@ -22,6 +22,7 @@ export function accountRoutes(deps: Deps) {
   r.get('/favorites', async (c) => c.json({ ok: true, data: await listFavorites(deps, c.get('me')) }));
   r.put('/favorites/:courseId', async (c) => { await setFavorite(deps, c.get('me'), c.req.param('courseId'), true); return c.json({ ok: true, data: null }); });
   r.delete('/favorites/:courseId', async (c) => { await setFavorite(deps, c.get('me'), c.req.param('courseId'), false); return c.json({ ok: true, data: null }); });
+  r.get('/stats', async (c) => c.json({ ok: true, data: await myStats(deps, c.get('me')) }));
   r.get('/classes', async (c) => c.json({ ok: true, data: await myClasses(deps, c.get('me')) }));
   return r;
 }

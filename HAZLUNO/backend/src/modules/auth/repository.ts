@@ -1,10 +1,11 @@
 import type { InstructorVerification, LanguageCode, Me, Role } from '../../../../shared/contracts.js';
 import type { Db } from '../../infra/db/types.js';
+import { parseJsonList } from '../../common/sql.js';
 
 export interface UserRow {
   id: string; email: string; password_hash: string | null; display_name: string; country_code: string;
   language_code: LanguageCode; timezone: string; status: 'active' | 'suspended' | 'deleted';
-  email_verified_at: string | null; avatar_key: string | null; created_at: string; updated_at: string;
+  email_verified_at: string | null; avatar_key: string | null; interests: string; created_at: string; updated_at: string;
 }
 
 export const authRepo = {
@@ -19,6 +20,7 @@ export const authRepo = {
       id: u.id, email: u.email, displayName: u.display_name, countryCode: u.country_code, languageCode: u.language_code,
       timezone: u.timezone, roles, instructor: ip ? { verificationStatus: ip.verification_status } : null,
       avatarUrl: u.avatar_key ? `/api/files/${u.avatar_key}` : null,
+      interests: parseJsonList(u.interests),
       emailVerified: !!u.email_verified_at, createdAt: u.created_at,
     };
   },

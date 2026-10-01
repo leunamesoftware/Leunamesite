@@ -1,6 +1,6 @@
 import type {
   AdminInstructorRow, AgendaItem, ApiResponse, Category, ClassInput, ClassSummary, CourseCard, CourseDetail, CourseInput, ExploreQuery, ExploreResult,
-  InstructorCourse, InstructorProfile, InstructorPublic, LanguageCode, Me, MyClass, PublicConfig, SessionCreated, SessionInfo,
+  InstructorCourse, InstructorProfile, InstructorPublic, LanguageCode, Me, MyClass, MyStats, PublicConfig, SessionCreated, SessionInfo,
 } from '../../shared/contracts';
 
 const TOKEN_KEY = 'hazluno.token';
@@ -53,7 +53,9 @@ export const api = {
   login: (email: string, password: string) => request<SessionCreated>('POST', '/auth/login', { email, password }),
   logout: () => request<null>('POST', '/auth/logout'),
   me: () => request<Me>('GET', '/me'),
-  updateMe: (body: Partial<Pick<Me, 'displayName' | 'countryCode' | 'languageCode' | 'timezone'>>) => request<Me>('PATCH', '/me', body),
+  updateMe: (body: Partial<Pick<Me, 'displayName' | 'countryCode' | 'languageCode' | 'timezone' | 'interests'>>) => request<Me>('PATCH', '/me', body),
+  stats: () => request<MyStats>('GET', '/me/stats'),
+  changePassword: (currentPassword: string, newPassword: string) => request<null>('POST', '/me/password', { currentPassword, newPassword }),
   uploadAvatar: (file: File) => request<Me>('POST', '/me/avatar', formWith(file)),
   sessions: () => request<SessionInfo[]>('GET', '/me/sessions'),
   revokeSession: (id: string) => request<null>('DELETE', `/me/sessions/${id}`),

@@ -55,8 +55,16 @@ export interface Me {
   roles: Role[];
   instructor: { verificationStatus: InstructorVerification } | null;
   avatarUrl: string | null;
+  /** Category ids the user likes (profile → areas of interest). */
+  interests: string[];
   emailVerified: boolean;
   createdAt: string;
+}
+
+export interface MyStats {
+  completedClasses: number;
+  certificates: number;
+  inProgress: number;
 }
 
 export interface SessionCreated {
