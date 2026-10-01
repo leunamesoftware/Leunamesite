@@ -11,10 +11,10 @@
 
 ## Códigos dos apps (o dono chama por B1, B2, B3…)
 
-| Código | App | Pacote | Situação |
-|---|---|---|---|
-| B1 | Gestacell | com.leunamesoftwares.gestacell | Produção 1.0.4 em análise; 1.0.5 (teste de 7 dias) pronta para subir depois da aprovação |
-| B2 | Radar Preventivo | com.radarpreventivo.app | Teste interno (não lançar até o dono dizer "liberado") |
+| Código | App | Pacote | Situação | Código do app é de |
+|---|---|---|---|---|
+| B1 | Gestacell | com.leunamesoftwares.gestacell | Produção 1.0.4 em análise; 1.0.5 (teste de 7 dias) pronta para subir depois da aprovação | Cloud 1 |
+| B2 | Radar Preventivo | com.radarpreventivo.app | Teste interno (não lançar até o dono dizer "liberado") | Cloud 1 |
 
 ## Divisão de trabalho (acordo Cloud 1 × Cloud 2)
 
@@ -24,3 +24,4 @@
 - Comunicação: issues no GitHub com etiqueta `cloud1` ou `cloud2`.
 - Backups: `backup-bancos-d1.yml` (diário, 30 dias). Monitoramento: `monitoramento.yml` (de hora em hora, abre/fecha issue `cloud2`).
 - LeuCloud fica fora de backup/monitoramento/publicação por decisão do dono. EconoRota é de cliente: publicar só com ok do dono.
+- **Apps novos:** o dono decide quem cria cada um. Quem cria fica marcado na coluna "Código do app é de" e o outro não mexe no código dele (só revisa e avisa por issue).
