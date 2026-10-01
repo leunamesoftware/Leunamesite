@@ -25,6 +25,7 @@ import { GroupForm } from './screens/teacher/GroupForm';
 import { TeachAgenda } from './screens/teacher/TeachAgenda';
 import { TeachHome } from './screens/teacher/TeachHome';
 import { TeachProfile } from './screens/teacher/TeachProfile';
+import { TeachStudents } from './screens/teacher/TeachStudents';
 import { SessionProvider, useSession } from './state/session';
 import './styles.css';
 
@@ -66,6 +67,7 @@ createRoot(document.getElementById('root')!).render(
             <Route path="/profile" element={<OnlySignedIn><Profile /></OnlySignedIn>} />
             <Route path="/teach" element={<OnlyRole roles={['instructor']}><TeachHome /></OnlyRole>} />
             <Route path="/teach/profile" element={<OnlyRole roles={['instructor']}><TeachProfile /></OnlyRole>} />
+            <Route path="/teach/students" element={<OnlyRole roles={['instructor']}><TeachStudents /></OnlyRole>} />
             <Route path="/teach/agenda" element={<OnlyRole roles={['instructor']}><TeachAgenda /></OnlyRole>} />
             <Route path="/teach/courses/new" element={<OnlyRole roles={['instructor']}><CourseEditor /></OnlyRole>} />
             <Route path="/teach/courses/:id" element={<OnlyRole roles={['instructor']}><CourseEditor /></OnlyRole>} />

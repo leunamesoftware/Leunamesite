@@ -1,4 +1,4 @@
-import type { ClassSummary, InstructorCourse, InstructorProfile, Me, AgendaItem } from '../../../../shared/contracts.js';
+import type { ClassSummary, InstructorCourse, InstructorProfile, Me, AgendaItem, MyStudent, StudentState } from '../../../../shared/contracts.js';
 import type { Deps } from '../../common/env.js';
 import { AppError, errors } from '../../common/errors.js';
 import { newId } from '../../common/security.js';
@@ -9,7 +9,7 @@ import { authRepo } from '../auth/repository.js';
 import type { RequestMeta } from '../auth/service.js';
 import { loadClasses } from '../explore/queries.js';
 import { publicUrl, storeImage } from '../files/images.js';
-import { classSchema, courseSchema, instructorProfileSchema } from './schemas.js';
+import { classSchema, courseSchema, instructorProfileSchema, reportSchema, studentNoteSchema } from './schemas.js';
 
 const MIN_MEETING_MIN = 15;
 const MAX_MEETING_MIN = 8 * 60;
@@ -342,3 +342,69 @@ export async function agenda(deps: Deps, me: Me, from: string | undefined, to: s
     start: r.start, end: r.end, classStatus: r.status, seatsTaken: r.seats_taken, capacity: r.capacity }));
 }
 
+
+// ---------- students ("Mis alumnos") ----------
+
+const STATE: Record<string, StudentState> = {
+  confirmed: 'active', pending_payment: 'pending', completed: 'completed',
+  canceled_by_student: 'inactive', canceled_by_instructor: 'inactive', canceled_by_platform: 'inactive', expired: 'inactive', no_show: 'inactive',
+};
+
+/** Everyone who enrolled in the teacher's groups. Progress = live meetings attended, not videos watched. */
+export async function listStudents(deps: Deps, me: Me): Promise<MyStudent[]> {
+  const rows = await deps.db.all<{ enrollment_id: string; student_id: string; name: string; avatar_key: string | null; language_code: MyStudent['languageCode'];
+    course_id: string; title: string; class_id: string; label: string | null; starts_at: string; status: string; created_at: string;
+    total: number; done: number; attended: number; last_meeting: string | null; note: string | null }>(
+    `SELECT e.id AS enrollment_id, u.id AS student_id, u.display_name AS name, u.avatar_key, u.language_code,
+            c.id AS course_id, c.title, cs.id AS class_id, cs.label, cs.starts_at, e.status, e.created_at,
+            (SELECT COUNT(*) FROM live_sessions ls WHERE ls.class_session_id = cs.id AND ls.status != 'canceled') AS total,
+            (SELECT COUNT(*) FROM live_sessions ls WHERE ls.class_session_id = cs.id AND ls.status = 'ended') AS done,
+            (SELECT COUNT(*) FROM attendances a JOIN live_sessions ls ON ls.id = a.live_session_id
+               WHERE ls.class_session_id = cs.id AND a.user_id = u.id) AS attended,
+            (SELECT MAX(ls.scheduled_start) FROM live_sessions ls WHERE ls.class_session_id = cs.id AND ls.status = 'ended') AS last_meeting,
+            n.note
+     FROM enrollments e
+     JOIN class_sessions cs ON cs.id = e.class_session_id
+     JOIN courses c ON c.id = cs.course_id
+     JOIN users u ON u.id = e.student_id
+     LEFT JOIN instructor_student_notes n ON n.instructor_id = cs.instructor_id AND n.student_id = u.id
+     WHERE cs.instructor_id = ? AND u.status != 'deleted'
+     ORDER BY e.created_at DESC`, [me.id]);
+  return rows.map((r) => ({
+    enrollmentId: r.enrollment_id, studentId: r.student_id, name: r.name, avatarUrl: r.avatar_key ? `/api/files/${r.avatar_key}` : null,
+    languageCode: r.language_code, courseId: r.course_id, courseTitle: r.title, classId: r.class_id, classLabel: r.label, classStartsAt: r.starts_at,
+    state: STATE[r.status] ?? 'inactive', enrolledAt: r.created_at, meetingsTotal: r.total, meetingsDone: r.done, meetingsAttended: r.attended,
+    lastMeetingAt: r.last_meeting, note: r.note,
+  }));
+}
+
+/** A teacher only acts on people who enrolled in one of their groups. */
+async function ownStudent(deps: Deps, me: Me, studentId: string) {
+  const row = await deps.db.one(
+    `SELECT 1 FROM enrollments e JOIN class_sessions cs ON cs.id = e.class_session_id WHERE cs.instructor_id = ? AND e.student_id = ?`, [me.id, studentId]);
+  if (!row) throw errors.notFound('Student');
+}
+
+export async function saveStudentNote(deps: Deps, me: Me, studentId: string, input: unknown) {
+  await ownStudent(deps, me, studentId);
+  const { note } = parse(studentNoteSchema, input);
+  if (!note) await deps.db.run('DELETE FROM instructor_student_notes WHERE instructor_id = ? AND student_id = ?', [me.id, studentId]);
+  else await deps.db.run(
+    `INSERT INTO instructor_student_notes (instructor_id, student_id, note, updated_at) VALUES (?, ?, ?, ?)
+     ON CONFLICT (instructor_id, student_id) DO UPDATE SET note = excluded.note, updated_at = excluded.updated_at`,
+    [me.id, studentId, note, deps.clock.now().toISOString()]);
+  return { note: note || null };
+}
+
+/** Teachers cannot remove a student who paid (refunds): they report to the team, who decides. */
+export async function reportStudent(deps: Deps, me: Me, studentId: string, input: unknown, meta: RequestMeta) {
+  await ownStudent(deps, me, studentId);
+  const d = parse(reportSchema, input);
+  const id = newId();
+  await deps.db.batch([
+    { sql: `INSERT INTO reports (id, reporter_id, target_type, target_id, reason, details, status, created_at) VALUES (?, ?, 'user', ?, ?, ?, 'open', ?)`,
+      params: [id, me.id, studentId, d.reason, d.details, deps.clock.now().toISOString()] },
+    auditStatement(deps, { actorId: me.id, action: 'student.reported', targetType: 'user', targetId: studentId, ipHash: meta.ipHash, userAgent: meta.userAgent }),
+  ]);
+  return { id };
+}

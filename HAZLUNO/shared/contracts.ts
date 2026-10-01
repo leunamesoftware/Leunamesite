@@ -321,3 +321,26 @@ export interface AdminInstructorRow {
   city: string | null;
   submittedAt: string;
 }
+
+/** "Mis alumnos": one enrollment in one of the teacher's groups. No e-mail: contact stays inside the platform. */
+export type StudentState = 'active' | 'pending' | 'completed' | 'inactive';
+export interface MyStudent {
+  enrollmentId: string;
+  studentId: string;
+  name: string;
+  avatarUrl: string | null;
+  languageCode: LanguageCode;
+  courseId: string;
+  courseTitle: string;
+  classId: string;
+  classLabel: string | null;
+  classStartsAt: string;
+  state: StudentState;
+  enrolledAt: string;
+  meetingsTotal: number;
+  meetingsDone: number;
+  meetingsAttended: number;
+  lastMeetingAt: string | null;
+  note: string | null;
+}
+export type ReportReason = 'spam' | 'harassment' | 'inappropriate' | 'fraud' | 'safety' | 'other';

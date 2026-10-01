@@ -32,6 +32,10 @@ export function instructorRoutes(deps: Deps) {
   });
   r.delete('/classes/:id', async (c) => { await s.deleteDraftClass(deps, c.get('me'), c.req.param('id')); return c.json(ok(null)); });
 
+  r.get('/students', async (c) => c.json(ok(await s.listStudents(deps, c.get('me')))));
+  r.put('/students/:id/note', async (c) => c.json(ok(await s.saveStudentNote(deps, c.get('me'), c.req.param('id'), await readJson(c.req.raw)))));
+  r.post('/students/:id/report', async (c) => c.json(ok(await s.reportStudent(deps, c.get('me'), c.req.param('id'), await readJson(c.req.raw), await requestMeta(deps, c))), 201));
+
   r.get('/agenda', async (c) => c.json(ok(await s.agenda(deps, c.get('me'), c.req.query('from'), c.req.query('to')))));
   return r;
 }

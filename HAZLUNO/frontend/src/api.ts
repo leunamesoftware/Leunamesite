@@ -1,6 +1,6 @@
 import type {
   AdminInstructorRow, AgendaItem, ApiResponse, Category, ClassInput, ClassSummary, CourseCard, CourseDetail, CourseInput, ExploreQuery, ExploreResult,
-  InstructorCourse, InstructorProfile, InstructorPublic, LanguageCode, Me, MyClass, MyStats, PublicConfig, SessionCreated, SessionInfo,
+  InstructorCourse, InstructorProfile, InstructorPublic, LanguageCode, Me, MyStudent, ReportReason, MyClass, MyStats, PublicConfig, SessionCreated, SessionInfo,
 } from '../../shared/contracts';
 
 const TOKEN_KEY = 'hazluno.token';
@@ -87,6 +87,9 @@ export const api = {
     cancelClass: (id: string, reason: string) => request<ClassSummary>('POST', `/instructor/classes/${id}/cancel`, { reason }),
     deleteClass: (id: string) => request<null>('DELETE', `/instructor/classes/${id}`),
     agenda: () => request<AgendaItem[]>('GET', '/instructor/agenda'),
+    students: () => request<MyStudent[]>('GET', '/instructor/students'),
+    saveStudentNote: (id: string, note: string) => request<{ note: string | null }>('PUT', `/instructor/students/${id}/note`, { note }),
+    reportStudent: (id: string, reason: ReportReason, details: string) => request<{ id: string }>('POST', `/instructor/students/${id}/report`, { reason, details }),
   },
 
   admin: {

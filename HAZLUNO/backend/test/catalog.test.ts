@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import type {
-  AgendaItem, ClassSummary, CourseCard, CourseDetail, ExploreResult, InstructorCourse, InstructorProfile, InstructorPublic, Me, SessionCreated,
+  AgendaItem, ClassSummary, CourseCard, CourseDetail, ExploreResult, InstructorCourse, InstructorProfile, InstructorPublic, Me, MyStudent, SessionCreated,
 } from '../../shared/contracts.js';
 import { setup, validSignup, type TestCtx } from './helpers.js';
 
@@ -295,5 +295,53 @@ describe('student account', () => {
     const ok = await upload(`/api/instructor/courses/${courseId}/cover`, teacher.token, PNG);
     expect(ok.json.data.coverUrl).toMatch(/^\/api\/files\/public\/covers\//);
     expect((await explore()).json.data.items[0]!.coverUrl).toBe(ok.json.data.coverUrl);
+  });
+});
+
+describe('teacher: my students', () => {
+  // Enrollment payments arrive in Phase 3; here the enrollment row is written directly.
+  const enroll = (classId: string, studentId: string, status = 'confirmed') => t.deps.db.run(
+    `INSERT INTO enrollments (id, class_session_id, student_id, status, price_cents, currency, created_at) VALUES (?, ?, ?, ?, 2000, 'EUR', ?)`,
+    [crypto.randomUUID(), classId, studentId, status, day(1, 8)]);
+
+  it('lists who enrolled, with progress by meetings and never the e-mail', async () => {
+    const laura = await approvedTeacher();
+    const { classId } = await publishedCourseWithClass(laura);
+    const ana = await account('ana@example.com', 'learn', { displayName: 'Ana Silva' });
+    const carlos = await account('carlos@example.com', 'learn', { displayName: 'Carlos Ruiz' });
+    await enroll(classId, ana.id);
+    await enroll(classId, carlos.id, 'pending_payment');
+    const r = await t.call<MyStudent[]>('GET', '/api/instructor/students', { token: laura.token });
+    expect(r.status).toBe(200);
+    const byName = Object.fromEntries(r.json.data.map((x) => [x.name, x]));
+    expect(byName['Ana Silva']).toMatchObject({ state: 'active', meetingsTotal: 2, meetingsDone: 0, meetingsAttended: 0, classLabel: 'Mañana' });
+    expect(byName['Carlos Ruiz']!.state).toBe('pending');
+    expect(JSON.stringify(r.json.data)).not.toContain('@example.com');
+  });
+
+  it('private notes and reports only about the teacher\'s own students', async () => {
+    const laura = await approvedTeacher();
+    const { classId } = await publishedCourseWithClass(laura);
+    const ana = await account('ana@example.com', 'learn');
+    await enroll(classId, ana.id);
+    const other = await approvedTeacher('otro@example.com', 'Otro');
+
+    expect((await t.call('PUT', `/api/instructor/students/${ana.id}/note`, { token: other.token, body: { note: 'x' } })).status).toBe(404);
+    expect((await t.call('PUT', `/api/instructor/students/${ana.id}/note`, { token: laura.token, body: { note: 'Muy participativa.' } })).status).toBe(200);
+    expect((await t.call<MyStudent[]>('GET', '/api/instructor/students', { token: laura.token })).json.data[0]!.note).toBe('Muy participativa.');
+    expect((await t.call<MyStudent[]>('GET', '/api/instructor/students', { token: other.token })).json.data).toEqual([]);
+
+    expect((await t.call('POST', `/api/instructor/students/${ana.id}/report`, { token: other.token, body: { reason: 'spam' } })).status).toBe(404);
+    expect((await t.call('POST', `/api/instructor/students/${ana.id}/report`, { token: laura.token, body: { reason: 'nope' } })).status).toBe(400);
+    expect((await t.call('POST', `/api/instructor/students/${ana.id}/report`, { token: laura.token, body: { reason: 'harassment', details: 'Mensajes ofensivos' } })).status).toBe(201);
+    const rep = await t.deps.db.one<{ target_id: string; reason: string }>('SELECT target_id, reason FROM reports');
+    expect(rep).toEqual({ target_id: ana.id, reason: 'harassment' });
+  });
+
+  it('a group description is saved and shown to students', async () => {
+    const laura = await approvedTeacher();
+    const { courseId } = await publishedCourseWithClass(laura, {}, { description: 'Grupo de mañana, ritmo tranquilo.' });
+    const d = await t.call<CourseDetail>('GET', `/api/public/courses/${courseId}`);
+    expect(d.json.data.classes[0]!.description).toBe('Grupo de mañana, ritmo tranquilo.');
   });
 });

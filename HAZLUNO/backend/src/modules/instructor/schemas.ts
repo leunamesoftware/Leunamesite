@@ -65,3 +65,9 @@ export const classSchema = z.object({
 });
 
 export const rejectSchema = z.object({ reason: text(3, 500) });
+
+export const studentNoteSchema = z.object({ note: z.string().trim().max(2000, 'too_long') });
+export const reportSchema = z.object({
+  reason: z.enum(['spam', 'harassment', 'inappropriate', 'fraud', 'safety', 'other'], { errorMap: () => ({ message: 'invalid_option' }) }),
+  details: optText(1000),
+});

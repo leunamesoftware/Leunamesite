@@ -1,4 +1,4 @@
-import { CalendarDays, ChevronLeft, LayoutDashboard, UserRound } from 'lucide-react';
+import { CalendarDays, ChevronLeft, LayoutDashboard, UserRound, UsersRound } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useI18n } from '../../i18n';
@@ -8,7 +8,7 @@ export function TeachLayout({ title, children, back = '/profile' }: { title: str
   const { t } = useI18n();
   const navigate = useNavigate();
   const nav: [string, string, typeof UserRound, boolean][] = [
-    ['/teach', t.teach.navPanel, LayoutDashboard, true], ['/teach/profile', t.profile.tabProfile, UserRound, false], ['/teach/agenda', t.teach.agenda, CalendarDays, false],
+    ['/teach', t.teach.navPanel, LayoutDashboard, true], ['/teach/profile', t.profile.tabProfile, UserRound, false], ['/teach/students', t.teach.stTitle, UsersRound, false], ['/teach/agenda', t.teach.agenda, CalendarDays, false],
   ];
   return (
     <main className="mine teach">
@@ -25,6 +25,7 @@ export function TeachLayout({ title, children, back = '/profile' }: { title: str
         <h1>{title}</h1>
         <nav className="seg">
           <NavLink end to="/teach" className={({ isActive }) => `seg-btn${isActive ? ' seg-on' : ''}`}>{t.teach.myCourses}</NavLink>
+          <NavLink to="/teach/students" className={({ isActive }) => `seg-btn${isActive ? ' seg-on' : ''}`}>{t.teach.stTitle}</NavLink>
           <NavLink to="/teach/agenda" className={({ isActive }) => `seg-btn${isActive ? ' seg-on' : ''}`}>{t.teach.agenda}</NavLink>
           <NavLink to="/teach/profile" className={({ isActive }) => `seg-btn${isActive ? ' seg-on' : ''}`}>{t.teach.profileTitle}</NavLink>
         </nav>

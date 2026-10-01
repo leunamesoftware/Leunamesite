@@ -8,7 +8,7 @@ Plataforma europeia de aprendizagem prática **ao vivo**: professores abrem turm
 | `frontend/` | App (React + Vite), em 6 idiomas. O mesmo app vira o Android (Capacitor) na Fase 8. |
 | `shared/contracts.ts` | Formato dos dados trocados entre app e API (os dois lados importam o mesmo arquivo). |
 | `brand/` | Ícone aprovado, foto principal e referências de tela enviadas pelo dono. |
-| `docs/` | ARCHITECTURE, SETUP, TESTES, DEPLOY, PAYMENTS, PRIVACY. |
+| `docs/` | ARCHITECTURE, TELAS (mapa das 40 telas), SETUP, TESTES, DEPLOY, PAYMENTS, PRIVACY. |
 
 O nome da marca fica em um lugar só: `frontend/src/brand.ts` (e `{brand}` nos textos).
 
