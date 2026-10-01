@@ -81,3 +81,49 @@ jobs:
             --file android/app/build/outputs/apk/debug/app-debug.apk \
             --content-type application/vnd.android.package-archive --remote
           echo "### APK de prévia: https://api.leunamesoftware.com/download/facturo-previa.apk" >> "$GITHUB_STEP_SUMMARY"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: facturo-previa-apk
+          path: FACTURO/app/android/app/build/outputs/apk/debug/app-debug.apk
+          retention-days: 7
+
+  # Abre o APK num Android de verdade (emulador), toca como usuário e guarda fotos e erros
+  # no branch "testes-android" (para o Cloud 2 ver o que aconteceu).
+  testar-no-android:
+    needs: apk
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: facturo-previa-apk
+          path: apk
+
+      - name: Ativar aceleração (KVM)
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules && sudo udevadm trigger --name-match=kvm
+
+      - name: Rodar no emulador (Android 14)
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 34
+          target: google_apis
+          arch: x86_64
+          profile: pixel_6
+          disable-animations: true
+          script: bash FACTURO/app/testes-android/rodar.sh apk/app-debug.apk resultado
+
+      - name: Guardar fotos e log no branch testes-android
+        if: always()
+        run: |
+          git config user.name "leuname-robo"; git config user.email "robo@leunamesoftware.com.br"
+          mkdir -p /tmp/r && cp -r resultado/. /tmp/r/ 2>/dev/null || true
+          git fetch origin testes-android 2>/dev/null && git checkout -B testes-android origin/testes-android || git checkout --orphan testes-android
+          git rm -rfq . 2>/dev/null || true
+          mkdir -p facturo && cp -r /tmp/r/. facturo/
+          git add facturo && git commit -qm "Teste Android do Facturo (${GITHUB_SHA::7})" && git push -f origin testes-android
