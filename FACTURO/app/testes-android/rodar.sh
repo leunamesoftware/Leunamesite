@@ -14,12 +14,15 @@ tocar() {
 import re, sys
 alvo, arq = sys.argv[1], sys.argv[2]
 x = open(arq, encoding="utf-8", errors="ignore").read()
+achados = []
 for m in re.finditer(r'<node [^>]*>', x):
     n = m.group(0)
-    t = re.search(r' text="([^"]*)"', n).group(1) + re.search(r' content-desc="([^"]*)"', n).group(1)
+    t = (re.search(r' text="([^"]*)"', n).group(1) + re.search(r' content-desc="([^"]*)"', n).group(1)).strip()
     if alvo.lower() in t.lower():
         a = list(map(int, re.findall(r'\d+', re.search(r'bounds="([^"]*)"', n).group(1))))
-        print((a[0]+a[2])//2, (a[1]+a[3])//2); break
+        achados.append((len(t), (a[0]+a[2])//2, (a[1]+a[3])//2))
+if achados:  # o texto mais curto que contém o alvo = o botão, não um parágrafo que cita o nome dele
+    _, cx, cy = min(achados); print(cx, cy)
 PY
 )
   [ -n "$P" ] && break; sleep 2; done
