@@ -11,7 +11,7 @@ import { Ajustes, Mais } from './telas/Mais';
 function Telas() {
   const { negocio, tela } = useEstado();
   if (negocio === undefined) return null;
-  if (negocio === null) return <BoasVindas />;
+  if (negocio === null) return <><BoasVindas /><AvisoFlutuante /></>;
   const comBarra = ['inicio', 'documentos', 'clientes', 'mais'].includes(tela.nome);
   return (
     <div className="app">

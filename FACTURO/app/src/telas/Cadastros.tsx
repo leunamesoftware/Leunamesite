@@ -5,6 +5,7 @@ import { useEstado } from '../estado';
 import { dinheiro, t, unidade, useIdioma } from '../i18n';
 import { regiaoDe } from '../regioes/regioes';
 import { iniciais } from '../dominio/marca';
+import { reduzirImagem } from '../servicos/imagem';
 import { Campo, CampoTexto, Topo } from '../componentes/base';
 import { EditorCliente, EditorItem } from './Editor';
 
@@ -95,25 +96,6 @@ export function Itens() {
       )}
     </>
   );
-}
-
-/** Reduz a logo para no máximo 320px (PDF e link leves). */
-function reduzirImagem(arquivo: File): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const img = new Image();
-    img.onload = () => {
-      const max = 320;
-      const escala = Math.min(1, max / Math.max(img.width, img.height));
-      const c = document.createElement('canvas');
-      c.width = Math.round(img.width * escala);
-      c.height = Math.round(img.height * escala);
-      c.getContext('2d')!.drawImage(img, 0, 0, c.width, c.height);
-      resolve(c.toDataURL('image/png'));
-      URL.revokeObjectURL(img.src);
-    };
-    img.onerror = reject;
-    img.src = URL.createObjectURL(arquivo);
-  });
 }
 
 const CORES = ['#0E9F6E', '#0B4F6C', '#1D4ED8', '#7C3AED', '#DB2777', '#DC2626', '#EA580C', '#111827'];

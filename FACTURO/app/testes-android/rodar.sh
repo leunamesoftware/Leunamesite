@@ -60,10 +60,11 @@ adb shell monkey -p $PKG -c android.intent.category.LAUNCHER 1 >/dev/null
 sleep 3; foto 00-3s
 sleep 7; foto 01-abriu
 # Posições medidas no Pixel 6 (1080x2400); fração da tela para valer em outros tamanhos.
-pos 0.67 0.44; foto 02-profissao            # Pintor
-pos 0.5 0.473                               # campo nome
-adb shell input text "Pintura"; sleep 2; foto 03-nome
-pos 0.5 0.548; sleep 3; foto 04-inicio      # Começar
+pos 0.5 0.84; sleep 2; foto 02-empresa      # Criar minha conta
+pos 0.5 0.47                               # nome da empresa
+adb shell input text "Pinta%sCell"; sleep 1; foto 03-nome
+adb shell input keyevent 66; sleep 3; foto 03b-area   # Enter = continuar
+pos 0.75 0.29; sleep 4; foto 04-inicio     # Pintor
 pos 0.75 0.855; sleep 2; foto 05-novo-orcamento
 adb shell input swipe 540 1700 540 700 300; sleep 1; foto 06-rolou
 adb shell input keyevent 4; sleep 2

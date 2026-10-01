@@ -5,11 +5,14 @@ import { regiaoDe } from '../regioes/regioes';
 import { dataLocal, somarDias } from './calculos';
 import type { Cliente, Documento, Negocio, TipoDocumento } from './tipos';
 
-export async function criarNegocioInicial(nome: string, pais: string, profissaoId: string, idioma: string): Promise<Negocio> {
+export interface DadosEmpresa { nome: string; telefone?: string; email?: string; documento?: string; logo?: string | null }
+
+export async function criarNegocioInicial(empresa: DadosEmpresa, pais: string, profissaoId: string, idioma: string): Promise<Negocio> {
   const reg = regiaoDe(pais);
   const n: Negocio = {
     id: 'principal', criadoEm: agora(), atualizadoEm: agora(),
-    nome: nome.trim(), documento: '', telefone: '', email: '', endereco: '', logo: null,
+    nome: empresa.nome.trim(), documento: (empresa.documento ?? '').trim(), telefone: (empresa.telefone ?? '').trim(),
+    email: (empresa.email ?? '').trim(), endereco: '', logo: empresa.logo ?? null,
     cor: '#0E9F6E', pais: reg.pais, moeda: reg.moeda, idioma, profissao: profissaoId,
     pagamento: { pixChave: '', pixCidade: '', link: '', banco: '' },
     validadePadraoDias: 15, observacaoPadrao: '',

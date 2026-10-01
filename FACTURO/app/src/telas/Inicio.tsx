@@ -40,7 +40,7 @@ export function Inicio() {
 
   return (
     <>
-      <Topo titulo={t('inicio.ola', { nome: negocio.nome.split(' ')[0] ?? '' })} />
+      <Topo titulo={negocio.nome} />
       <main className="conteudo">
         <section className="destaque">
           <div className="rotulo">{t('inicio.aReceber')}</div>
