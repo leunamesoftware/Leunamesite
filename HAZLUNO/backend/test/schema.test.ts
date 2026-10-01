@@ -68,12 +68,15 @@ describe('schema', () => {
 });
 
 describe('public catalog', () => {
-  it('lists the 12 categories in each of the 6 languages', async () => {
+  it('lists the 14 categories in each of the 6 languages', async () => {
     for (const [lang, culinary] of [['pt', 'Culinária'], ['en', 'Cooking'], ['es', 'Cocina'], ['fr', 'Cuisine'], ['it', 'Cucina'], ['de', 'Kochen']]) {
       const r = await t.call<{ id: string; name: string }[]>('GET', `/api/public/categories?lang=${lang}`);
-      expect(r.json.data).toHaveLength(12);
+      expect(r.json.data).toHaveLength(14);
       expect(r.json.data[0]).toMatchObject({ id: 'culinary', name: culinary });
+      expect(r.json.data.at(-1)!.id).toBe('other');
     }
+    const es = (await t.call<{ id: string; name: string }[]>('GET', '/api/public/categories?lang=es')).json.data;
+    expect(es.filter((c) => ['art', 'wellness'].includes(c.id)).map((c) => c.name)).toEqual(['Arte', 'Bienestar']);
   });
 
   it('falls back to English for a language not supported yet', async () => {

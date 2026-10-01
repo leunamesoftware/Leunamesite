@@ -25,6 +25,18 @@ App (React, 6 idiomas)  ──HTTPS + token de sessão──▶  API (Hono, Clou
 - Pagamento só vira "pago" com confirmação real do provedor (webhook verificado). Nada de pagamento simulado.
 - Turma que começou não aceita aluno novo; turma encerrada não aceita inscrição. Para oferecer de novo, o professor cria outra turma.
 - Valores de cobrança e limites ficam em `fee_rules` e `platform_settings` (editáveis pelo admin), nunca no código.
+- **O que cada pessoa pode fazer com uma turma** sai de uma função só, `shared/class-access.ts`, usada pelo app e pela API (testada em `backend/test/class-access.test.ts`):
+
+  | Situação da turma | Quem não comprou | Aluno inscrito |
+  |---|---|---|
+  | Antes de começar, com vaga e dentro do prazo | "Inicia el …" + vagas restantes → **comprar** | ver detalhes e materiais |
+  | Lotada ou prazo de inscrição encerrado | nada clicável | ver detalhes e materiais |
+  | Ao vivo agora | nada clicável | **entrar** |
+  | Começou (entre um encontro e outro) | nada clicável | ver detalhes |
+  | Terminada | nada clicável | **gravação** |
+  | Cancelada | nada clicável | nada (reembolso automático) |
+
+  O horário manda: passou do início, ninguém novo entra, mesmo que o estado ainda não tenha sido atualizado.
 
 ## Banco (resumo)
 - Identidade: `users`, `user_roles`, `sessions`, `login_attempts`, `auth_tokens`, `auth_identities`, `student_profiles`, `instructor_profiles`, `consents`.
@@ -42,3 +54,12 @@ Textos do app em `frontend/src/i18n/<idioma>.ts` (PT é a base; os outros precis
 
 ## Preparado para IA (sem funcionalidade falsa)
 Transcrição, legendas, resumo e capítulos vão se ligar às `recordings`; tradução aos textos de curso; recomendação aos `favorites`/`enrollments`; moderação aos `reports`. Nenhuma dessas funções existe ainda.
+
+## Referências de tela da Fase 2 (em `brand/`)
+- `home-reference-phase2.webp` (início) e `explore-reference-phase2.webp` (buscar): barra de busca, categorias em chips, filtros (tipo, preço, nível, duração; o prompt mestre pede também idioma, país, data e horário), ordenação, contagem de resultados, cartões com foto do professor, avaliação e botão, barra inferior Início / Buscar / Mis clases / Favoritos / Perfil.
+- Ajustes obrigatórios em relação às imagens:
+  - Cartão "EN VIVO" **não** mostra "Unirme" para quem não comprou (regra acima). Para essa pessoa, o cartão mostra o próximo grupo do mesmo curso, se existir.
+  - Número de participantes nunca passa da capacidade (máximo 25); a imagem mostra 32.
+  - Nota (4,9 etc.) só aparece com avaliações reais; professor sem avaliação aparece como "Nuevo".
+  - Contagem "124 clases" e qualquer número da tela vêm do banco; nada de número de exemplo.
+  - Fotos dos cartões são as que o professor envia; sem fotos de banco de imagens se passando por professores.

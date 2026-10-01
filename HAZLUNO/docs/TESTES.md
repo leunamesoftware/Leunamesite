@@ -1,7 +1,7 @@
 # Testes
 
 ```bash
-cd HAZLUNO/backend && npm test        # 30 testes (banco em memória, sem internet)
+cd HAZLUNO/backend && npm test        # 39 testes (banco em memória, sem internet)
 cd HAZLUNO/backend && npm run typecheck
 cd HAZLUNO/frontend && npm run build  # checagem de tipos + build
 ```
@@ -14,6 +14,8 @@ cd HAZLUNO/frontend && npm run build  # checagem de tipos + build
 - **Conta:** perfil, troca de senha derruba os outros aparelhos, desconectar aparelho, não mexe em aparelho de outra pessoa, aluno pode pedir para ensinar.
 - **Papéis:** área de administrador recusa aluno e aceita administrador (checado no servidor).
 - **Recuperação de senha:** indisponível sem e-mail configurado; com e-mail, link de uso único, expira em 1 hora e desconecta todos os aparelhos.
+
+- **Regra da turma (`class-access`):** só compra quem está de fora, antes do início e com vaga; lotada, encerrada, ao vivo, iniciada ou terminada não deixa ninguém de fora clicar; inscrito entra ao vivo e vê a gravação; o horário vale mais que o estado gravado; rascunho não aparece.
 
 ## Também conferido no navegador (celular 390px e 360px)
 Abertura em ES/PT/EN/FR/DE, escolha aprender/ensinar, cadastro com erros e com sucesso, início com categorias reais, sair, login com erro, aviso de recuperação indisponível, sem rolagem lateral.

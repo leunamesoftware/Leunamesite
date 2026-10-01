@@ -1,5 +1,5 @@
 import {
-  Briefcase, Camera, ChefHat, Dumbbell, Hammer, Languages, Laptop, LayoutGrid, LogOut, Music, Scissors, Sparkles, Wrench,
+  Briefcase, Camera, ChefHat, Dumbbell, Hammer, Heart, Languages, Laptop, LayoutGrid, LogOut, Music, Palette, Scissors, Sparkles, Wrench,
   type LucideIcon,
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
@@ -12,6 +12,7 @@ import { Banner, Wordmark } from '../ui/kit';
 const ICONS: Record<string, LucideIcon> = {
   'chef-hat': ChefHat, sparkles: Sparkles, music: Music, languages: Languages, laptop: Laptop, camera: Camera,
   scissors: Scissors, wrench: Wrench, hammer: Hammer, dumbbell: Dumbbell, briefcase: Briefcase, grid: LayoutGrid,
+  palette: Palette, heart: Heart,
 };
 const iconFor = (name: string) => ICONS[name] ?? LayoutGrid;
 
