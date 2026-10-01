@@ -21,6 +21,7 @@
 | B6 | EconoRota | (Flutter, pasta ECONOROTA) | Projeto de cliente: publicar só com ok do dono | C1 |
 | B7 | LeuCloud | com.leunamesoftwares.leucloud | NÃO MEXER (decisão do dono) | C1 |
 | B8 | Lerguie (acessibilidade) | repositório leuname-softwarea-apps, pasta lerguie | Pausado pelo dono | C2 |
+| B9 | Facturo (orçamentos e faturas) | com.leunamesoftwares.facturo | Em construção (pasta FACTURO) | C2 |
 
 ## Divisão de trabalho (acordo Cloud 1 × Cloud 2)
 
