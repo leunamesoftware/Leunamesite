@@ -145,3 +145,14 @@ textarea.entrada { min-height: 84px; resize: vertical; }
 .modal h2 { margin: 0; font-size: 19px; }
 .logo-previa { width: 72px; height: 72px; border-radius: 14px; object-fit: contain; background: #fff; border: 1px solid var(--linha); }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+
+/* Boas-vindas em 2 passos */
+.bv-titulo { margin: 0 0 4px; font-size: 28px; }
+.bv-sub { margin: 0; color: var(--suave); }
+.bv-passo { font-size: 13px; font-weight: 700; color: var(--verde-forte); text-transform: uppercase; letter-spacing: .04em; }
+.bv-form { display: flex; flex-direction: column; gap: 16px; }
+.bv-escolhida { cursor: default; }
+.bv-trocar { border: 0; background: none; color: var(--verde-forte); font-weight: 700; font-size: 15px; padding: 8px; }
+.bv-erro { color: #C2410C; font-weight: 600; }
+.entrada.invalida { border-color: #EA580C; }
+.profissao:active { transform: scale(.98); }

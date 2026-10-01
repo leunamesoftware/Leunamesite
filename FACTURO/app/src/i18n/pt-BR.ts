@@ -25,6 +25,9 @@ export const ptBR = {
     nomeNegocio: 'Nome do seu negócio ou seu nome',
     pais: 'País',
     comecar: 'Começar',
+    trocar: 'Trocar',
+    faltaNome: 'Digite o nome para continuar.',
+    passo: 'Passo {n} de 2',
   },
   inicio: {
     ola: 'Olá, {nome}',

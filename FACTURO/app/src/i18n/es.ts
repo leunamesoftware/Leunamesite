@@ -24,6 +24,9 @@ export const es: Dicionario = {
     nomeNegocio: 'Nombre de tu negocio o tu nombre',
     pais: 'País',
     comecar: 'Empezar',
+    trocar: 'Cambiar',
+    faltaNome: 'Escribe un nombre para continuar.',
+    passo: 'Paso {n} de 2',
   },
   inicio: {
     ola: 'Hola, {nome}',
