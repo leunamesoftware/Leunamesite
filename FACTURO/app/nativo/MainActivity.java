@@ -10,7 +10,10 @@ import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
 import com.getcapacitor.BridgeActivity;
 
-/** Android 15+ desenha o app atrás do relógio e da barra de navegação: aqui reservamos esse espaço (e o do teclado). */
+/**
+ * Android 15+ desenha o app atrás do relógio e da barra de navegação: aqui reservamos esse espaço.
+ * O teclado NÃO entra aqui: a janela já encolhe sozinha (adjustResize); somar os dois cortava a tela pela metade.
+ */
 public class MainActivity extends BridgeActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -22,7 +25,7 @@ public class MainActivity extends BridgeActivity {
 
         View conteudo = findViewById(android.R.id.content);
         ViewCompat.setOnApplyWindowInsetsListener(conteudo, (v, insets) -> {
-            Insets b = insets.getInsets(WindowInsetsCompat.Type.systemBars() | WindowInsetsCompat.Type.displayCutout() | WindowInsetsCompat.Type.ime());
+            Insets b = insets.getInsets(WindowInsetsCompat.Type.systemBars() | WindowInsetsCompat.Type.displayCutout());
             v.setPadding(b.left, b.top, b.right, b.bottom);
             return WindowInsetsCompat.CONSUMED;
         });

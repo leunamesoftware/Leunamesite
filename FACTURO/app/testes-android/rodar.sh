@@ -5,12 +5,28 @@ FALHAS=""
 APK="$1"; OUT="$2"; PKG=com.leunamesoftwares.facturo.previa
 mkdir -p "$OUT"
 exec > >(tee "$OUT/saida.txt") 2>&1
+# Toque por posição (fração da tela): a árvore de acessibilidade do WebView às vezes fica desatualizada.
+TAM=""
+pos() { [ -z "$TAM" ] && TAM=$(adb shell wm size | grep -o "[0-9]*x[0-9]*" | tail -1); echo "toque em $1,$2"; adb shell input tap $(echo "$TAM" | awk -Fx -v a="$1" -v b="$2" '{print int($1*a), int($2*b)}'); sleep 2; }
 foto() { adb exec-out screencap -p > "$OUT/$1.png"; echo "foto: $1"; }
 arvore() { adb shell uiautomator dump /sdcard/t.xml >/dev/null 2>&1; adb shell cat /sdcard/t.xml > "$OUT/tela.xml"; }
 # Toca no centro do elemento cujo texto contém $1 (lido da árvore de acessibilidade).
 tocar() {
   for tentativa in 1 2 3; do
-  arvore
+  # Clientes → novo cliente com teclado aberto (o caso do print do dono)
+adb shell input keyevent 4; sleep 2
+pos 0.62 0.94; foto 07-clientes
+pos 0.75 0.855; sleep 1; foto 08-novo-cliente
+adb shell input text "Maria%sSouza"; sleep 1; foto 09-digitando
+pos 0.5 0.33; sleep 1; foto 10-telefone
+
+# Tema escuro
+adb shell cmd uimode night yes; adb shell am force-stop $PKG; sleep 1
+adb shell monkey -p $PKG -c android.intent.category.LAUNCHER 1 >/dev/null; sleep 6; foto 11-escuro-inicio
+pos 0.87 0.94; foto 12-escuro-mais
+pos 0.37 0.94; foto 13-escuro-documentos
+pos 0.75 0.855; sleep 1; foto 14-escuro-editor
+arvore
   P=$(python3 - "$1" "$OUT/tela.xml" <<'PY'
 import re, sys
 alvo, arq = sys.argv[1], sys.argv[2]
@@ -50,6 +66,19 @@ tocar "Começar" ; sleep 4; foto 04-inicio
 tocar "Novo orçamento" || adb shell input tap $(adb shell wm size | grep -o "[0-9]*x[0-9]*" | tail -1 | awk -Fx '{print int($1*0.75), int($2*0.855)}'); sleep 3; foto 05-novo-orcamento
 adb shell dumpsys input_method | grep -iE "mInputShown|mIsInputViewShown" | head -3
 adb shell input swipe 540 1700 540 700 300; sleep 1; foto 06-rolou
+# Clientes → novo cliente com teclado aberto (o caso do print do dono)
+adb shell input keyevent 4; sleep 2
+pos 0.62 0.94; foto 07-clientes
+pos 0.75 0.855; sleep 1; foto 08-novo-cliente
+adb shell input text "Maria%sSouza"; sleep 1; foto 09-digitando
+pos 0.5 0.33; sleep 1; foto 10-telefone
+
+# Tema escuro
+adb shell cmd uimode night yes; adb shell am force-stop $PKG; sleep 1
+adb shell monkey -p $PKG -c android.intent.category.LAUNCHER 1 >/dev/null; sleep 6; foto 11-escuro-inicio
+pos 0.87 0.94; foto 12-escuro-mais
+pos 0.37 0.94; foto 13-escuro-documentos
+pos 0.75 0.855; sleep 1; foto 14-escuro-editor
 arvore
 adb logcat -d > "$OUT/log-completo.txt"
 grep -iE "facturo|Capacitor|Console|FATAL|AndroidRuntime: (FATAL|java)|ActivityTaskManager|ActivityManager.*(Kill|died|crash)|cr_AwContents" "$OUT/log-completo.txt" | grep -v nativeloader | tail -250 > "$OUT/log.txt"

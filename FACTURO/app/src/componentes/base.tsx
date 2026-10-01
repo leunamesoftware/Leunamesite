@@ -68,7 +68,7 @@ export function Modal({ titulo, aoFechar, children }: { titulo: string; aoFechar
   return (
     <div className="modal-fundo" onClick={aoFechar}>
       <div className="modal" role="dialog" aria-label={titulo} onClick={(e) => e.stopPropagation()}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+        <div className="modal-topo">
           <h2 style={{ flex: 1 }}>{titulo}</h2>
           <button className="icone-botao" aria-label={t('comum.fechar')} onClick={aoFechar}>✕</button>
         </div>

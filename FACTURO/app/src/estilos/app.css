@@ -141,7 +141,9 @@ textarea.entrada { min-height: 84px; resize: vertical; }
 .cabecalho-doc .cliente { font-size: 20px; font-weight: 800; }
 .assinatura { max-width: 220px; background: #fff; border-radius: 8px; border: 1px solid var(--linha); }
 .modal-fundo { position: fixed; inset: 0; background: rgba(8, 20, 24, 0.5); z-index: 20; display: flex; align-items: flex-end; justify-content: center; }
-.modal { background: var(--fundo); width: 100%; max-width: 560px; max-height: 92dvh; overflow: auto; border-radius: 22px 22px 0 0; padding: 18px 16px calc(18px + env(safe-area-inset-bottom)); display: flex; flex-direction: column; gap: 12px; }
+.modal { background: var(--fundo); width: 100%; max-width: 560px; max-height: 94dvh; overflow-y: auto; overscroll-behavior: contain; border-radius: 22px 22px 0 0; padding: 0 16px calc(18px + env(safe-area-inset-bottom)); display: flex; flex-direction: column; gap: 12px; animation: subir .18s ease-out; }
+.modal-topo { position: sticky; top: 0; z-index: 1; background: var(--fundo); display: flex; align-items: center; gap: 8px; padding: 14px 0 6px; }
+@keyframes subir { from { transform: translateY(24px); opacity: .6; } to { transform: none; opacity: 1; } }
 .modal h2 { margin: 0; font-size: 19px; }
 .logo-previa { width: 72px; height: 72px; border-radius: 14px; object-fit: contain; background: #fff; border: 1px solid var(--linha); }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
@@ -156,3 +158,6 @@ textarea.entrada { min-height: 84px; resize: vertical; }
 .bv-erro { color: #C2410C; font-weight: 600; }
 .entrada.invalida { border-color: #EA580C; }
 .profissao:active { transform: scale(.98); }
+
+/* Teclado aberto: some a barra de baixo e o botão flutuante */
+body.digitando .barra-nav, body.digitando .fab { display: none; }
