@@ -1,0 +1,11 @@
+{
+  "appId": "com.leunamesoftwares.hazluno.previa",
+  "appName": "Hazluno Prévia",
+  "webDir": "www",
+  "backgroundColor": "#FFFFFF",
+  "server": {
+    "url": "https://hazluno-previa.leunamesoftware.com.br",
+    "androidScheme": "https",
+    "errorPath": "index.html"
+  }
+}

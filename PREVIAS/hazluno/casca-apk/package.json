@@ -1,0 +1,7 @@
+{
+  "name": "hazluno-previa-android",
+  "private": true,
+  "description": "Casca Android da prévia do Hazluno: abre o site da prévia (atualiza sozinho, sem novo APK).",
+  "dependencies": { "@capacitor/android": "^8.5.2", "@capacitor/core": "^8.5.2" },
+  "devDependencies": { "@capacitor/cli": "^8.5.2" }
+}

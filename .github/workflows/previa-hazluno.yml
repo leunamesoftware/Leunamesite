@@ -89,7 +89,7 @@ jobs:
 
       - name: Gerar APK da prévia
         if: steps.ja.outputs.pular != 'sim'
-        working-directory: ci/PREVIAS/hazluno/android
+        working-directory: ci/PREVIAS/hazluno/casca-apk
         run: |
           npm install --no-audit --no-fund
           npx cap add android
@@ -115,7 +115,7 @@ jobs:
 
       - name: Publicar o APK no link fixo
         if: steps.ja.outputs.pular != 'sim'
-        working-directory: ci/PREVIAS/hazluno/android
+        working-directory: ci/PREVIAS/hazluno/casca-apk
         run: |
           npx --yes wrangler@4 r2 object put leuname-downloads/hazluno-previa.apk \
             --file android/app/build/outputs/apk/debug/app-debug.apk \
