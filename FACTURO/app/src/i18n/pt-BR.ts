@@ -105,6 +105,10 @@ export const ptBR = {
     recebemosDe: 'Recebemos de {cliente} a quantia de {total}, referente a:',
     pagoEm: 'Pago em {data}',
     feitoCom: 'Feito com Facturo',
+    cliente: 'Cliente', detalhes: 'Detalhes', emissao: 'Emissão', telefone: 'Tel.', documento: 'Doc.',
+    aceite: 'Aceite do orçamento', aceiteTexto: 'Declaro que aprovo este orçamento nos valores e condições acima.',
+    assinaturaCliente: 'Assinatura do cliente', responsavel: 'Responsável', dataAceite: 'Data: ____/____/______',
+    obrigado: 'Obrigado pela preferência!', pagina: 'Página {a} de {b}',
   },
   clientes: {
     titulo: 'Clientes', novo: 'Novo cliente', nome: 'Nome', telefone: 'WhatsApp / telefone',
@@ -117,7 +121,7 @@ export const ptBR = {
   },
   negocio: {
     titulo: 'Meu negócio', nome: 'Nome', telefone: 'Telefone', email: 'E-mail', endereco: 'Endereço',
-    logo: 'Logo', trocarLogo: 'Escolher logo', removerLogo: 'Remover', cor: 'Cor dos documentos',
+    logo: 'Logo', logoAuto: 'Sem logo? Usamos suas iniciais nos documentos.', trocarLogo: 'Escolher logo', removerLogo: 'Remover', cor: 'Cor dos documentos',
     pagamento: 'Como você recebe',
     pixChave: 'Chave Pix', pixCidade: 'Cidade (para o Pix)',
     link: 'Link de pagamento', linkAjuda: 'PayPal, Mercado Pago, Stripe, Wise… o cliente toca e paga.',

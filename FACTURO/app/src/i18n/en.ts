@@ -104,6 +104,10 @@ export const en: Dicionario = {
     recebemosDe: 'Received from {cliente} the amount of {total}, for:',
     pagoEm: 'Paid on {data}',
     feitoCom: 'Made with Facturo',
+    cliente: 'Client', detalhes: 'Details', emissao: 'Issue date', telefone: 'Phone', documento: 'ID',
+    aceite: 'Quote acceptance', aceiteTexto: 'I approve this quote at the prices and conditions above.',
+    assinaturaCliente: 'Client signature', responsavel: 'Authorized by', dataAceite: 'Date: ____/____/______',
+    obrigado: 'Thank you for your business!', pagina: 'Page {a} of {b}',
   },
   clientes: {
     titulo: 'Clients', novo: 'New client', nome: 'Name', telefone: 'WhatsApp / phone',
@@ -116,7 +120,7 @@ export const en: Dicionario = {
   },
   negocio: {
     titulo: 'My business', nome: 'Name', telefone: 'Phone', email: 'Email', endereco: 'Address',
-    logo: 'Logo', trocarLogo: 'Choose logo', removerLogo: 'Remove', cor: 'Document color',
+    logo: 'Logo', logoAuto: 'No logo? We use your initials on documents.', trocarLogo: 'Choose logo', removerLogo: 'Remove', cor: 'Document color',
     pagamento: 'How you get paid',
     pixChave: 'Pix key', pixCidade: 'City (for Pix)',
     link: 'Payment link', linkAjuda: 'PayPal, Stripe, Wise, Square… the client taps and pays.',

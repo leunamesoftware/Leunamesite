@@ -4,6 +4,7 @@ import type { Cliente, Item, Negocio } from '../dominio/tipos';
 import { useEstado } from '../estado';
 import { dinheiro, t, unidade, useIdioma } from '../i18n';
 import { regiaoDe } from '../regioes/regioes';
+import { iniciais } from '../dominio/marca';
 import { Campo, CampoTexto, Topo } from '../componentes/base';
 import { EditorCliente, EditorItem } from './Editor';
 
@@ -141,13 +142,14 @@ export function MeuNegocio() {
           <div className="campo">
             <label>{t('negocio.logo')}</label>
             <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-              {n.logo ? <img className="logo-previa" src={n.logo} alt="" /> : <div className="logo-previa" />}
+              {n.logo ? <img className="logo-previa" src={n.logo} alt="" /> : <div className="logo-previa monograma" style={{ color: n.cor }} title={t('negocio.logoAuto')}>{iniciais(n.nome)}</div>}
               <label className="botao secundario" style={{ width: 'auto' }}>
                 {t('negocio.trocarLogo')}
                 <input type="file" accept="image/*" hidden onChange={async (e) => { const f = e.target.files?.[0]; if (f) setN({ ...n, logo: await reduzirImagem(f) }); }} />
               </label>
               {n.logo && <button className="botao perigo" style={{ width: 'auto' }} onClick={() => setN({ ...n, logo: null })}>{t('negocio.removerLogo')}</button>}
             </div>
+            {!n.logo && <small>{t('negocio.logoAuto')}</small>}
           </div>
           <Campo id="ng-nome" rotulo={t('negocio.nome')} value={n.nome} onChange={m('nome')} />
           <Campo id="ng-doc" rotulo={`${reg.rotuloDocumento} (${t('comum.opcional')})`} value={n.documento} onChange={m('documento')} />

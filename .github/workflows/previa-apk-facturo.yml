@@ -57,6 +57,9 @@ jobs:
                          '        <item name="windowSplashScreenBackground">@color/facturo_fundo</item>\n'
                          '        <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_launcher_foreground</item>', t)
           assert n == 1, t
+          t, n = re.subn(r'(<style name="AppTheme\.NoActionBar"[^>]*>)',
+                         r'\1\n        <item name="android:windowBackground">@color/facturo_fundo</item>', t)
+          assert n == 1, "AppTheme.NoActionBar não encontrado"
           p.write_text(t, encoding="utf-8")
           s = pathlib.Path("android/app/src/main/res/values/strings.xml")
           s.write_text(re.sub(r'(<string name="app_name">)[^<]*', r'\1Facturo Prévia', s.read_text(encoding="utf-8")), encoding="utf-8")

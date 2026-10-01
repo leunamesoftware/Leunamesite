@@ -104,6 +104,10 @@ export const es: Dicionario = {
     recebemosDe: 'Recibimos de {cliente} la suma de {total}, por concepto de:',
     pagoEm: 'Pagado el {data}',
     feitoCom: 'Hecho con Facturo',
+    cliente: 'Cliente', detalhes: 'Detalles', emissao: 'Emisión', telefone: 'Tel.', documento: 'Doc.',
+    aceite: 'Aceptación del presupuesto', aceiteTexto: 'Apruebo este presupuesto con los valores y condiciones indicados.',
+    assinaturaCliente: 'Firma del cliente', responsavel: 'Responsable', dataAceite: 'Fecha: ____/____/______',
+    obrigado: '¡Gracias por su preferencia!', pagina: 'Página {a} de {b}',
   },
   clientes: {
     titulo: 'Clientes', novo: 'Nuevo cliente', nome: 'Nombre', telefone: 'WhatsApp / teléfono',
@@ -116,7 +120,7 @@ export const es: Dicionario = {
   },
   negocio: {
     titulo: 'Mi negocio', nome: 'Nombre', telefone: 'Teléfono', email: 'Correo', endereco: 'Dirección',
-    logo: 'Logo', trocarLogo: 'Elegir logo', removerLogo: 'Quitar', cor: 'Color de los documentos',
+    logo: 'Logo', logoAuto: '¿Sin logo? Usamos tus iniciales en los documentos.', trocarLogo: 'Elegir logo', removerLogo: 'Quitar', cor: 'Color de los documentos',
     pagamento: 'Cómo cobras',
     pixChave: 'Clave Pix', pixCidade: 'Ciudad (para Pix)',
     link: 'Enlace de pago', linkAjuda: 'Mercado Pago, PayPal, Stripe… el cliente toca y paga.',
