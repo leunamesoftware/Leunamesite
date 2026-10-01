@@ -15,3 +15,12 @@
 |---|---|---|---|
 | B1 | Gestacell | com.leunamesoftwares.gestacell | Produção 1.0.4 em análise; 1.0.5 (teste de 7 dias) pronta para subir depois da aprovação |
 | B2 | Radar Preventivo | com.radarpreventivo.app | Teste interno (não lançar até o dono dizer "liberado") |
+
+## Divisão de trabalho (acordo Cloud 1 × Cloud 2)
+
+- **Cloud 1:** código dos apps (telas, regras, pagamentos no app, analytics, notificações, hash de senha) e os testes de cada função nova.
+- **Cloud 2:** `.github/workflows`, `.github/scripts`, `wrangler.toml` (rotas, bindings, cron), backups, monitoramento, publicação na Play Store e materiais da loja.
+- Cada um no seu branch; junta no principal por PR. Ninguém dá push direto no principal.
+- Comunicação: issues no GitHub com etiqueta `cloud1` ou `cloud2`.
+- Backups: `backup-bancos-d1.yml` (diário, 30 dias). Monitoramento: `monitoramento.yml` (de hora em hora, abre/fecha issue `cloud2`).
+- LeuCloud fica fora de backup/monitoramento/publicação por decisão do dono. EconoRota é de cliente: publicar só com ok do dono.
