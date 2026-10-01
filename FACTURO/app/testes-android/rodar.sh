@@ -4,6 +4,7 @@ set -u
 FALHAS=""
 APK="$1"; OUT="$2"; PKG=com.leunamesoftwares.facturo.previa
 mkdir -p "$OUT"
+exec > >(tee "$OUT/saida.txt") 2>&1
 foto() { adb exec-out screencap -p > "$OUT/$1.png"; echo "foto: $1"; }
 arvore() { adb shell uiautomator dump /sdcard/t.xml >/dev/null 2>&1; adb shell cat /sdcard/t.xml > "$OUT/tela.xml"; }
 # Toca no centro do elemento cujo texto contém $1 (lido da árvore de acessibilidade).
@@ -46,11 +47,8 @@ adb shell dumpsys activity activities | grep -iE "facturo|mResumed|topResumed" |
 tocar "Pintor" && foto 02-profissao
 adb shell input text "Pintura%sSilva" && sleep 2 && foto 03-nome
 tocar "Começar" ; sleep 4; foto 04-inicio
-tocar "Nova fatura" ; sleep 3; foto 05a-nova-fatura
-adb shell input keyevent 4; sleep 2
-tocar "Documentos" ; sleep 2; foto 05b-documentos
-tocar "Início" ; sleep 2
 tocar "Novo orçamento" ; sleep 3; foto 05-novo-orcamento
+adb shell input tap 540 700; sleep 2; foto 05c-toque-meio
 adb shell dumpsys input_method | grep -iE "mInputShown|mIsInputViewShown" | head -3
 adb shell input swipe 540 1700 540 700 300; sleep 1; foto 06-rolou
 arvore
