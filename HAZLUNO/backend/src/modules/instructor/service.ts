@@ -191,7 +191,7 @@ export async function setCourseCover(deps: Deps, me: Me, courseId: string, reque
 
 // ---------- classes ----------
 
-interface ClassValidated { label: string | null; timezone: string; capacity: number; priceCents: number; languageCode: string;
+interface ClassValidated { label: string | null; description: string | null; timezone: string; capacity: number; priceCents: number; languageCode: string;
   enrollmentDeadline: string; meetings: { start: string; end: string }[] }
 
 /** Checks a class: seats limit, meetings in the future, no overlaps (also against the teacher's other classes). */
@@ -224,7 +224,7 @@ async function validateClass(deps: Deps, me: Me, course: CourseRow, input: unkno
          AND ls.scheduled_start < ? AND ls.scheduled_end > ?`, [me.id, excludeClassId ?? '', m.end, m.start]);
     if (clash) throw new AppError('schedule_conflict', 409, 'You already have a class at this time.', { meetings: 'overlap' });
   }
-  return { label: d.label, timezone: d.timezone, capacity: d.capacity, priceCents: d.priceCents,
+  return { label: d.label, description: d.description ?? null, timezone: d.timezone, capacity: d.capacity, priceCents: d.priceCents,
     languageCode: d.languageCode ?? course.language_code, enrollmentDeadline: deadline, meetings };
 }
 
@@ -253,9 +253,9 @@ export async function createClass(deps: Deps, me: Me, courseId: string, input: u
   const now = deps.clock.now().toISOString();
   await deps.db.batch([
     {
-      sql: `INSERT INTO class_sessions (id, course_id, instructor_id, label, timezone, starts_at, ends_at, capacity, price_cents, currency,
-              language_code, enrollment_deadline, status, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'EUR', ?, ?, 'draft', ?, ?)`,
-      params: [id, courseId, me.id, v.label, v.timezone, v.meetings[0]!.start, v.meetings.at(-1)!.end, v.capacity, v.priceCents,
+      sql: `INSERT INTO class_sessions (id, course_id, instructor_id, label, description, timezone, starts_at, ends_at, capacity, price_cents, currency,
+              language_code, enrollment_deadline, status, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'EUR', ?, ?, 'draft', ?, ?)`,
+      params: [id, courseId, me.id, v.label, v.description, v.timezone, v.meetings[0]!.start, v.meetings.at(-1)!.end, v.capacity, v.priceCents,
         v.languageCode, v.enrollmentDeadline, now, now],
     },
     ...meetingStatements(id, v.meetings),
@@ -272,9 +272,9 @@ export async function updateClass(deps: Deps, me: Me, classId: string, input: un
   await deps.db.batch([
     { sql: 'DELETE FROM live_sessions WHERE class_session_id = ?', params: [classId] },
     {
-      sql: `UPDATE class_sessions SET label = ?, timezone = ?, starts_at = ?, ends_at = ?, capacity = ?, price_cents = ?, language_code = ?,
+      sql: `UPDATE class_sessions SET label = ?, description = ?, timezone = ?, starts_at = ?, ends_at = ?, capacity = ?, price_cents = ?, language_code = ?,
               enrollment_deadline = ?, updated_at = ? WHERE id = ?`,
-      params: [v.label, v.timezone, v.meetings[0]!.start, v.meetings.at(-1)!.end, v.capacity, v.priceCents, v.languageCode,
+      params: [v.label, v.description, v.timezone, v.meetings[0]!.start, v.meetings.at(-1)!.end, v.capacity, v.priceCents, v.languageCode,
         v.enrollmentDeadline, deps.clock.now().toISOString(), classId],
     },
     ...meetingStatements(classId, v.meetings),

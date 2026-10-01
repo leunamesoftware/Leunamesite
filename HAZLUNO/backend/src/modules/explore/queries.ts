@@ -7,7 +7,7 @@ import { placeholders } from '../../common/sql.js';
 import { publicUrl } from '../files/images.js';
 
 export interface ClassRow {
-  id: string; course_id: string; instructor_id: string; label: string | null; timezone: string; starts_at: string; ends_at: string;
+  id: string; course_id: string; instructor_id: string; label: string | null; description: string | null; timezone: string; starts_at: string; ends_at: string;
   capacity: number; seats_taken: number; price_cents: number; currency: string; language_code: LanguageCode;
   enrollment_deadline: string; status: ClassSessionStatus; enrolled: number | null;
 }
@@ -33,7 +33,7 @@ export async function loadClasses(db: Db, opts: { courseIds?: string[]; classIds
 
 export function toClassSummary(r: ClassRow, meetings: MeetingRow[], now: Date): ClassSummary {
   return {
-    id: r.id, courseId: r.course_id, label: r.label, timezone: r.timezone, startsAt: r.starts_at, endsAt: r.ends_at,
+    id: r.id, courseId: r.course_id, label: r.label, description: r.description ?? null, timezone: r.timezone, startsAt: r.starts_at, endsAt: r.ends_at,
     enrollmentDeadline: r.enrollment_deadline, capacity: r.capacity, seatsLeft: Math.max(0, r.capacity - r.seats_taken),
     priceCents: r.price_cents, currency: r.currency, languageCode: r.language_code, status: r.status,
     meetings: meetings.map((m) => ({ id: m.id, sequence: m.sequence, start: m.scheduled_start, end: m.scheduled_end, status: m.status })),

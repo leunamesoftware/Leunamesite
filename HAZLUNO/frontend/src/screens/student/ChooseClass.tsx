@@ -65,6 +65,7 @@ export function ChooseClass() {
                 <div className="slot-main">
                   <strong>{k.label || periodLabel(k.startsAt)}</strong>
                   <span>{when(k)}</span>
+                  {k.description && <p className="slot-desc">{k.description}</p>}
                   <div className="slot-facts">
                     <span><Clock size={18} aria-hidden /><b>{m.range}</b> ({m.length})</span>
                     <span><UsersRound size={18} aria-hidden />{buy ? fill(t.choose.seats, { n: String(k.seatsLeft) }) : badge(k)}</span>

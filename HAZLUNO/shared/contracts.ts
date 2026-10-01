@@ -125,6 +125,7 @@ export interface ClassSummary {
   id: string;
   courseId: string;
   label: string | null;
+  description: string | null;
   timezone: string;
   startsAt: string;
   endsAt: string;
@@ -273,6 +274,7 @@ export interface CourseInput {
 
 export interface ClassInput {
   label?: string | null;
+  description?: string | null;
   timezone: string;
   capacity: number;
   priceCents: number;

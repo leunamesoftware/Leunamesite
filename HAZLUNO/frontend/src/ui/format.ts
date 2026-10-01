@@ -1,6 +1,6 @@
 import type { LanguageCode } from '../../../shared/contracts';
 
-const LOCALE: Record<LanguageCode, string> = { es: 'es-ES', pt: 'pt-PT', en: 'en-GB', fr: 'fr-FR', it: 'it-IT', de: 'de-DE' };
+export const LOCALE: Record<LanguageCode, string> = { es: 'es-ES', pt: 'pt-PT', en: 'en-GB', fr: 'fr-FR', it: 'it-IT', de: 'de-DE' };
 
 /** Everything is shown in the viewer's own time zone and language. */
 export const viewerTimeZone = () => Intl.DateTimeFormat().resolvedOptions().timeZone;

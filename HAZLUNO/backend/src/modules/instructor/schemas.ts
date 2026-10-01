@@ -55,6 +55,7 @@ const iso = z.string({ required_error: 'required' }).datetime({ offset: true, me
 
 export const classSchema = z.object({
   label: optText(40),
+  description: optText(300),
   timezone: timezoneSchema,
   capacity: z.number({ required_error: 'required', invalid_type_error: 'required' }).int('invalid_option').min(1, 'too_small'),
   priceCents: z.number({ required_error: 'required', invalid_type_error: 'required' }).int('invalid_option').min(0, 'too_small').max(500_000, 'too_large'),
