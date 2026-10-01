@@ -42,6 +42,7 @@ jobs:
         run: |
           npx cap add android
           npx cap sync android
+          cp nativo/MainActivity.java "$(find android/app/src/main/java -name MainActivity.java | head -1)"
           RES=android/app/src/main/res
           cp -r android-recursos/. "$RES/"
           rm -f "$RES"/drawable*/splash.png

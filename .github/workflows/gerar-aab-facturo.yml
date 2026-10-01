@@ -54,6 +54,7 @@ jobs:
 
       - name: Ícone e abertura do Facturo
         run: |
+          cp nativo/MainActivity.java "$(find android/app/src/main/java -name MainActivity.java | head -1)"
           RES=android/app/src/main/res
           cp -r android-recursos/. "$RES/"
           rm -f "$RES"/drawable*/splash.png "$RES"/drawable-*/splash.png
