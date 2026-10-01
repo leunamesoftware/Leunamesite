@@ -1,0 +1,115 @@
+10-01 02:46:34.065  6555  6555 D AndroidRuntime: >>>>>> START com.android.internal.os.RuntimeInit uid 0 <<<<<<
+10-01 02:46:34.076  6555  6555 I AndroidRuntime: Using default boot image
+10-01 02:46:34.076  6555  6555 I AndroidRuntime: Leaving lock profiling enabled
+10-01 02:46:34.162  6555  6555 D nativeloader: InitDefaultPublicLibraries for_preload=1: libandroid.so:libaaudio.so:libamidi.so:libbinder_ndk.so:libc.so:libcamera2ndk.so:libdl.so:libEGL.so:libGLESv1_CM.so:libGLESv2.so:libGLESv3.so:libicu.so:libicui18n.so:libicuuc.so:libjnigraphics.so:liblog.so:libmediandk.so:libm.so:libnativehelper.so:libnativewindow.so:libOpenMAXAL.so:libOpenSLES.so:libRS.so:libstdc++.so:libsync.so:libvulkan.so:libwebviewchromium_plat_support.so:libz.so
+10-01 02:46:34.204  6555  6555 D AndroidRuntime: Calling main entry com.android.commands.monkey.Monkey
+10-01 02:46:34.522  6555  6555 I AndroidRuntime: VM exiting with result code 0.
+10-01 02:46:35.090  6573  6573 I WebViewFactory: Loading com.google.android.webview version 113.0.5672.136 (code 567263637)
+10-01 02:46:35.096  6573  6573 D nativeloader: Configuring clns-7 for other apk /data/app/~~Ze3O8u8JhzpPI8mGrvblXQ==/com.google.android.trichromelibrary_567263637-NGEhh_ttMXs-5A5sYyrguA==/TrichromeLibrary.apk. target_sdk_version=34, uses_libraries=ALL, library_path=/data/app/~~qO_Hym7BGk8tcpUzV8E60Q==/com.google.android.webview-6lACpB2mR2VWFyjs9lEqEQ==/lib/x86_64:/data/app/~~qO_Hym7BGk8tcpUzV8E60Q==/com.google.android.webview-6lACpB2mR2VWFyjs9lEqEQ==/WebViewGoogle.apk!/lib/x86_64:/data/app/~~Ze3O8u8JhzpPI8mGrvblXQ==/com.google.android.trichromelibrary_567263637-NGEhh_ttMXs-5A5sYyrguA==/TrichromeLibrary.apk!/lib/x86_64, permitted_path=/data:/mnt/expand
+10-01 02:46:35.098  6573  6573 D nativeloader: Configuring clns-8 for other apk /data/app/~~qO_Hym7BGk8tcpUzV8E60Q==/com.google.android.webview-6lACpB2mR2VWFyjs9lEqEQ==/WebViewGoogle.apk. target_sdk_version=34, uses_libraries=, library_path=/data/app/~~qO_Hym7BGk8tcpUzV8E60Q==/com.google.android.webview-6lACpB2mR2VWFyjs9lEqEQ==/lib/x86_64:/data/app/~~qO_Hym7BGk8tcpUzV8E60Q==/com.google.android.webview-6lACpB2mR2VWFyjs9lEqEQ==/WebViewGoogle.apk!/lib/x86_64:/data/app/~~Ze3O8u8JhzpPI8mGrvblXQ==/com.google.android.trichromelibrary_567263637-NGEhh_ttMXs-5A5sYyrguA==/TrichromeLibrary.apk!/lib/x86_64, permitted_path=/data:/mnt/expand
+10-01 02:46:35.106  4010  4481 I HeterodyneSyncScheduler: Scheduling Phenotype for a PhenotypeSyncImmediately(6, org.chromium.net.cronet) one off with window [1, 2] in seconds [CONTEXT service_id=51 ]
+10-01 02:46:35.178  3325  3358 I ActivityManager: Start proc 6624:com.google.android.webview:webview_service/u0a134 for service {com.google.android.webview/org.chromium.android_webview.services.VariationsSeedServer}
+10-01 02:46:35.331  3325  3358 I ActivityManager: Start proc 6643:com.google.android.webview:sandboxed_process0:org.chromium.content.app.SandboxedProcessService0:0/u0ai9000 for  {com.leunamesoftwares.facturo.previa/org.chromium.content.app.SandboxedProcessService0:0}
+10-01 02:46:35.393  6643  6643 I cr_WebViewApkApp: Launched version=113.0.5672.136 minSdkVersion=29 isBundle=false processName=com.google.android.webview:sandboxed_process0:org.chromium.content.app.SandboxedProcessService0:0
+10-01 02:46:35.415  6624  6624 D nativeloader: Configuring clns-6 for other apk /data/app/~~Ze3O8u8JhzpPI8mGrvblXQ==/com.google.android.trichromelibrary_567263637-NGEhh_ttMXs-5A5sYyrguA==/TrichromeLibrary.apk. target_sdk_version=34, uses_libraries=ALL, library_path=/data/app/~~qO_Hym7BGk8tcpUzV8E60Q==/com.google.android.webview-6lACpB2mR2VWFyjs9lEqEQ==/lib/x86_64:/data/app/~~qO_Hym7BGk8tcpUzV8E60Q==/com.google.android.webview-6lACpB2mR2VWFyjs9lEqEQ==/WebViewGoogle.apk!/lib/x86_64:/data/app/~~Ze3O8u8JhzpPI8mGrvblXQ==/com.google.android.trichromelibrary_567263637-NGEhh_ttMXs-5A5sYyrguA==/TrichromeLibrary.apk!/lib/x86_64, permitted_path=/data:/mnt/expand:/data/user/0/com.google.android.webview
+10-01 02:46:35.417  6624  6624 D nativeloader: Configuring clns-7 for other apk /data/app/~~qO_Hym7BGk8tcpUzV8E60Q==/com.google.android.webview-6lACpB2mR2VWFyjs9lEqEQ==/WebViewGoogle.apk. target_sdk_version=34, uses_libraries=, library_path=/data/app/~~qO_Hym7BGk8tcpUzV8E60Q==/com.google.android.webview-6lACpB2mR2VWFyjs9lEqEQ==/lib/x86_64:/data/app/~~qO_Hym7BGk8tcpUzV8E60Q==/com.google.android.webview-6lACpB2mR2VWFyjs9lEqEQ==/WebViewGoogle.apk!/lib/x86_64:/data/app/~~Ze3O8u8JhzpPI8mGrvblXQ==/com.google.android.trichromelibrary_567263637-NGEhh_ttMXs-5A5sYyrguA==/TrichromeLibrary.apk!/lib/x86_64, permitted_path=/data:/mnt/expand:/data/user/0/com.google.android.webview
+10-01 02:46:35.557  6624  6624 I cr_WebViewApkApp: Launched version=113.0.5672.136 minSdkVersion=29 isBundle=false processName=com.google.android.webview:webview_service
+10-01 02:46:35.595  6573  6658 W chromium: [WARNING:dns_config_service_android.cc(115)] Failed to read DnsConfig.
+10-01 02:46:35.759  6573  6573 D Capacitor: Starting BridgeActivity
+10-01 02:46:35.777  6573  6573 D Capacitor: Registering plugin instance: CapacitorCookies
+10-01 02:46:35.782  6573  6573 D Capacitor: Registering plugin instance: WebView
+10-01 02:46:35.786  6573  6573 D Capacitor: Registering plugin instance: CapacitorHttp
+10-01 02:46:35.788  6573  6573 D Capacitor: Registering plugin instance: SystemBars
+10-01 02:46:35.794  6573  6573 D Capacitor: Registering plugin instance: App
+10-01 02:46:35.795  6573  6573 D Capacitor: Registering plugin instance: Filesystem
+10-01 02:46:35.797  6573  6573 D Capacitor: Registering plugin instance: Share
+10-01 02:46:35.850  6573  6573 W Capacitor: Unable to read file at path public/plugins
+10-01 02:46:35.857  6573  6573 D Capacitor: Loading app at https://localhost
+10-01 02:46:35.930  6573  6573 D Capacitor: App started
+10-01 02:46:35.980  6573  6573 D Capacitor/AppPlugin: Firing change: true
+10-01 02:46:35.980  6573  6573 V Capacitor/AppPlugin: Notifying listeners for event appStateChange
+10-01 02:46:35.980  6573  6573 D Capacitor/AppPlugin: No listeners found for event appStateChange
+10-01 02:46:35.980  6573  6573 D Capacitor: App resumed
+10-01 02:46:36.071  6573  6645 D Capacitor: Handling local request: https://localhost/
+10-01 02:46:36.256  3325  3358 I ActivityManager: Start proc 6754:com.google.android.webview:webview_apk/u0a134 for service {com.google.android.webview/org.chromium.android_webview.nonembedded.AwComponentUpdateService}
+10-01 02:46:36.544  6573  6573 V Capacitor/AppPlugin: Notifying listeners for event pause
+10-01 02:46:36.547  6573  6573 D Capacitor/AppPlugin: No listeners found for event pause
+10-01 02:46:36.548  6573  6573 D Capacitor: App paused
+10-01 02:46:36.602  6573  6573 D Capacitor/AppPlugin: Firing change: false
+10-01 02:46:36.606  6573  6573 V Capacitor/AppPlugin: Notifying listeners for event appStateChange
+10-01 02:46:36.606  6573  6573 D Capacitor/AppPlugin: No listeners found for event appStateChange
+10-01 02:46:36.606  6573  6573 D Capacitor: App stopped
+10-01 02:46:36.611  6573  6573 D Capacitor: Saving instance state!
+10-01 02:46:36.641  6573  6573 D Capacitor: App destroyed
+10-01 02:46:36.665  6754  6754 D nativeloader: Configuring clns-6 for other apk /data/app/~~Ze3O8u8JhzpPI8mGrvblXQ==/com.google.android.trichromelibrary_567263637-NGEhh_ttMXs-5A5sYyrguA==/TrichromeLibrary.apk. target_sdk_version=34, uses_libraries=ALL, library_path=/data/app/~~qO_Hym7BGk8tcpUzV8E60Q==/com.google.android.webview-6lACpB2mR2VWFyjs9lEqEQ==/lib/x86_64:/data/app/~~qO_Hym7BGk8tcpUzV8E60Q==/com.google.android.webview-6lACpB2mR2VWFyjs9lEqEQ==/WebViewGoogle.apk!/lib/x86_64:/data/app/~~Ze3O8u8JhzpPI8mGrvblXQ==/com.google.android.trichromelibrary_567263637-NGEhh_ttMXs-5A5sYyrguA==/TrichromeLibrary.apk!/lib/x86_64, permitted_path=/data:/mnt/expand:/data/user/0/com.google.android.webview
+10-01 02:46:36.666  6754  6754 D nativeloader: Configuring clns-7 for other apk /data/app/~~qO_Hym7BGk8tcpUzV8E60Q==/com.google.android.webview-6lACpB2mR2VWFyjs9lEqEQ==/WebViewGoogle.apk. target_sdk_version=34, uses_libraries=, library_path=/data/app/~~qO_Hym7BGk8tcpUzV8E60Q==/com.google.android.webview-6lACpB2mR2VWFyjs9lEqEQ==/lib/x86_64:/data/app/~~qO_Hym7BGk8tcpUzV8E60Q==/com.google.android.webview-6lACpB2mR2VWFyjs9lEqEQ==/WebViewGoogle.apk!/lib/x86_64:/data/app/~~Ze3O8u8JhzpPI8mGrvblXQ==/com.google.android.trichromelibrary_567263637-NGEhh_ttMXs-5A5sYyrguA==/TrichromeLibrary.apk!/lib/x86_64, permitted_path=/data:/mnt/expand:/data/user/0/com.google.android.webview
+10-01 02:46:36.738  6573  6573 D Capacitor: Starting BridgeActivity
+10-01 02:46:36.778  6573  6573 D Capacitor: Registering plugin instance: CapacitorCookies
+10-01 02:46:36.779  6573  6573 D Capacitor: Registering plugin instance: WebView
+10-01 02:46:36.781  6573  6573 D Capacitor: Registering plugin instance: CapacitorHttp
+10-01 02:46:36.783  6573  6573 D Capacitor: Registering plugin instance: SystemBars
+10-01 02:46:36.784  6573  6573 D Capacitor: Registering plugin instance: App
+10-01 02:46:36.785  6573  6573 D Capacitor: Registering plugin instance: Filesystem
+10-01 02:46:36.791  6754  6754 I cr_WebViewApkApp: Launched version=113.0.5672.136 minSdkVersion=29 isBundle=false processName=com.google.android.webview:webview_apk
+10-01 02:46:36.792  6573  6573 D Capacitor: Registering plugin instance: Share
+10-01 02:46:36.829  6573  6573 W Capacitor: Unable to read file at path public/plugins
+10-01 02:46:36.833  6573  6573 D Capacitor: Loading app at https://localhost
+10-01 02:46:36.845  6573  6645 D Capacitor: Handling local request: https://localhost/
+10-01 02:46:36.849  6573  6573 D Capacitor: App started
+10-01 02:46:36.851  6573  6573 D Capacitor/AppPlugin: Firing change: true
+10-01 02:46:36.851  6573  6573 V Capacitor/AppPlugin: Notifying listeners for event appStateChange
+10-01 02:46:36.851  6573  6573 D Capacitor/AppPlugin: No listeners found for event appStateChange
+10-01 02:46:36.851  6573  6573 D Capacitor: App resumed
+10-01 02:46:36.921  6573  6645 D Capacitor: Handling local request: https://localhost/assets/index-Bumwputj.js
+10-01 02:46:36.953  6573  6660 D Capacitor: Handling local request: https://localhost/assets/index-BoZZjlpx.css
+10-01 02:46:37.005  6573  6573 W cr_AwContents: Application attempted to call on a destroyed WebView
+10-01 02:46:37.005  6573  6573 W cr_AwContents: 	at org.chromium.android_webview.AwContents.m(chromium-TrichromeWebViewGoogle6432.apk-stable-567263637:10)
+10-01 02:46:37.005  6573  6573 W cr_AwContents: 	at org.chromium.android_webview.AwContents.h(chromium-TrichromeWebViewGoogle6432.apk-stable-567263637:2)
+10-01 02:46:37.005  6573  6573 W cr_AwContents: 	at com.android.webview.chromium.WebViewChromium.evaluateJavaScript(chromium-TrichromeWebViewGoogle6432.apk-stable-567263637:37)
+10-01 02:46:37.005  6573  6573 W cr_AwContents: 	at android.webkit.WebView.evaluateJavascript(WebView.java:893)
+10-01 02:46:37.016  6573  6573 W cr_AwContents: Application attempted to call on a destroyed WebView
+10-01 02:46:37.016  6573  6573 W cr_AwContents: 	at org.chromium.android_webview.AwContents.m(chromium-TrichromeWebViewGoogle6432.apk-stable-567263637:10)
+10-01 02:46:37.016  6573  6573 W cr_AwContents: 	at org.chromium.android_webview.AwContents.h(chromium-TrichromeWebViewGoogle6432.apk-stable-567263637:2)
+10-01 02:46:37.016  6573  6573 W cr_AwContents: 	at com.android.webview.chromium.WebViewChromium.evaluateJavaScript(chromium-TrichromeWebViewGoogle6432.apk-stable-567263637:37)
+10-01 02:46:37.016  6573  6573 W cr_AwContents: 	at android.webkit.WebView.evaluateJavascript(WebView.java:893)
+10-01 02:46:37.016  6573  6573 W cr_AwContents: 	at com.getcapacitor.cordova.MockCordovaWebViewImpl.lambda$eval$0(MockCordovaWebViewImpl.java:189)
+10-01 02:46:37.016  6573  6573 W cr_AwContents: 	at com.getcapacitor.cordova.MockCordovaWebViewImpl.$r8$lambda$4KdV8CYlWQxu6zbahMKlKsvDFpM(Unknown Source:0)
+10-01 02:46:37.016  6573  6573 W cr_AwContents: 	at com.getcapacitor.cordova.MockCordovaWebViewImpl$$ExternalSyntheticLambda1.run(D8$$SyntheticClass:0)
+10-01 02:46:37.603  6573  6573 I Capacitor/Console: File:  - Line 349 - Msg: [object Object]
+10-01 02:46:37.606  6573  6573 V Capacitor/Plugin: To native (Capacitor plugin): callbackId: 24810054, pluginId: App, methodName: addListener
+10-01 02:46:37.607  6573  6573 V Capacitor: callback: 24810054, pluginId: App, methodName: addListener, methodData: {"eventName":"backButton"}
+10-01 02:46:37.610  6573  6646 D Capacitor: Handling local request: https://localhost/icone.png
+10-01 02:46:37.669  6754  6824 W cr_AWNetworkFetcherTask: 	at org.chromium.android_webview.nonembedded.NetworkFetcherTask.download(chromium-TrichromeWebViewGoogle6432.apk-stable-567263637:48)
+10-01 02:46:37.708  6573  6645 D Capacitor: Handling local request: https://localhost/icone.png
+10-01 02:46:39.838  3325  5995 W ActivityManager: Exception when unbinding service com.leunamesoftwares.facturo.previa/org.chromium.content.app.SandboxedProcessService0:0
+10-01 02:46:39.858  3325  5995 I ActivityManager: Killing 6643:com.google.android.webview:sandboxed_process0:org.chromium.content.app.SandboxedProcessService0:0/u0a192i0 (adj 900): isolated not needed
+10-01 02:46:46.127  6321  7442 I cr_CronetUrlRequestContext: destroyNativeStreamLocked org.chromium.net.impl.CronetBidirectionalStream@de8ca8d
+10-01 02:46:47.501  7471  7471 D AndroidRuntime: >>>>>> START com.android.internal.os.RuntimeInit uid 0 <<<<<<
+10-01 02:46:47.508  7471  7471 I AndroidRuntime: Using default boot image
+10-01 02:46:47.508  7471  7471 I AndroidRuntime: Leaving lock profiling enabled
+10-01 02:46:47.626  7471  7471 D nativeloader: InitDefaultPublicLibraries for_preload=1: libandroid.so:libaaudio.so:libamidi.so:libbinder_ndk.so:libc.so:libcamera2ndk.so:libdl.so:libEGL.so:libGLESv1_CM.so:libGLESv2.so:libGLESv3.so:libicu.so:libicui18n.so:libicuuc.so:libjnigraphics.so:liblog.so:libmediandk.so:libm.so:libnativehelper.so:libnativewindow.so:libOpenMAXAL.so:libOpenSLES.so:libRS.so:libstdc++.so:libsync.so:libvulkan.so:libwebviewchromium_plat_support.so:libz.so
+10-01 02:46:47.673  7471  7471 D AndroidRuntime: Calling main entry com.android.commands.uiautomator.Launcher
+10-01 02:46:48.750  7471  7471 D AndroidRuntime: Shutting down VM
+10-01 02:46:49.172  7502  7502 D nativeloader: Configuring clns-6 for other apk /data/app/~~Ze3O8u8JhzpPI8mGrvblXQ==/com.google.android.trichromelibrary_567263637-NGEhh_ttMXs-5A5sYyrguA==/TrichromeLibrary.apk. target_sdk_version=34, uses_libraries=ALL, library_path=/data/app/~~qO_Hym7BGk8tcpUzV8E60Q==/com.google.android.webview-6lACpB2mR2VWFyjs9lEqEQ==/lib/x86_64:/data/app/~~qO_Hym7BGk8tcpUzV8E60Q==/com.google.android.webview-6lACpB2mR2VWFyjs9lEqEQ==/WebViewGoogle.apk!/lib/x86_64:/data/app/~~Ze3O8u8JhzpPI8mGrvblXQ==/com.google.android.trichromelibrary_567263637-NGEhh_ttMXs-5A5sYyrguA==/TrichromeLibrary.apk!/lib/x86_64, permitted_path=/data:/mnt/expand:/data/user/0/com.google.android.webview
+10-01 02:46:49.174  7502  7502 D nativeloader: Configuring clns-7 for other apk /data/app/~~qO_Hym7BGk8tcpUzV8E60Q==/com.google.android.webview-6lACpB2mR2VWFyjs9lEqEQ==/WebViewGoogle.apk. target_sdk_version=34, uses_libraries=, library_path=/data/app/~~qO_Hym7BGk8tcpUzV8E60Q==/com.google.android.webview-6lACpB2mR2VWFyjs9lEqEQ==/lib/x86_64:/data/app/~~qO_Hym7BGk8tcpUzV8E60Q==/com.google.android.webview-6lACpB2mR2VWFyjs9lEqEQ==/WebViewGoogle.apk!/lib/x86_64:/data/app/~~Ze3O8u8JhzpPI8mGrvblXQ==/com.google.android.trichromelibrary_567263637-NGEhh_ttMXs-5A5sYyrguA==/TrichromeLibrary.apk!/lib/x86_64, permitted_path=/data:/mnt/expand:/data/user/0/com.google.android.webview
+10-01 02:46:49.193  7502  7502 I cr_WebViewApkApp: Launched version=113.0.5672.136 minSdkVersion=29 isBundle=false processName=com.google.android.webview
+10-01 02:46:49.644  3697  6232 D PrefCtrlListHelper: Could not find Context-only controller for pref: com.android.settings.deviceinfo.legal.WebViewLicensePreferenceController
+10-01 02:46:49.740  7528  7528 D AndroidRuntime: >>>>>> START com.android.internal.os.RuntimeInit uid 0 <<<<<<
+10-01 02:46:49.748  7528  7528 I AndroidRuntime: Using default boot image
+10-01 02:46:49.748  7528  7528 I AndroidRuntime: Leaving lock profiling enabled
+10-01 02:46:49.868  7528  7528 D nativeloader: InitDefaultPublicLibraries for_preload=1: libandroid.so:libaaudio.so:libamidi.so:libbinder_ndk.so:libc.so:libcamera2ndk.so:libdl.so:libEGL.so:libGLESv1_CM.so:libGLESv2.so:libGLESv3.so:libicu.so:libicui18n.so:libicuuc.so:libjnigraphics.so:liblog.so:libmediandk.so:libm.so:libnativehelper.so:libnativewindow.so:libOpenMAXAL.so:libOpenSLES.so:libRS.so:libstdc++.so:libsync.so:libvulkan.so:libwebviewchromium_plat_support.so:libz.so
+10-01 02:46:49.933  7528  7528 D AndroidRuntime: Calling main entry com.android.commands.uiautomator.Launcher
+10-01 02:46:50.719  3697  3722 D PrefCtrlListHelper: Could not find Context-only controller for pref: com.android.settings.deviceinfo.legal.WebViewLicensePreferenceController
+10-01 02:46:51.013  7528  7528 D AndroidRuntime: Shutting down VM
+10-01 02:46:51.977  7663  7663 D AndroidRuntime: >>>>>> START com.android.internal.os.RuntimeInit uid 0 <<<<<<
+10-01 02:46:51.981  7663  7663 I AndroidRuntime: Using default boot image
+10-01 02:46:51.981  7663  7663 I AndroidRuntime: Leaving lock profiling enabled
+10-01 02:46:52.021  7663  7663 D nativeloader: InitDefaultPublicLibraries for_preload=1: libandroid.so:libaaudio.so:libamidi.so:libbinder_ndk.so:libc.so:libcamera2ndk.so:libdl.so:libEGL.so:libGLESv1_CM.so:libGLESv2.so:libGLESv3.so:libicu.so:libicui18n.so:libicuuc.so:libjnigraphics.so:liblog.so:libmediandk.so:libm.so:libnativehelper.so:libnativewindow.so:libOpenMAXAL.so:libOpenSLES.so:libRS.so:libstdc++.so:libsync.so:libvulkan.so:libwebviewchromium_plat_support.so:libz.so
+10-01 02:46:52.050  7663  7663 D AndroidRuntime: Calling main entry com.android.commands.uiautomator.Launcher
+10-01 02:46:53.107  7663  7663 D AndroidRuntime: Shutting down VM
+10-01 02:47:00.170  7810  7810 D AndroidRuntime: >>>>>> START com.android.internal.os.RuntimeInit uid 0 <<<<<<
+10-01 02:47:00.173  7810  7810 I AndroidRuntime: Using default boot image
+10-01 02:47:00.173  7810  7810 I AndroidRuntime: Leaving lock profiling enabled
+10-01 02:47:00.212  7810  7810 D nativeloader: InitDefaultPublicLibraries for_preload=1: libandroid.so:libaaudio.so:libamidi.so:libbinder_ndk.so:libc.so:libcamera2ndk.so:libdl.so:libEGL.so:libGLESv1_CM.so:libGLESv2.so:libGLESv3.so:libicu.so:libicui18n.so:libicuuc.so:libjnigraphics.so:liblog.so:libmediandk.so:libm.so:libnativehelper.so:libnativewindow.so:libOpenMAXAL.so:libOpenSLES.so:libRS.so:libstdc++.so:libsync.so:libvulkan.so:libwebviewchromium_plat_support.so:libz.so
+10-01 02:47:00.231  7810  7810 D AndroidRuntime: Calling main entry com.android.commands.uiautomator.Launcher
+10-01 02:47:01.252  7810  7810 D AndroidRuntime: Shutting down VM
