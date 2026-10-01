@@ -29,6 +29,12 @@ export const ptBR = {
     faltaNome: 'Digite o nome para continuar.',
     passo: 'Passo {n} de 2',
   },
+  vazios: {
+    orcamento: 'Nenhum orçamento ainda. Toque em "Novo orçamento" para criar o primeiro.',
+    fatura: 'Nenhuma fatura ainda. Aprove um orçamento ou crie uma fatura direto.',
+    recibo: 'Os recibos aparecem aqui quando você marca uma fatura como paga.',
+    busca: 'Nada encontrado para essa busca.',
+  },
   inicio: {
     ola: 'Olá, {nome}',
     aReceber: 'A receber',

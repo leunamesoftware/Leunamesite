@@ -47,8 +47,7 @@ adb shell dumpsys activity activities | grep -iE "facturo|mResumed|topResumed" |
 tocar "Pintor" && foto 02-profissao
 adb shell input text "Pintura%sSilva" && sleep 2 && foto 03-nome
 tocar "Começar" ; sleep 4; foto 04-inicio
-tocar "Novo orçamento" ; sleep 3; foto 05-novo-orcamento
-adb shell input tap 540 700; sleep 2; foto 05c-toque-meio
+tocar "Novo orçamento" || adb shell input tap $(adb shell wm size | grep -o "[0-9]*x[0-9]*" | tail -1 | awk -Fx '{print int($1*0.75), int($2*0.855)}'); sleep 3; foto 05-novo-orcamento
 adb shell dumpsys input_method | grep -iE "mInputShown|mIsInputViewShown" | head -3
 adb shell input swipe 540 1700 540 700 300; sleep 1; foto 06-rolou
 arvore

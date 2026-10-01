@@ -31,7 +31,7 @@ export function Documentos() {
         </div>
         <input id="busca-docs" className="entrada" placeholder={t('comum.buscar')} value={busca} onChange={(e) => setBusca(e.target.value)} />
         <section className="cartao">
-          {lista.length ? <div className="lista">{lista.map((d) => <ItemDocumento key={d.id} d={d} />)}</div> : <div className="vazio">—</div>}
+          {lista.length ? <div className="lista">{lista.map((d) => <ItemDocumento key={d.id} d={d} />)}</div> : <div className="vazio">{q ? t('vazios.busca') : t('vazios.' + tipo)}</div>}
         </section>
       </main>
       {tipo !== 'recibo' && (

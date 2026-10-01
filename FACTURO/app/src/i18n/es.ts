@@ -28,6 +28,12 @@ export const es: Dicionario = {
     faltaNome: 'Escribe un nombre para continuar.',
     passo: 'Paso {n} de 2',
   },
+  vazios: {
+    orcamento: 'Aún no hay presupuestos. Toca "Nuevo presupuesto" para crear el primero.',
+    fatura: 'Aún no hay facturas. Aprueba un presupuesto o crea una factura directamente.',
+    recibo: 'Los recibos aparecen aquí cuando marcas una factura como pagada.',
+    busca: 'No se encontró nada con esa búsqueda.',
+  },
   inicio: {
     ola: 'Hola, {nome}',
     aReceber: 'Por cobrar',

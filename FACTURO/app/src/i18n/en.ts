@@ -28,6 +28,12 @@ export const en: Dicionario = {
     faltaNome: 'Type a name to continue.',
     passo: 'Step {n} of 2',
   },
+  vazios: {
+    orcamento: 'No quotes yet. Tap "New quote" to create your first one.',
+    fatura: 'No invoices yet. Approve a quote or create an invoice directly.',
+    recibo: 'Receipts show up here when you mark an invoice as paid.',
+    busca: 'Nothing found for this search.',
+  },
   inicio: {
     ola: 'Hi, {nome}',
     aReceber: 'To receive',
