@@ -15,6 +15,12 @@
 |---|---|---|---|---|
 | B1 | Gestacell | com.leunamesoftwares.gestacell | Produção 1.0.4 em análise; 1.0.5 (teste de 7 dias) pronta para subir depois da aprovação | C1 |
 | B2 | Radar Preventivo | com.radarpreventivo.app | Teste interno (não lançar até o dono dizer "liberado") | C1 |
+| B3 | ConstruGestão | com.leunamesoftwares.construgestao | Em melhoria (vistoria feita; não lançar ainda) | C1 |
+| B4 | Sucatell | com.leunamesoftwares.sucatell | Só versão de teste | C1 |
+| B5 | Sucatell Admin | com.leunamesoftwares.sucatelladmin | Só versão de teste | C1 |
+| B6 | EconoRota | (Flutter, pasta ECONOROTA) | Projeto de cliente: publicar só com ok do dono | C1 |
+| B7 | LeuCloud | com.leunamesoftwares.leucloud | NÃO MEXER (decisão do dono) | C1 |
+| B8 | Lerguie (acessibilidade) | repositório leuname-softwarea-apps, pasta lerguie | Pausado pelo dono | C2 |
 
 ## Divisão de trabalho (acordo Cloud 1 × Cloud 2)
 
@@ -24,4 +30,4 @@
 - Comunicação: issues no GitHub com etiqueta `cloud1` ou `cloud2`.
 - Backups: `backup-bancos-d1.yml` (diário, 30 dias). Monitoramento: `monitoramento.yml` (de hora em hora, abre/fecha issue `cloud2`).
 - LeuCloud fica fora de backup/monitoramento/publicação por decisão do dono. EconoRota é de cliente: publicar só com ok do dono.
-- **Apps novos:** o dono decide quem cria cada um. Quem cria fica marcado na coluna "Criado por" (C1 = Cloud 1, C2 = Cloud 2; o dono fala "B1 (C1)", "B3 (C2)"…) e o outro não mexe no código dele (só revisa e avisa por issue).
+- **Apps novos:** o dono decide quem cria cada um. Quem cria fica marcado na coluna "Criado por" (C1 = Cloud 1 / feito fora da conversa do Cloud 2, C2 = Cloud 2; o dono fala "B1 (C1)", "B3 (C2)"…) e o outro não mexe no código dele (só revisa e avisa por issue).
