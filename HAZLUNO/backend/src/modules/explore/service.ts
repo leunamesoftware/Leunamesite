@@ -112,8 +112,8 @@ export async function courseDetail(deps: Deps, courseId: string, viewerId: strin
 export async function instructorPublic(deps: Deps, instructorId: string, viewerId: string | null): Promise<InstructorPublic> {
   const p = await deps.db.one<{
     id: string; display_name: string; avatar_key: string | null; country_code: string; headline: string | null; bio: string | null;
-    specialties: string; teaching_languages: string;
-  }>(`SELECT u.id, u.display_name, u.avatar_key, u.country_code, ip.headline, ip.bio, ip.specialties, ip.teaching_languages
+    specialties: string; teaching_languages: string; experience: InstructorPublic['experience']; links: string; cover_key: string | null;
+  }>(`SELECT u.id, u.display_name, u.avatar_key, ip.cover_key, u.country_code, ip.headline, ip.bio, ip.specialties, ip.teaching_languages, ip.experience, ip.links
       FROM users u JOIN instructor_profiles ip ON ip.user_id = u.id WHERE u.id = ? AND u.status = 'active' AND ip.verification_status = 'approved'`,
     [instructorId]);
   if (!p) throw errors.notFound('Instructor');
@@ -129,8 +129,10 @@ export async function instructorPublic(deps: Deps, instructorId: string, viewerI
     `SELECT COUNT(DISTINCT e.student_id) AS n FROM enrollments e JOIN class_sessions cs ON cs.id = e.class_session_id
      WHERE cs.instructor_id = ? AND e.status IN ('confirmed', 'completed')`, [instructorId]);
   return {
-    id: p.id, name: p.display_name, avatarUrl: p.avatar_key ? `/api/files/${p.avatar_key}` : null, countryCode: p.country_code,
+    id: p.id, name: p.display_name, avatarUrl: p.avatar_key ? `/api/files/${p.avatar_key}` : null, coverUrl: p.cover_key ? `/api/files/${p.cover_key}` : null,
+    verified: true, countryCode: p.country_code,
     headline: p.headline, bio: p.bio, specialties: parseJsonList(p.specialties), teachingLanguages: parseJsonList(p.teaching_languages),
+    experience: p.experience, links: parseJsonList(p.links),
     rating: rating?.avg != null ? Math.round(rating.avg * 10) / 10 : null, reviewsCount: Number(rating?.n ?? 0),
     studentsCount: Number(students?.n ?? 0), courses,
   };

@@ -41,7 +41,7 @@ export type ErrorCode =
 /** Field-level validation codes (translated by the app). */
 export type FieldError =
   | 'required' | 'too_short' | 'too_long' | 'invalid_email' | 'invalid_option' | 'must_accept' | 'invalid_json'
-  | 'too_small' | 'too_large' | 'in_the_past' | 'overlap' | 'after_start' | 'end_before_start' | 'too_many';
+  | 'too_small' | 'too_large' | 'in_the_past' | 'overlap' | 'after_start' | 'end_before_start' | 'too_many' | 'contact_link';
 
 // ---------- account ----------
 
@@ -192,15 +192,22 @@ export interface ExploreResult {
   items: CourseCard[];
 }
 
+export type Experience = 'lt1' | '1_3' | '3_5' | '5_10' | 'gt10';
+export interface ProfileLink { kind: 'instagram' | 'youtube' | 'website'; url: string }
+
 export interface InstructorPublic {
   id: string;
   name: string;
   avatarUrl: string | null;
+  coverUrl: string | null;
+  verified: true;
   countryCode: string;
   headline: string | null;
   bio: string | null;
   specialties: string[];
   teachingLanguages: LanguageCode[];
+  experience: Experience | null;
+  links: ProfileLink[];
   rating: number | null;
   reviewsCount: number;
   studentsCount: number;
@@ -212,10 +219,16 @@ export interface InstructorPublic {
 export interface InstructorProfile {
   verificationStatus: InstructorVerification;
   rejectionReason: string | null;
+  coverUrl: string | null;
+  /** Private: used only to verify and contact the teacher. */
+  phone: string | null;
+  city: string | null;
   headline: string | null;
   bio: string | null;
   specialties: string[];
   teachingLanguages: LanguageCode[];
+  experience: Experience | null;
+  links: ProfileLink[];
   legalEntityType: 'individual' | 'company' | null;
   legalName: string | null;
   taxId: string | null;
@@ -302,5 +315,7 @@ export interface AdminInstructorRow {
   taxCountry: string | null;
   businessAddress: string | null;
   headline: string | null;
+  phone: string | null;
+  city: string | null;
   submittedAt: string;
 }

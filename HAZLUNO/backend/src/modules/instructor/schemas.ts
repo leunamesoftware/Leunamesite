@@ -8,7 +8,20 @@ const list = (maxItems: number, maxLen: number) =>
   z.array(z.string().trim().min(1, 'required').max(maxLen, 'too_long')).max(maxItems, 'too_many').default([]);
 const lang = z.enum(LANGUAGES, { errorMap: () => ({ message: 'invalid_option' }) });
 
+/** Contact apps would let students book and pay outside Hazluno (no face check, no attendance, no certificate). */
+const CONTACT_HOSTS = /(^|\.)(wa\.me|whatsapp\.com|t\.me|telegram\.(me|org)|signal\.(me|group)|viber\.com|m\.me|messenger\.com)$/i;
+const linkSchema = z.object({
+  kind: z.enum(['instagram', 'youtube', 'website'], { errorMap: () => ({ message: 'invalid_option' }) }),
+  url: z.string().trim().max(200, 'too_long').url('invalid_option').refine((u) => u.startsWith('https://'), 'invalid_option')
+    .refine((u) => { try { return !CONTACT_HOSTS.test(new URL(u).hostname) && !/^tel:|^mailto:/i.test(u); } catch { return false; } }, 'contact_link'),
+});
+
 export const instructorProfileSchema = z.object({
+  experience: z.enum(['lt1', '1_3', '3_5', '5_10', 'gt10'], { errorMap: () => ({ message: 'invalid_option' }) }).nullable().optional(),
+  links: z.array(linkSchema).max(5, 'too_many').default([]),
+  phone: z.string().trim().transform((v) => v.replace(/[\s().-]/g, '')).pipe(z.string().regex(/^\+[1-9]\d{6,14}$/, 'invalid_option'))
+    .nullable().optional().or(z.literal('').transform(() => null)),
+  city: optText(80),
   headline: optText(120),
   bio: optText(2000),
   specialties: list(10, 60),

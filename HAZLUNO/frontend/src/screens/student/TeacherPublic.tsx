@@ -1,4 +1,4 @@
-import { ChevronLeft, Languages, Star, UsersRound } from 'lucide-react';
+import { BadgeCheck, ChevronLeft, Languages, Star, UsersRound } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import type { InstructorPublic } from '../../../../shared/contracts';
@@ -21,9 +21,10 @@ export function TeacherPublic() {
   return (
     <main className="teacherpub">
       <header className="teacherpub-head">
+        {p.coverUrl && <img className="teacherpub-cover" src={p.coverUrl} alt="" />}
         <button type="button" className="icon-btn icon-btn-light" onClick={() => navigate(-1)} aria-label={t.common.back}><ChevronLeft size={24} /></button>
         <Avatar url={p.avatarUrl} name={p.name} size={112} />
-        <h1>{p.name}</h1>
+        <h1>{p.name} <BadgeCheck className="verified verified-light" size={24} aria-label={t.teach.verified} /></h1>
         <p>{countryName(p.countryCode)}</p>
         <div className="teacherpub-stats">
           {p.rating != null ? <span><Star size={18} fill="currentColor" aria-hidden />{p.rating.toLocaleString(lang, { minimumFractionDigits: 1 })} ({p.reviewsCount})</span>

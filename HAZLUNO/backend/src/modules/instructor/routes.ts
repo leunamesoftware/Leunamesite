@@ -11,6 +11,7 @@ export function instructorRoutes(deps: Deps) {
 
   r.get('/profile', async (c) => c.json(ok(await s.getProfile(deps, c.get('me')))));
   r.put('/profile', async (c) => c.json(ok(await s.saveProfile(deps, c.get('me'), await readJson(c.req.raw)))));
+  r.post('/profile/cover', async (c) => c.json(ok(await s.setProfileCover(deps, c.get('me'), c.req.raw))));
   r.post('/profile/submit', async (c) => c.json(ok(await s.submitForReview(deps, c.get('me'), await requestMeta(deps, c)))));
 
   r.get('/courses', async (c) => c.json(ok(await s.listCourses(deps, c.get('me')))));

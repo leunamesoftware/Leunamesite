@@ -17,7 +17,7 @@ async function account(email: string, intent: 'learn' | 'teach', over: Record<st
 }
 
 const legal = {
-  headline: 'Pintora y profesora', bio: 'Doce años enseñando pintura al óleo.', specialties: ['Óleo', 'Acuarela'], teachingLanguages: ['es'],
+  phone: '+34 612 345 678', city: 'Madrid', headline: 'Pintora y profesora', bio: 'Doce años enseñando pintura al óleo.', specialties: ['Óleo', 'Acuarela'], teachingLanguages: ['es'],
   legalEntityType: 'individual', legalName: 'Laura Méndez Ruiz', taxId: 'X1234567L', taxCountry: 'ES', businessAddress: 'Calle Mayor 1, Madrid',
 };
 
@@ -81,12 +81,22 @@ describe('teacher verification', () => {
   it('submitting needs the legal details; once under review they are locked', async () => {
     const teacher = await account('laura@example.com', 'teach');
     const empty = await t.call('POST', '/api/instructor/profile/submit', { token: teacher.token });
-    expect(empty.json.fields).toMatchObject({ legalName: 'required', taxId: 'required', teachingLanguages: 'required' });
+    expect(empty.json.fields).toMatchObject({ phone: 'required', city: 'required', legalName: 'required', taxId: 'required', teachingLanguages: 'required' });
     await t.call('PUT', '/api/instructor/profile', { token: teacher.token, body: legal });
+    const badPhone = await t.call('PUT', '/api/instructor/profile', { token: teacher.token, body: { ...legal, phone: '612345' } });
+    expect(badPhone.json.fields).toEqual({ phone: 'invalid_option' });
+    const saved = await t.call<InstructorProfile>('GET', '/api/instructor/profile', { token: teacher.token });
+    expect(saved.json.data).toMatchObject({ phone: '+34612345678', city: 'Madrid' });
     const sent = await t.call<InstructorProfile>('POST', '/api/instructor/profile/submit', { token: teacher.token });
     expect(sent.json.data.verificationStatus).toBe('under_review');
     const change = await t.call('PUT', '/api/instructor/profile', { token: teacher.token, body: { ...legal, taxId: 'OTHER' } });
     expect(change.json.error).toBe('invalid_state');
+    const wa = await t.call('PUT', '/api/instructor/profile', { token: teacher.token,
+      body: { ...legal, links: [{ kind: 'website', url: 'https://wa.me/34612345678' }] } });
+    expect(wa.json.fields).toEqual({ 'links.0.url': 'contact_link' });
+    const ok = await t.call<InstructorProfile>('PUT', '/api/instructor/profile', { token: teacher.token,
+      body: { ...legal, experience: '5_10', links: [{ kind: 'instagram', url: 'https://instagram.com/lauramendez' }] } });
+    expect(ok.json.data).toMatchObject({ experience: '5_10', links: [{ kind: 'instagram', url: 'https://instagram.com/lauramendez' }] });
     const bioOnly = await t.call<InstructorProfile>('PUT', '/api/instructor/profile', { token: teacher.token, body: { ...legal, bio: 'Nueva bio.' } });
     expect(bioOnly.json.data.bio).toBe('Nueva bio.');
   });
@@ -266,6 +276,15 @@ describe('student account', () => {
     const res = await t.app.request(url);
     expect([res.status, res.headers.get('content-type')]).toEqual([200, 'image/png']);
     expect((await t.app.request('/api/files/public/../secret.png')).status).toBe(404);
+  });
+
+  it('teacher profile cover shows on the public profile, with the verified mark', async () => {
+    const laura = await approvedTeacher();
+    await publishedCourseWithClass(laura);
+    const up = await upload('/api/instructor/profile/cover', laura.token, PNG);
+    expect(up.json.data.coverUrl).toMatch(/^\/api\/files\/public\/covers\//);
+    const p = await t.call<InstructorPublic>('GET', `/api/public/instructors/${laura.id}`);
+    expect(p.json.data).toMatchObject({ coverUrl: up.json.data.coverUrl, verified: true });
   });
 
   it('course cover upload by its teacher only', async () => {

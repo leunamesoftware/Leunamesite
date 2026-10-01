@@ -6,7 +6,7 @@ import { api } from '../../api';
 import { useI18n } from '../../i18n';
 import { TeachLayout } from './TeachLayout';
 
-export function VerificationCard({ profile }: { profile: InstructorProfile }) {
+export function VerificationCard({ profile, showAction = true }: { profile: InstructorProfile; showAction?: boolean }) {
   const { t, fill } = useI18n();
   const s = profile.verificationStatus;
   const map = {
@@ -23,7 +23,7 @@ export function VerificationCard({ profile }: { profile: InstructorProfile }) {
       <div>
         <h2>{map.title}</h2>
         {map.text && <p>{map.text}</p>}
-        {(s === 'pending' || s === 'rejected') && <Link className="btn-small btn-orange-solid" to="/teach/profile">{t.teach.completeProfile}</Link>}
+        {showAction && (s === 'pending' || s === 'rejected') && <Link className="btn-small btn-orange-solid" to="/teach/profile">{t.teach.completeProfile}</Link>}
       </div>
     </section>
   );

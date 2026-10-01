@@ -17,6 +17,7 @@ const MAX_MEETING_MIN = 8 * 60;
 // ---------- profile & verification ----------
 
 interface ProfileRow {
+  cover_key: string | null; phone: string | null; city: string | null; experience: InstructorProfile['experience']; links: string;
   verification_status: InstructorProfile['verificationStatus']; rejection_reason: string | null; headline: string | null; bio: string | null;
   specialties: string; teaching_languages: string; legal_entity_type: 'individual' | 'company' | null; legal_name: string | null;
   tax_id: string | null; tax_country: string | null; business_address: string | null;
@@ -29,7 +30,8 @@ async function profileRow(deps: Deps, me: Me) {
 }
 
 const toProfile = (p: ProfileRow): InstructorProfile => ({
-  verificationStatus: p.verification_status, rejectionReason: p.rejection_reason, headline: p.headline, bio: p.bio,
+  verificationStatus: p.verification_status, rejectionReason: p.rejection_reason, coverUrl: publicUrl(p.cover_key), phone: p.phone, city: p.city,
+  experience: p.experience, links: parseJsonList(p.links), headline: p.headline, bio: p.bio,
   specialties: parseJsonList(p.specialties), teachingLanguages: parseJsonList(p.teaching_languages), legalEntityType: p.legal_entity_type,
   legalName: p.legal_name, taxId: p.tax_id, taxCountry: p.tax_country, businessAddress: p.business_address,
 });
@@ -45,9 +47,9 @@ export async function saveProfile(deps: Deps, me: Me, input: unknown): Promise<I
     || (d.taxCountry ?? null) !== p.tax_country || d.businessAddress !== p.business_address;
   if (locked && legalChanged) throw new AppError('invalid_state', 409, 'Legal details cannot be changed while under review or after approval. Contact support.');
   await deps.db.run(
-    `UPDATE instructor_profiles SET headline = ?, bio = ?, specialties = ?, teaching_languages = ?, legal_entity_type = ?, legal_name = ?,
+    `UPDATE instructor_profiles SET experience = ?, links = ?, phone = ?, city = ?, headline = ?, bio = ?, specialties = ?, teaching_languages = ?, legal_entity_type = ?, legal_name = ?,
        tax_id = ?, tax_country = ?, business_address = ?, updated_at = ? WHERE user_id = ?`,
-    [d.headline, d.bio, JSON.stringify(d.specialties), JSON.stringify(d.teachingLanguages), d.legalEntityType ?? null, d.legalName, d.taxId,
+    [d.experience ?? null, JSON.stringify(d.links), d.phone ?? null, d.city, d.headline, d.bio, JSON.stringify(d.specialties), JSON.stringify(d.teachingLanguages), d.legalEntityType ?? null, d.legalName, d.taxId,
       d.taxCountry ?? null, d.businessAddress, deps.clock.now().toISOString(), me.id]);
   return getProfile(deps, me);
 }
@@ -57,7 +59,7 @@ export async function submitForReview(deps: Deps, me: Me, meta: RequestMeta): Pr
   const p = await profileRow(deps, me);
   if (!['pending', 'rejected'].includes(p.verification_status)) throw new AppError('invalid_state', 409, 'This profile is not waiting for submission.');
   const missing: Record<string, string> = {};
-  for (const [field, value] of Object.entries({ headline: p.headline, bio: p.bio, legalEntityType: p.legal_entity_type, legalName: p.legal_name,
+  for (const [field, value] of Object.entries({ phone: p.phone, city: p.city, headline: p.headline, bio: p.bio, legalEntityType: p.legal_entity_type, legalName: p.legal_name,
     taxId: p.tax_id, taxCountry: p.tax_country, businessAddress: p.business_address })) if (!value) missing[field] = 'required';
   if (!parseJsonList(p.teaching_languages).length) missing.teachingLanguages = 'required';
   if (Object.keys(missing).length) throw errors.invalid(missing);
@@ -66,6 +68,15 @@ export async function submitForReview(deps: Deps, me: Me, meta: RequestMeta): Pr
     { sql: `UPDATE instructor_profiles SET verification_status = 'under_review', rejection_reason = NULL, updated_at = ? WHERE user_id = ?`, params: [now, me.id] },
     auditStatement(deps, { actorId: me.id, action: 'instructor.submitted', ipHash: meta.ipHash, userAgent: meta.userAgent }),
   ]);
+  return getProfile(deps, me);
+}
+
+/** Wide cover image of the public teacher profile. */
+export async function setProfileCover(deps: Deps, me: Me, request: Request): Promise<InstructorProfile> {
+  const p = await profileRow(deps, me);
+  const key = await storeImage(deps, request, 'covers');
+  await deps.db.run('UPDATE instructor_profiles SET cover_key = ?, updated_at = ? WHERE user_id = ?', [key, deps.clock.now().toISOString(), me.id]);
+  if (p.cover_key) await deps.storage.delete(p.cover_key);
   return getProfile(deps, me);
 }
 

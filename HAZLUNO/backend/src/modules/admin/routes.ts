@@ -17,7 +17,7 @@ export function adminRoutes(deps: Deps) {
     const rows = await deps.db.all<AdminInstructorRow>(
       `SELECT u.id AS userId, u.display_name AS name, u.email, u.country_code AS countryCode, ip.verification_status AS verificationStatus,
               ip.legal_entity_type AS legalEntityType, ip.legal_name AS legalName, ip.tax_id AS taxId, ip.tax_country AS taxCountry,
-              ip.business_address AS businessAddress, ip.headline, ip.updated_at AS submittedAt
+              ip.business_address AS businessAddress, ip.headline, ip.phone, ip.city, ip.updated_at AS submittedAt
        FROM instructor_profiles ip JOIN users u ON u.id = ip.user_id WHERE ip.verification_status = ? ORDER BY ip.updated_at`, [status]);
     return c.json({ ok: true, data: rows });
   });

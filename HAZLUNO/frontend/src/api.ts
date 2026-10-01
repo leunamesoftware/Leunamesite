@@ -73,6 +73,7 @@ export const api = {
     profile: () => request<InstructorProfile>('GET', '/instructor/profile'),
     saveProfile: (body: Omit<InstructorProfile, 'verificationStatus' | 'rejectionReason'>) => request<InstructorProfile>('PUT', '/instructor/profile', body),
     submit: () => request<InstructorProfile>('POST', '/instructor/profile/submit'),
+    uploadProfileCover: (file: File) => request<InstructorProfile>('POST', '/instructor/profile/cover', formWith(file)),
     courses: () => request<InstructorCourse[]>('GET', '/instructor/courses'),
     course: (id: string) => request<InstructorCourse>('GET', `/instructor/courses/${id}`),
     createCourse: (body: CourseInput) => request<InstructorCourse>('POST', '/instructor/courses', body),
