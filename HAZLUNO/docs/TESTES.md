@@ -8,7 +8,7 @@ cd HAZLUNO/frontend && npm run build  # checagem de tipos + build
 
 ## O que está coberto (Fase 1)
 - **Banco:** existem todas as entidades do prompt mestre; só os 8 estados de turma são aceitos; vagas nunca passam da capacidade; inscrição fecha antes do início; divisão de pagamento sempre soma o valor pago; regras de cobrança iniciais do dono.
-- **Catálogo:** 12 categorias nos 6 idiomas, inglês quando o idioma não existe, só anuncia funções realmente configuradas.
+- **Catálogo:** 14 categorias nos 6 idiomas, inglês quando o idioma não existe, só anuncia funções realmente configuradas.
 - **Cadastro:** aprender (aluno) e ensinar (professor em verificação), consentimento com versão, códigos de erro por campo, e-mail repetido, senha nunca guardada pura, IP nunca guardado puro.
 - **Login e sessões:** maiúsculas/espaços, mesma resposta para senha errada e e-mail inexistente, bloqueio após 10 erros por 15 min, expiração, conta suspensa perde o acesso, auditoria.
 - **Conta:** perfil, troca de senha derruba os outros aparelhos, desconectar aparelho, não mexe em aparelho de outra pessoa, aluno pode pedir para ensinar.
