@@ -8,7 +8,7 @@ Pelo acordo Cloud 1 / Cloud 2, **o Cloud 2 cuida** de `wrangler.toml`, workflows
 - **Banco:** D1 `hazluno`, binding `DB`, `migrations_dir = "backend/src/db/migrations"` → `wrangler d1 migrations apply hazluno --remote`.
 - **Variáveis:** `NODE_ENV=production`, `SESSION_DAYS=30`, `ALLOWED_ORIGINS` e `PUBLIC_URL` com o endereço final.
 - **Segredos:** `PASSWORD_PEPPER` e `IP_HASH_SECRET` (16+ caracteres cada) via `wrangler secret put`. **Nunca** trocar o `PASSWORD_PEPPER` depois de ter contas: as senhas param de funcionar.
-- **R2** (Fase 5): bucket privado para materiais e certificados.
+- **R2 (desde a Fase 2):** bucket `hazluno-files`, binding **`FILES`** (fotos de perfil e capas em `public/…`; depois materiais e certificados). Privado: o Worker é quem serve os arquivos.
 
 ## Ordem do deploy
 1. `cd HAZLUNO/frontend && npm ci && npm run build`

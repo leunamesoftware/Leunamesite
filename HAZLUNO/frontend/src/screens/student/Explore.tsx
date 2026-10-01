@@ -138,7 +138,7 @@ export function Explore() {
 
           <section className="results" aria-busy={loading}>
             <div className="results-head">
-              <h1>{t.explore.results} {total !== null && <span>{fill(t.explore.resultsCount, { n: String(total) })}</span>}</h1>
+              <h1>{t.explore.results} {total !== null && <span>{total === 1 ? t.explore.resultsCountOne : fill(t.explore.resultsCount, { n: String(total) })}</span>}</h1>
               <div className="results-tools">
                 <button type="button" className="tool-btn filters-toggle" onClick={() => setFiltersOpen(true)}>
                   <SlidersHorizontal size={18} aria-hidden />{t.explore.filters}{activeFilters ? ` (${activeFilters})` : ''}

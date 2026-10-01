@@ -17,3 +17,15 @@ Variáveis da API: veja `backend/.env.example`. Em desenvolvimento nada é obrig
 | `PUBLIC_URL` | endereço público (links de e-mail e certificado) | sim |
 | `SESSION_DAYS` | duração do login | não (30) |
 | `EMAIL_PROVIDER` | liga a recuperação de senha quando houver adaptador | não |
+| `FILES_DIR` | pasta das imagens no desenvolvimento local (padrão `./data/files`) | não (em produção é o R2) |
+
+## Primeiro administrador
+Depois de criar sua conta normalmente no app, dê o papel de administrador pelo banco (uma vez):
+
+```bash
+# local
+sqlite3 data/hazluno.db "INSERT INTO user_roles (user_id, role, granted_at) SELECT id, 'admin', datetime('now') FROM users WHERE email = 'seu@email';"
+# produção (Cloudflare D1)
+wrangler d1 execute hazluno --remote --command "INSERT INTO user_roles (user_id, role, granted_at) SELECT id, 'admin', datetime('now') FROM users WHERE email = 'seu@email';"
+```
+O admin aprova professores em Perfil → Administrador.

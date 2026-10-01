@@ -17,8 +17,8 @@ O nome da marca fica em um lugar só: `frontend/src/brand.ts` (e `{brand}` nos t
 | Fase | Conteúdo | Situação |
 |---|---|---|
 | 1 | Arquitetura + banco + autenticação | **Concluída** (veja abaixo) |
-| 2 | Aluno, professor, cursos e turmas | Próxima |
-| 3 | Inscrição, pagamentos e comissão | — |
+| 2 | Aluno, professor, cursos e turmas | **Concluída** (veja abaixo) |
+| 3 | Inscrição, pagamentos e comissão | Próxima (precisa do provedor de pagamento) |
 | 4 | Sala ao vivo | — |
 | 5 | Gravações, materiais e certificados | — |
 | 6 | Painel administrativo | — |
@@ -32,7 +32,15 @@ O nome da marca fica em um lugar só: `frontend/src/brand.ts` (e `{brand}` nos t
 - Cadastro "Quero aprender" / "Quero ensinar" (professor começa **em verificação**), login, sair, sessões revogáveis, aparelhos conectados, trocar senha, limite de tentativas, papéis (aluno, professor, administrador, moderador) checados no servidor, registro de auditoria, consentimento de termos/privacidade com versão.
 - Telas 1 (abertura), 2 (login), 3 (aprender ou ensinar + cadastro) e um início provisório com as categorias reais.
 - Regra de acesso à turma (quem compra, quem entra, quem não clica em nada) num lugar só, usada por app e API.
-- 39 testes automáticos.
+- 39 testes automáticos na Fase 1 (57 com a Fase 2).
+
+### Fase 2 — o que foi entregue
+- **Professor:** verificação com dados públicos e fiscais (bloqueados depois de enviados), aprovação/recusa pelo admin (registrada e notificada), cursos com capa, materiais e aviso de segurança, **grupos com vários encontros** (máx. 25 vagas, sem choque de horário, inscrição fecha no início), publicar, cancelar, agenda.
+- **Aluno:** início, buscar (texto, categoria, quando, preço, nível, idioma, país do professor, ordenação), detalhe do curso, "Elige tu grupo" no horário local, perfil do professor, mis clases, favoritos, perfil com foto e aparelhos conectados.
+- **Regra da turma** em todas as telas e no servidor: de fora só se compra antes do início e com vaga; ao vivo, lotada, encerrada ou terminada não deixa clicar.
+- Fotos (perfil e capa) checadas pelo conteúdo real do arquivo. Gravação 30 dias. Categorias Arte e Bienestar.
+- 57 testes no servidor + jornadas completas conferidas no navegador (aluno e professor).
+- Reservar com pagamento: a tela leva até "Continuar" e avisa que o pagamento chega na Fase 3.
 
 ### O que ainda falta (honesto)
 - **Nome:** Hazluno (com H), confirmado pelo dono.

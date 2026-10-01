@@ -1,5 +1,5 @@
 import type {
-  AgendaItem, ApiResponse, Category, ClassInput, ClassSummary, CourseCard, CourseDetail, CourseInput, ExploreQuery, ExploreResult,
+  AdminInstructorRow, AgendaItem, ApiResponse, Category, ClassInput, ClassSummary, CourseCard, CourseDetail, CourseInput, ExploreQuery, ExploreResult,
   InstructorCourse, InstructorProfile, InstructorPublic, LanguageCode, Me, MyClass, PublicConfig, SessionCreated, SessionInfo,
 } from '../../shared/contracts';
 
@@ -84,6 +84,12 @@ export const api = {
     cancelClass: (id: string, reason: string) => request<ClassSummary>('POST', `/instructor/classes/${id}/cancel`, { reason }),
     deleteClass: (id: string) => request<null>('DELETE', `/instructor/classes/${id}`),
     agenda: () => request<AgendaItem[]>('GET', '/instructor/agenda'),
+  },
+
+  admin: {
+    instructors: () => request<AdminInstructorRow[]>('GET', '/admin/instructors'),
+    approve: (id: string) => request<null>('POST', `/admin/instructors/${id}/approve`),
+    reject: (id: string, reason: string) => request<null>('POST', `/admin/instructors/${id}/reject`, { reason }),
   },
 };
 

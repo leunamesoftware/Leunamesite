@@ -19,6 +19,11 @@ import { Home } from './screens/student/Home';
 import { MyClasses } from './screens/student/MyClasses';
 import { Profile } from './screens/student/Profile';
 import { TeacherPublic } from './screens/student/TeacherPublic';
+import { AdminInstructors } from './screens/admin/AdminInstructors';
+import { CourseEditor } from './screens/teacher/CourseEditor';
+import { TeachAgenda } from './screens/teacher/TeachAgenda';
+import { TeachHome } from './screens/teacher/TeachHome';
+import { TeachProfile } from './screens/teacher/TeachProfile';
 import { SessionProvider, useSession } from './state/session';
 import './styles.css';
 
@@ -26,6 +31,13 @@ function OnlySignedIn({ children }: { children: ReactNode }) {
   const { me, restoring } = useSession();
   if (restoring) return null;
   return me ? children : <Navigate to="/" replace />;
+}
+
+function OnlyRole({ roles, children }: { roles: string[]; children: ReactNode }) {
+  const { me, restoring } = useSession();
+  if (restoring) return null;
+  if (!me) return <Navigate to="/" replace />;
+  return me.roles.some((r) => roles.includes(r)) ? children : <Navigate to="/home" replace />;
 }
 
 function OnlySignedOut({ children }: { children: ReactNode }) {
@@ -51,6 +63,12 @@ createRoot(document.getElementById('root')!).render(
             <Route path="/my" element={<OnlySignedIn><MyClasses /></OnlySignedIn>} />
             <Route path="/favorites" element={<OnlySignedIn><Favorites /></OnlySignedIn>} />
             <Route path="/profile" element={<OnlySignedIn><Profile /></OnlySignedIn>} />
+            <Route path="/teach" element={<OnlyRole roles={['instructor']}><TeachHome /></OnlyRole>} />
+            <Route path="/teach/profile" element={<OnlyRole roles={['instructor']}><TeachProfile /></OnlyRole>} />
+            <Route path="/teach/agenda" element={<OnlyRole roles={['instructor']}><TeachAgenda /></OnlyRole>} />
+            <Route path="/teach/courses/new" element={<OnlyRole roles={['instructor']}><CourseEditor /></OnlyRole>} />
+            <Route path="/teach/courses/:id" element={<OnlyRole roles={['instructor']}><CourseEditor /></OnlyRole>} />
+            <Route path="/admin" element={<OnlyRole roles={['admin', 'moderator']}><AdminInstructors /></OnlyRole>} />
             <Route path="/terms" element={<Legal doc="terms" />} />
             <Route path="/privacy" element={<Legal doc="privacy" />} />
             <Route path="*" element={<Navigate to="/" replace />} />

@@ -108,3 +108,8 @@ Transcrição, legendas, resumo e capítulos vão se ligar às `recordings`; tra
   - **Sem botão "Descargar"** (proposta ao dono): arquivo baixado pode ser repassado. Gravação só dentro do app, por streaming com link temporário, com o nome do aluno por cima do vídeo, e apagada no fim do prazo.
   - Capítulos: marcados pelo professor; sugestão automática por IA só quando existir de verdade (transcrição).
   - "Más clases de esta profesora" mostra cursos ao vivo com turmas abertas (o Hazluno não vende gravações avulsas).
+- `materials-reference-phase5.webp` (materiais da aula): PDFs, vídeos complementares, imagens de referência e links úteis, com abas Materiales / Grabación / Chat / Detalles.
+  - Só para inscritos; o professor envia por curso (vale para todos os grupos) ou por grupo.
+  - Tipo (PDF, vídeo, imagem) detectado pelo arquivo real, como já é feito com as fotos; limite de tamanho por tipo.
+  - PDF e imagem podem ser baixados (o professor decidiu compartilhar); vídeo complementar só por streaming, como a gravação.
+  - Link externo abre com aviso de saída do app; links entram na moderação (denúncia).
