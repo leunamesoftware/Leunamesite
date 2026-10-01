@@ -5,6 +5,8 @@ name: Prévia do Hazluno (link para o dono ver no celular)
 # da versão oficial. Não altera nada na pasta HAZLUNO/ do repositório.
 on:
   workflow_dispatch:
+  push:
+    paths: ['PREVIAS/hazluno/**', '.github/workflows/previa-hazluno.yml']
   schedule:
     - cron: '*/30 * * * *'   # confere a cada 30 min se o Cloud 1 enviou algo novo
 
