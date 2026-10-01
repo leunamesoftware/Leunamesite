@@ -7,11 +7,18 @@ import { StrictMode, type ReactNode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { I18nProvider } from './i18n';
-import { Home } from './screens/Home';
 import { Legal } from './screens/Legal';
 import { Login } from './screens/Login';
 import { Signup } from './screens/Signup';
 import { Welcome } from './screens/Welcome';
+import { ChooseClass } from './screens/student/ChooseClass';
+import { CourseDetail } from './screens/student/CourseDetail';
+import { Explore } from './screens/student/Explore';
+import { Favorites } from './screens/student/Favorites';
+import { Home } from './screens/student/Home';
+import { MyClasses } from './screens/student/MyClasses';
+import { Profile } from './screens/student/Profile';
+import { TeacherPublic } from './screens/student/TeacherPublic';
 import { SessionProvider, useSession } from './state/session';
 import './styles.css';
 
@@ -37,6 +44,13 @@ createRoot(document.getElementById('root')!).render(
             <Route path="/login" element={<OnlySignedOut><Login /></OnlySignedOut>} />
             <Route path="/signup" element={<OnlySignedOut><Signup /></OnlySignedOut>} />
             <Route path="/home" element={<OnlySignedIn><Home /></OnlySignedIn>} />
+            <Route path="/explore" element={<Explore />} />
+            <Route path="/course/:id" element={<CourseDetail />} />
+            <Route path="/course/:id/choose" element={<ChooseClass />} />
+            <Route path="/teacher/:id" element={<TeacherPublic />} />
+            <Route path="/my" element={<OnlySignedIn><MyClasses /></OnlySignedIn>} />
+            <Route path="/favorites" element={<OnlySignedIn><Favorites /></OnlySignedIn>} />
+            <Route path="/profile" element={<OnlySignedIn><Profile /></OnlySignedIn>} />
             <Route path="/terms" element={<Legal doc="terms" />} />
             <Route path="/privacy" element={<Legal doc="privacy" />} />
             <Route path="*" element={<Navigate to="/" replace />} />

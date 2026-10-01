@@ -10,7 +10,7 @@
 
 ## Planejado (Fase 7)
 - Exportar meus dados (JSON) e excluir conta (anonimiza o que a lei manda manter, como registros fiscais).
-- Consentimento específico para gravação de aula, pedido antes de entrar na sala; retenção das gravações por `recording.retention_days` (365, configurável), depois exclusão automática.
+- Consentimento específico para gravação de aula, pedido antes de entrar na sala; retenção das gravações por `recording.retention_days` (30 dias, como na tela do dono; configurável), depois exclusão automática.
 - Gravações só para quem estava inscrito na turma e para o professor; nunca públicas.
 - Aviso e aceite para cursos com risco físico (`courses.is_hazardous`).
 

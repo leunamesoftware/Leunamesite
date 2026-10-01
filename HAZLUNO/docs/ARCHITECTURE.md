@@ -84,3 +84,27 @@ Transcrição, legendas, resumo e capítulos vão se ligar às `recordings`; tra
   - "Entrar a la clase" só no cartão ao vivo (regra da turma); entrada sempre pelo app, com verificação facial (Fase 4).
   - Para quem já comprou, no lugar de "plazas disponibles": progresso da turma ("Encuentro 2 de 7 · jueves 09:00").
   - "Clases pasadas": gravação (só para inscritos) e certificado quando houver (Fase 5).
+- `booked-class-reference-phase4.webp` (aula reservada, com contagem regressiva): "La clase comienza en", "Entrar a la clase" (ativa 5 min antes), agregar ao calendário, cancelar reserva, materiais, mensagens com o professor, outros alunos, sobre o professor.
+  - **Regra nova do dono (Fase 4):** a primeira entrada vale de 5 min antes até 5 min depois do início de cada encontro (`live.early_join_minutes` = 5, `live.late_join_minutes` = 5, editáveis). Quem já entrou e caiu da internet **pode voltar** a qualquer momento do encontro (o prompt mestre pede reconexão).
+  - Sem selo "EN VIVO" antes da hora: no lugar, a contagem regressiva.
+  - Sem "plazas disponibles" para quem já comprou.
+  - "Cancelar reserva" mostra antes o valor que volta e o que fica retido (regra de desistência de 50 %) e pede confirmação.
+  - "Otros alumnos": por privacidade (GDPR), só aparece quem aceitar ser visto; para os demais, só o número de colegas.
+- `live-room-reference-phase4.webp` (sala ao vivo): vídeo do professor em destaque, faixa com os alunos, chat / participantes / materiais, tempo restante, nº de alunos, microfone, câmera, levantar a mão, chat, compartilhar, "Salir de la clase".
+  - **Câmera do aluno obrigatória** e checagem facial periódica (pedido do dono); sem câmera, o aluno não fica na sala.
+  - **Marca-d'água** com o nome do aluno sobre o vídeo do professor (desestimula gravar e repassar).
+  - **Levantar a mão → professor dá a palavra → contador de 30 s** (`live.question_seconds`), um aluno por vez.
+  - "Compartir" para aluno só quando o professor autorizar.
+  - Selo **"Grabando"** sempre visível quando a gravação estiver ligada (GDPR); consentimento pedido antes de entrar.
+  - Chat com denúncia de mensagem; professor pode silenciar e remover aluno.
+  - Android: bloqueio de captura e gravação de tela durante a aula (FLAG_SECURE).
+  - Nunca mais de 25 alunos (a sala segue a capacidade da turma).
+- `class-finished-reference-phase5.webp` ("¡Clase finalizada!"): gravação, materiais, certificado, avaliar, mensagem ao professor, "Ver mis clases" / "Buscar más clases".
+  - Gravação disponível por **30 dias** (`recording.retention_days`), só para inscritos.
+  - Curso de vários encontros: a tela aparece ao fim de cada encontro, mas **certificado só depois do último**, com presença mínima (`courses.completion_min_attendance_bp`, padrão 80 %).
+  - Certificado diz "de participação/conclusão"; nunca afirma reconhecimento oficial sem comprovação.
+  - "Evaluar la clase": uma avaliação por inscrição, só de quem participou.
+- `recording-reference-phase5.webp` (gravação): player, capítulos, "Grabación disponible 30 días", continuar vendo, materiais, favoritos, certificado, avaliar, mais cursos do professor.
+  - **Sem botão "Descargar"** (proposta ao dono): arquivo baixado pode ser repassado. Gravação só dentro do app, por streaming com link temporário, com o nome do aluno por cima do vídeo, e apagada no fim do prazo.
+  - Capítulos: marcados pelo professor; sugestão automática por IA só quando existir de verdade (transcrição).
+  - "Más clases de esta profesora" mostra cursos ao vivo com turmas abertas (o Hazluno não vende gravações avulsas).

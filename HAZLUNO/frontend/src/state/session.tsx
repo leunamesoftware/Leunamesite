@@ -8,6 +8,8 @@ interface Session {
   /** true while checking a token saved on the device. */
   restoring: boolean;
   start(created: SessionCreated): void;
+  /** Replaces the cached account after the server returns a fresh one. */
+  refresh(me: Me): void;
   logout(): Promise<void>;
 }
 
@@ -38,7 +40,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     setMe(null);
   }, []);
 
-  return <Ctx.Provider value={{ me, restoring, start, logout }}>{children}</Ctx.Provider>;
+  return <Ctx.Provider value={{ me, restoring, start, refresh: setMe, logout }}>{children}</Ctx.Provider>;
 }
 
 export function useSession() {
