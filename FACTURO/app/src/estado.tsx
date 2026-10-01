@@ -1,4 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from 'react';
+import { App as CapApp } from '@capacitor/app';
+import { Capacitor } from '@capacitor/core';
 import { negocio as repoNegocio } from './dados/banco';
 import type { Negocio } from './dominio/tipos';
 import { definirIdioma, idiomaDoAparelho } from './i18n';
@@ -47,9 +49,20 @@ export function ProvedorEstado({ children }: { children: ReactNode }) {
   }, []);
   const voltar = useCallback(() => setPilha((p) => (p.length > 1 ? p.slice(0, -1) : p)), []);
 
-  // Botão "voltar" do Android
+  // Botão "voltar" do Android: volta uma tela; numa aba vai ao início; no início fecha o app.
   useEffect(() => {
-    const aoVoltar = (e: PopStateEvent) => { e.preventDefault(); voltar(); history.pushState(null, ''); };
+    if (Capacitor.isNativePlatform()) {
+      const ouvinte = CapApp.addListener('backButton', () => {
+        setPilha((p) => {
+          if (p.length > 1) return p.slice(0, -1);
+          if (p[0]!.nome !== 'inicio') return [{ nome: 'inicio' }];
+          void CapApp.exitApp();
+          return p;
+        });
+      });
+      return () => { void ouvinte.then((o) => o.remove()); };
+    }
+    const aoVoltar = () => { voltar(); history.pushState(null, ''); };
     history.pushState(null, '');
     window.addEventListener('popstate', aoVoltar);
     return () => window.removeEventListener('popstate', aoVoltar);

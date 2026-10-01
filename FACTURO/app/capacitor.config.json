@@ -1,0 +1,12 @@
+{
+  "appId": "com.leunamesoftwares.facturo",
+  "appName": "Facturo",
+  "webDir": "dist",
+  "backgroundColor": "#F3F6F6",
+  "android": {
+    "allowMixedContent": false
+  },
+  "server": {
+    "androidScheme": "https"
+  }
+}
