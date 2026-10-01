@@ -1,6 +1,7 @@
 // Textos da página que o cliente abre. Um idioma novo: acrescente um bloco igual.
 export const TEXTOS = {
   'pt-BR': {
+    jaPaguei: 'Já paguei', confirmarPaguei: 'Confirma que você já fez o pagamento?', pagamentoInformado: 'Pagamento informado em {data}. {negocio} vai conferir e confirmar.',
     orcamento: 'Orçamento', fatura: 'Fatura', para: 'Para', emitido: 'Emitido em', valido: 'Válido até', vence: 'Vencimento',
     item: 'Item', qtd: 'Qtd.', valor: 'Valor', subtotal: 'Subtotal', desconto: 'Desconto', total: 'Total', observacoes: 'Observações',
     aprovarTitulo: 'Aprovar este orçamento', seuNome: 'Seu nome', assine: 'Assine com o dedo no quadro abaixo', limpar: 'Limpar',
@@ -13,6 +14,7 @@ export const TEXTOS = {
     vencido: 'Link expirado ou inexistente.', feito: 'Feito com Facturo', contato: 'Falar com {negocio}',
   },
   en: {
+    jaPaguei: 'I have paid', confirmarPaguei: 'Confirm that you have already paid?', pagamentoInformado: 'Payment reported on {data}. {negocio} will check and confirm.',
     orcamento: 'Quote', fatura: 'Invoice', para: 'Bill to', emitido: 'Issued', valido: 'Valid until', vence: 'Due date',
     item: 'Item', qtd: 'Qty', valor: 'Amount', subtotal: 'Subtotal', desconto: 'Discount', total: 'Total', observacoes: 'Notes',
     aprovarTitulo: 'Approve this quote', seuNome: 'Your name', assine: 'Sign with your finger in the box below', limpar: 'Clear',
@@ -25,6 +27,7 @@ export const TEXTOS = {
     vencido: 'This link has expired or does not exist.', feito: 'Made with Facturo', contato: 'Contact {negocio}',
   },
   es: {
+    jaPaguei: 'Ya pagué', confirmarPaguei: '¿Confirmas que ya hiciste el pago?', pagamentoInformado: 'Pago informado el {data}. {negocio} lo revisará y confirmará.',
     orcamento: 'Presupuesto', fatura: 'Factura', para: 'Para', emitido: 'Emitido', valido: 'Válido hasta', vence: 'Vencimiento',
     item: 'Ítem', qtd: 'Cant.', valor: 'Importe', subtotal: 'Subtotal', desconto: 'Descuento', total: 'Total', observacoes: 'Notas',
     aprovarTitulo: 'Aprobar este presupuesto', seuNome: 'Tu nombre', assine: 'Firma con el dedo en el recuadro', limpar: 'Borrar',

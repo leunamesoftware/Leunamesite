@@ -13,11 +13,20 @@ function data(v: string | null, locale: string): string {
   try { return new Intl.DateTimeFormat(locale, { day: '2-digit', month: '2-digit', year: 'numeric', timeZone: 'UTC' }).format(d); } catch { return v.slice(0, 10); }
 }
 
+/** Iniciais para o logo automático (igual ao app). */
+function iniciais(nome: string): string {
+  const limpas = nome.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^A-Za-z0-9 ]/g, ' ').trim().split(/\s+/).filter(Boolean);
+  const fortes = limpas.filter((p) => p.length > 2 || /\d/.test(p));
+  const w = fortes.length ? fortes : limpas;
+  if (!w.length) return 'F';
+  return (w.length === 1 ? w[0]!.slice(0, 2) : w[0]![0]! + w[1]![0]!).toUpperCase();
+}
+
 const CSS = `
 :root{--cor:#0E9F6E;--fundo:#F3F6F6;--sup:#fff;--txt:#10262C;--suave:#5B6E74;--linha:#E1E8E8}
 *{box-sizing:border-box}body{margin:0;background:var(--fundo);color:var(--txt);font:16px/1.45 system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif}
 .w{max-width:620px;margin:0 auto;padding:0 16px 40px}.faixa{height:6px;background:var(--cor)}
-.cab{display:flex;gap:12px;align-items:center;padding:18px 0}.cab img{width:56px;height:56px;object-fit:contain;border-radius:12px;background:#fff;border:1px solid var(--linha)}
+.cab{display:flex;gap:12px;align-items:center;padding:18px 0}.cab .ini{width:56px;height:56px;border-radius:12px;display:grid;place-items:center;background:#fff;color:var(--cor);font-weight:800;font-size:22px;border:1px solid var(--linha)}.cab img{width:56px;height:56px;object-fit:contain;border-radius:12px;background:#fff;border:1px solid var(--linha)}
 .cab h1{font-size:19px;margin:0}.cab small{color:var(--suave)}
 .c{background:var(--sup);border-radius:16px;padding:16px;margin-top:12px;box-shadow:0 1px 2px rgba(16,38,44,.06),0 6px 18px rgba(16,38,44,.06)}
 .tipo{color:var(--cor);font-weight:800;text-transform:uppercase;letter-spacing:.04em;font-size:13px}.cod{font-weight:700}
@@ -37,7 +46,7 @@ canvas{width:100%;height:180px;border:1.5px dashed var(--linha);border-radius:12
 footer{text-align:center;color:var(--suave);font-size:13px;margin-top:22px}pre{white-space:pre-wrap;font:inherit;margin:0}
 `;
 
-export async function paginaDocumento(id: string, d: CopiaPublica, aprovacao: Aprovacao | null, recusado: boolean, nonce: string): Promise<string> {
+export async function paginaDocumento(id: string, d: CopiaPublica, aprovacao: Aprovacao | null, recusado: boolean, nonce: string, pagoInformadoEm: string | null = null): Promise<string> {
   const T = textos(d.idioma);
   const $ = (c: number) => dinheiro(c, d.moeda, d.locale);
   const cor = d.negocio.cor;
@@ -61,8 +70,8 @@ export async function paginaDocumento(id: string, d: CopiaPublica, aprovacao: Ap
   }
 
   let pagamento = '';
-  if (d.tipo === 'fatura' && d.pagamento) {
-    const p = d.pagamento;
+  if (d.tipo === 'fatura') {
+    const p = d.pagamento ?? { pix: '', link: '', banco: '' };
     const blocos: string[] = [];
     if (p.pix) {
       const svg = await QRCode.toString(p.pix, { type: 'svg', margin: 1, errorCorrectionLevel: 'M' });
@@ -70,14 +79,17 @@ export async function paginaDocumento(id: string, d: CopiaPublica, aprovacao: Ap
     }
     if (p.link) blocos.push(`<a class="b" href="${esc(p.link)}" rel="noopener noreferrer" target="_blank">${esc(T.pagarLink)}</a>`);
     if (p.banco) blocos.push(`<h2 style="margin-top:14px">${esc(T.banco)}</h2><pre class="meta">${esc(p.banco)}</pre>`);
-    if (blocos.length) pagamento = `<div class="c"><h2>${esc(T.pagar)}</h2>${blocos.join('')}</div>`;
+    const paguei = pagoInformadoEm
+      ? `<div class="ok" style="margin-top:14px">✓ ${esc(preencher(T.pagamentoInformado, { data: data(pagoInformadoEm, d.locale), negocio: d.negocio.nome }))}</div>`
+      : `<div class="err" id="erro" role="alert"></div><button class="b" id="paguei" type="button" style="margin-top:14px">✓ ${esc(T.jaPaguei)}</button>`;
+    pagamento = `<div class="c" id="pagar">${blocos.length ? `<h2>${esc(T.pagar)}</h2>${blocos.join('')}` : ''}${paguei}</div>`;
   }
 
   const telefone = d.negocio.telefone.replace(/\D/g, '');
   const contato = telefone ? `<a class="b out" href="https://wa.me/${esc(telefone)}" rel="noopener noreferrer">${esc(preencher(T.contato, { negocio: d.negocio.nome }))}</a>` : '';
 
   const script = `
-const T=${JSON.stringify({ faltaNome: T.faltaNome, faltaAssinatura: T.faltaAssinatura, erro: T.erro, obrigado: preencher(T.obrigado, { negocio: d.negocio.nome }), confirmarRecusa: T.confirmarRecusa, copiado: T.copiado })};
+const T=${JSON.stringify({ faltaNome: T.faltaNome, faltaAssinatura: T.faltaAssinatura, erro: T.erro, obrigado: preencher(T.obrigado, { negocio: d.negocio.nome }), confirmarRecusa: T.confirmarRecusa, copiado: T.copiado, confirmarPaguei: T.confirmarPaguei })};
 const id=${JSON.stringify(id)};
 const c=document.getElementById('tela');
 if(c){const r=window.devicePixelRatio||1;const ajustar=()=>{const b=c.getBoundingClientRect();c.width=b.width*r;c.height=b.height*r;const x=c.getContext('2d');x.scale(r,r);x.lineWidth=2.4;x.lineCap='round';x.lineJoin='round';x.strokeStyle='#10262C';};ajustar();
@@ -92,12 +104,13 @@ document.getElementById('ok').onclick=async e=>{const nome=document.getElementBy
 const m=document.createElement('canvas');m.width=480;m.height=Math.round(480*c.height/c.width);m.getContext('2d').drawImage(c,0,0,m.width,m.height);
 try{await enviar('aprovar',{nome,assinatura:m.toDataURL('image/png')});document.getElementById('aprovar').innerHTML='<div class="ok">✓ '+T.obrigado+'</div>';setTimeout(()=>location.reload(),1800)}catch{e.target.disabled=false;erro(T.erro)}};
 document.getElementById('nao').onclick=async()=>{if(!confirm(T.confirmarRecusa))return;try{await enviar('recusar',{});location.reload()}catch{erro(T.erro)}};}
+const pg=document.getElementById('paguei');if(pg)pg.onclick=async()=>{if(!confirm(T.confirmarPaguei))return;pg.disabled=true;try{const r=await fetch('/o/'+id+'/paguei',{method:'POST',headers:{'Content-Type':'application/json'},body:'{}'});if(!r.ok)throw 0;location.reload()}catch{pg.disabled=false;document.getElementById('erro').textContent=T.erro}};
 const cp=document.getElementById('copiar');if(cp)cp.onclick=async()=>{try{await navigator.clipboard.writeText(document.getElementById('pix').textContent);cp.textContent=T.copiado}catch{}};`;
 
   return `<!doctype html><html lang="${esc(d.idioma)}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow"><title>${esc(d.tipo === 'fatura' ? T.fatura : T.orcamento)} ${esc(d.codigo)} — ${esc(d.negocio.nome)}</title>
 <style nonce="${nonce}">${CSS}:root{--cor:${esc(cor)}}</style></head><body><div class="faixa"></div><div class="w">
-<div class="cab">${d.negocio.logo ? `<img src="${esc(d.negocio.logo)}" alt="">` : ''}<div><h1>${esc(d.negocio.nome)}</h1><small>${esc([d.negocio.telefone, d.negocio.email].filter(Boolean).join(' · '))}</small></div></div>
+<div class="cab">${d.negocio.logo ? `<img src="${esc(d.negocio.logo)}" alt="">` : `<div class="ini">${esc(iniciais(d.negocio.nome))}</div>`}<div><h1>${esc(d.negocio.nome)}</h1><small>${esc([d.negocio.telefone, d.negocio.email].filter(Boolean).join(' · '))}</small></div></div>
 <div class="c"><div class="tipo">${esc(d.tipo === 'fatura' ? T.fatura : T.orcamento)} · <span class="cod">${esc(d.codigo)}</span></div>
 <div class="meta">${esc(T.para)}</div><div class="cli">${esc(d.cliente.nome)}</div>
 <div class="meta">${esc(T.emitido)} ${esc(data(d.emitidoEm, d.locale))}${d.validoAte && d.tipo === 'orcamento' ? ` · ${esc(T.valido)} ${esc(data(d.validoAte, d.locale))}` : ''}${d.venceEm && d.tipo === 'fatura' ? ` · ${esc(T.vence)} ${esc(data(d.venceEm, d.locale))}` : ''}</div>

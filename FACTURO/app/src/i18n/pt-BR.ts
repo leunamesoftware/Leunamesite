@@ -57,6 +57,11 @@ export const ptBR = {
     recibo: 'Os recibos aparecem aqui quando você marca uma fatura como paga.',
     busca: 'Nada encontrado para essa busca.',
   },
+  avisos: {
+    aprovou: '✓ {cliente} aprovou o {codigo}',
+    recusou: '{cliente} recusou o {codigo}',
+    pagou: '💰 {cliente} informou o pagamento da {codigo}',
+  },
   inicio: {
     ola: 'Olá, {nome}',
     aReceber: 'A receber',
@@ -71,6 +76,8 @@ export const ptBR = {
     vazioTexto: 'Toque em "Novo orçamento", escolha o cliente e os serviços. Pronto.',
   },
   doc: {
+    clienteInformou: '💰 {cliente} informou que pagou em {data}. Confira no seu banco e confirme.',
+    confirmarRecebimento: 'Confirmar recebimento',
     novo: 'Novo {tipo}',
     cliente: 'Cliente',
     escolherCliente: 'Escolher cliente',

@@ -7,22 +7,23 @@ import { useEstado } from '../estado';
 import { data, dinheiro, t, unidade, useIdioma } from '../i18n';
 import { gerarPdf, nomeArquivo } from '../pdf/gerarPdf';
 import { abrirWhatsApp, compartilharArquivo, copiarTexto } from '../servicos/compartilhar';
-import { atualizarLink, consultarLink, criarLink } from '../servicos/links';
+import { atualizarLink, criarLink } from '../servicos/links';
+import { acompanhar, aguardaCliente } from '../servicos/acompanhar';
 import { Selo, Topo } from '../componentes/base';
 
 export function Detalhe({ id, enviar = false }: { id: string; enviar?: boolean }) {
   useIdioma();
-  const { negocio, ir, voltar, aviso } = useEstado();
+  const { negocio, ir, voltar, aviso, revisao } = useEstado();
   const [doc, setDoc] = useState<Documento | null>(null);
   const [ocupado, setOcupado] = useState(false);
   const jaEnviou = useRef(false);
 
   const recarregar = useCallback(async () => setDoc((await documentos.obter(id)) ?? null), [id]);
-  useEffect(() => { void recarregar(); }, [recarregar]);
+  useEffect(() => { void recarregar(); }, [recarregar, revisao]);
 
-  // Ao abrir um orçamento enviado, confere em silêncio se o cliente já aprovou.
+  // Ao abrir, confere em silêncio se o cliente já aprovou ou informou pagamento.
   useEffect(() => {
-    if (doc?.link && doc.status === 'enviado' && navigator.onLine) void conferirAprovacao(true);
+    if (doc && aguardaCliente(doc) && navigator.onLine) void conferirAprovacao(true);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [doc?.id]);
 
@@ -86,17 +87,10 @@ export function Detalhe({ id, enviar = false }: { id: string; enviar?: boolean }
   }
 
   async function conferirAprovacao(silencioso = false) {
-    if (!d.link) return;
     try {
-      const r = await consultarLink(d.link);
-      if (r.aprovacao) {
-        setDoc(await marcarAprovado(d, r.aprovacao.nome, r.aprovacao.assinatura));
-        if (!silencioso) aviso(t('status.aprovado'));
-      } else if (r.recusado) {
-        setDoc(await documentos.salvar({ ...d, status: 'recusado' }));
-      } else if (!silencioso) {
-        aviso(t('doc.aguardandoCliente'));
-      }
+      const { doc: novo, evento } = await acompanhar(d);
+      setDoc(novo);
+      if (!silencioso) aviso(evento ? t('status.' + (evento.tipo === 'aprovou' ? 'aprovado' : evento.tipo === 'recusou' ? 'recusado' : 'pago')) : t('doc.aguardandoCliente'));
     } catch {
       if (!silencioso) aviso(t('comum.semInternet'));
     }
@@ -157,12 +151,16 @@ export function Detalhe({ id, enviar = false }: { id: string; enviar?: boolean }
           {d.pagoEm && <div style={{ color: 'var(--verde-forte)', fontWeight: 700, marginTop: 8 }}>{t('doc.pagoEm', { data: data(d.pagoEm) })}</div>}
         </section>
 
+        {d.tipo === 'fatura' && d.pagamentoInformadoEm && d.status !== 'pago' && (
+          <div className="faixa-aviso">{t('doc.clienteInformou', { cliente: d.cliente.nome.split(' ')[0] ?? '', data: data(d.pagamentoInformadoEm) })}</div>
+        )}
+
         <div className="acoes">
           {d.status !== 'cancelado' && (
             <button className="botao whats" disabled={ocupado} onClick={enviarWhatsApp}>🟢 {t('doc.enviarWhatsapp')}</button>
           )}
 
-          {d.tipo === 'orcamento' && d.status === 'enviado' && d.link && (
+          {aguardaCliente(d) && (
             <button className="botao secundario" disabled={ocupado} onClick={() => void comOcupado(() => conferirAprovacao())}>{t('doc.atualizarStatus')}</button>
           )}
           {d.tipo === 'orcamento' && (d.status === 'aprovado' || d.status === 'enviado' || d.status === 'rascunho') && (
@@ -193,7 +191,7 @@ export function Detalhe({ id, enviar = false }: { id: string; enviar?: boolean }
                   ir({ nome: 'documento', id: recibo.id });
                 })}
               >
-                ✓ {t('doc.marcarPago')}
+                ✓ {d.pagamentoInformadoEm ? t('doc.confirmarRecebimento') : t('doc.marcarPago')}
               </button>
               {(vencida || d.status === 'enviado') && (
                 <button className="botao secundario" disabled={ocupado} onClick={lembrar}>{t('doc.lembrete')}</button>

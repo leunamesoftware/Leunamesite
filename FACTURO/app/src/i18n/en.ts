@@ -56,6 +56,11 @@ export const en: Dicionario = {
     recibo: 'Receipts show up here when you mark an invoice as paid.',
     busca: 'Nothing found for this search.',
   },
+  avisos: {
+    aprovou: '✓ {cliente} approved {codigo}',
+    recusou: '{cliente} declined {codigo}',
+    pagou: '💰 {cliente} reported paying {codigo}',
+  },
   inicio: {
     ola: 'Hi, {nome}',
     aReceber: 'To receive',
@@ -70,6 +75,8 @@ export const en: Dicionario = {
     vazioTexto: 'Tap "New quote", pick the client and the services. Done.',
   },
   doc: {
+    clienteInformou: '💰 {cliente} reported paying on {data}. Check your bank and confirm.',
+    confirmarRecebimento: 'Confirm payment received',
     novo: 'New {tipo}',
     cliente: 'Client',
     escolherCliente: 'Choose client',

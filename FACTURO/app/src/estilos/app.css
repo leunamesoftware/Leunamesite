@@ -190,3 +190,4 @@ textarea.entrada { min-height: 84px; resize: vertical; }
 /* Teclado aberto: some a barra de baixo e o botão flutuante */
 body.digitando .barra-nav, body.digitando .fab { display: none; }
 .logo-previa.monograma { display: grid; place-items: center; font-weight: 800; font-size: 26px; letter-spacing: .02em; background: var(--superficie); }
+.faixa-aviso { background: var(--selo-aviso); color: var(--texto); border: 1px solid var(--aviso); border-radius: 14px; padding: 12px 14px; font-weight: 600; }

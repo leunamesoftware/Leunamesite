@@ -96,4 +96,5 @@ export interface Documento extends Registro {
   link: LinkCompartilhado | null;
   aprovacao: Aprovacao | null;
   pagoEm: string | null;
+  pagamentoInformadoEm?: string | null; // o cliente tocou em "Já paguei" no link (falta o profissional confirmar)
 }

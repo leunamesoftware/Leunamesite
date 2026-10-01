@@ -9,11 +9,11 @@ import { ItemDocumento } from './Inicio';
 
 export function Documentos() {
   useIdioma();
-  const { ir } = useEstado();
+  const { ir, revisao } = useEstado();
   const [docs, setDocs] = useState<Documento[]>([]);
   const [tipo, setTipo] = useState<TipoDocumento>('orcamento');
   const [busca, setBusca] = useState('');
-  useEffect(() => { void documentos.listar().then(setDocs); }, []);
+  useEffect(() => { void documentos.listar().then(setDocs); }, [revisao]);
 
   const q = busca.trim().toLowerCase();
   const lista = docs.filter((d) => d.tipo === tipo && (!q || d.cliente.nome.toLowerCase().includes(q) || codigo(d).toLowerCase().includes(q)));

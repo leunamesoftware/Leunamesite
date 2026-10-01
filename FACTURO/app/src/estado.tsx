@@ -3,7 +3,9 @@ import { App as CapApp } from '@capacitor/app';
 import { Capacitor } from '@capacitor/core';
 import { negocio as repoNegocio } from './dados/banco';
 import type { Negocio } from './dominio/tipos';
-import { definirIdioma, idiomaDoAparelho } from './i18n';
+import { definirIdioma, idiomaDoAparelho, t } from './i18n';
+import { acompanharTodos } from './servicos/acompanhar';
+import { codigo } from './dominio/calculos';
 import { regiaoDe } from './regioes/regioes';
 
 export type Tela =
@@ -25,6 +27,7 @@ interface Estado {
   voltar: () => void;
   aviso: (texto: string) => void;
   avisoAtual: string | null;
+  revisao: number; // muda quando chega novidade do cliente (telas recarregam as listas)
 }
 
 const Contexto = createContext<Estado | null>(null);
@@ -33,6 +36,7 @@ export function ProvedorEstado({ children }: { children: ReactNode }) {
   const [neg, setNeg] = useState<Negocio | null | undefined>(undefined);
   const [pilha, setPilha] = useState<Tela[]>([{ nome: 'inicio' }]);
   const [avisoAtual, setAviso] = useState<string | null>(null);
+  const [revisao, setRevisao] = useState(0);
 
   const recarregarNegocio = useCallback(async () => {
     const n = (await repoNegocio.obter()) ?? null;
@@ -70,11 +74,29 @@ export function ProvedorEstado({ children }: { children: ReactNode }) {
 
   const aviso = useCallback((texto: string) => {
     setAviso(texto);
-    window.setTimeout(() => setAviso((a) => (a === texto ? null : a)), 2600);
+    window.setTimeout(() => setAviso((a) => (a === texto ? null : a)), 3800);
   }, []);
 
+  // Ao abrir o app e ao voltar para ele: confere se clientes aprovaram ou informaram pagamento.
+  const temNegocio = !!neg;
+  useEffect(() => {
+    if (!temNegocio) return;
+    const conferir = async () => {
+      const eventos = await acompanharTodos();
+      if (!eventos.length) return;
+      setRevisao((r) => r + 1);
+      const e = eventos[0]!;
+      aviso(t('avisos.' + e.tipo, { cliente: e.doc.cliente.nome.split(' ')[0] ?? '', codigo: codigo(e.doc) }) + (eventos.length > 1 ? ` (+${eventos.length - 1})` : ''));
+    };
+    void conferir();
+    const aoVoltarAoApp = () => { if (document.visibilityState === 'visible') void conferir(); };
+    document.addEventListener('visibilitychange', aoVoltarAoApp);
+    const intervalo = window.setInterval(() => void conferir(), 60_000);
+    return () => { document.removeEventListener('visibilitychange', aoVoltarAoApp); window.clearInterval(intervalo); };
+  }, [temNegocio, aviso]);
+
   return (
-    <Contexto.Provider value={{ negocio: neg, recarregarNegocio, tela: pilha[pilha.length - 1]!, ir, voltar, aviso, avisoAtual }}>
+    <Contexto.Provider value={{ negocio: neg, recarregarNegocio, tela: pilha[pilha.length - 1]!, ir, voltar, aviso, avisoAtual, revisao }}>
       {children}
     </Contexto.Provider>
   );

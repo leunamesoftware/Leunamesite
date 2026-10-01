@@ -23,9 +23,9 @@ export function ItemDocumento({ d }: { d: Documento }) {
 
 export function Inicio() {
   useIdioma();
-  const { negocio, ir } = useEstado();
+  const { negocio, ir, revisao } = useEstado();
   const [docs, setDocs] = useState<Documento[] | null>(null);
-  useEffect(() => { void documentos.listar().then(setDocs); }, []);
+  useEffect(() => { void documentos.listar().then(setDocs); }, [revisao]);
   if (!negocio) return null;
 
   const lista = docs ?? [];

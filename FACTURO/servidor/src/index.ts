@@ -10,7 +10,7 @@ const MAX_CORPO = 600_000;
 const ID = /^[A-Za-z0-9]{16}$/;
 
 interface Linha {
-  id: string; chave_hash: string; dados: string; expira_em: string; visto_em: string | null; aprovacao: string | null; recusado: number;
+  id: string; chave_hash: string; dados: string; expira_em: string; visto_em: string | null; aprovacao: string | null; recusado: number; pago_informado_em: string | null;
 }
 
 async function lerCorpo(req: Request): Promise<unknown> {
@@ -92,7 +92,7 @@ async function atualizar(req: Request, env: Env, id: string): Promise<Response> 
 async function situacao(req: Request, env: Env, id: string): Promise<Response> {
   const l = await doDono(req, env, id);
   if (!l) return json({ erro: 'nao_encontrado' }, 404);
-  return json({ aprovacao: l.aprovacao ? JSON.parse(l.aprovacao) : null, recusado: l.recusado === 1, vistoEm: l.visto_em });
+  return json({ aprovacao: l.aprovacao ? JSON.parse(l.aprovacao) : null, recusado: l.recusado === 1, vistoEm: l.visto_em, pagoInformadoEm: l.pago_informado_em });
 }
 
 async function pagina(req: Request, env: Env, id: string, ctx: ExecutionContext): Promise<Response> {
@@ -102,7 +102,16 @@ async function pagina(req: Request, env: Env, id: string, ctx: ExecutionContext)
   if (!l.visto_em) ctx.waitUntil(env.DB.prepare('UPDATE links SET visto_em = ? WHERE id = ?').bind(new Date().toISOString(), id).run());
   const nonce = chaveAleatoria().slice(0, 24);
   const aprovacao = l.aprovacao ? (JSON.parse(l.aprovacao) as Aprovacao) : null;
-  return html(await paginaDocumento(id, dados, aprovacao, l.recusado === 1, nonce), 200, nonce);
+  return html(await paginaDocumento(id, dados, aprovacao, l.recusado === 1, nonce, l.pago_informado_em), 200, nonce);
+}
+
+async function informarPagamento(req: Request, env: Env, id: string): Promise<Response> {
+  if (!mesmaOrigem(req)) return json({ erro: 'origem' }, 403);
+  const l = await buscar(env, id);
+  if (!l) return json({ erro: 'nao_encontrado' }, 404);
+  if (JSON.parse(l.dados).tipo !== 'fatura') return json({ erro: 'nao_e_fatura' }, 409);
+  await env.DB.prepare('UPDATE links SET pago_informado_em = ? WHERE id = ? AND pago_informado_em IS NULL').bind(new Date().toISOString(), id).run();
+  return json({ ok: true });
 }
 
 async function responder(req: Request, env: Env, id: string, acao: 'aprovar' | 'recusar'): Promise<Response> {
@@ -140,6 +149,8 @@ export default {
       if (r && m === 'GET') return await pagina(req, env, r[1]!, ctx);
       r = pathname.match(/^\/o\/([^/]+)\/(aprovar|recusar)$/);
       if (r && m === 'POST') return await responder(req, env, r[1]!, r[2] as 'aprovar' | 'recusar');
+      r = pathname.match(/^\/o\/([^/]+)\/paguei$/);
+      if (r && m === 'POST') return await informarPagamento(req, env, r[1]!);
       if (pathname === '/' && m === 'GET') return Response.redirect('https://leunamesoftware.com.br/', 302);
       if (pathname === '/saude') return json({ ok: true });
       return pathname.startsWith('/api/') ? json({ erro: 'nao_encontrado' }, 404) : naoEncontrado(req);

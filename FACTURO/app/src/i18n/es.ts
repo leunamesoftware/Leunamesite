@@ -56,6 +56,11 @@ export const es: Dicionario = {
     recibo: 'Los recibos aparecen aquí cuando marcas una factura como pagada.',
     busca: 'No se encontró nada con esa búsqueda.',
   },
+  avisos: {
+    aprovou: '✓ {cliente} aprobó {codigo}',
+    recusou: '{cliente} rechazó {codigo}',
+    pagou: '💰 {cliente} informó el pago de {codigo}',
+  },
   inicio: {
     ola: 'Hola, {nome}',
     aReceber: 'Por cobrar',
@@ -70,6 +75,8 @@ export const es: Dicionario = {
     vazioTexto: 'Toca "Nuevo presupuesto", elige el cliente y los servicios. Listo.',
   },
   doc: {
+    clienteInformou: '💰 {cliente} informó que pagó el {data}. Revisa tu banco y confirma.',
+    confirmarRecebimento: 'Confirmar recibido',
     novo: 'Nuevo {tipo}',
     cliente: 'Cliente',
     escolherCliente: 'Elegir cliente',

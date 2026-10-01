@@ -57,8 +57,10 @@ export async function atualizarLink(link: LinkCompartilhado, doc: Documento, neg
   if (!r.ok) throw new Error('servidor ' + r.status);
 }
 
-export async function consultarLink(link: LinkCompartilhado): Promise<{ aprovacao: Aprovacao | null; recusado: boolean }> {
+export interface SituacaoLink { aprovacao: Aprovacao | null; recusado: boolean; pagoInformadoEm?: string | null }
+
+export async function consultarLink(link: LinkCompartilhado): Promise<SituacaoLink> {
   const r = await fetch(`${SERVIDOR}/api/links/${link.id}/status`, { headers: { Authorization: `Bearer ${link.chaveDono}` } });
   if (!r.ok) throw new Error('servidor ' + r.status);
-  return (await r.json()) as { aprovacao: Aprovacao | null; recusado: boolean };
+  return (await r.json()) as SituacaoLink;
 }
