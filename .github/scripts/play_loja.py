@@ -50,7 +50,7 @@ for kind in ("icon", "featureGraphic", "phoneScreenshots"):
 # Se a conta não exigir isso, o Google recusa o parâmetro e enviamos direto.
 r = s.post(f"{api}/edits/{edit}:commit?changesNotSentForReview=true")
 if r.status_code >= 300 and r.status_code != 403:
-    print("Commit sem envio para revisão recusado, tentando o envio direto:", r.status_code)
+    print("Commit sem envio para revisão recusado, tentando o envio direto:", r.status_code, r.text[:400])
     r = s.post(f"{api}/edits/{edit}:commit")
 ok(r)
 print("Página da loja atualizada:", pkg, "(confira em Visão geral da publicação → Enviar para revisão)")
