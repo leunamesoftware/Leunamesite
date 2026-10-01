@@ -32,3 +32,4 @@
 - Backups: `backup-bancos-d1.yml` (diário, 30 dias). Monitoramento: `monitoramento.yml` (de hora em hora, abre/fecha issue `cloud2`).
 - LeuCloud fica fora de backup/monitoramento/publicação por decisão do dono. EconoRota é de cliente: publicar só com ok do dono.
 - **Apps novos:** o dono decide quem cria cada um. Quem cria fica marcado na coluna "Criado por" (C1 = Cloud 1 / feito fora da conversa do Cloud 2, C2 = Cloud 2; o dono fala "B1 (C1)", "B3 (C2)"…) e o outro não mexe no código dele (só revisa e avisa por issue).
+- **Prévia no celular (regra do dono):** todo app em construção tem um APK de prévia em link fixo `https://api.leunamesoftware.com/download/<app>-previa.apk`, gerado a cada envio de código (ex.: `previa-apk-facturo.yml`). Sempre mandar esse link ao dono para ele ver e opinar.
