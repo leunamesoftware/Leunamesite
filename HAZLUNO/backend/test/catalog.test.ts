@@ -24,7 +24,7 @@ const legal = {
 async function approvedTeacher(email = 'laura@example.com', name = 'Laura Méndez') {
   const teacher = await account(email, 'teach', { displayName: name });
   await t.call('PUT', '/api/instructor/profile', { token: teacher.token, body: legal });
-  expect((await t.call('POST', '/api/instructor/profile/submit', { token: teacher.token })).status).toBe(200);
+  expect((await t.call('POST', '/api/instructor/profile/submit', { token: teacher.token, body: { acceptAgreement: true } })).status).toBe(200);
   const admin = await adminToken();
   expect((await t.call('POST', `/api/admin/instructors/${teacher.id}/approve`, { token: admin })).status).toBe(200);
   return teacher;
@@ -80,15 +80,18 @@ describe('teacher verification', () => {
 
   it('submitting needs the legal details; once under review they are locked', async () => {
     const teacher = await account('laura@example.com', 'teach');
-    const empty = await t.call('POST', '/api/instructor/profile/submit', { token: teacher.token });
+    const empty = await t.call('POST', '/api/instructor/profile/submit', { token: teacher.token, body: { acceptAgreement: true } });
     expect(empty.json.fields).toMatchObject({ phone: 'required', city: 'required', legalName: 'required', taxId: 'required', teachingLanguages: 'required' });
     await t.call('PUT', '/api/instructor/profile', { token: teacher.token, body: legal });
     const badPhone = await t.call('PUT', '/api/instructor/profile', { token: teacher.token, body: { ...legal, phone: '612345' } });
     expect(badPhone.json.fields).toEqual({ phone: 'invalid_option' });
     const saved = await t.call<InstructorProfile>('GET', '/api/instructor/profile', { token: teacher.token });
     expect(saved.json.data).toMatchObject({ phone: '+34612345678', city: 'Madrid' });
-    const sent = await t.call<InstructorProfile>('POST', '/api/instructor/profile/submit', { token: teacher.token });
+    const noAgreement = await t.call('POST', '/api/instructor/profile/submit', { token: teacher.token });
+    expect(noAgreement.json.fields).toEqual({ acceptAgreement: 'must_accept' }); // the teacher agreement comes first
+    const sent = await t.call<InstructorProfile>('POST', '/api/instructor/profile/submit', { token: teacher.token, body: { acceptAgreement: true } });
     expect(sent.json.data.verificationStatus).toBe('under_review');
+    expect(sent.json.data.agreementAcceptedAt).toBe(t.clock.at.toISOString());
     const change = await t.call('PUT', '/api/instructor/profile', { token: teacher.token, body: { ...legal, taxId: 'OTHER' } });
     expect(change.json.error).toBe('invalid_state');
     const wa = await t.call('PUT', '/api/instructor/profile', { token: teacher.token,
@@ -104,7 +107,7 @@ describe('teacher verification', () => {
   it('an admin approves (recorded and notified); a rejected teacher can fix and resubmit', async () => {
     const teacher = await account('laura@example.com', 'teach');
     await t.call('PUT', '/api/instructor/profile', { token: teacher.token, body: legal });
-    await t.call('POST', '/api/instructor/profile/submit', { token: teacher.token });
+    await t.call('POST', '/api/instructor/profile/submit', { token: teacher.token, body: { acceptAgreement: true } });
     const admin = await adminToken();
     const queue = await t.call<{ userId: string }[]>('GET', '/api/admin/instructors', { token: admin });
     expect(queue.json.data.map((r) => r.userId)).toEqual([teacher.id]);
@@ -112,7 +115,7 @@ describe('teacher verification', () => {
     const rejected = await t.call<InstructorProfile>('GET', '/api/instructor/profile', { token: teacher.token });
     expect(rejected.json.data).toMatchObject({ verificationStatus: 'rejected', rejectionReason: 'NIF ilegible' });
     await t.call('PUT', '/api/instructor/profile', { token: teacher.token, body: { ...legal, taxId: 'X7654321L' } });
-    await t.call('POST', '/api/instructor/profile/submit', { token: teacher.token });
+    await t.call('POST', '/api/instructor/profile/submit', { token: teacher.token, body: { acceptAgreement: true } });
     await t.call('POST', `/api/admin/instructors/${teacher.id}/approve`, { token: admin });
     expect((await t.call<Me>('GET', '/api/me', { token: teacher.token })).json.data.instructor?.verificationStatus).toBe('approved');
     const actions = await t.deps.db.all<{ action: string }>('SELECT action FROM moderation_actions ORDER BY created_at, rowid');

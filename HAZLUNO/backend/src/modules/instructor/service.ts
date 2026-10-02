@@ -21,7 +21,7 @@ interface ProfileRow {
   cover_key: string | null; phone: string | null; city: string | null; experience: InstructorProfile['experience']; links: string;
   verification_status: InstructorProfile['verificationStatus']; rejection_reason: string | null; headline: string | null; bio: string | null;
   specialties: string; teaching_languages: string; legal_entity_type: 'individual' | 'company' | null; legal_name: string | null;
-  tax_id: string | null; tax_country: string | null; business_address: string | null;
+  tax_id: string | null; tax_country: string | null; business_address: string | null; agreement_accepted_at: string | null;
 }
 
 async function profileRow(deps: Deps, me: Me) {
@@ -34,7 +34,7 @@ const toProfile = (p: ProfileRow): InstructorProfile => ({
   verificationStatus: p.verification_status, rejectionReason: p.rejection_reason, coverUrl: publicUrl(p.cover_key), phone: p.phone, city: p.city,
   experience: p.experience, links: parseJsonList(p.links), headline: p.headline, bio: p.bio,
   specialties: parseJsonList(p.specialties), teachingLanguages: parseJsonList(p.teaching_languages), legalEntityType: p.legal_entity_type,
-  legalName: p.legal_name, taxId: p.tax_id, taxCountry: p.tax_country, businessAddress: p.business_address,
+  legalName: p.legal_name, taxId: p.tax_id, taxCountry: p.tax_country, businessAddress: p.business_address, agreementAcceptedAt: p.agreement_accepted_at,
 });
 
 export const getProfile = async (deps: Deps, me: Me) => toProfile(await profileRow(deps, me));
@@ -56,17 +56,22 @@ export async function saveProfile(deps: Deps, me: Me, input: unknown): Promise<I
 }
 
 /** Sends the profile for verification. Everything needed to issue real certificates and receive payouts must be filled in. */
-export async function submitForReview(deps: Deps, me: Me, meta: RequestMeta): Promise<InstructorProfile> {
+export async function submitForReview(deps: Deps, me: Me, input: unknown, meta: RequestMeta): Promise<InstructorProfile> {
   const p = await profileRow(deps, me);
+  const accepted = (input as { acceptAgreement?: unknown } | null)?.acceptAgreement === true;
   if (!['pending', 'rejected'].includes(p.verification_status)) throw new AppError('invalid_state', 409, 'This profile is not waiting for submission.');
   const missing: Record<string, string> = {};
   for (const [field, value] of Object.entries({ phone: p.phone, city: p.city, headline: p.headline, bio: p.bio, legalEntityType: p.legal_entity_type, legalName: p.legal_name,
     taxId: p.tax_id, taxCountry: p.tax_country, businessAddress: p.business_address })) if (!value) missing[field] = 'required';
   if (!parseJsonList(p.teaching_languages).length) missing.teachingLanguages = 'required';
+  // The teacher agreement (price, fees, withdrawal split, live-only rules) must be accepted before verification.
+  if (!accepted) missing.acceptAgreement = 'must_accept';
   if (Object.keys(missing).length) throw errors.invalid(missing);
   const now = deps.clock.now().toISOString();
+  const version = await authRepo.setting(deps.db, 'legal.instructor_agreement_version', '2026-10-02');
   await deps.db.batch([
-    { sql: `UPDATE instructor_profiles SET verification_status = 'under_review', rejection_reason = NULL, updated_at = ? WHERE user_id = ?`, params: [now, me.id] },
+    { sql: `UPDATE instructor_profiles SET verification_status = 'under_review', rejection_reason = NULL, agreement_version = ?, agreement_accepted_at = ?, updated_at = ? WHERE user_id = ?`,
+      params: [version, now, now, me.id] },
     auditStatement(deps, { actorId: me.id, action: 'instructor.submitted', ipHash: meta.ipHash, userAgent: meta.userAgent }),
   ]);
   return getProfile(deps, me);

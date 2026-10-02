@@ -11,7 +11,7 @@ import { Banner } from '../../ui/kit';
 import { VerificationCard } from './TeachHome';
 import { TeachLayout } from './TeachLayout';
 
-type Form = Omit<InstructorProfile, 'verificationStatus' | 'rejectionReason'>;
+type Form = Omit<InstructorProfile, 'verificationStatus' | 'rejectionReason' | 'agreementAcceptedAt'>;
 const STEP_FIELDS: (keyof Form | 'teachingLanguages')[][] = [
   ['phone', 'city'],
   ['headline', 'bio', 'specialties', 'teachingLanguages', 'experience', 'links'],
@@ -33,11 +33,13 @@ export function TeachProfile() {
   const [form, setForm] = useState<Form | null>(null);
   const [specialties, setSpecialties] = useState('');
   const [step, setStep] = useState(0);
+  const [agree, setAgree] = useState(false);
   const [fields, setFields] = useState<Record<string, string>>({});
   const [msg, setMsg] = useState<{ tone: 'info' | 'error'; text: string } | null>(null);
   const load = (x: InstructorProfile) => {
     setP(x);
-    const { verificationStatus: _v, rejectionReason: _r, ...rest } = x;
+    const { verificationStatus: _v, rejectionReason: _r, agreementAcceptedAt: _a, ...rest } = x;
+    setAgree(!!x.agreementAcceptedAt);
     setForm(rest);
     setSpecialties(x.specialties.join(', '));
   };
@@ -72,7 +74,7 @@ export function TeachProfile() {
   const next = async () => { if (await save()) setStep((s) => Math.min(LAST, s + 1)); };
   const submit = async () => {
     if (!(await save())) return;
-    try { load(await api.teacher.submit()); setMsg({ tone: 'info', text: t.teach.statusReview }); }
+    try { load(await api.teacher.submit(agree)); setMsg({ tone: 'info', text: t.teach.statusReview }); }
     catch (err) {
       const f = fieldTexts(t, err);
       setFields(f); setMsg({ tone: 'error', text: errorText(t, err) });
@@ -213,13 +215,19 @@ export function TeachProfile() {
               <dl className="kv review-kv">
                 {review.map(([s, k, v]) => <div key={k} className="kv-row"><dt>{k}</dt><dd>{v}</dd><button type="button" className="btn-plain" onClick={() => setStep(s)}>{t.teach.edit}</button></div>)}
               </dl>
+              <div className="pay-rule agreement">
+                <strong>{t.legal.teacherAgreement}</strong>
+                <a href="/teacher-agreement" target="_blank" rel="noopener">{t.legal.readAgreement}</a>
+                <label className="check-line"><input id="tp-agree" type="checkbox" checked={agree} disabled={!canSubmit} onChange={(e) => setAgree(e.target.checked)} />{t.legal.acceptAgreement}</label>
+                {fields.acceptAgreement && <em className="row-error">{fields.acceptAgreement}</em>}
+              </div>
             </>}
 
             <div className="wizard-nav">
               {step > 0 ? <button type="button" className="btn-small btn-blue-soft" onClick={() => setStep(step - 1)}><ChevronLeft size={18} aria-hidden />{t.teach.previous}</button> : <span />}
               {step < LAST && <button type="button" className="btn-small btn-orange-solid" onClick={next}>{t.teach.next}<ChevronRight size={18} aria-hidden /></button>}
               {step === LAST && (canSubmit
-                ? <button type="button" className="btn-small btn-orange-solid" onClick={submit}><Send size={18} aria-hidden />{t.teach.submit}</button>
+                ? <button type="button" className="btn-small btn-orange-solid" disabled={!agree} onClick={submit}><Send size={18} aria-hidden />{t.teach.submit}</button>
                 : <button type="button" className="btn-small btn-blue-soft" onClick={() => void save().then((ok) => ok && setMsg({ tone: 'info', text: t.teach.saved }))}>{t.teach.saveDraft}</button>)}
             </div>
           </section>

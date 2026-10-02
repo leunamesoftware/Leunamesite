@@ -159,7 +159,7 @@ export async function enrollmentInfo(deps: Deps, me: Me, enrollmentId: string): 
   };
 }
 
-/** Student withdraws before the class starts: 50% returned, 50% kept and split half and half (owner's rule). */
+/** Student withdraws before the class starts: 50% returned; the kept 50%, minus the processor fee, is split half and half (owner's rule). */
 export async function withdraw(deps: Deps, me: Me, enrollmentId: string, meta: RequestMeta): Promise<EnrollmentInfo> {
   const e = await deps.db.one<{ id: string; class_session_id: string; status: string; price_cents: number; currency: string; starts_at: string;
     payment_id: string | null; provider_payment_id: string | null; checkout: string | null }>(
@@ -185,7 +185,12 @@ export async function withdraw(deps: Deps, me: Me, enrollmentId: string, meta: R
   const retentionBp = await authRepo.setting(deps.db, 'withdrawal.retention_bp', 5000);
   const platformShareBp = await authRepo.setting(deps.db, 'withdrawal.retention_platform_share_bp', 5000);
   const retained = bp(e.price_cents, retentionBp);
-  const retainedPlatform = bp(retained, platformShareBp);
+  // Owner's rule: the processor fee comes off the kept part first, then it is split (platform floor, extra cent to the teacher).
+  // The fee was already charged to the platform's account, so it is booked on the platform's side of the split.
+  const fee = (await deps.db.one<{ fee: number }>('SELECT provider_fee_cents AS fee FROM platform_fees WHERE payment_id = ?', [e.payment_id]))?.fee ?? 0;
+  const keptNet = Math.max(0, retained - fee);
+  const platformNet = Math.floor((keptNet * platformShareBp) / 10_000);
+  const retainedPlatform = Math.min(retained, platformNet + fee);
   const refundCents = e.price_cents - retained;
   const refundId = newId();
   await deps.db.batch([
@@ -446,7 +451,7 @@ export async function earnings(deps: Deps, me: Me): Promise<Earnings> {
     }
     const withdrawn = r.estatus === 'canceled_by_student';
     const fullyRefunded = !withdrawn && (r.refunded ?? 0) >= r.gross;
-    const net = withdrawn ? Math.max(0, (r.retained_teacher ?? 0) - fee) : fullyRefunded ? 0 : r.net ?? 0;
+    const net = withdrawn ? r.retained_teacher ?? 0 : fullyRefunded ? 0 : r.net ?? 0;
     if (!fullyRefunded) { gross += r.gross - (r.refunded ?? 0); fees += fee; sales += withdrawn ? 0 : 1; }
     const state: EarningLine['state'] = fullyRefunded ? 'refunded' : r.settled_at ? 'transferred' : 'held';
     if (state === 'transferred') transferred += net; else if (state === 'held') held += net;
@@ -477,7 +482,7 @@ export async function settleFinishedClasses(deps: Deps) {
        AND e.status IN ('confirmed', 'completed', 'no_show', 'canceled_by_student')`, [now]);
   let transferred = 0, waiting = 0;
   for (const r of rows) {
-    const amount = r.status === 'canceled_by_student' ? Math.max(0, (r.retained_teacher ?? 0) - (r.fee ?? 0)) : r.net ?? 0;
+    const amount = r.status === 'canceled_by_student' ? r.retained_teacher ?? 0 : r.net ?? 0;
     if (amount > 0 && (!r.account || !r.enabled || !r.charge)) { waiting++; continue; }
     const marked = await deps.db.run('UPDATE enrollments SET settled_at = ? WHERE id = ? AND settled_at IS NULL', [now, r.enrollment_id]);
     if (!marked.changes || amount <= 0) continue;

@@ -16,7 +16,7 @@ async function approvedTeacher(t: TestCtx) {
   await t.call('PUT', '/api/instructor/profile', { token: teacher.token, body: {
     phone: '+34 612 345 678', city: 'Madrid', headline: 'Pintora', bio: 'Doce años enseñando.', specialties: ['Óleo'], teachingLanguages: ['es'],
     legalEntityType: 'individual', legalName: 'Laura Méndez Ruiz', taxId: 'X1234567L', taxCountry: 'ES', businessAddress: 'Calle Mayor 1, Madrid' } });
-  await t.call('POST', '/api/instructor/profile/submit', { token: teacher.token });
+  await t.call('POST', '/api/instructor/profile/submit', { token: teacher.token, body: { acceptAgreement: true } });
   const admin = await account(t, 'admin@example.com', 'learn', 'Admin');
   await t.deps.db.run(`INSERT INTO user_roles (user_id, role, granted_at) VALUES (?, 'admin', 'x')`, [admin.id]);
   expect((await t.call('POST', `/api/admin/instructors/${teacher.id}/approve`, { token: admin.token })).status).toBe(200);
@@ -144,24 +144,27 @@ describe('student pays, withdraws, teacher gets paid after the group ends', () =
     expect(w.json.data.status).toBe('canceled');
     expect(t.stripe!.refunds.map((r) => r.amount)).toEqual([1000]);
     const refund = await t.deps.db.one<Record<string, number | string>>('SELECT amount_cents, retained_cents, retained_platform_cents, retained_instructor_cents, status FROM refunds');
-    expect(refund).toEqual({ amount_cents: 1000, retained_cents: 1000, retained_platform_cents: 500, retained_instructor_cents: 500, status: 'succeeded' });
+    // Kept 50% (€10) minus the processor fee, split in halves; the extra cent goes to the teacher.
+    const keptNet = 1000 - fee;
+    const teacherShare = keptNet - Math.floor(keptNet / 2);
+    expect(refund).toEqual({ amount_cents: 1000, retained_cents: 1000, retained_platform_cents: 1000 - teacherShare, retained_instructor_cents: teacherShare, status: 'succeeded' });
     expect((await t.deps.db.one<{ n: number }>('SELECT seats_taken AS n FROM class_sessions WHERE id = ?', [g.classId]))!.n).toBe(1);
 
     // Earnings before the group ends: everything held.
     let e = (await t.call<Earnings>('GET', '/api/instructor/earnings', { token: g.laura.token })).json.data;
-    expect(e).toMatchObject({ heldCents: (2000 - fee) + (500 - fee), transferredCents: 0, salesCount: 1 });
-    expect(e.lines.find((l) => l.kind === 'withdrawal')).toMatchObject({ student: 'Beatriz G.', netCents: 500 - fee, state: 'held' });
+    expect(e).toMatchObject({ heldCents: (2000 - fee) + teacherShare, transferredCents: 0, salesCount: 1 });
+    expect(e.lines.find((l) => l.kind === 'withdrawal')).toMatchObject({ student: 'Beatriz G.', netCents: teacherShare, state: 'held' });
 
     // Nothing is transferred before the group ends.
     expect((await t.call<{ transferred: number }>('POST', '/api/admin/payments/settle', { token: g.laura.admin.token })).json.data.transferred).toBe(0);
     t.clock.at = new Date(day(16, 9));
     const settle = await t.call<{ transferred: number }>('POST', '/api/admin/payments/settle', { token: g.laura.admin.token });
     expect(settle.json.data.transferred).toBe(2);
-    expect(t.stripe!.transfers.map((x) => [x.amount, x.destination]).sort()).toEqual([[2000 - fee, g.acct], [500 - fee, g.acct]].sort());
+    expect(t.stripe!.transfers.map((x) => [x.amount, x.destination]).sort()).toEqual([[2000 - fee, g.acct], [teacherShare, g.acct]].sort());
     await t.call('POST', '/api/admin/payments/settle', { token: g.laura.admin.token });
     expect(t.stripe!.transfers).toHaveLength(2); // running again never pays twice
     e = (await t.call<Earnings>('GET', '/api/instructor/earnings', { token: g.laura.token })).json.data;
-    expect(e).toMatchObject({ heldCents: 0, transferredCents: (2000 - fee) + (500 - fee) });
+    expect(e).toMatchObject({ heldCents: 0, transferredCents: (2000 - fee) + teacherShare });
   });
 
   it('an unpaid seat comes back after 30 minutes; a late payment is confirmed only if a seat is free', async () => {

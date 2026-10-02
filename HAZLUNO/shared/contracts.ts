@@ -242,6 +242,8 @@ export interface InstructorProfile {
   taxId: string | null;
   taxCountry: string | null;
   businessAddress: string | null;
+  /** When the teacher accepted the teacher agreement (null = not yet). */
+  agreementAcceptedAt: string | null;
 }
 
 export interface InstructorCourse {

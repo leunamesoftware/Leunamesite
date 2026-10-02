@@ -92,6 +92,7 @@ createRoot(document.getElementById('root')!).render(
             <Route path="/admin/instructors" element={<OnlyRole roles={['admin', 'moderator']}><AdminInstructors /></OnlyRole>} />
             <Route path="/terms" element={<Legal doc="terms" />} />
             <Route path="/privacy" element={<Legal doc="privacy" />} />
+            <Route path="/teacher-agreement" element={<Legal doc="teacher" />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </BrowserRouter>

@@ -1119,3 +1119,5 @@ body::before { content: ''; position: fixed; z-index: 1000; top: 0; left: 0; rig
   .usr-row { grid-template-columns: 1fr auto; }
   .usr-row > .usr-roles, .usr-row > .usr-act { grid-column: 1 / -1; }
 }
+.legal-doc ol { margin: 0; padding-left: 22px; display: flex; flex-direction: column; gap: 12px; line-height: 1.55; color: var(--ink); }
+.agreement a { color: var(--blue-700); font-weight: 600; }

@@ -15,8 +15,11 @@
 - O professor define o preço de cada turma.
 - O professor paga **€5 por turma aberta** (`fee_rules.kind = class_opening_fee`). A turma só abre inscrições depois dessa taxa confirmada pelo provedor.
 - O aluno paga a turma ao se inscrever. Comissão sobre a inscrição começa em **0%** (`enrollment_commission`), configurável em percentual, valor fixo ou os dois.
-- **Desistência do aluno:** retém 50% do valor pago (`withdrawal.retention_bp = 5000`), dividido 50/50 entre Hazluno e professor (`withdrawal.retention_platform_share_bp = 5000`). O aluno vê essa regra e aceita (`consents.kind = withdrawal_policy`) antes de pagar.
+- **Desistência do aluno:** retém 50% do valor pago (`withdrawal.retention_bp = 5000`) como taxa por ocupar uma vaga que outra pessoa não pôde reservar. **Da parte retida sai primeiro a taxa do Stripe; o resto é dividido em partes iguais** entre Hazluno e professor (`withdrawal.retention_platform_share_bp = 5000`; centavo ímpar vai ao professor). Ex.: aula €20 → aluno recebe €10; dos €10 retidos sai ≈ €0,55 do Stripe; ≈ €4,72 Hazluno e ≈ €4,73 professor. Nada a configurar no Stripe: a Hazluno devolve a parte do aluno pela API e transfere a do professor quando o grupo termina. O aluno vê essa regra e aceita (`consents.kind = withdrawal_policy`) antes de pagar.
 - Cancelamento pelo professor ou pela plataforma: reembolso integral.
+
+- **O aluno não paga taxa nenhuma**: paga uma vez só, o preço do professor.
+- **Contrato do professor** (`/teacher-agreement`): aceito antes de enviar o perfil para verificação (`instructor_profiles.agreement_version` / `agreement_accepted_at`). Rascunho com as regras acima; revisão jurídica antes do lançamento.
 
 ## Regras técnicas
 - Provedor de marketplace com contas conectadas para repassar ao professor (ex.: Stripe Connect; Mollie e Adyen também servem na Europa). A escolha é do dono.
