@@ -10,7 +10,9 @@ import { I18nProvider } from './i18n';
 import { Legal } from './screens/Legal';
 import { Login } from './screens/Login';
 import { Signup } from './screens/Signup';
+import { Landing } from './screens/Landing';
 import { Welcome } from './screens/Welcome';
+import { useWide } from './ui/site';
 import { ChooseClass } from './screens/student/ChooseClass';
 import { CourseDetail } from './screens/student/CourseDetail';
 import { Explore } from './screens/student/Explore';
@@ -43,6 +45,11 @@ function OnlyRole({ roles, children }: { roles: string[]; children: ReactNode })
   return me.roles.some((r) => roles.includes(r)) ? children : <Navigate to="/home" replace />;
 }
 
+/** "/" is the public website on computers and the app's welcome screen on phones. */
+function Front() {
+  return useWide() ? <Landing /> : <Welcome />;
+}
+
 function OnlySignedOut({ children }: { children: ReactNode }) {
   const { me, restoring } = useSession();
   if (restoring) return null;
@@ -55,7 +62,7 @@ createRoot(document.getElementById('root')!).render(
       <SessionProvider>
         <BrowserRouter>
           <Routes>
-            <Route path="/" element={<OnlySignedOut><Welcome /></OnlySignedOut>} />
+            <Route path="/" element={<OnlySignedOut><Front /></OnlySignedOut>} />
             <Route path="/login" element={<OnlySignedOut><Login /></OnlySignedOut>} />
             <Route path="/signup" element={<OnlySignedOut><Signup /></OnlySignedOut>} />
             <Route path="/home" element={<OnlySignedIn><Home /></OnlySignedIn>} />

@@ -1,6 +1,6 @@
 import { ChevronDown, ChevronLeft, ChevronRight, GraduationCap, LockKeyhole, Mail, MapPin, Presentation, UserRound } from 'lucide-react';
 import { useMemo, useState, type FormEvent } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import type { LanguageCode, SignupIntent } from '../../../shared/contracts';
 import { api } from '../api';
 import { useI18n } from '../i18n';
@@ -27,7 +27,9 @@ export function Signup() {
   const { start } = useSession();
   const { config } = usePublicConfig();
   const navigate = useNavigate();
-  const [intent, setIntent] = useState<SignupIntent | null>(null);
+  const [params] = useSearchParams();
+  const fromLink = params.get('intent');
+  const [intent, setIntent] = useState<SignupIntent | null>(fromLink === 'learn' || fromLink === 'teach' ? fromLink : null);
   const [form, setForm] = useState({ displayName: '', email: '', password: '', confirm: '', countryCode: '', acceptTerms: false });
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);

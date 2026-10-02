@@ -10,7 +10,7 @@ Referência: `brand/flowchart-reference.webp`. Cada tela tem uma das três situa
 
 | # | Tela | Situação | Onde |
 |---|------|----------|------|
-| 1 | Abertura / boas-vindas | Pronta | `/` |
+| 1 | Abertura / boas-vindas | Pronta (no computador `/` é o site público; no celular, a tela de boas-vindas do app) | `/` |
 | 2 | Entrar / criar conta | Pronta | `/login`, `/signup` |
 | 3 | Escolher perfil | Pronta (aluno / professor). **"Sou empresa" fica para a Fase 9** (Hazluno Empleo) | `/signup` (primeiro passo) |
 | 4 | Cadastro do aluno | Pronta | `/signup` |

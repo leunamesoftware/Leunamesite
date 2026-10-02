@@ -2,11 +2,15 @@ import { CalendarDays, Heart, Home, Search, UserRound } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import { useI18n } from '../i18n';
+import { useSession } from '../state/session';
+import { SiteHeader } from './site';
 import { Wordmark } from './kit';
 
 /** Signed-in layout: page content + navigation (bottom bar on phones, top bar on computers). */
 export function Shell({ children, tone = 'blue' }: { children: ReactNode; tone?: 'blue' | 'soft' }) {
   const { t } = useI18n();
+  const { me } = useSession();
+  if (!me) return <div className={`shell shell-${tone} shell-guest`}><SiteHeader /><div className="shell-page">{children}</div></div>;
   const items = [
     { to: '/home', icon: Home, label: t.nav.home },
     { to: '/explore', icon: Search, label: t.nav.search },
