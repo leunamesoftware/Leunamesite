@@ -2,7 +2,7 @@ import { BarChart3, BookOpen, Camera, CheckCircle2, ChevronLeft, ChevronRight, E
 import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { LANGUAGES, type CourseInput, type InstructorCourse, type Level } from '../../../../shared/contracts';
-import { api } from '../../api';
+import { api, ApiError } from '../../api';
 import { NATIVE_NAMES, useI18n } from '../../i18n';
 import { useSession } from '../../state/session';
 import { Avatar } from '../../ui/avatar';
@@ -104,6 +104,17 @@ export function CourseEditor() {
   const cover = async (file?: File) => { if (file && course) try { load(await api.teacher.uploadCover(course.id, file)); } catch (err) { fail(err); } };
   const refresh = async () => course && load(await api.teacher.course(course.id));
   const classAction = async (fn: () => Promise<unknown>) => { setMsg(null); try { await fn(); await refresh(); } catch (err) { fail(err); } };
+  /** Publishing may first need the payout account or the opening fee, both on the provider's own pages. */
+  const publishGroup = async (classId: string) => {
+    setMsg(null);
+    try { await api.teacher.publishClass(classId); await refresh(); } catch (err) {
+      if (err instanceof ApiError && err.code === 'opening_fee_required') {
+        try { window.location.assign((await api.teacher.openingFee(classId)).url); } catch (e2) { fail(e2); }
+      } else if (err instanceof ApiError && err.code === 'payout_account_required') navigate('/teach/earnings');
+      else fail(err);
+    }
+  };
+  useEffect(() => { if (search.get('opened')) setMsg({ tone: 'info', text: t.earn.openingPaid }); }, [search, t]);
 
   const text = (k: 'title' | 'summary', label: string, max: number) => (
     <label className="lfield"><span>{label}</span>
@@ -209,7 +220,7 @@ export function CourseEditor() {
                     <span className={`badge badge-${k.status}`}>{t.teach.classStatus[k.status]}</span>
                     <div className="tgroup-actions">
                       {k.status === 'draft' && course.status === 'published' && (
-                        <button type="button" className="btn-small btn-orange-solid" onClick={() => classAction(() => api.teacher.publishClass(k.id))}>{t.teach.publishGroup}</button>)}
+                        <button type="button" className="btn-small btn-orange-solid" onClick={() => publishGroup(k.id)}>{t.teach.publishGroup}</button>)}
                       {k.status === 'draft' && (
                         <button type="button" className="btn-plain" onClick={() => classAction(() => api.teacher.deleteClass(k.id))}><Trash2 size={16} aria-hidden /> {t.teach.deleteGroup}</button>)}
                       {k.status === 'enrollment_open' && k.access.badge === 'starts_on' && (

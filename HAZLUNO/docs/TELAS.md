@@ -18,8 +18,8 @@ Referência: `brand/flowchart-reference.webp`. Cada tela tem uma das três situa
 | 6 | Buscar / explorar aulas | Pronta | `/explore` |
 | 7 | Detalhes da aula | Pronta (regra: de fora só clica para comprar) | `/course/:id` |
 | 8 | Escolher grupo e horário | Pronta (mostra a descrição do grupo) | `/course/:id/choose` |
-| 9 | Pagamento e confirmação | **Fase 3** (falta o dono escolher o provedor) | — |
-| 10 | Reserva confirmada | **Fase 3** | — |
+| 9 | Pagamento e confirmação | Pronta (Stripe Checkout; liga quando as chaves do Stripe forem colocadas) | `/course/:id/checkout/:classId` |
+| 10 | Reserva confirmada | Pronta (só confirma pelo aviso assinado do Stripe; calendário .ics; cancelar com 50%) | `/enrollment/:id` |
 | 11 | Minhas aulas | Pronta (próximas / em curso / concluídas) | `/my` |
 | 12 | Detalhes da aula agendada | Parcial: contagem regressiva e "Entrar" na **Fase 4** | `/my` |
 | 13 | Sala de aula ao vivo | **Fase 4** (vídeo + verificação facial) | — |
@@ -42,7 +42,7 @@ Referência: `brand/flowchart-reference.webp`. Cada tela tem uma das três situa
 | 25 | Gerenciar alunos | Pronta (lista, filtros, notas privadas, reportar). Presença real chega na **Fase 4** | `/teach/students` |
 | 26 | Aula ao vivo do professor | **Fase 4** (gravação sempre ligada) | — |
 | 27 | Gravações do professor | **Fase 5** | — |
-| 28 | Ganhos e saques | **Fase 3** (Stripe Connect; regras de saque a decidir) | — |
+| 28 | Ganhos e saques | Pronta (taxa do Stripe às claras, conta de cobro no Stripe, repasse ao terminar o grupo) | `/teach/earnings` |
 
 ## Fluxo administrativo (29–40) — Fase 6
 

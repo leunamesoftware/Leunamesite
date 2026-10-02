@@ -14,6 +14,8 @@ import { Landing } from './screens/Landing';
 import { Welcome } from './screens/Welcome';
 import { useWide } from './ui/site';
 import { ChooseClass } from './screens/student/ChooseClass';
+import { Checkout } from './screens/student/Checkout';
+import { Enrollment } from './screens/student/Enrollment';
 import { CourseDetail } from './screens/student/CourseDetail';
 import { Explore } from './screens/student/Explore';
 import { Favorites } from './screens/student/Favorites';
@@ -29,6 +31,7 @@ import { TeachAgenda } from './screens/teacher/TeachAgenda';
 import { TeachHome } from './screens/teacher/TeachHome';
 import { TeachProfile } from './screens/teacher/TeachProfile';
 import { TeachStudents } from './screens/teacher/TeachStudents';
+import { TeachEarnings } from './screens/teacher/TeachEarnings';
 import { SessionProvider, useSession } from './state/session';
 import './styles.css';
 
@@ -69,6 +72,8 @@ createRoot(document.getElementById('root')!).render(
             <Route path="/explore" element={<Explore />} />
             <Route path="/course/:id" element={<CourseDetail />} />
             <Route path="/course/:id/choose" element={<ChooseClass />} />
+            <Route path="/course/:id/checkout/:classId" element={<Checkout />} />
+            <Route path="/enrollment/:id" element={<OnlySignedIn><Enrollment /></OnlySignedIn>} />
             <Route path="/teacher/:id" element={<TeacherPublic />} />
             <Route path="/my" element={<OnlySignedIn><MyClasses /></OnlySignedIn>} />
             <Route path="/favorites" element={<OnlySignedIn><Favorites /></OnlySignedIn>} />
@@ -76,6 +81,7 @@ createRoot(document.getElementById('root')!).render(
             <Route path="/teach" element={<OnlyRole roles={['instructor']}><TeachHome /></OnlyRole>} />
             <Route path="/teach/profile" element={<OnlyRole roles={['instructor']}><TeachProfile /></OnlyRole>} />
             <Route path="/teach/students" element={<OnlyRole roles={['instructor']}><TeachStudents /></OnlyRole>} />
+            <Route path="/teach/earnings" element={<OnlyRole roles={['instructor']}><TeachEarnings /></OnlyRole>} />
             <Route path="/teach/agenda" element={<OnlyRole roles={['instructor']}><TeachAgenda /></OnlyRole>} />
             <Route path="/teach/courses/new" element={<OnlyRole roles={['instructor']}><CourseEditor /></OnlyRole>} />
             <Route path="/teach/courses/:id" element={<OnlyRole roles={['instructor']}><CourseEditor /></OnlyRole>} />

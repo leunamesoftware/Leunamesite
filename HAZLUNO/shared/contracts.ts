@@ -293,6 +293,7 @@ export interface ClassInput {
 
 /** "Mis clases": a class the student is enrolled in. */
 export interface MyClass extends ClassSummary {
+  enrollmentId: string;
   courseTitle: string;
   coverUrl: string | null;
   instructor: InstructorMini;

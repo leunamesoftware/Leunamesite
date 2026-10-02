@@ -1,5 +1,5 @@
 import type {
-  AdminDashboard, AdminInstructorRow, AgendaItem, ApiResponse, Category, ClassInput, ClassSummary, CourseCard, CourseDetail, CourseInput, ExploreQuery, ExploreResult,
+  AdminDashboard, AdminInstructorRow, AgendaItem, Earnings, EnrollmentInfo, EnrollmentStart, PayoutStatus, ApiResponse, Category, ClassInput, ClassSummary, CourseCard, CourseDetail, CourseInput, ExploreQuery, ExploreResult,
   InstructorCourse, InstructorProfile, InstructorPublic, LanguageCode, Me, MyStudent, ReportReason, MyClass, MyStats, PublicConfig, SessionCreated, SessionInfo,
 } from '../../shared/contracts';
 
@@ -69,7 +69,15 @@ export const api = {
   course: (id: string) => request<CourseDetail>('GET', `/public/courses/${id}`),
   instructor: (id: string) => request<InstructorPublic>('GET', `/public/instructors/${id}`),
 
+  enroll: (body: { classId: string; acceptWithdrawal?: boolean; acceptSafety?: boolean }) => request<EnrollmentStart>('POST', '/me/enrollments', body),
+  enrollment: (id: string) => request<EnrollmentInfo>('GET', `/me/enrollments/${id}`),
+  withdraw: (id: string) => request<EnrollmentInfo>('POST', `/me/enrollments/${id}/withdraw`),
+
   teacher: {
+    payouts: () => request<PayoutStatus>('GET', '/instructor/payouts'),
+    connectPayouts: () => request<{ url: string }>('POST', '/instructor/payouts/connect'),
+    earnings: () => request<Earnings>('GET', '/instructor/earnings'),
+    openingFee: (classId: string) => request<{ url: string }>('POST', `/instructor/classes/${classId}/opening-fee`),
     profile: () => request<InstructorProfile>('GET', '/instructor/profile'),
     saveProfile: (body: Omit<InstructorProfile, 'verificationStatus' | 'rejectionReason'>) => request<InstructorProfile>('PUT', '/instructor/profile', body),
     submit: () => request<InstructorProfile>('POST', '/instructor/profile/submit'),

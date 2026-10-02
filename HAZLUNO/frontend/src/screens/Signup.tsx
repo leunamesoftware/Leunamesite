@@ -7,6 +7,7 @@ import { useI18n } from '../i18n';
 import { usePublicConfig } from '../state/config';
 import { useSession } from '../state/session';
 import { errorText, fieldTexts } from '../ui/errors';
+import { nextPath } from '../ui/next';
 import { AuthBar, Banner, LanguagePicker, PillField, Wordmark } from '../ui/kit';
 import { SocialButtons } from '../ui/social';
 
@@ -55,7 +56,7 @@ export function Signup() {
         ...data, countryCode, languageCode: lang, intent,
         timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
       }));
-      navigate('/home', { replace: true });
+      navigate(nextPath(params), { replace: true });
     } catch (err) {
       setError(errorText(t, err)); setFields(fieldTexts(t, err));
     } finally {

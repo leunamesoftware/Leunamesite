@@ -1,11 +1,12 @@
 import { ChevronRight, LockKeyhole, Mail } from 'lucide-react';
 import { useState, type FormEvent } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { api } from '../api';
 import { useI18n } from '../i18n';
 import { usePublicConfig } from '../state/config';
 import { useSession } from '../state/session';
 import { errorText, fieldTexts } from '../ui/errors';
+import { nextPath } from '../ui/next';
 import { AuthBar, Banner, PillField, Wordmark } from '../ui/kit';
 import { SocialButtons } from '../ui/social';
 
@@ -15,6 +16,7 @@ export function Login() {
   const { start } = useSession();
   const { config } = usePublicConfig();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [busy, setBusy] = useState(false);
@@ -27,7 +29,7 @@ export function Login() {
     setBusy(true); setError(null); setFields({});
     try {
       start(await api.login(email, password));
-      navigate('/home', { replace: true });
+      navigate(nextPath(searchParams), { replace: true });
     } catch (err) {
       setError(errorText(t, err)); setFields(fieldTexts(t, err));
     } finally {

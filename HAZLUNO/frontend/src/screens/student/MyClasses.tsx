@@ -97,6 +97,7 @@ export function MyClasses() {
                     {k.access.action === 'enter' && <button type="button" className="btn-small btn-orange-solid"><Video size={18} aria-hidden />{t.card.enter}</button>}
                     {k.access.action === 'recording' && <button type="button" className="btn-small btn-blue-solid"><PlayCircle size={18} aria-hidden />{t.card.recording}</button>}
                     {state === 'completed' && <button type="button" className="btn-small btn-blue-soft" disabled title="Fase 5"><Award size={18} aria-hidden />{t.my.certificate}</button>}
+                    <button type="button" className="btn-small btn-blue-soft" onClick={() => navigate(`/enrollment/${k.enrollmentId}`)}>{t.pay.myBooking}</button>
                     <button type="button" className="btn-small btn-blue-soft" onClick={() => navigate(`/course/${k.courseId}`)}>{t.card.details}</button>
                   </div>
                 </li>

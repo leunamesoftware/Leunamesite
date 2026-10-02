@@ -17,3 +17,8 @@ Pelo acordo Cloud 1 / Cloud 2, **o Cloud 2 cuida** de `wrangler.toml`, workflows
 
 ## Android (Fase 8)
 Mesmo processo do Radar Preventivo (Capacitor). Ícone aprovado em `brand/icon-1024.png`.
+
+## Fase 3 — pagamentos (Stripe Connect)
+- Segredos do Worker: `STRIPE_SECRET_KEY` (começar com `sk_test_…`) e `STRIPE_WEBHOOK_SECRET` (`whsec_…`). Sem os dois, pagamento fica desligado e o app diz isso (grupos grátis continuam funcionando).
+- Webhook no painel do Stripe: `https://<domínio>/api/payments/webhook`, eventos `checkout.session.completed`, `checkout.session.async_payment_succeeded`, `checkout.session.async_payment_failed`, `checkout.session.expired`, `account.updated`, `refund.updated`. Marcar "Connect" também para `account.updated`.
+- Cron do Worker (`[triggers] crons = ["*/15 * * * *"]`): libera vagas não pagas e transfere aos professores o líquido dos grupos que terminaram. O admin também pode rodar em `POST /api/admin/payments/settle`.

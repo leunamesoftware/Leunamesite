@@ -7,7 +7,7 @@ import { useI18n } from '../../i18n';
 import { Avatar } from '../../ui/avatar';
 import { PeriodIcon, useAccessLabel, useClassWhen, useMeetingTime, usePeriodLabel } from '../../ui/classes';
 import { money, viewerTimeZone } from '../../ui/format';
-import { Banner, Wordmark } from '../../ui/kit';
+import { Wordmark } from '../../ui/kit';
 
 /** "Elige tu grupo" — the course's groups in the viewer's local time; only buyable ones can be chosen. */
 export function ChooseClass() {
@@ -17,7 +17,6 @@ export function ChooseClass() {
   const navigate = useNavigate();
   const [c, setC] = useState<CourseDetail | null>(null);
   const [picked, setPicked] = useState<string | null>(params.get('class'));
-  const [continued, setContinued] = useState(false);
   const when = useClassWhen();
   const meetingTime = useMeetingTime();
   const periodLabel = usePeriodLabel();
@@ -74,7 +73,7 @@ export function ChooseClass() {
                 <div className="slot-side">
                   <span className="slot-price">{price(k.priceCents, k.currency)}<small>{t.card.perGroup}</small></span>
                   {buy
-                    ? <button type="button" className="btn-small btn-orange-solid" aria-pressed={picked === k.id} onClick={() => { setPicked(k.id); setContinued(false); }}>
+                    ? <button type="button" className="btn-small btn-orange-solid" aria-pressed={picked === k.id} onClick={() => setPicked(k.id)}>
                         {picked === k.id ? t.choose.picked : t.choose.pick}</button>
                     : <span className="pill pill-muted">{badge(k)}</span>}
                 </div>
@@ -95,8 +94,7 @@ export function ChooseClass() {
               <span className="slot-price">{price(selected.priceCents, selected.currency)}</span>
             </div>
           </div>
-          {continued && <Banner tone="info">{t.choose.paymentsSoon}</Banner>}
-          <button type="button" className="btn btn-orange btn-split" onClick={() => setContinued(true)}>
+          <button type="button" className="btn btn-orange btn-split" onClick={() => navigate(`/course/${c.id}/checkout/${selected.id}`)}>
             <span /><span>{t.choose.goOn}</span><ChevronRight size={22} aria-hidden />
           </button>
         </div>

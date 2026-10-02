@@ -114,9 +114,10 @@ export async function setAvatar(deps: Deps, me: Me, request: Request): Promise<M
 
 /** Tela 10: classes the student is enrolled in (filled by Phase 3 enrollments). */
 export async function myClasses(deps: Deps, me: Me): Promise<MyClass[]> {
-  const ids = (await deps.db.all<{ id: string }>(
-    `SELECT cs.id FROM enrollments e JOIN class_sessions cs ON cs.id = e.class_session_id
-     WHERE e.student_id = ? AND e.status IN ('confirmed', 'completed') ORDER BY cs.starts_at`, [me.id])).map((r) => r.id);
+  const rows = await deps.db.all<{ id: string; enrollment_id: string }>(
+    `SELECT cs.id, e.id AS enrollment_id FROM enrollments e JOIN class_sessions cs ON cs.id = e.class_session_id
+     WHERE e.student_id = ? AND e.status IN ('confirmed', 'completed') ORDER BY cs.starts_at`, [me.id]);
+  const ids = rows.map((r) => r.id);
   const classes = await loadClasses(deps.db, { classIds: ids, viewerId: me.id, now: deps.clock.now() });
   if (!classes.length) return [];
   const courses = await deps.db.all<{ id: string; title: string; cover_key: string | null; instructor_id: string; name: string; avatar: string | null; country: string }>(
@@ -126,7 +127,7 @@ export async function myClasses(deps: Deps, me: Me): Promise<MyClass[]> {
   const minis = await instructorMinis(deps.db, courses.map((c) => ({ id: c.instructor_id, name: c.name, avatar: c.avatar, country: c.country })));
   return classes.map((k) => {
     const c = courses.find((x) => x.id === k.courseId)!;
-    return { ...k, courseTitle: c.title, coverUrl: publicUrl(c.cover_key), instructor: minis.get(c.instructor_id)! };
+    return { ...k, enrollmentId: rows.find((r) => r.id === k.id)!.enrollment_id, courseTitle: c.title, coverUrl: publicUrl(c.cover_key), instructor: minis.get(c.instructor_id)! };
   });
 }
 
