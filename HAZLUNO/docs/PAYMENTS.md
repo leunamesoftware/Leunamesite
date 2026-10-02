@@ -51,3 +51,8 @@ Só aparece depois que o provedor confirmou o pagamento (webhook), nunca ao clic
 - Final do cartão (•••• 4582) vem do provedor; o Hazluno não guarda o cartão.
 - Lembrete discreto da regra de desistência e link para o recibo.
 - "Te hemos enviado los detalles a tu correo" só aparece se o e-mail realmente foi enviado.
+
+## Conta da empresa (anotado em 2 out 2026)
+- O dono vai usar a **conta PJ** da empresa para criar o Stripe, mais tarde.
+- Atenção: o Stripe abre a conta no país de registro da empresa. Se for uma empresa brasileira, confirmar com o Stripe se a plataforma Connect pode cobrar em EUR de alunos europeus e transferir a professores na Europa (repasse entre países tem restrições). Se não puder, a alternativa é uma empresa registrada na UE (ex.: Espanha ou Portugal). O código não muda: só as chaves.
+- Falar com o contador sobre IVA/OSS na UE antes de cobrar.
