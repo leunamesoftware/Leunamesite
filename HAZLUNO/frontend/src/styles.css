@@ -902,3 +902,60 @@ a.btn-small { text-decoration: none; }
 .adm-q-blue { background: var(--blue-50); color: var(--blue-800); } .adm-q-green { background: #e5f7ea; color: #137a34; }
 /* Faixa fixa atrás da barra de status do celular: o conteúdo nunca fica por baixo da hora e da bateria. */
 body::before { content: ''; position: fixed; z-index: 1000; top: 0; left: 0; right: 0; height: var(--sat); background: #0a37b3; pointer-events: none; }
+/* =================== modo computador (≥1000px) =================== */
+.tabbar-brand { display: none; }
+@media (min-width: 1000px) {
+  /* menu no topo em vez da barra de baixo */
+  .shell-page { padding-bottom: 0; padding-top: calc(68px + var(--sat)); }
+  .tabbar { top: 0; bottom: auto; display: flex; align-items: center; gap: 4px; height: calc(68px + var(--sat));
+    padding: var(--sat) max(24px, calc((100vw - 1240px) / 2)) 0; box-shadow: 0 8px 24px -18px rgba(3, 18, 70, 0.9); }
+  .tabbar-brand { display: block; margin-right: auto; text-decoration: none; }
+  .tab { flex-direction: row; gap: 8px; padding: 10px 14px; border-radius: 12px; font-size: 15px; }
+  .tab:hover { background: rgba(255, 255, 255, 0.08); }
+  .tab-on { background: rgba(255, 255, 255, 0.12); }
+  .tab-on::after { display: none; }
+  .cta-bar, .choosecls-foot { left: 50%; right: auto; width: min(760px, 100vw); transform: translateX(-50%); }
+
+  /* início do aluno: conteúdo largo e cartões em grade */
+  .home-bar { display: none; }
+  .home-head, .home-body { max-width: 1180px; }
+  .home-head { padding-top: 40px; }
+  .home-question { font-size: 44px; }
+  .home .searchbar { max-width: 640px; }
+  .home .cards-row { grid-auto-flow: row; grid-auto-columns: auto; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); overflow: visible; }
+  .home-art { display: none; }
+  .shell-page .page-head > .wordmark, .shell-page .wordmark:first-child { display: none; }
+  /* detalhe do curso: foto em faixa com cantos, sem rosto gigante */
+  .detail-hero { height: 340px; max-width: 1180px; margin: 16px auto 0; border-radius: 24px; }
+  .detail-hero img { object-position: center 30%; }
+
+  /* abertura: foto à esquerda, texto e botões à direita */
+  .welcome { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); align-items: center; column-gap: 48px;
+    min-height: 100vh; padding: 0 max(32px, calc((100vw - 1240px) / 2)); }
+  .welcome-hero { max-width: none; align-self: end; }
+  .welcome-hero img { -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 10%, #000 90%, transparent 100%), linear-gradient(180deg, transparent 0, #000 12%, #000 78%, transparent 100%);
+    -webkit-mask-composite: source-in; mask-image: linear-gradient(90deg, transparent 0, #000 10%, #000 90%, transparent 100%), linear-gradient(180deg, transparent 0, #000 12%, #000 78%, transparent 100%); mask-composite: intersect; }
+  .welcome-body { margin: 0; max-width: 520px; padding: 48px 0; align-items: flex-start; text-align: left; }
+  .welcome-tagline { font-size: 30px; max-width: 20ch; }
+  .welcome-features { justify-items: start; }
+  .welcome-legal { justify-content: flex-start; }
+
+  /* entrar / criar conta: imagem à esquerda, formulário à direita */
+  .auth { padding-left: 44vw; min-height: 100vh; }
+  .auth::before { content: ''; position: fixed; left: 0; top: 0; bottom: 0; width: 44vw;
+    background: url(/hero.webp) center bottom / contain no-repeat, linear-gradient(170deg, #0565f0 0%, #0a2f9f 100%); }
+  .auth-photo::before { background: linear-gradient(170deg, #0e6dfd 0%, #0a2f9f 100%); }
+  .auth-photo .auth-art { position: fixed; z-index: 1; left: 0; right: auto; top: auto; bottom: 0; width: 44vw; max-width: none; height: auto;
+    max-height: 92vh; object-fit: contain; object-position: center bottom; -webkit-mask-image: none; mask-image: none; }
+  .auth-bar, .auth-body { max-width: 520px; }
+  .auth-body { padding-top: 6vh; }
+  .auth-title-split, .auth-sub-narrow { max-width: none; }
+
+  /* escolher aprender / ensinar: dois cartões lado a lado */
+  .choose-bar, .choose-body { max-width: 1040px; }
+  .choose-body { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; padding-top: 32px; }
+  .choose-title, .choose-switch { grid-column: 1 / -1; }
+  .choose-title { font-size: 40px; }
+  .choose-card { min-height: 340px; grid-template-columns: 48% 1fr; }
+  .choose-card:hover { transform: translateY(-3px); }
+}

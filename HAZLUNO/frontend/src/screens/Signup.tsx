@@ -74,7 +74,7 @@ export function Signup() {
         <div className="choose-body">
           <h1 className="choose-title">{t.signup.chooseTitle}</h1>
           <button type="button" className="choose-card choose-learn" onClick={() => setIntent('learn')}>
-            <img src="/choose-learn.webp" alt="" width={510} height={536} />
+            <img src="/choose-learn.webp" alt="" width={450} height={508} />
             <span className="choose-copy">
               <GraduationCap className="choose-icon" size={44} strokeWidth={2} aria-hidden />
               <strong>{t.signup.learnTitle}</strong>
