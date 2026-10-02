@@ -1,5 +1,5 @@
 import type {
-  AdminClassRow, AdminCourseRow, AdminDashboard, AdminInstructorRow, AdminPage, AdminUserList, AgendaItem, Earnings, EnrollmentInfo, EnrollmentStart, PayoutStatus, ApiResponse, Category, ClassInput, ClassSummary, CourseCard, CourseDetail, CourseInput, ExploreQuery, ExploreResult,
+  AdminClassRow, AdminCourseRow, AdminDashboard, AdminFinance, AdminInstructorRow, AdminPage, AdminUserList, AgendaItem, Earnings, EnrollmentInfo, EnrollmentStart, PayoutStatus, ApiResponse, Category, ClassInput, ClassSummary, CourseCard, CourseDetail, CourseInput, ExploreQuery, ExploreResult,
   InstructorCourse, InstructorProfile, InstructorPublic, LanguageCode, Me, MyStudent, ReportReason, MyClass, MyStats, PublicConfig, SessionCreated, SessionInfo,
 } from '../../shared/contracts';
 
@@ -107,6 +107,8 @@ export const api = {
     showCourse: (id: string) => request<null>('POST', `/admin/courses/${id}/show`),
     classes: (q: { status?: string; q?: string; page?: number }) => request<AdminPage<AdminClassRow>>('GET', `/admin/classes?${qs(q)}`),
     cancelClass: (id: string, reason: string) => request<null>('POST', `/admin/classes/${id}/cancel`, { reason }),
+    finance: (tab: string, page: number) => request<AdminFinance>('GET', `/admin/finance?${qs({ tab, page })}`),
+    settle: () => request<{ transferred: number; waiting: number }>('POST', '/admin/payments/settle'),
     suspend: (id: string, reason: string) => request<null>('POST', `/admin/users/${id}/suspend`, { reason }),
     reinstate: (id: string) => request<null>('POST', `/admin/users/${id}/reinstate`),
     dashboard: (days: number) => request<AdminDashboard>('GET', `/admin/dashboard?days=${days}`),

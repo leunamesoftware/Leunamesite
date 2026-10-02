@@ -485,3 +485,32 @@ export interface AdminClassRow {
   openingFeePaid: boolean;
 }
 export interface AdminPage<T> { items: T[]; total: number; counts: Record<string, number> }
+
+// ---------- admin: money (Telas 33–34) ----------
+export interface AdminFinanceSummary {
+  paymentsAvailable: boolean;
+  testMode: boolean | null;
+  salesCents: number;
+  processorFeesCents: number;
+  openingFeesCents: number;
+  /** What Hazluno keeps: opening fees and commissions net of the processor fee, plus its half of withdrawals. */
+  platformRevenueCents: number;
+  refundedCents: number;
+  /** Teachers' money still waiting for their group to end (or for their payout account). */
+  heldForTeachersCents: number;
+  transferredCents: number;
+  failedRefunds: number;
+}
+export interface AdminMoneyLine {
+  id: string;
+  at: string;
+  kind: 'enrollment' | 'class_opening_fee' | 'refund' | 'transfer';
+  who: string;
+  courseTitle: string | null;
+  amountCents: number;
+  feeCents: number;
+  status: string;
+  detail: string | null;
+  test: boolean;
+}
+export interface AdminFinance { summary: AdminFinanceSummary; items: AdminMoneyLine[]; total: number }

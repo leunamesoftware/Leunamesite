@@ -4,7 +4,7 @@ import { useI18n } from '../../i18n';
 
 /** Shared top of the admin lists: tabs with counts + search box, and the pager at the bottom. */
 export function AdminFilters<T extends string>({ tabs, tab, onTab, q, onQ, placeholder }: {
-  tabs: [T, string, number | undefined][]; tab: T; onTab(t: T): void; q: string; onQ(q: string): void; placeholder: string;
+  tabs: [T, string, number | undefined][]; tab: T; onTab(t: T): void; q?: string; onQ?(q: string): void; placeholder?: string;
 }) {
   return (
     <div className="stu-tools">
@@ -14,8 +14,8 @@ export function AdminFilters<T extends string>({ tabs, tab, onTab, q, onQ, place
             {label}{n !== undefined ? ` (${n})` : ''}</button>
         ))}
       </div>
-      <label className="stu-search"><Search size={20} aria-hidden />
-        <input type="search" value={q} placeholder={placeholder} aria-label={placeholder} onChange={(e) => onQ(e.target.value)} /></label>
+      {onQ && <label className="stu-search"><Search size={20} aria-hidden />
+        <input type="search" value={q} placeholder={placeholder} aria-label={placeholder} onChange={(e) => onQ(e.target.value)} /></label>}
     </div>
   );
 }

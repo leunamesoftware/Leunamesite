@@ -1131,3 +1131,5 @@ body::before { content: ''; position: fixed; z-index: 1000; top: 0; left: 0; rig
 .usr-name a:hover { text-decoration: underline; }
 .admin-seg { overflow-x: auto; flex-wrap: nowrap; }
 .admin .seg-btn { text-decoration: none; }
+.money-row { grid-template-columns: 90px minmax(220px, 2fr) 100px 90px 130px; }
+.test-badge { align-self: center; padding: 6px 12px; border-radius: 999px; background: #fff3c4; color: #7a5200; font-weight: 700; font-size: 13px; }

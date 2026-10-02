@@ -10,6 +10,7 @@ import { rejectSchema } from '../instructor/schemas.js';
 import { dashboard } from './dashboard.js';
 import { listUsers, setSuspended } from './users.js';
 import { cancelClassAsAdmin, listClasses, listCourses, setCourseVisible } from './catalog.js';
+import { finance } from './finance.js';
 import { releaseExpiredHolds, settleFinishedClasses } from '../payments/service.js';
 
 /** Minimal moderation needed in Phase 2: approving or rejecting teachers. The full panel is Phase 6. */
@@ -48,7 +49,11 @@ export function adminRoutes(deps: Deps) {
     return c.json({ ok: true, data: null });
   });
 
+  /** Money is for administrators only (moderators handle people and content). */
+  const adminOnly = (c: Context<AppEnv>) => { if (!c.get('me').roles.includes('admin')) throw errors.forbidden(); };
+  r.get('/finance', async (c) => { adminOnly(c); return c.json({ ok: true, data: await finance(deps, c.req.query()) }); });
   r.post('/payments/settle', async (c) => {
+    adminOnly(c);
     await releaseExpiredHolds(deps);
     return c.json({ ok: true, data: await settleFinishedClasses(deps) });
   });

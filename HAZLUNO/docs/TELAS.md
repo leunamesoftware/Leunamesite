@@ -52,8 +52,8 @@ Referência: `brand/flowchart-reference.webp`. Cada tela tem uma das três situa
 | 30 | Gerenciar usuários | Pronta: lista, filtros, busca, suspender (encerra as sessões) e reativar com motivo registrado — `/admin/users`; aprovação de professores em `/admin/instructors` |
 | 31 | Gerenciar cursos | Pronta: lista por estado, busca, ocultar do catálogo com motivo e publicar de novo — `/admin/courses` |
 | 32 | Gerenciar turmas | Pronta: próximos / em curso / terminados / cancelados, vagas, taxa de abertura, cancelar com reembolso integral — `/admin/classes` |
-| 33 | Pagamentos e transações | Fase 6 (depende da Fase 3) |
-| 34 | Comissões e repasses | Fase 6 (taxa de €5 e regra de desistência 50% / 50-50) |
+| 33 | Pagamentos e transações | Pronta: vendas, taxa do Stripe, aberturas, reembolsos (com a divisão da desistência) — `/admin/finance` (só administrador) |
+| 34 | Comissões e repasses | Pronta: receita da Hazluno, a pagar e transferido aos professores, botão para transferir os grupos terminados — `/admin/finance` |
 | 35 | Certificados | Fase 6 (emissão é da Fase 5) |
 | 36 | Gravações | Fase 6 (ficam para sempre; o admin só apaga caso sensível, com motivo registrado) |
 | 37 | Denúncias e suporte | Fase 6 (denúncias já gravadas: o professor reporta aluno desde já) |

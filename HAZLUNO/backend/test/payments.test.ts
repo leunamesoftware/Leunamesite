@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { ClassSummary, Earnings, EnrollmentInfo, EnrollmentStart, InstructorCourse, PayoutStatus, SessionCreated } from '../../shared/contracts.js';
+import type { AdminFinance, ClassSummary, Earnings, EnrollmentInfo, EnrollmentStart, InstructorCourse, PayoutStatus, SessionCreated } from '../../shared/contracts.js';
 import { setup, validSignup, type TestCtx } from './helpers.js';
 
 // "Now" in these tests: Thu 1 Oct 2026, 09:00 UTC. Classes happen on 15–16 Oct.
@@ -165,6 +165,18 @@ describe('student pays, withdraws, teacher gets paid after the group ends', () =
     expect(t.stripe!.transfers).toHaveLength(2); // running again never pays twice
     e = (await t.call<Earnings>('GET', '/api/instructor/earnings', { token: g.laura.token })).json.data;
     expect(e).toMatchObject({ heldCents: 0, transferredCents: (2000 - fee) + teacherShare });
+
+    // Admin money screen adds up: sales, fees, Hazluno's part, refunds and transfers.
+    const openingFee = t.stripe!.feeFor(500);
+    const fin = (await t.call<AdminFinance>('GET', '/api/admin/finance', { token: g.laura.admin.token })).json.data;
+    expect(fin.summary).toMatchObject({
+      paymentsAvailable: true, testMode: true, salesCents: 4000, processorFeesCents: fee * 2 + openingFee, openingFeesCents: 500,
+      platformRevenueCents: (500 - openingFee) + ((1000 - teacherShare) - fee), refundedCents: 1000, heldForTeachersCents: 0,
+      transferredCents: (2000 - fee) + teacherShare, failedRefunds: 0,
+    });
+    expect((await t.call<AdminFinance>('GET', '/api/admin/finance?tab=transfers', { token: g.laura.admin.token })).json.data.total).toBe(2);
+    expect((await t.call<AdminFinance>('GET', '/api/admin/finance?tab=refunds', { token: g.laura.admin.token })).json.data.items[0]!.detail)
+      .toBe(`student_withdrawal:${1000 - teacherShare}:${teacherShare}`);
   });
 
   it('an unpaid seat comes back after 30 minutes; a late payment is confirmed only if a seat is free', async () => {
