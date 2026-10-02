@@ -1,5 +1,5 @@
 import type {
-  AdminDashboard, AdminInstructorRow, AdminUserList, AgendaItem, Earnings, EnrollmentInfo, EnrollmentStart, PayoutStatus, ApiResponse, Category, ClassInput, ClassSummary, CourseCard, CourseDetail, CourseInput, ExploreQuery, ExploreResult,
+  AdminClassRow, AdminCourseRow, AdminDashboard, AdminInstructorRow, AdminPage, AdminUserList, AgendaItem, Earnings, EnrollmentInfo, EnrollmentStart, PayoutStatus, ApiResponse, Category, ClassInput, ClassSummary, CourseCard, CourseDetail, CourseInput, ExploreQuery, ExploreResult,
   InstructorCourse, InstructorProfile, InstructorPublic, LanguageCode, Me, MyStudent, ReportReason, MyClass, MyStats, PublicConfig, SessionCreated, SessionInfo,
 } from '../../shared/contracts';
 
@@ -101,8 +101,12 @@ export const api = {
   },
 
   admin: {
-    users: (q: { role?: string; status?: string; q?: string; page?: number }) => request<AdminUserList>('GET', `/admin/users?${new URLSearchParams(
-      Object.entries(q).filter(([, v]) => v !== undefined && v !== '').map(([k, v]) => [k, String(v)]))}`),
+    users: (q: { role?: string; status?: string; q?: string; page?: number }) => request<AdminUserList>('GET', `/admin/users?${qs(q)}`),
+    courses: (q: { status?: string; q?: string; page?: number }) => request<AdminPage<AdminCourseRow>>('GET', `/admin/courses?${qs(q)}`),
+    hideCourse: (id: string, reason: string) => request<null>('POST', `/admin/courses/${id}/hide`, { reason }),
+    showCourse: (id: string) => request<null>('POST', `/admin/courses/${id}/show`),
+    classes: (q: { status?: string; q?: string; page?: number }) => request<AdminPage<AdminClassRow>>('GET', `/admin/classes?${qs(q)}`),
+    cancelClass: (id: string, reason: string) => request<null>('POST', `/admin/classes/${id}/cancel`, { reason }),
     suspend: (id: string, reason: string) => request<null>('POST', `/admin/users/${id}/suspend`, { reason }),
     reinstate: (id: string) => request<null>('POST', `/admin/users/${id}/reinstate`),
     dashboard: (days: number) => request<AdminDashboard>('GET', `/admin/dashboard?days=${days}`),
@@ -111,6 +115,11 @@ export const api = {
     reject: (id: string, reason: string) => request<null>('POST', `/admin/instructors/${id}/reject`, { reason }),
   },
 };
+
+/** Query string without empty values. */
+function qs(q: Record<string, string | number | undefined>) {
+  return new URLSearchParams(Object.entries(q).filter(([, v]) => v !== undefined && v !== '').map(([k, v]) => [k, String(v)])).toString();
+}
 
 function formWith(file: File) {
   const f = new FormData();

@@ -453,3 +453,35 @@ export interface AdminUserList {
   total: number;
   counts: { all: number; students: number; teachers: number; suspended: number };
 }
+
+// ---------- admin: courses & groups (Telas 31–32) ----------
+export interface AdminCourseRow {
+  id: string;
+  title: string;
+  coverUrl: string | null;
+  teacherId: string;
+  teacherName: string;
+  categoryId: string;
+  status: CourseStatus;
+  groups: number;
+  openGroups: number;
+  students: number;
+  createdAt: string;
+}
+export interface AdminClassRow {
+  id: string;
+  courseId: string;
+  courseTitle: string;
+  teacherName: string;
+  label: string | null;
+  startsAt: string;
+  endsAt: string;
+  meetings: number;
+  status: ClassSessionStatus;
+  capacity: number;
+  seatsTaken: number;
+  priceCents: number;
+  currency: string;
+  openingFeePaid: boolean;
+}
+export interface AdminPage<T> { items: T[]; total: number; counts: Record<string, number> }

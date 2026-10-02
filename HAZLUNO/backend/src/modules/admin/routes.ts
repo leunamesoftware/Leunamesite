@@ -9,6 +9,7 @@ import { requestMeta } from '../auth/routes.js';
 import { rejectSchema } from '../instructor/schemas.js';
 import { dashboard } from './dashboard.js';
 import { listUsers, setSuspended } from './users.js';
+import { cancelClassAsAdmin, listClasses, listCourses, setCourseVisible } from './catalog.js';
 import { releaseExpiredHolds, settleFinishedClasses } from '../payments/service.js';
 
 /** Minimal moderation needed in Phase 2: approving or rejecting teachers. The full panel is Phase 6. */
@@ -25,6 +26,25 @@ export function adminRoutes(deps: Deps) {
   });
   r.post('/users/:id/reinstate', async (c) => {
     await setSuspended(deps, c.get('me'), c.req.param('id'), false, null, await requestMeta(deps, c));
+    return c.json({ ok: true, data: null });
+  });
+
+  const reasonOf = async (c: Context<AppEnv>) => {
+    const body = (await c.req.json().catch(() => ({}))) as { reason?: unknown };
+    return typeof body.reason === 'string' ? body.reason.slice(0, 500) : null;
+  };
+  r.get('/courses', async (c) => c.json({ ok: true, data: await listCourses(deps, c.req.query()) }));
+  r.post('/courses/:id/hide', async (c) => {
+    await setCourseVisible(deps, c.get('me'), c.req.param('id'), false, await reasonOf(c), await requestMeta(deps, c));
+    return c.json({ ok: true, data: null });
+  });
+  r.post('/courses/:id/show', async (c) => {
+    await setCourseVisible(deps, c.get('me'), c.req.param('id'), true, null, await requestMeta(deps, c));
+    return c.json({ ok: true, data: null });
+  });
+  r.get('/classes', async (c) => c.json({ ok: true, data: await listClasses(deps, c.req.query()) }));
+  r.post('/classes/:id/cancel', async (c) => {
+    await cancelClassAsAdmin(deps, c.get('me'), c.req.param('id'), await reasonOf(c), await requestMeta(deps, c));
     return c.json({ ok: true, data: null });
   });
 

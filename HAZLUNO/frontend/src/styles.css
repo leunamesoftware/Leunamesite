@@ -1101,7 +1101,7 @@ body::before { content: ''; position: fixed; z-index: 1000; top: 0; left: 0; rig
 .earn-refunded { background: #fde8e8; color: var(--danger); } .earn-paid { background: var(--blue-50); color: var(--blue-800); }
 .earn-ok { display: flex; gap: 8px; align-items: center; color: #137a34; font-weight: 600; }
 /* admin: usuários (tela 30) */
-.usr-row { display: grid; grid-template-columns: minmax(220px, 1.6fr) minmax(140px, 1fr) minmax(150px, 1fr) 120px 110px; gap: 10px; align-items: center; padding: 10px 8px; border-top: 1px solid var(--line); }
+.usr-row { display: grid; grid-template-columns: minmax(220px, 1.6fr) minmax(130px, 1fr) minmax(140px, 1fr) 170px 150px; gap: 10px; align-items: center; padding: 10px 8px; border-top: 1px solid var(--line); }
 .usr-row.stu-head { border-top: 0; }
 .usr-name { display: flex; flex-direction: column; min-width: 0; }
 .usr-name small { color: var(--ink-2); overflow-wrap: anywhere; font-size: 13px; }
@@ -1110,14 +1110,24 @@ body::before { content: ''; position: fixed; z-index: 1000; top: 0; left: 0; rig
 .usr-roles svg { color: #1fa64a; }
 .usr-act { display: flex; flex-direction: column; font-size: 13px; color: var(--ink-2); }
 .usr-actions { display: flex; justify-content: flex-end; }
+.usr-actions .btn-plain { white-space: nowrap; }
 .role-chip-soft { background: var(--soft); color: var(--ink-2); }
 .role-chip-orange { background: var(--orange-50); color: #b45309; }
 .usr-pager { display: flex; gap: 8px; align-items: center; justify-content: flex-end; margin-top: 12px; }
 .usr-pager small { margin-right: auto; }
 @media (max-width: 900px) {
   .usr-row.stu-head { display: none; }
-  .usr-row { grid-template-columns: 1fr auto; }
-  .usr-row > .usr-roles, .usr-row > .usr-act { grid-column: 1 / -1; }
+  .usr-row { grid-template-columns: 1fr; gap: 6px; }
+  .usr-row > * { grid-area: auto; }
+  .usr-row .stu-state { align-self: flex-start; }
+  .usr-actions { justify-content: flex-start; }
 }
 .legal-doc ol { margin: 0; padding-left: 22px; display: flex; flex-direction: column; gap: 12px; line-height: 1.55; color: var(--ink); }
 .agreement a { color: var(--blue-700); font-weight: 600; }
+.adm-cover { width: 56px; height: 56px; border-radius: 12px; object-fit: cover; flex: none; }
+.fee-ok { color: #137a34; }
+.usr-act small { display: inline-flex; gap: 4px; align-items: center; }
+.usr-name a { color: var(--ink); text-decoration: none; }
+.usr-name a:hover { text-decoration: underline; }
+.admin-seg { overflow-x: auto; flex-wrap: nowrap; }
+.admin .seg-btn { text-decoration: none; }

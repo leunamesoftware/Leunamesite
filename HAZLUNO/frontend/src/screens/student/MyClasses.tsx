@@ -1,4 +1,4 @@
-import { Award, CalendarDays, CheckCircle2, Clock, Heart, PlayCircle, Radio, Search, Video } from 'lucide-react';
+import { CalendarDays, CheckCircle2, Clock, Heart, PlayCircle, Radio, Search } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import type { MyClass } from '../../../../shared/contracts';
@@ -94,9 +94,7 @@ export function MyClasses() {
                     )}
                   </div>
                   <div className="mine-actions">
-                    {k.access.action === 'enter' && <button type="button" className="btn-small btn-orange-solid"><Video size={18} aria-hidden />{t.card.enter}</button>}
-                    {k.access.action === 'recording' && <button type="button" className="btn-small btn-blue-solid"><PlayCircle size={18} aria-hidden />{t.card.recording}</button>}
-                    {state === 'completed' && <button type="button" className="btn-small btn-blue-soft" disabled title="Fase 5"><Award size={18} aria-hidden />{t.my.certificate}</button>}
+                    {/* "Entrar", "Ver grabación" and "Certificado" appear when the live room (Phase 4) and certificates (Phase 5) exist: no button that does nothing. */}
                     <button type="button" className="btn-small btn-blue-soft" onClick={() => navigate(`/enrollment/${k.enrollmentId}`)}>{t.pay.myBooking}</button>
                     <button type="button" className="btn-small btn-blue-soft" onClick={() => navigate(`/course/${k.courseId}`)}>{t.card.details}</button>
                   </div>
