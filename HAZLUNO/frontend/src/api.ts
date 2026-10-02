@@ -1,5 +1,5 @@
 import type {
-  AdminDashboard, AdminInstructorRow, AgendaItem, Earnings, EnrollmentInfo, EnrollmentStart, PayoutStatus, ApiResponse, Category, ClassInput, ClassSummary, CourseCard, CourseDetail, CourseInput, ExploreQuery, ExploreResult,
+  AdminDashboard, AdminInstructorRow, AdminUserList, AgendaItem, Earnings, EnrollmentInfo, EnrollmentStart, PayoutStatus, ApiResponse, Category, ClassInput, ClassSummary, CourseCard, CourseDetail, CourseInput, ExploreQuery, ExploreResult,
   InstructorCourse, InstructorProfile, InstructorPublic, LanguageCode, Me, MyStudent, ReportReason, MyClass, MyStats, PublicConfig, SessionCreated, SessionInfo,
 } from '../../shared/contracts';
 
@@ -101,6 +101,10 @@ export const api = {
   },
 
   admin: {
+    users: (q: { role?: string; status?: string; q?: string; page?: number }) => request<AdminUserList>('GET', `/admin/users?${new URLSearchParams(
+      Object.entries(q).filter(([, v]) => v !== undefined && v !== '').map(([k, v]) => [k, String(v)]))}`),
+    suspend: (id: string, reason: string) => request<null>('POST', `/admin/users/${id}/suspend`, { reason }),
+    reinstate: (id: string) => request<null>('POST', `/admin/users/${id}/reinstate`),
     dashboard: (days: number) => request<AdminDashboard>('GET', `/admin/dashboard?days=${days}`),
     instructors: () => request<AdminInstructorRow[]>('GET', '/admin/instructors'),
     approve: (id: string) => request<null>('POST', `/admin/instructors/${id}/approve`),

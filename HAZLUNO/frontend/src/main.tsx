@@ -25,6 +25,7 @@ import { Profile } from './screens/student/Profile';
 import { TeacherPublic } from './screens/student/TeacherPublic';
 import { AdminDashboard } from './screens/admin/AdminDashboard';
 import { AdminInstructors } from './screens/admin/AdminInstructors';
+import { AdminUsers } from './screens/admin/AdminUsers';
 import { CourseEditor } from './screens/teacher/CourseEditor';
 import { GroupForm } from './screens/teacher/GroupForm';
 import { TeachAgenda } from './screens/teacher/TeachAgenda';
@@ -87,6 +88,7 @@ createRoot(document.getElementById('root')!).render(
             <Route path="/teach/courses/:id" element={<OnlyRole roles={['instructor']}><CourseEditor /></OnlyRole>} />
             <Route path="/teach/courses/:id/groups/new" element={<OnlyRole roles={['instructor']}><GroupForm /></OnlyRole>} />
             <Route path="/admin" element={<OnlyRole roles={['admin', 'moderator']}><AdminDashboard /></OnlyRole>} />
+            <Route path="/admin/users" element={<OnlyRole roles={['admin', 'moderator']}><AdminUsers /></OnlyRole>} />
             <Route path="/admin/instructors" element={<OnlyRole roles={['admin', 'moderator']}><AdminInstructors /></OnlyRole>} />
             <Route path="/terms" element={<Legal doc="terms" />} />
             <Route path="/privacy" element={<Legal doc="privacy" />} />

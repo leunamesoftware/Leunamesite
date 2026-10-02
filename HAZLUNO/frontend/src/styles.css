@@ -1100,3 +1100,22 @@ body::before { content: ''; position: fixed; z-index: 1000; top: 0; left: 0; rig
 .earn-held { background: var(--orange-50); color: #b45309; } .earn-transferred { background: #e5f7ea; color: #137a34; }
 .earn-refunded { background: #fde8e8; color: var(--danger); } .earn-paid { background: var(--blue-50); color: var(--blue-800); }
 .earn-ok { display: flex; gap: 8px; align-items: center; color: #137a34; font-weight: 600; }
+/* admin: usuários (tela 30) */
+.usr-row { display: grid; grid-template-columns: minmax(220px, 1.6fr) minmax(140px, 1fr) minmax(150px, 1fr) 120px 110px; gap: 10px; align-items: center; padding: 10px 8px; border-top: 1px solid var(--line); }
+.usr-row.stu-head { border-top: 0; }
+.usr-name { display: flex; flex-direction: column; min-width: 0; }
+.usr-name small { color: var(--ink-2); overflow-wrap: anywhere; font-size: 13px; }
+.usr-roles { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; }
+.usr-roles small { display: inline-flex; gap: 4px; align-items: center; width: 100%; font-size: 12px; }
+.usr-roles svg { color: #1fa64a; }
+.usr-act { display: flex; flex-direction: column; font-size: 13px; color: var(--ink-2); }
+.usr-actions { display: flex; justify-content: flex-end; }
+.role-chip-soft { background: var(--soft); color: var(--ink-2); }
+.role-chip-orange { background: var(--orange-50); color: #b45309; }
+.usr-pager { display: flex; gap: 8px; align-items: center; justify-content: flex-end; margin-top: 12px; }
+.usr-pager small { margin-right: auto; }
+@media (max-width: 900px) {
+  .usr-row.stu-head { display: none; }
+  .usr-row { grid-template-columns: 1fr auto; }
+  .usr-row > .usr-roles, .usr-row > .usr-act { grid-column: 1 / -1; }
+}

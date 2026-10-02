@@ -8,6 +8,7 @@ import { auditStatement } from '../audit/audit.js';
 import { requestMeta } from '../auth/routes.js';
 import { rejectSchema } from '../instructor/schemas.js';
 import { dashboard } from './dashboard.js';
+import { listUsers, setSuspended } from './users.js';
 import { releaseExpiredHolds, settleFinishedClasses } from '../payments/service.js';
 
 /** Minimal moderation needed in Phase 2: approving or rejecting teachers. The full panel is Phase 6. */
@@ -15,6 +16,17 @@ export function adminRoutes(deps: Deps) {
   const r = new Hono<AppEnv>();
 
   r.get('/dashboard', async (c) => c.json({ ok: true, data: await dashboard(deps, Number(c.req.query('days') ?? 30)) }));
+
+  r.get('/users', async (c) => c.json({ ok: true, data: await listUsers(deps, c.req.query()) }));
+  r.post('/users/:id/suspend', async (c) => {
+    const body = (await c.req.json().catch(() => ({}))) as { reason?: unknown };
+    await setSuspended(deps, c.get('me'), c.req.param('id'), true, typeof body.reason === 'string' ? body.reason.slice(0, 500) : null, await requestMeta(deps, c));
+    return c.json({ ok: true, data: null });
+  });
+  r.post('/users/:id/reinstate', async (c) => {
+    await setSuspended(deps, c.get('me'), c.req.param('id'), false, null, await requestMeta(deps, c));
+    return c.json({ ok: true, data: null });
+  });
 
   r.post('/payments/settle', async (c) => {
     await releaseExpiredHolds(deps);

@@ -49,7 +49,7 @@ Referência: `brand/flowchart-reference.webp`. Cada tela tem uma das três situa
 | # | Tela | Situação |
 |---|------|----------|
 | 29 | Dashboard administrativo | Pronta (números reais; dinheiro na Fase 3) — `/admin` |
-| 30 | Gerenciar usuários | Parcial: aprovação de professores já pronta (`/admin/instructors`) |
+| 30 | Gerenciar usuários | Pronta: lista, filtros, busca, suspender (encerra as sessões) e reativar com motivo registrado — `/admin/users`; aprovação de professores em `/admin/instructors` |
 | 31 | Gerenciar cursos | Fase 6 |
 | 32 | Gerenciar turmas | Fase 6 |
 | 33 | Pagamentos e transações | Fase 6 (depende da Fase 3) |

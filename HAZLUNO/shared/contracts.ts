@@ -430,3 +430,24 @@ export interface Earnings {
   salesCount: number;
   lines: EarningLine[];
 }
+
+// ---------- admin: users (Tela 30) ----------
+export interface AdminUserRow {
+  id: string;
+  name: string;
+  email: string;
+  avatarUrl: string | null;
+  countryCode: string;
+  roles: Role[];
+  status: 'active' | 'suspended';
+  createdAt: string;
+  lastSeenAt: string | null;
+  teacherStatus: InstructorProfile['verificationStatus'] | null;
+  enrollments: number;
+  courses: number;
+}
+export interface AdminUserList {
+  items: AdminUserRow[];
+  total: number;
+  counts: { all: number; students: number; teachers: number; suspended: number };
+}
