@@ -11,6 +11,7 @@ import { fileRoutes } from './modules/files/routes.js';
 import { instructorRoutes } from './modules/instructor/routes.js';
 import { authRoutes } from './modules/auth/routes.js';
 import { catalogRoutes } from './modules/catalog/routes.js';
+import { enrollmentRoutes, webhookRoutes } from './modules/payments/routes.js';
 
 /** Builds the API. Knows nothing about hosting: receives database, config etc. ready-made. */
 export function createApp(deps: Deps) {
@@ -40,10 +41,12 @@ export function createApp(deps: Deps) {
   app.route('/api/public', catalogRoutes(deps));
   app.route('/api/public', exploreRoutes(deps));
   app.route('/api/files', fileRoutes(deps));
+  app.route('/api/payments', webhookRoutes(deps));
 
   // Signed in
   app.use('/api/me', requireAuth(deps));
   app.use('/api/me/*', requireAuth(deps));
+  app.route('/api/me/enrollments', enrollmentRoutes(deps));
   app.route('/api/me', accountRoutes(deps));
 
   app.use('/api/instructor/*', requireAuth(deps), requireRole('instructor'));

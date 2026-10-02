@@ -8,12 +8,18 @@ import { auditStatement } from '../audit/audit.js';
 import { requestMeta } from '../auth/routes.js';
 import { rejectSchema } from '../instructor/schemas.js';
 import { dashboard } from './dashboard.js';
+import { releaseExpiredHolds, settleFinishedClasses } from '../payments/service.js';
 
 /** Minimal moderation needed in Phase 2: approving or rejecting teachers. The full panel is Phase 6. */
 export function adminRoutes(deps: Deps) {
   const r = new Hono<AppEnv>();
 
   r.get('/dashboard', async (c) => c.json({ ok: true, data: await dashboard(deps, Number(c.req.query('days') ?? 30)) }));
+
+  r.post('/payments/settle', async (c) => {
+    await releaseExpiredHolds(deps);
+    return c.json({ ok: true, data: await settleFinishedClasses(deps) });
+  });
 
   r.get('/instructors', async (c) => {
     const status = c.req.query('status') ?? 'under_review';

@@ -36,6 +36,13 @@ export type ErrorCode =
   | 'schedule_conflict'
   | 'file_invalid'
   | 'file_too_large'
+  | 'payments_unavailable'
+  | 'class_full'
+  | 'enrollment_closed'
+  | 'already_enrolled'
+  | 'opening_fee_required'
+  | 'payout_account_required'
+  | 'webhook_invalid'
   | 'internal_error';
 
 /** Field-level validation codes (translated by the app). */
@@ -357,4 +364,68 @@ export interface AdminDashboard {
   topTeachers: { id: string; name: string; avatarUrl: string | null; courses: number; students: number }[];
   activity: { action: string; at: string; actor: string | null; target: string | null }[];
   platform: { site: 'online'; email: 'online' | 'not_configured'; payments: 'later'; video: 'later'; certificates: 'later' };
+}
+
+// ---------- payments (Phase 3, Stripe Connect) ----------
+
+/** Result of "Reservar plaza": free groups confirm at once; paid ones go to the provider's page. */
+export interface EnrollmentStart {
+  enrollmentId: string;
+  status: 'confirmed' | 'pending_payment';
+  /** Provider page where the student pays (never inside the app). */
+  checkoutUrl: string | null;
+  /** The seat is held until this moment while the student pays. */
+  holdExpiresAt: string | null;
+}
+
+export interface EnrollmentInfo {
+  id: string;
+  classId: string;
+  courseId: string;
+  status: 'pending_payment' | 'confirmed' | 'completed' | 'canceled' | 'expired';
+  holdExpiresAt: string | null;
+  priceCents: number;
+  currency: string;
+  /** Can still withdraw (before the first meeting starts). */
+  canWithdraw: boolean;
+  /** What a withdrawal returns now (policy: 50% retained). */
+  withdrawalRefundCents: number;
+}
+
+export interface PayoutStatus {
+  /** false = no payment provider configured yet. */
+  paymentsAvailable: boolean;
+  connected: boolean;
+  payoutsEnabled: boolean;
+  openingFeeCents: number;
+}
+
+export type EarningKind = 'sale' | 'withdrawal' | 'refund' | 'opening_fee';
+export interface EarningLine {
+  at: string;
+  kind: EarningKind;
+  courseTitle: string;
+  classLabel: string | null;
+  /** First name + initial: enough for the teacher, no e-mail. */
+  student: string | null;
+  grossCents: number;
+  /** Payment processor fee (paid by the teacher, shown openly). */
+  feeCents: number;
+  /** What the teacher receives (negative for the opening fee). */
+  netCents: number;
+  state: 'held' | 'transferred' | 'refunded' | 'paid';
+}
+export interface Earnings {
+  paymentsAvailable: boolean;
+  payoutsEnabled: boolean;
+  currency: string;
+  /** Net of finished groups already sent to the teacher's account. */
+  transferredCents: number;
+  /** Net waiting for the group to finish (or for the payout account). */
+  heldCents: number;
+  grossCents: number;
+  feesCents: number;
+  openingFeesCents: number;
+  salesCount: number;
+  lines: EarningLine[];
 }

@@ -1,4 +1,15 @@
-# Pagamentos (Fase 3 — planejado, ainda não ligado)
+# Pagamentos (Fase 3)
+
+## Decisões (2 out 2026)
+- **Provedor: Stripe Connect** (contas Express para os professores). Recomendado pelo Cloud 1; o dono não marcou outra opção.
+- **A taxa do processador é paga pelo professor**: sai da parte dele e aparece às claras ("Venta €20 · Comisión del procesador −€0,55 · Recibes €19,45"). A Hazluno nunca paga essa taxa (com comissão 0% ela perderia dinheiro em quase todo grupo).
+- **Fluxo do dinheiro: cobrança na conta da Hazluno + transferência ao professor depois** (Stripe "separate charges and transfers"):
+  1. O aluno paga no Stripe Checkout (conta da plataforma). Só o webhook verificado confirma a vaga.
+  2. A taxa real do Stripe é lida da transação (não é estimada) e gravada em `platform_fees`.
+  3. Até o grupo terminar, o dinheiro fica na conta da plataforma: assim a regra de desistência (50% retido, metade para cada lado) e os reembolsos integrais (cancelamento do professor/plataforma) funcionam sem pedir dinheiro de volta ao professor.
+  4. Quando o grupo termina, o líquido de cada inscrição é **transferido** para a conta conectada do professor; o Stripe paga no banco dele. "Disponível para saque" = grupos concluídos.
+  5. A taxa de €5 por grupo aberto é paga pelo professor no Stripe Checkout, antes de o grupo abrir inscrições.
+- **Vídeo (Fase 4): Cloudflare** (sala ao vivo com gravação, mesma conta do app). **Rosto (Fase 4): serviço automático** com consentimento explícito (dado biométrico, GDPR art. 9); sem consentimento, a entrada fica com conferência manual pelo professor.
 
 ## Modelo definido pelo dono
 - O professor define o preço de cada turma.
@@ -15,9 +26,9 @@
 - A divisão de cada pagamento fica em `platform_fees` (bruto = taxa do provedor + comissão + líquido do professor, conferido pelo banco).
 - Repasses ao professor em `instructor_payouts`, feitos pelo provedor.
 
-## O que o dono precisa decidir/criar
-1. Qual provedor (sugestão: Stripe Connect, por ter a melhor documentação e sandbox).
-2. Conta da empresa no provedor e chaves de teste.
+## O que o dono precisa criar
+1. Conta Stripe da empresa (stripe.com) e ativar o **Connect** (tipo de conta: Express).
+2. Entregar ao Cloud 2 as chaves **de teste** como segredos do Worker: `STRIPE_SECRET_KEY` (sk_test_…) e `STRIPE_WEBHOOK_SECRET` (whsec_…, do endpoint `/api/payments/webhook`).
 3. Revisão jurídica da regra de desistência para os países de lançamento (direito do consumidor da UE).
 
 ## Tela de pagamento (referência `brand/payment-reference-phase3.webp`)

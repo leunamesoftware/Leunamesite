@@ -16,6 +16,9 @@ export interface Config {
   appleClientId: string | null;
   /** Outgoing e-mail provider. Without it, password recovery answers "unavailable" (never pretends it sent). */
   emailProvider: string | null;
+  /** Stripe Connect keys (secrets). Payments stay off until both exist. */
+  stripeSecretKey: string | null;
+  stripeWebhookSecret: string | null;
 }
 
 export function loadConfig(env: Record<string, string | undefined> = process.env): Config {
@@ -36,5 +39,7 @@ export function loadConfig(env: Record<string, string | undefined> = process.env
     googleClientId: env.GOOGLE_CLIENT_ID || null,
     appleClientId: env.APPLE_CLIENT_ID || null,
     emailProvider: env.EMAIL_PROVIDER || null,
+    stripeSecretKey: env.STRIPE_SECRET_KEY || null,
+    stripeWebhookSecret: env.STRIPE_WEBHOOK_SECRET || null,
   };
 }

@@ -2,6 +2,7 @@ import { Hono } from 'hono';
 import type { AppEnv, Deps } from '../../common/env.js';
 import { readJson } from '../../common/validation.js';
 import { requestMeta } from '../auth/routes.js';
+import * as pay from '../payments/service.js';
 import * as s from './service.js';
 
 /** Instructor area (role "instructor" is checked in app.ts). */
@@ -35,6 +36,11 @@ export function instructorRoutes(deps: Deps) {
   r.get('/students', async (c) => c.json(ok(await s.listStudents(deps, c.get('me')))));
   r.put('/students/:id/note', async (c) => c.json(ok(await s.saveStudentNote(deps, c.get('me'), c.req.param('id'), await readJson(c.req.raw)))));
   r.post('/students/:id/report', async (c) => c.json(ok(await s.reportStudent(deps, c.get('me'), c.req.param('id'), await readJson(c.req.raw), await requestMeta(deps, c))), 201));
+
+  r.get('/payouts', async (c) => c.json(ok(await pay.payoutStatus(deps, c.get('me')))));
+  r.post('/payouts/connect', async (c) => c.json(ok(await pay.connectPayouts(deps, c.get('me')))));
+  r.get('/earnings', async (c) => c.json(ok(await pay.earnings(deps, c.get('me')))));
+  r.post('/classes/:id/opening-fee', async (c) => c.json(ok(await pay.openingFeeCheckout(deps, c.get('me'), c.req.param('id')))));
 
   r.get('/agenda', async (c) => c.json(ok(await s.agenda(deps, c.get('me'), c.req.query('from'), c.req.query('to')))));
   return r;

@@ -9,6 +9,7 @@ import { authRepo } from '../auth/repository.js';
 import type { RequestMeta } from '../auth/service.js';
 import { loadClasses } from '../explore/queries.js';
 import { publicUrl, storeImage } from '../files/images.js';
+import { openingFeeSettled, payoutStatus, refundWholeClass } from '../payments/service.js';
 import { classSchema, courseSchema, instructorProfileSchema, reportSchema, studentNoteSchema } from './schemas.js';
 
 const MIN_MEETING_MIN = 15;
@@ -295,6 +296,12 @@ export async function publishClass(deps: Deps, me: Me, classId: string, meta: Re
   const deadline = (await deps.db.one<{ enrollment_deadline: string }>('SELECT enrollment_deadline FROM class_sessions WHERE id = ?', [classId]))!;
   const now = deps.clock.now().toISOString();
   if (deadline.enrollment_deadline <= now) throw new AppError('invalid_state', 409, 'The enrollment deadline has passed. Change the dates.');
+  // With payments on, a paid group needs the teacher's payout account, and every group needs the opening fee (paid on the provider's page).
+  if (deps.payments) {
+    const price = (await deps.db.one<{ price_cents: number }>('SELECT price_cents FROM class_sessions WHERE id = ?', [classId]))!.price_cents;
+    if (price > 0 && !(await payoutStatus(deps, me)).payoutsEnabled) throw new AppError('payout_account_required', 409, 'Connect your payout account first.');
+    if (!(await openingFeeSettled(deps, classId))) throw new AppError('opening_fee_required', 409, 'Pay the opening fee to publish this class.');
+  }
   await deps.db.batch([
     { sql: `UPDATE class_sessions SET status = 'enrollment_open', enrollment_opens_at = ?, updated_at = ? WHERE id = ?`, params: [now, now, classId] },
     auditStatement(deps, { actorId: me.id, action: 'class.published', targetType: 'class_session', targetId: classId, ipHash: meta.ipHash, userAgent: meta.userAgent }),
@@ -307,9 +314,9 @@ export async function cancelClass(deps: Deps, me: Me, classId: string, reason: s
   if (['canceled', 'completed', 'live'].includes(k.status) || k.starts_at <= deps.clock.now().toISOString()) {
     throw new AppError('invalid_state', 409, 'Only classes that have not started can be canceled.');
   }
-  // Refunds arrive with payments (Phase 3); until then a class with students cannot be canceled here.
-  if (k.seats_taken > 0) throw new AppError('invalid_state', 409, 'This class has students. Contact support to cancel it with refunds.');
   const now = deps.clock.now().toISOString();
+  // Every student gets the full price back (seats held for unfinished payments are released).
+  if (k.seats_taken > 0) await refundWholeClass(deps, classId, 'instructor_cancel', me.id);
   await deps.db.batch([
     { sql: `UPDATE class_sessions SET status = 'canceled', canceled_reason = ?, canceled_at = ?, updated_at = ? WHERE id = ?`, params: [reason, now, now, classId] },
     { sql: `UPDATE live_sessions SET status = 'canceled' WHERE class_session_id = ?`, params: [classId] },
