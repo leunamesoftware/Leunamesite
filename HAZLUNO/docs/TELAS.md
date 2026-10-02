@@ -24,7 +24,7 @@ Referência: `brand/flowchart-reference.webp`. Cada tela tem uma das três situa
 | 12 | Detalhes da aula agendada | Parcial: contagem regressiva e "Entrar" na **Fase 4** | `/my` |
 | 13 | Sala de aula ao vivo | **Fase 4** (vídeo + verificação facial) | — |
 | 14 | Aula encerrada | **Fase 5** | — |
-| 15 | Gravação da aula | **Fase 5** (30 dias, sem download) | — |
+| 15 | Gravação da aula | **Fase 5** (para sempre para os inscritos, sem download) | — |
 | 16 | Materiais da aula | **Fase 5** | — |
 | 17 | Certificado | **Fase 5** (regras já no banco e em `shared/certificate.ts`) | — |
 | 18 | Avaliação da aula | **Fase 5** (banco pronto, migração 0006) | — |
@@ -55,7 +55,7 @@ Referência: `brand/flowchart-reference.webp`. Cada tela tem uma das três situa
 | 33 | Pagamentos e transações | Fase 6 (depende da Fase 3) |
 | 34 | Comissões e repasses | Fase 6 (taxa de €5 e regra de desistência 50% / 50-50) |
 | 35 | Certificados | Fase 6 (emissão é da Fase 5) |
-| 36 | Gravações | Fase 6 (apagar caso sensível; a regra de 30 dias é automática) |
+| 36 | Gravações | Fase 6 (ficam para sempre; o admin só apaga caso sensível, com motivo registrado) |
 | 37 | Denúncias e suporte | Fase 6 (denúncias já gravadas: o professor reporta aluno desde já) |
 | 38 | Notificações | Fase 6 |
 | 39 | Configurações | Fase 6 (hoje em `platform_settings` e `fee_rules`) |

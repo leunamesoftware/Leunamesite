@@ -39,7 +39,7 @@ O nome da marca fica em um lugar só: `frontend/src/brand.ts` (e `{brand}` nos t
 - **Professor:** verificação com dados públicos e fiscais (bloqueados depois de enviados), aprovação/recusa pelo admin (registrada e notificada), cursos com capa, materiais e aviso de segurança, **grupos com vários encontros** (máx. 25 vagas, sem choque de horário, inscrição fecha no início), publicar, cancelar, agenda.
 - **Aluno:** início, buscar (texto, categoria, quando, preço, nível, idioma, país do professor, ordenação), detalhe do curso, "Elige tu grupo" no horário local, perfil do professor, mis clases, favoritos, perfil com foto e aparelhos conectados.
 - **Regra da turma** em todas as telas e no servidor: de fora só se compra antes do início e com vaga; ao vivo, lotada, encerrada ou terminada não deixa clicar.
-- Fotos (perfil e capa) checadas pelo conteúdo real do arquivo. Gravação 30 dias. Categorias Arte e Bienestar.
+- Fotos (perfil e capa) checadas pelo conteúdo real do arquivo. Gravação disponível para sempre para os inscritos. Categorias Arte e Bienestar.
 - 57 testes no servidor + jornadas completas conferidas no navegador (aluno e professor).
 - Reservar com pagamento: a tela leva até "Continuar" e avisa que o pagamento chega na Fase 3.
 

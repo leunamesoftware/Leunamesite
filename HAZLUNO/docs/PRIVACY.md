@@ -10,7 +10,7 @@
 
 ## Planejado (Fase 7)
 - Exportar meus dados (JSON) e excluir conta (anonimiza o que a lei manda manter, como registros fiscais).
-- Consentimento específico para gravação de aula, pedido antes de entrar na sala; retenção das gravações por `recording.retention_days` (30 dias, como na tela do dono; configurável), depois exclusão automática.
+- Consentimento específico para gravação de aula, pedido antes de entrar na sala; as gravações ficam **para sempre** para os alunos inscritos (regra do dono). Por isso: (1) o consentimento de gravação explica que a gravação é permanente; (2) quem aparece na gravação pode pedir a remoção da sua imagem/voz (direito de apagamento do GDPR), tratada pelo admin; (3) a conta excluída perde o acesso, mas a gravação da turma continua para os demais inscritos. Custo de armazenamento cresce com o tempo (R2), acompanhar no painel.
 - Gravações só para quem estava inscrito na turma e para o professor; nunca públicas.
 - Aviso e aceite para cursos com risco físico (`courses.is_hazardous`).
 
