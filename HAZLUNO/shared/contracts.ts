@@ -344,3 +344,17 @@ export interface MyStudent {
   note: string | null;
 }
 export type ReportReason = 'spam' | 'harassment' | 'inappropriate' | 'fraud' | 'safety' | 'other';
+
+/** Tela 29: admin dashboard. Only real numbers; money arrives with payments (Phase 3). */
+export interface AdminDashboard {
+  days: number;
+  totals: { students: number; teachers: number; verifiedTeachers: number; courses: number; meetingsDone: number; pendingTeachers: number; openReports: number };
+  /** New in the chosen period and in the period before it (for the "+N%" line). */
+  growth: Record<'students' | 'teachers' | 'courses' | 'meetingsDone', { now: number; before: number }>;
+  /** Accumulated totals per day over the period. */
+  usersSeries: { date: string; students: number; teachers: number }[];
+  popularCourses: { id: string; title: string; coverUrl: string | null; students: number }[];
+  topTeachers: { id: string; name: string; avatarUrl: string | null; courses: number; students: number }[];
+  activity: { action: string; at: string; actor: string | null; target: string | null }[];
+  platform: { site: 'online'; email: 'online' | 'not_configured'; payments: 'later'; video: 'later'; certificates: 'later' };
+}

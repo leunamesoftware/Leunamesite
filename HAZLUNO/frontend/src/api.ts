@@ -1,5 +1,5 @@
 import type {
-  AdminInstructorRow, AgendaItem, ApiResponse, Category, ClassInput, ClassSummary, CourseCard, CourseDetail, CourseInput, ExploreQuery, ExploreResult,
+  AdminDashboard, AdminInstructorRow, AgendaItem, ApiResponse, Category, ClassInput, ClassSummary, CourseCard, CourseDetail, CourseInput, ExploreQuery, ExploreResult,
   InstructorCourse, InstructorProfile, InstructorPublic, LanguageCode, Me, MyStudent, ReportReason, MyClass, MyStats, PublicConfig, SessionCreated, SessionInfo,
 } from '../../shared/contracts';
 
@@ -93,6 +93,7 @@ export const api = {
   },
 
   admin: {
+    dashboard: (days: number) => request<AdminDashboard>('GET', `/admin/dashboard?days=${days}`),
     instructors: () => request<AdminInstructorRow[]>('GET', '/admin/instructors'),
     approve: (id: string) => request<null>('POST', `/admin/instructors/${id}/approve`),
     reject: (id: string, reason: string) => request<null>('POST', `/admin/instructors/${id}/reject`, { reason }),

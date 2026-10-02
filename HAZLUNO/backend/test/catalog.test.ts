@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import type {
-  AgendaItem, ClassSummary, CourseCard, CourseDetail, ExploreResult, InstructorCourse, InstructorProfile, InstructorPublic, Me, MyStudent, SessionCreated,
+  AdminDashboard, AgendaItem, ClassSummary, CourseCard, CourseDetail, ExploreResult, InstructorCourse, InstructorProfile, InstructorPublic, Me, MyStudent, SessionCreated,
 } from '../../shared/contracts.js';
 import { setup, validSignup, type TestCtx } from './helpers.js';
 
@@ -343,5 +343,33 @@ describe('teacher: my students', () => {
     const { courseId } = await publishedCourseWithClass(laura, {}, { description: 'Grupo de mañana, ritmo tranquilo.' });
     const d = await t.call<CourseDetail>('GET', `/api/public/courses/${courseId}`);
     expect(d.json.data.classes[0]!.description).toBe('Grupo de mañana, ritmo tranquilo.');
+  });
+});
+
+describe('admin dashboard (tela 29)', () => {
+  it('real counts only, activity without logins, money waits for payments', async () => {
+    const laura = await approvedTeacher();
+    const { classId } = await publishedCourseWithClass(laura);
+    const ana = await account('ana@example.com', 'learn', { displayName: 'Ana Silva' });
+    await t.deps.db.run(`INSERT INTO enrollments (id, class_session_id, student_id, status, price_cents, currency, created_at) VALUES ('e1', ?, ?, 'confirmed', 2000, 'EUR', ?)`,
+      [classId, ana.id, day(1, 8)]);
+    expect((await t.call('GET', '/api/admin/dashboard', { token: ana.token })).status).toBe(403);
+    const admin = await adminToken();
+    const r = await t.call<AdminDashboard>('GET', '/api/admin/dashboard?days=7', { token: admin });
+    expect(r.status).toBe(200);
+    const d = r.json.data;
+    expect(d.days).toBe(7);
+    expect(d.totals).toMatchObject({ teachers: 1, verifiedTeachers: 1, courses: 1, meetingsDone: 0, pendingTeachers: 0, openReports: 0 });
+    expect(d.totals.students).toBeGreaterThanOrEqual(1);
+    expect(d.usersSeries).toHaveLength(7);
+    expect(d.usersSeries.at(-1)!.teachers).toBe(1);
+    expect(d.popularCourses[0]).toMatchObject({ title: 'Pintura creativa para principiantes', students: 1 });
+    expect(d.topTeachers[0]).toMatchObject({ name: 'Laura Méndez', courses: 1, students: 1 });
+    const actions = d.activity.map((a) => a.action);
+    expect(actions).toContain('course.published');
+    expect(actions).toContain('admin.instructor_approved');
+    expect(actions.some((a) => a.startsWith('auth.login'))).toBe(false);
+    expect(d.platform).toEqual({ site: 'online', email: 'not_configured', payments: 'later', video: 'later', certificates: 'later' });
+    expect(JSON.stringify(d)).not.toContain('@example.com');
   });
 });

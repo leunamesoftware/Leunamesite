@@ -1,17 +1,16 @@
-import { Check, ChevronLeft, X } from 'lucide-react';
+import { Check, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import type { AdminInstructorRow } from '../../../../shared/contracts';
 import { api } from '../../api';
 import { useI18n } from '../../i18n';
 import { errorText } from '../../ui/errors';
 import { dayShort } from '../../ui/format';
 import { Banner } from '../../ui/kit';
+import { AdminLayout } from './AdminLayout';
 
 /** Minimal admin screen of Phase 2: approve or decline teachers. The full panel is Phase 6. */
 export function AdminInstructors() {
   const { t, lang, fill, countryName } = useI18n();
-  const navigate = useNavigate();
   const [rows, setRows] = useState<AdminInstructorRow[] | null>(null);
   const [reasons, setReasons] = useState<Record<string, string>>({});
   const [error, setError] = useState<string | null>(null);
@@ -22,12 +21,7 @@ export function AdminInstructors() {
     try { await (approve ? api.admin.approve(id) : api.admin.reject(id, reasons[id] ?? '')); await load(); } catch (e) { setError(errorText(t, e)); }
   };
   return (
-    <main className="mine">
-      <header className="page-head">
-        <div className="teach-bar"><button type="button" className="icon-btn icon-btn-light" onClick={() => navigate('/profile')} aria-label={t.common.back}><ChevronLeft size={24} /></button></div>
-        <h1>{t.admin.title}</h1>
-      </header>
-      <div className="page-body">
+    <AdminLayout title={t.admin.title}>
         {error && <Banner tone="error">{error}</Banner>}
         {rows && !rows.length && <div className="empty empty-light"><p>{t.admin.empty}</p></div>}
         {(rows ?? []).map((r) => (
@@ -48,7 +42,6 @@ export function AdminInstructors() {
             </div>
           </section>
         ))}
-      </div>
-    </main>
+    </AdminLayout>
   );
 }

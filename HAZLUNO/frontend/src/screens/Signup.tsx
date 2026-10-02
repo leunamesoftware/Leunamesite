@@ -117,7 +117,7 @@ export function Signup() {
           <PillField id="su-email" label={t.signup.email} icon={Mail} type="email" autoComplete="email" inputMode="email" value={form.email} onChange={set('email')} error={fields.email} />
           <PillField id="su-password" label={t.signup.password} icon={LockKeyhole} revealable autoComplete="new-password" value={form.password} onChange={set('password')} error={fields.password} />
           <PillField id="su-confirm" label={t.signup.confirmPassword} icon={LockKeyhole} revealable autoComplete="new-password" value={form.confirm} onChange={set('confirm')} error={fields.confirm} />
-          <div className={`pill${fields.countryCode ? ' pill-error' : ''}`}>
+          <div className={`pfield${fields.countryCode ? ' pfield-error' : ''}`}>
             <label htmlFor="su-country" className="sr-only">{t.signup.country}</label>
             <div className="pill-box">
               <MapPin className="pill-icon" size={22} aria-hidden />

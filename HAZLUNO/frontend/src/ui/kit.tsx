@@ -53,7 +53,7 @@ export function PillField({ id, label, icon: Icon, error, revealable, type, ...i
   const [visible, setVisible] = useState(false);
   const { t } = useI18n();
   return (
-    <div className={`pill${error ? ' pill-error' : ''}`}>
+    <div className={`pfield${error ? ' pfield-error' : ''}`}>
       <label htmlFor={id} className="sr-only">{label}</label>
       <div className="pill-box">
         <Icon className="pill-icon" size={22} aria-hidden />
