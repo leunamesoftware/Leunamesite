@@ -1,0 +1,77 @@
+name: Calculadora Inteligente — testar e publicar
+
+# Publica a Calculadora Inteligente de Receitas (código no repositório leuname-softwarea-apps,
+# pasta calculadora/) usando a chave da Cloudflare deste repositório.
+#   Worker "calculadora-receitas" → calculadora.leunamesoftware.com.br
+#   D1 calculadora-receitas (rendimento e pedidos) + leuname_licencas (chaves)
+# Segredo opcional MP_ACCESS_TOKEN: Access Token de produção do Mercado Pago (liga o Pix/cartão).
+on:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: 'Branch da calculadora'
+        default: 'ccr-f58cd13b-ml0bzs'
+  push:
+    paths: ['.github/workflows/calculadora-publicar.yml']
+
+concurrency: calculadora-publicar
+
+env:
+  REF: ${{ github.event.inputs.ref || 'ccr-f58cd13b-ml0bzs' }}
+
+jobs:
+  publicar:
+    runs-on: ubuntu-latest
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+    defaults:
+      run:
+        working-directory: app/calculadora
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: leunamesoftware/leuname-softwarea-apps
+          ref: ${{ env.REF }}
+          path: app
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Testes
+        run: |
+          npm ci
+          npm test
+
+      - name: Conta da Cloudflare
+        run: |
+          CONTA=$(curl -fsS -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" "https://api.cloudflare.com/client/v4/accounts" | jq -r '.result[0].id')
+          echo "::add-mask::$CONTA"
+          echo "CLOUDFLARE_ACCOUNT_ID=$CONTA" >> "$GITHUB_ENV"
+
+      - name: Banco e publicação
+        env:
+          MP_ACCESS_TOKEN: ${{ secrets.MP_ACCESS_TOKEN }}
+        run: |
+          npx wrangler d1 migrations apply calculadora-receitas --remote
+          npx wrangler deploy
+          if [ -n "$MP_ACCESS_TOKEN" ]; then
+            printf '%s' "$MP_ACCESS_TOKEN" | npx wrangler secret put MP_ACCESS_TOKEN
+          else
+            echo "::warning::Sem MP_ACCESS_TOKEN: o app está no ar, mas a compra pelo Mercado Pago fica desligada até o segredo ser criado."
+          fi
+
+      - name: Conferir no ar
+        run: |
+          for i in 1 2 3 4 5 6 7 8 9 10 11 12; do
+            if curl -fsS https://calculadora.leunamesoftware.com.br/api/saude; then echo; break; fi
+            sleep 10
+          done
+          curl -fsS -o /dev/null -w "página de vendas: %{http_code}\n" https://calculadora.leunamesoftware.com.br/
+          curl -fsS -o /dev/null -w "app: %{http_code}\n" https://calculadora.leunamesoftware.com.br/app/
+          {
+            echo "### Calculadora publicada"
+            echo "- Vendas: https://calculadora.leunamesoftware.com.br/"
+            echo "- Comprar: https://calculadora.leunamesoftware.com.br/comprar"
+            echo "- App: https://calculadora.leunamesoftware.com.br/app/"
+          } >> "$GITHUB_STEP_SUMMARY"
