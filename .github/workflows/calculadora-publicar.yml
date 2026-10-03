@@ -69,6 +69,7 @@ jobs:
           done
           curl -fsS -o /dev/null -w "página de vendas: %{http_code}\n" https://calculadora.leunamesoftware.com.br/
           curl -fsS -o /dev/null -w "app: %{http_code}\n" https://calculadora.leunamesoftware.com.br/app/
+          echo "versão no ar: $(curl -fsS https://calculadora.leunamesoftware.com.br/app/app.js | grep -o "VERSAO_APP = '[0-9.]*'")"
           {
             echo "### Calculadora publicada"
             echo "- Vendas: https://calculadora.leunamesoftware.com.br/"
