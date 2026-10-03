@@ -1,0 +1,101 @@
+name: Eclud (Clube Euro) — publicar servidor e site
+
+# Roda a esteira do Eclud (feito em outra conversa, repositório leuname-softwarea-apps)
+# usando a chave da Cloudflare deste repositório. NÃO altera o código do Eclud.
+#   API  → Worker "eclud-api" (D1 eclud-db, R2 eclud-files)
+#   Site → Cloudflare Pages "eclud"
+on:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: 'Branch do Eclud'
+        default: 'claude/aplicativo-profissional-7irtpr'
+  push:
+    paths: ['.github/workflows/eclud-publicar.yml']
+
+concurrency: eclud-publicar
+
+env:
+  FLUTTER_VERSION: '3.47.6'
+  REF: ${{ github.event.inputs.ref || 'claude/aplicativo-profissional-7irtpr' }}
+
+jobs:
+  publicar:
+    runs-on: ubuntu-latest
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: leunamesoftware/leuname-softwarea-apps
+          ref: ${{ env.REF }}
+          path: app
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: API — tipos e testes
+        working-directory: app/eclud/backend
+        run: |
+          npm ci
+          npm run typecheck
+          npm test
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+
+      - name: App — análise e testes
+        working-directory: app/eclud
+        run: |
+          flutter pub get
+          flutter analyze
+          flutter test
+
+      - name: Conta da Cloudflare e endereços
+        id: urls
+        working-directory: app/eclud
+        run: |
+          auth="Authorization: Bearer $CLOUDFLARE_API_TOKEN"
+          CONTA=$(curl -fsS -H "$auth" "https://api.cloudflare.com/client/v4/accounts" | jq -r '.result[0].id')
+          echo "::add-mask::$CONTA"
+          echo "CLOUDFLARE_ACCOUNT_ID=$CONTA" >> "$GITHUB_ENV"
+          export CLOUDFLARE_ACCOUNT_ID=$CONTA
+          api="https://api.cloudflare.com/client/v4/accounts/$CONTA"
+          npx --yes wrangler@4 pages project create eclud --production-branch=main || true
+          pages=$(curl -fsS -H "$auth" "$api/pages/projects/eclud" | jq -r '.result.subdomain')
+          workers=$(curl -fsS -H "$auth" "$api/workers/subdomain" | jq -r '.result.subdomain')
+          echo "site=https://$pages" >> "$GITHUB_OUTPUT"
+          echo "api=https://eclud-api.$workers.workers.dev" >> "$GITHUB_OUTPUT"
+
+      - name: Publicar API
+        working-directory: app/eclud/backend
+        env:
+          PLAY_JSON: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
+        run: |
+          npx wrangler d1 migrations apply eclud-db --remote
+          npx wrangler deploy --var "ALLOWED_ORIGINS:${{ steps.urls.outputs.site }}"
+          EXISTENTES="$(npx wrangler secret list)"
+          echo "$EXISTENTES" | grep -q '"JWT_SECRET"' || openssl rand -base64 48 | npx wrangler secret put JWT_SECRET
+          # Mesma conta de serviço do robô da Play: a API confirma as assinaturas com ela.
+          if [ -n "$PLAY_JSON" ] && ! echo "$EXISTENTES" | grep -q '"GOOGLE_SERVICE_ACCOUNT"'; then
+            printf '%s' "$PLAY_JSON" | npx wrangler secret put GOOGLE_SERVICE_ACCOUNT
+          fi
+          sleep 5; curl -fsS "${{ steps.urls.outputs.api }}/health"
+
+      - name: Construir e publicar o site
+        working-directory: app/eclud
+        run: |
+          flutter build web --release --no-web-resources-cdn \
+            --dart-define=API_URL=${{ steps.urls.outputs.api }} \
+            --dart-define=TERMS_URL=${{ steps.urls.outputs.site }}/legal/terminos.html \
+            --dart-define=PRIVACY_URL=${{ steps.urls.outputs.site }}/legal/privacidad.html
+          npx --yes wrangler@4 pages deploy build/web --project-name=eclud --branch=main --commit-dirty=true
+          {
+            echo "### Eclud publicado"
+            echo "- Site: ${{ steps.urls.outputs.site }}"
+            echo "- API: ${{ steps.urls.outputs.api }}"
+            echo "- Privacidade: ${{ steps.urls.outputs.site }}/legal/privacidad.html"
+          } >> "$GITHUB_STEP_SUMMARY"
