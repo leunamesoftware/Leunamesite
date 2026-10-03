@@ -2,7 +2,7 @@ name: Calculadora Inteligente — testar e publicar
 
 # Publica a Calculadora Inteligente de Receitas (código no repositório leuname-softwarea-apps,
 # pasta calculadora/) usando a chave da Cloudflare deste repositório.
-#   Worker "calculadora-receitas" → calculadora.leunamesoftware.com.br
+#   Worker "calculadora-receitas" → quantocobrar.leunamesoftware.com.br
 #   D1 calculadora-receitas (rendimento e pedidos) + leuname_licencas (chaves)
 # Segredo opcional MP_ACCESS_TOKEN: Access Token de produção do Mercado Pago (liga o Pix/cartão).
 on:
@@ -64,15 +64,16 @@ jobs:
       - name: Conferir no ar
         run: |
           for i in 1 2 3 4 5 6 7 8 9 10 11 12; do
-            if curl -fsS https://calculadora.leunamesoftware.com.br/api/saude; then echo; break; fi
+            if curl -fsS https://quantocobrar.leunamesoftware.com.br/api/saude; then echo; break; fi
             sleep 10
           done
-          curl -fsS -o /dev/null -w "página de vendas: %{http_code}\n" https://calculadora.leunamesoftware.com.br/
-          curl -fsS -o /dev/null -w "app: %{http_code}\n" https://calculadora.leunamesoftware.com.br/app/
-          echo "versão no ar: $(curl -fsS https://calculadora.leunamesoftware.com.br/app/app.js | grep -o "VERSAO_APP = '[0-9.]*'")"
+          curl -fsS -o /dev/null -w "página de vendas: %{http_code}\n" https://quantocobrar.leunamesoftware.com.br/
+          curl -fsS -o /dev/null -w "app: %{http_code}\n" https://quantocobrar.leunamesoftware.com.br/app/
+          echo "endereço antigo: $(curl -s -o /dev/null -w '%{http_code} -> %{redirect_url}' https://calculadora.leunamesoftware.com.br/app/)"
+          echo "versão no ar: $(curl -fsS https://quantocobrar.leunamesoftware.com.br/app/app.js | grep -o "VERSAO_APP = '[0-9.]*'")"
           {
             echo "### Calculadora publicada"
-            echo "- Vendas: https://calculadora.leunamesoftware.com.br/"
-            echo "- Comprar: https://calculadora.leunamesoftware.com.br/comprar"
-            echo "- App: https://calculadora.leunamesoftware.com.br/app/"
+            echo "- Vendas: https://quantocobrar.leunamesoftware.com.br/"
+            echo "- Comprar: https://quantocobrar.leunamesoftware.com.br/comprar"
+            echo "- App: https://quantocobrar.leunamesoftware.com.br/app/"
           } >> "$GITHUB_STEP_SUMMARY"
