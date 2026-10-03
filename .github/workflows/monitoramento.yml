@@ -1,0 +1,49 @@
+name: Monitoramento dos sites e servidores
+
+# A cada hora confere se cada endereço responde. Se algum cair (sem resposta ou
+# erro 5xx), abre um aviso (issue) "cloud2"; quando voltar, fecha o aviso sozinho.
+# LeuCloud fica de fora por decisão do dono.
+on:
+  schedule:
+    - cron: '7 * * * *'
+  workflow_dispatch:
+
+permissions:
+  issues: write
+
+jobs:
+  checar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Conferir endereços
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh label create cloud2 --color 1D76DB --description "Infraestrutura (Cloud 2)" --force -R "$GITHUB_REPOSITORY" >/dev/null 2>&1 || true
+          ENDERECOS="
+          Site LeuName (.com.br)|https://leunamesoftware.com.br/
+          Site LeuName (.com)|https://leunamesoftware.com/
+          Gestacell web|https://gestao.leunamesoftware.com.br/
+          ConstruGestão web|https://construgestao.leunamesoftware.com.br/
+          Sucatell web|https://sucatell.leunamesoftware.com.br/
+          Radar Preventivo|https://radar-preventivo.emanuelantunes2024.workers.dev/
+          API licenças e downloads|https://api.leunamesoftware.com/download/gestacell-versao.json
+          "
+          echo "$ENDERECOS" | sed '/^\s*$/d' | while IFS='|' read -r NOME URL; do
+            NOME=$(echo "$NOME" | xargs)
+            CODIGO=$(curl -s -o /dev/null -w '%{http_code}' --max-time 20 --retry 2 --retry-delay 10 "$URL" || echo 000)
+            TITULO="Fora do ar: $NOME"
+            ABERTA=$(gh issue list -R "$GITHUB_REPOSITORY" --label cloud2 --state open --search "\"$TITULO\" in:title" --json number --jq '.[0].number')
+            if [ "$CODIGO" = "000" ] || [ "$CODIGO" -ge 500 ]; then
+              echo "CAIU  $NOME ($CODIGO)"
+              if [ -z "$ABERTA" ]; then
+                gh issue create -R "$GITHUB_REPOSITORY" --label cloud2 --title "$TITULO" \
+                  --body "**$NOME** não respondeu ($CODIGO) em $(date -u '+%d/%m/%Y %H:%M') UTC. Endereço: $URL"
+              fi
+            else
+              echo "OK    $NOME ($CODIGO)"
+              if [ -n "$ABERTA" ]; then
+                gh issue close "$ABERTA" -R "$GITHUB_REPOSITORY" --comment "Voltou ao ar ($CODIGO) em $(date -u '+%d/%m/%Y %H:%M') UTC."
+              fi
+            fi
+          done

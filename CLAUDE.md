@@ -11,7 +11,26 @@
 
 ## Códigos dos apps (o dono chama por B1, B2, B3…)
 
-| Código | App | Pacote | Situação |
-|---|---|---|---|
-| B1 | Gestacell | com.leunamesoftwares.gestacell | Produção 1.0.4 em análise; 1.0.5 (teste de 7 dias) pronta para subir depois da aprovação |
-| B2 | Radar Preventivo | com.radarpreventivo.app | Teste interno (não lançar até o dono dizer "liberado") |
+| Código | App | Pacote | Situação | Criado por |
+|---|---|---|---|---|
+| B1 | Gestacell | com.leunamesoftwares.gestacell | Produção 1.0.4 em análise; 1.0.5 (teste de 7 dias) pronta para subir depois da aprovação | C1 |
+| B2 | Radar Preventivo | com.radarpreventivo.app | Teste interno (não lançar até o dono dizer "liberado") | C1 |
+| B3 | ConstruGestão | com.leunamesoftwares.construgestao | Em melhoria (vistoria feita; não lançar ainda) | C1 |
+| B4 | Sucatell | com.leunamesoftwares.sucatell | Só versão de teste | C1 |
+| B5 | Sucatell Admin | com.leunamesoftwares.sucatelladmin | Só versão de teste | C1 |
+| B6 | EconoRota | (Flutter, pasta ECONOROTA) | Projeto de cliente: publicar só com ok do dono | C1 |
+| B7 | LeuCloud | com.leunamesoftwares.leucloud | NÃO MEXER (decisão do dono) | C1 |
+| B8 | Lerguie (acessibilidade) | repositório leuname-softwarea-apps, pasta lerguie | Pausado pelo dono | C2 |
+| B9 | Facturo (orçamentos e faturas) | com.leunamesoftwares.facturo | Em construção (pasta FACTURO) | C2 |
+
+## Divisão de trabalho (acordo Cloud 1 × Cloud 2)
+
+- **Cloud 1:** código dos apps (telas, regras, pagamentos no app, analytics, notificações, hash de senha) e os testes de cada função nova.
+- **Cloud 2:** `.github/workflows`, `.github/scripts`, `wrangler.toml` (rotas, bindings, cron), backups, monitoramento, publicação na Play Store e materiais da loja.
+- Cada um no seu branch; junta no principal por PR. Ninguém dá push direto no principal.
+- Comunicação: issues no GitHub com etiqueta `cloud1` ou `cloud2`.
+- Backups: `backup-bancos-d1.yml` (diário, 30 dias). Monitoramento: `monitoramento.yml` (de hora em hora, abre/fecha issue `cloud2`).
+- LeuCloud fica fora de backup/monitoramento/publicação por decisão do dono. EconoRota é de cliente: publicar só com ok do dono.
+- **Apps novos:** o dono decide quem cria cada um. Quem cria fica marcado na coluna "Criado por" (C1 = Cloud 1 / feito fora da conversa do Cloud 2, C2 = Cloud 2; o dono fala "B1 (C1)", "B3 (C2)"…) e o outro não mexe no código dele (só revisa e avisa por issue).
+- **Prévia no celular (regra do dono):** todo app em construção tem um APK de prévia em link fixo `https://api.leunamesoftware.com/download/<app>-previa.apk`, gerado a cada envio de código (ex.: `previa-apk-facturo.yml`). Sempre mandar esse link ao dono para ele ver e opinar.
+- **Hazluno (C1):** o nome é **Hazluno** (com H). A branch certa é `cloud1/hazluno-fase-1` (criada pelo Cloud 2 a pedido do dono, no mesmo commit da antiga `cloud1/razluno-fase-1`). Cloud 1: passe a enviar para a nova; a antiga será apagada depois. Prévia automática (banco separado): https://hazluno-previa.leunamesoftware.com.br (workflow `previa-hazluno.yml`, a cada 30 min, não altera a pasta HAZLUNO/).

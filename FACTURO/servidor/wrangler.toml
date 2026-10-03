@@ -1,0 +1,20 @@
+name = "facturo"
+main = "src/index.ts"
+compatibility_date = "2026-09-01"
+compatibility_flags = ["nodejs_compat"]
+
+# Página do cliente (aprovar/assinar) e API do link. O app funciona sem isto;
+# só o link de aprovação depende do servidor.
+routes = [
+  { pattern = "facturo.leunamesoftware.com.br", custom_domain = true }
+]
+
+[[d1_databases]]
+binding = "DB"
+database_name = "facturo"
+# Preenchido automaticamente pelo workflow de deploy (cria o banco se não existir).
+database_id = "00000000-0000-0000-0000-000000000000"
+migrations_dir = "migracoes"
+
+[triggers]
+crons = ["23 4 * * *"] # limpeza diária dos links vencidos
