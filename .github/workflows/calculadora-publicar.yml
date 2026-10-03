@@ -70,6 +70,7 @@ jobs:
           curl -fsS -o /dev/null -w "página de vendas: %{http_code}\n" https://quantocobrar.leunamesoftware.com.br/
           curl -fsS -o /dev/null -w "app: %{http_code}\n" https://quantocobrar.leunamesoftware.com.br/app/
           echo "endereço antigo: $(curl -s -o /dev/null -w '%{http_code} -> %{redirect_url}' https://calculadora.leunamesoftware.com.br/app/)"
+          curl -fsS -o /dev/null -w "download do APK (/baixar): %{http_code} %{size_download} bytes\n" https://quantocobrar.leunamesoftware.com.br/baixar
           echo "versão no ar: $(curl -fsS https://quantocobrar.leunamesoftware.com.br/app/app.js | grep -o "VERSAO_APP = '[0-9.]*'")"
           {
             echo "### Calculadora publicada"
