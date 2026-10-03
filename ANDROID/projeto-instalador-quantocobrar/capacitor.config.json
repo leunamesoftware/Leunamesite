@@ -1,0 +1,12 @@
+{
+  "appId": "com.leunamesoftwares.quantocobrar",
+  "appName": "Quanto Cobrar",
+  "webDir": "www",
+  "backgroundColor": "#FFF8F1",
+  "android": { "backgroundColor": "#FFF8F1", "allowMixedContent": false },
+  "server": {
+    "url": "https://quantocobrar.leunamesoftware.com.br/app/",
+    "androidScheme": "https",
+    "allowNavigation": ["quantocobrar.leunamesoftware.com.br", "*.mercadopago.com.br", "*.mercadopago.com", "*.mercadolivre.com", "*.mlstatic.com"]
+  }
+}
