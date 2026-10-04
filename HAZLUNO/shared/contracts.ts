@@ -43,6 +43,8 @@ export type ErrorCode =
   | 'opening_fee_required'
   | 'payout_account_required'
   | 'webhook_invalid'
+  | 'has_active_enrollments'
+  | 'teacher_has_students'
   | 'internal_error';
 
 /** Field-level validation codes (translated by the app). */
