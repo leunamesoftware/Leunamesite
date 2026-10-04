@@ -4,6 +4,8 @@ name: Radar Preventivo — endereço radar.leunamesoftware.com.br
 # sem republicar o app (o endereço antigo *.workers.dev continua funcionando).
 on:
   workflow_dispatch:
+  push:
+    paths: ['.github/workflows/radar-dominio.yml']
 
 jobs:
   dominio:
