@@ -1,0 +1,46 @@
+name: LeuApps — publicar vitrine
+
+# Publica a vitrine LeuApps (código em leuname-softwarea-apps, pasta leuapps/)
+# em https://apps.leunamesoftware.com.br
+on:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: 'Branch do LeuApps'
+        default: 'ccr-f58cd13b-ml0bzs'
+  push:
+    paths: ['.github/workflows/leuapps-publicar.yml']
+
+concurrency: leuapps-publicar
+
+env:
+  REF: ${{ github.event.inputs.ref || 'ccr-f58cd13b-ml0bzs' }}
+
+jobs:
+  publicar:
+    runs-on: ubuntu-latest
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+    defaults:
+      run:
+        working-directory: app/leuapps
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: leunamesoftware/leuname-softwarea-apps
+          ref: ${{ env.REF }}
+          path: app
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Conta da Cloudflare
+        run: |
+          CONTA=$(curl -fsS -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" "https://api.cloudflare.com/client/v4/accounts" | jq -r '.result[0].id')
+          echo "::add-mask::$CONTA"
+          echo "CLOUDFLARE_ACCOUNT_ID=$CONTA" >> "$GITHUB_ENV"
+      - name: Publicar
+        run: npx --yes wrangler@4 deploy
+      - name: Conferir no ar
+        run: |
+          for i in $(seq 12); do curl -fsS -o /dev/null https://apps.leunamesoftware.com.br/apps.json && break; sleep 10; done
+          for u in / /apps.json /gestacell/ /img/leuapps-512.png; do echo "::notice::$u → $(curl -s -o /dev/null -w '%{http_code}' https://apps.leunamesoftware.com.br$u)"; done
