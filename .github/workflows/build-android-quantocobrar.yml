@@ -16,7 +16,7 @@ on:
       trilha:
         description: 'Para onde enviar na Google Play (o app precisa já existir no Play Console)'
         type: choice
-        default: internal
+        default: nenhuma
         options: [internal, alpha, production, nenhuma]
   push:
     paths:
@@ -26,7 +26,8 @@ on:
 concurrency: build-android-quantocobrar
 
 env:
-  TRILHA: ${{ inputs.trilha || 'internal' }}
+  # Conta da Play em contestação (out/2026): por padrão não envia para a Play; só o APK/AAB.
+  TRILHA: ${{ inputs.trilha || 'nenhuma' }}
   PLAY_JSON: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
   CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
   COFRE: leuname-chaves-privadas/quantocobrar
