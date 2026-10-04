@@ -3,7 +3,14 @@
   "version": "1.0.0",
   "private": true,
   "description": "Quanto Cobrar — empacotamento Android (Capacitor) — LeuName Softwares",
-  "scripts": { "sync": "npx cap sync android" },
-  "dependencies": { "@capacitor/android": "^6.1.2", "@capacitor/core": "^6.1.2" },
-  "devDependencies": { "@capacitor/cli": "^6.1.2" }
+  "scripts": {
+    "sync": "npx cap sync android"
+  },
+  "dependencies": {
+    "@capacitor/android": "^8.5.2",
+    "@capacitor/core": "^8.5.2"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^8.5.2"
+  }
 }

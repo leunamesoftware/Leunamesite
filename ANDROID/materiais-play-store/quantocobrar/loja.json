@@ -1,0 +1,17 @@
+{
+  "package": "com.leunamesoftwares.quantocobrar",
+  "language": "pt-BR",
+  "defaultLanguage": "pt-BR",
+  "contactEmail": "contato@leunamesoftware.com.br",
+  "contactWebsite": "https://quantocobrar.leunamesoftware.com.br",
+  "title": "Quanto Cobrar: Receitas",
+  "shortDescription": "Livro de receitas com custo, preço de venda e lucro calculados na hora.",
+  "fullDescription": "O Quanto Cobrar é um livro de receitas para quem cozinha para vender. Em cada página, uma calculadora mostra quanto custa fazer, quanto cobrar e quanto você vai lucrar.\n\n• Receitas testadas, com ingredientes, modo de preparo e tempo de fogo.\n• Rendimento de cada receita: quantas unidades sai e o peso de cada uma.\n• Diga quantas unidades quer fazer (10, 100 ou 1.000) e as quantidades se ajustam sozinhas.\n• Informe o preço que você pagou nos ingredientes e veja o custo de cada unidade.\n• Preço de venda sugerido e lucro do lote, já com embalagem.\n• Cadastre as suas próprias receitas.\n• Controle de ingredientes e das vendas.\n• Novas receitas chegam ao livro sem precisar atualizar o app.\n\nPara usar, ative o app com a sua chave de acesso.\n\nLeuName Softwares",
+  "icon": "icone-512.png",
+  "featureGraphic": "imagem-destaque-1024x500.png",
+  "phoneScreenshots": [
+    "capturas/1-livro.png",
+    "capturas/2-calculo.png",
+    "capturas/3-receita.png"
+  ]
+}

@@ -12,6 +12,7 @@ on:
         options:
           - RADAR-PREVENTIVO/loja/loja.json
           - ANDROID/materiais-play-store/gestacell/loja.json
+          - ANDROID/materiais-play-store/quantocobrar/loja.json
 
 jobs:
   loja:
