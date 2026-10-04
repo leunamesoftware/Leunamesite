@@ -514,3 +514,33 @@ export interface AdminMoneyLine {
   test: boolean;
 }
 export interface AdminFinance { summary: AdminFinanceSummary; items: AdminMoneyLine[]; total: number }
+
+// ---------- support & reports (Tela 37) ----------
+export type SupportTopic = 'account' | 'payment' | 'class' | 'instructor' | 'certificate' | 'technical' | 'other';
+export type TicketStatus = 'open' | 'pending' | 'resolved' | 'closed';
+export interface SupportMessage { id: string; body: string; staff: boolean; author: string; at: string }
+export interface Ticket {
+  id: string;
+  subject: string;
+  topic: SupportTopic;
+  status: TicketStatus;
+  createdAt: string;
+  updatedAt: string;
+  /** Admin views only. */
+  user?: { id: string; name: string; email: string };
+  messages: SupportMessage[];
+  lastAt: string;
+  count: number;
+}
+export type ReportStatus = 'open' | 'in_review' | 'resolved' | 'dismissed';
+export interface AdminReport {
+  id: string;
+  reporter: string;
+  targetType: 'user' | 'course' | 'class_session' | 'message' | 'review' | 'recording';
+  targetId: string;
+  targetLabel: string | null;
+  reason: ReportReason;
+  details: string | null;
+  status: ReportStatus;
+  createdAt: string;
+}

@@ -12,6 +12,7 @@ import { instructorRoutes } from './modules/instructor/routes.js';
 import { authRoutes } from './modules/auth/routes.js';
 import { catalogRoutes } from './modules/catalog/routes.js';
 import { enrollmentRoutes, webhookRoutes } from './modules/payments/routes.js';
+import { adminSupportRoutes, supportRoutes } from './modules/support/routes.js';
 
 /** Builds the API. Knows nothing about hosting: receives database, config etc. ready-made. */
 export function createApp(deps: Deps) {
@@ -47,12 +48,14 @@ export function createApp(deps: Deps) {
   app.use('/api/me', requireAuth(deps));
   app.use('/api/me/*', requireAuth(deps));
   app.route('/api/me/enrollments', enrollmentRoutes(deps));
+  app.route('/api/me', supportRoutes(deps));
   app.route('/api/me', accountRoutes(deps));
 
   app.use('/api/instructor/*', requireAuth(deps), requireRole('instructor'));
   app.route('/api/instructor', instructorRoutes(deps));
 
   app.use('/api/admin/*', requireAuth(deps), requireRole('admin', 'moderator'));
+  app.route('/api/admin', adminSupportRoutes(deps));
   app.route('/api/admin', adminRoutes(deps));
 
   return app;

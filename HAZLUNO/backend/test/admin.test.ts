@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { AdminClassRow, AdminCourseRow, AdminPage, AdminUserList, SessionCreated } from '../../shared/contracts.js';
+import type { AdminClassRow, AdminCourseRow, AdminPage, AdminReport, AdminUserList, SessionCreated, Ticket } from '../../shared/contracts.js';
 import { setup, validSignup, type TestCtx } from './helpers.js';
 
 async function account(t: TestCtx, email: string, intent: 'learn' | 'teach', name: string) {
@@ -72,5 +72,31 @@ describe('admin: courses and groups (telas 31–32)', () => {
     expect((await t.call('POST', `/api/admin/classes/${k.json.data.id}/cancel`, { token: admin.token, body: { reason: 'Profesor no disponible' } })).status).toBe(200);
     expect((await t.deps.db.one<{ status: string }>('SELECT status FROM enrollments WHERE student_id = ?', [ana.id]))!.status).toBe('canceled_by_platform');
     expect((await t.call<AdminPage<AdminClassRow>>('GET', '/api/admin/classes?status=canceled', { token: admin.token })).json.data.total).toBe(1);
+  });
+});
+
+describe('support and reports (tela 37)', () => {
+  it('a person opens a help conversation, the team answers; reports reach the team', async () => {
+    const t = await setup();
+    const admin = await account(t, 'admin@example.com', 'learn', 'Admin');
+    await t.deps.db.run(`INSERT INTO user_roles (user_id, role, granted_at) VALUES (?, 'admin', 'x')`, [admin.id]);
+    const ana = await account(t, 'ana@example.com', 'learn', 'Ana Silva');
+    const bad = await account(t, 'bad@example.com', 'learn', 'Spammer');
+    const open = await t.call<Ticket>('POST', '/api/me/support', { token: ana.token, body: { topic: 'payment', subject: 'Cobro doble', message: 'Me cobraron dos veces la clase.' } });
+    expect(open.status).toBe(201);
+    expect((await t.call('GET', `/api/me/support/${open.json.data.id}`, { token: bad.token })).status).toBe(404);
+    const list = await t.call<{ items: Ticket[]; counts: { waiting: number } }>('GET', '/api/admin/support?status=waiting', { token: admin.token });
+    expect(list.json.data.counts.waiting).toBe(1);
+    expect(list.json.data.items[0]!.user).toMatchObject({ name: 'Ana Silva', email: 'ana@example.com' });
+    await t.call('POST', `/api/admin/support/${open.json.data.id}/messages`, { token: admin.token, body: { body: 'Ya lo revisamos y te devolvemos uno.' } });
+    const mine = await t.call<Ticket>('GET', `/api/me/support/${open.json.data.id}`, { token: ana.token });
+    expect(mine.json.data).toMatchObject({ status: 'pending', count: 2 });
+    expect(mine.json.data.messages.map((m) => m.author)).toEqual(['Ana Silva', 'Hazluno']);
+
+    expect((await t.call('POST', '/api/me/reports', { token: ana.token, body: { targetType: 'user', targetId: bad.id, reason: 'spam' } })).status).toBe(201);
+    const reports = await t.call<{ items: AdminReport[] }>('GET', '/api/admin/reports', { token: admin.token });
+    expect(reports.json.data.items[0]).toMatchObject({ reporter: 'Ana Silva', targetLabel: 'Spammer', reason: 'spam', status: 'open' });
+    await t.call('POST', `/api/admin/reports/${reports.json.data.items[0]!.id}`, { token: admin.token, body: { status: 'resolved' } });
+    expect((await t.call<{ items: AdminReport[] }>('GET', '/api/admin/reports?status=resolved', { token: admin.token })).json.data.items).toHaveLength(1);
   });
 });
