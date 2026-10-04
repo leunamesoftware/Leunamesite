@@ -38,9 +38,21 @@ jobs:
           CONTA=$(curl -fsS -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" "https://api.cloudflare.com/client/v4/accounts" | jq -r '.result[0].id')
           echo "::add-mask::$CONTA"
           echo "CLOUDFLARE_ACCOUNT_ID=$CONTA" >> "$GITHUB_ENV"
+      - name: Soltar os endereços principais do site antigo
+        # O LeuApps assume leunamesoftware.com.br e www; o site antigo continua respondendo
+        # por dentro do LeuApps (ligação SITE_ANTIGO) para painel, licenças e páginas antigas.
+        run: |
+          H="Authorization: Bearer $CLOUDFLARE_API_TOKEN"
+          curl -fsS -H "$H" "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/workers/domains" \
+            | jq -r '.result[] | select((.hostname=="leunamesoftware.com.br" or .hostname=="www.leunamesoftware.com.br") and .service!="leuapps") | .id' \
+            | while read -r ID; do
+                curl -fsS -X DELETE -H "$H" "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/workers/domains/$ID" >/dev/null && echo "solto: $ID"
+              done
       - name: Publicar
         run: npx --yes wrangler@4 deploy
       - name: Conferir no ar
         run: |
-          for i in $(seq 12); do curl -fsS -o /dev/null https://apps.leunamesoftware.com.br/apps.json && break; sleep 10; done
-          for u in / /apps.json /gestacell/ /img/leuapps-512.png; do echo "::notice::$u → $(curl -s -o /dev/null -w '%{http_code}' https://apps.leunamesoftware.com.br$u)"; done
+          for i in $(seq 30); do curl -fsS -o /dev/null https://www.leunamesoftware.com.br/apps.json && break; sleep 10; done
+          for u in https://www.leunamesoftware.com.br/ https://www.leunamesoftware.com.br/apps.json https://www.leunamesoftware.com.br/admin-licencas/ https://www.leunamesoftware.com.br/site-antigo https://apps.leunamesoftware.com.br/ https://leunamesoftware.com.br/; do
+            echo "::notice::$u → $(curl -s -o /dev/null -w '%{http_code}' "$u" || true)"
+          done
