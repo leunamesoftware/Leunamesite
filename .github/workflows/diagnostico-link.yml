@@ -1,0 +1,33 @@
+name: Diagnóstico — velocidade do link do WhatsApp
+
+# Mede quanto demora para abrir os links que vão no canal/grupo do WhatsApp
+# (DNS, conexão, primeira resposta e total, com os redirecionamentos).
+on:
+  workflow_dispatch:
+  push:
+    paths: ['.github/workflows/diagnostico-link.yml']
+
+jobs:
+  medir:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Medir links
+        run: |
+          medir() {
+            for i in 1 2 3; do
+              R=$(curl -sS -L -o /dev/null --max-time 60 -A "Mozilla/5.0 (Linux; Android 14) WhatsApp" \
+                -w "%{http_code} redir=%{num_redirects} dns=%{time_namelookup}s conexão=%{time_connect}s tls=%{time_appconnect}s redirecionar=%{time_redirect}s 1ª-resposta=%{time_starttransfer}s total=%{time_total}s final=%{url_effective}" "$1" 2>&1)
+              echo "::warning title=$1 (vez $i)::$R"
+            done
+          }
+          medir "http://www.leunamesoftware.com.br/quantocobrar"
+          medir "https://www.leunamesoftware.com.br/quantocobrar"
+          medir "https://www.leunamesoftware.com.br/"
+          medir "https://www.leunamesoftware.com.br/apps.json"
+          medir "https://www.leunamesoftware.com.br/servicos.json"
+          medir "https://www.leunamesoftware.com.br/img/quantocobrar-192.webp"
+          medir "https://www.leunamesoftware.com.br/quantocobrar/app/"
+          medir "https://quantocobrar.leunamesoftware.com.br/"
+          medir "http://leunamesoftware.com.br/quantocobrar"
+          echo "::warning title=DNS::$(dig +short www.leunamesoftware.com.br | tr '\n' ' ') | AAAA: $(dig +short AAAA www.leunamesoftware.com.br | tr '\n' ' ')"
+          echo "::warning title=Cabeçalhos::$(curl -sSI http://www.leunamesoftware.com.br/quantocobrar | tr '\r\n' '  ' | head -c 900)"
