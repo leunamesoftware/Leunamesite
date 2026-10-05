@@ -1,0 +1,57 @@
+name: Backup diário dos bancos (D1)
+
+# Exporta todos os bancos D1 uma vez por dia e guarda por 30 dias como
+# Artifact do GitHub (privado). Se falhar, abre um aviso (issue) "cloud2".
+# LeuCloud fica de fora por decisão do dono.
+on:
+  schedule:
+    - cron: '17 6 * * *'   # 03:17 em Brasília
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { banco: radar-preventivo, pasta: RADAR-PREVENTIVO }
+          - { banco: leuname_licencas, pasta: PROJETO/servidor-licencas-cloudflare }
+          - { banco: leuname_loja, pasta: PROJETO/servidor-loja-cloudflare }
+          - { banco: sucatel, pasta: PROJETO/servidor-sucatel-cloudflare }
+          - { banco: econorota, pasta: ECONOROTA/api }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Exportar ${{ matrix.banco }}
+        working-directory: ${{ matrix.pasta }}
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+        run: |
+          DATA=$(date -u +%Y-%m-%d)
+          mkdir -p "$GITHUB_WORKSPACE/backup"
+          npx --yes wrangler@4 d1 export "${{ matrix.banco }}" --remote \
+            --output "$GITHUB_WORKSPACE/backup/${{ matrix.banco }}-$DATA.sql"
+          gzip "$GITHUB_WORKSPACE/backup/${{ matrix.banco }}-$DATA.sql"
+          ls -la "$GITHUB_WORKSPACE/backup"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: backup-${{ matrix.banco }}
+          path: backup/
+          retention-days: 30
+          if-no-files-found: error
+      - name: Avisar se o backup falhou
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh label create cloud2 --color 1D76DB --description "Infraestrutura (Cloud 2)" --force -R "$GITHUB_REPOSITORY" || true
+          gh issue create -R "$GITHUB_REPOSITORY" --label cloud2 \
+            --title "Backup falhou: ${{ matrix.banco }}" \
+            --body "O backup diário do banco **${{ matrix.banco }}** falhou em $(date -u +%d/%m/%Y). Execução: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"

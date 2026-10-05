@@ -1,0 +1,32 @@
+# Prévia do Hazluno (B?·C1) para o dono ver no celular. Banco e arquivos SEPARADOS
+# da versão oficial: pode apagar e recriar sem risco. Copiado para HAZLUNO/ no deploy.
+name = "hazluno-previa"
+main = "backend/src/worker.ts"
+compatibility_date = "2026-09-01"
+compatibility_flags = ["nodejs_compat"]
+
+routes = [
+  { pattern = "hazluno-previa.leunamesoftware.com.br", custom_domain = true }
+]
+
+[assets]
+directory = "frontend/dist"
+binding = "ASSETS"
+not_found_handling = "single-page-application"
+run_worker_first = ["/api/*"]
+
+[[d1_databases]]
+binding = "DB"
+database_name = "hazluno-previa"
+database_id = "0551e329-bd6e-4277-849f-ddf59bbd04e2"
+migrations_dir = "backend/src/db/migrations"
+
+[[r2_buckets]]
+binding = "FILES"
+bucket_name = "hazluno-previa-files"
+
+[vars]
+NODE_ENV = "production"
+SESSION_DAYS = "30"
+ALLOWED_ORIGINS = "https://hazluno-previa.leunamesoftware.com.br"
+PUBLIC_URL = "https://hazluno-previa.leunamesoftware.com.br"

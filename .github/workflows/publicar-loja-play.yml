@@ -12,6 +12,7 @@ on:
         options:
           - RADAR-PREVENTIVO/loja/loja.json
           - ANDROID/materiais-play-store/gestacell/loja.json
+          - ANDROID/materiais-play-store/quantocobrar/loja.json
 
 jobs:
   loja:
@@ -25,4 +26,7 @@ jobs:
       - name: Enviar para a Google Play
         env:
           PLAY_JSON: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
-        run: python .github/scripts/play_loja.py "${{ inputs.app }}"
+        run: |
+          set -o pipefail
+          python .github/scripts/play_loja.py "${{ inputs.app }}" 2>&1 | tee saida.txt || {
+            echo "::error::$(tail -c 900 saida.txt | tr '\n' ' ')"; exit 1; }

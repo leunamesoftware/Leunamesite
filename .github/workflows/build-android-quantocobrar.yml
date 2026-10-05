@@ -1,0 +1,199 @@
+name: Build Android Quanto Cobrar (Play Store + APK)
+
+# Gera o app Android do Quanto Cobrar (Capacitor 8, abre o app publicado em
+# quantocobrar.leunamesoftware.com.br/app/) já assinado:
+#   AAB (Google Play): https://api.leunamesoftware.com/download/quantocobrar.aab
+#   APK (instalar direto): https://quantocobrar.leunamesoftware.com.br/baixar
+# e envia o AAB para a Google Play (teste interno) quando o app já existe no Play Console.
+#
+# Chave de assinatura (chave de upload da Play): gerada na primeira execução e guardada no
+# bucket PRIVADO "leuname-chaves-privadas" da Cloudflare (não tem link público). As próximas
+# execuções usam sempre a mesma. Com a "Assinatura de apps do Google Play" ligada, se ela se
+# perder o Google permite trocar a chave de upload, sem perder o app.
+on:
+  workflow_dispatch:
+    inputs:
+      trilha:
+        description: 'Para onde enviar na Google Play (o app precisa já existir no Play Console)'
+        type: choice
+        default: nenhuma
+        options: [internal, alpha, production, nenhuma]
+  push:
+    paths:
+      - 'ANDROID/projeto-instalador-quantocobrar/**'
+      - '.github/workflows/build-android-quantocobrar.yml'
+
+concurrency: build-android-quantocobrar
+
+env:
+  # Conta da Play em contestação (out/2026): por padrão não envia para a Play; só o APK/AAB.
+  TRILHA: ${{ inputs.trilha || 'nenhuma' }}
+  PLAY_JSON: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
+  CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+  COFRE: leuname-chaves-privadas/quantocobrar
+
+jobs:
+  android:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: ANDROID/projeto-instalador-quantocobrar
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Android SDK (API 36)
+        run: |
+          export ANDROID_SDK_ROOT="${ANDROID_SDK_ROOT:-${ANDROID_HOME:-/usr/local/lib/android/sdk}}"
+          echo "ANDROID_SDK_ROOT=$ANDROID_SDK_ROOT" >> "$GITHUB_ENV"
+          echo "ANDROID_HOME=$ANDROID_SDK_ROOT" >> "$GITHUB_ENV"
+          SDKMANAGER="$(find "$ANDROID_SDK_ROOT" -maxdepth 4 -type f -name sdkmanager 2>/dev/null | sort -V | tail -n1)"
+          yes | "$SDKMANAGER" --licenses > /dev/null || true
+          "$SDKMANAGER" --install "platform-tools" "platforms;android-36" "build-tools;36.0.0" > /dev/null
+
+      - name: Conta da Cloudflare
+        run: |
+          CONTA=$(curl -fsS -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" "https://api.cloudflare.com/client/v4/accounts" | jq -r '.result[0].id')
+          echo "::add-mask::$CONTA"
+          echo "CLOUDFLARE_ACCOUNT_ID=$CONTA" >> "$GITHUB_ENV"
+
+      - name: Projeto Android (Capacitor)
+        run: |
+          npm install
+          npx cap add android
+          npx cap sync android
+
+      - name: Ícones e cores da abertura
+        run: |
+          for d in mipmap-mdpi mipmap-hdpi mipmap-xhdpi mipmap-xxhdpi mipmap-xxxhdpi; do
+            cp icones-oficiais/$d/*.png android/app/src/main/res/$d/
+          done
+          cp icones-oficiais/ic_launcher_background.xml android/app/src/main/res/values/ic_launcher_background.xml
+          python3 - <<'EOF'
+          import re, pathlib
+          p = pathlib.Path('android/app/src/main/res/values/styles.xml'); s = p.read_text()
+          # Abertura laranja com o ícone (com e sem "android:": abertura do Android 12+ e a da biblioteca).
+          abre = ''.join(f'<item name="{a}windowSplashScreenBackground">#E8590C</item>'
+                         f'<item name="{a}windowSplashScreenAnimatedIcon">@mipmap/ic_launcher_foreground</item>' for a in ('', 'android:'))
+          s, n1 = re.subn(r'(<style name="AppTheme.NoActionBarLaunch"[^>]*>)', r'\1' + abre, s)
+          s, n2 = re.subn(r'(<style name="AppTheme.NoActionBar"[^>]*>)', r'\1<item name="android:windowBackground">@color/fundo_app</item>', s)
+          assert n1 == 1 and n2 == 1, s
+          s = s.replace('</resources>', '<color name="fundo_app">#FFF8F1</color></resources>')
+          p.write_text(s)
+          print(s)
+          EOF
+
+      - name: Chave de assinatura (cofre privado)
+        run: |
+          npx --yes wrangler@4 r2 bucket create leuname-chaves-privadas >/dev/null 2>&1 || true
+          set +e
+          SAIDA=$(npx --yes wrangler@4 r2 object get "$COFRE/upload.keystore" --file android/app/release.keystore --remote 2>&1)
+          OK=$?
+          set -e
+          if [ $OK -eq 0 ] && [ -s android/app/release.keystore ]; then
+            npx --yes wrangler@4 r2 object get "$COFRE/senha.txt" --file senha.txt --remote
+            SENHA=$(cat senha.txt); rm senha.txt
+            echo "Usando a chave guardada."
+          elif echo "$SAIDA" | grep -qiE "does not exist|not found|NoSuchKey"; then
+            rm -f android/app/release.keystore
+            SENHA="$(openssl rand -base64 24 | tr -dc 'A-Za-z0-9' | cut -c1-24)"
+            keytool -genkeypair -keystore android/app/release.keystore -alias quantocobrar \
+              -keyalg RSA -keysize 2048 -validity 10000 -storepass "$SENHA" -keypass "$SENHA" \
+              -dname "CN=Quanto Cobrar, O=LeuName Softwares, C=BR"
+            printf '%s' "$SENHA" > senha.txt
+            npx --yes wrangler@4 r2 object put "$COFRE/upload.keystore" --file android/app/release.keystore --remote
+            npx --yes wrangler@4 r2 object put "$COFRE/senha.txt" --file senha.txt --remote
+            rm senha.txt
+            echo "::notice::Chave nova criada e guardada no cofre privado (primeira vez)."
+          else
+            echo "$SAIDA"
+            echo "::error::Não consegui ler o cofre da chave. Parei para não gerar uma chave diferente."
+            exit 1
+          fi
+          test -n "$SENHA"
+          echo "::add-mask::$SENHA"
+          echo "KEYSTORE_PASSWORD=$SENHA" >> "$GITHUB_ENV"
+
+      - name: Versão e assinatura
+        run: |
+          python3 - <<'EOF'
+          import os, re
+          n = int(os.environ['GITHUB_RUN_NUMBER'])
+          caminho = 'android/app/build.gradle'; t = open(caminho).read()
+          t = re.sub(r'versionCode\s+\d+', f'versionCode {n + 10}', t, count=1)
+          t = re.sub(r'versionName\s+"[^"]*"', f'versionName "1.1.{n}"', t, count=1)
+          assinatura = ("    signingConfigs {\n        release {\n"
+                        "            storeFile file('release.keystore')\n"
+                        "            storePassword System.getenv('KEYSTORE_PASSWORD')\n"
+                        "            keyAlias 'quantocobrar'\n"
+                        "            keyPassword System.getenv('KEYSTORE_PASSWORD')\n"
+                        "        }\n    }\n")
+          assert '    buildTypes {' in t
+          t = t.replace('    buildTypes {', assinatura + '    buildTypes {', 1)
+          t, k = re.subn(r'(buildTypes \{\s*release \{)', r'\1\n            signingConfig signingConfigs.release', t, count=1)
+          assert k == 1
+          open(caminho, 'w').write(t)
+          print('versão', n + 10, f'1.1.{n}')
+          EOF
+
+      - name: Gerar AAB e APK
+        working-directory: ANDROID/projeto-instalador-quantocobrar/android
+        run: |
+          chmod +x gradlew
+          ./gradlew bundleRelease assembleRelease --no-daemon
+          jarsigner -verify app/build/outputs/bundle/release/app-release.aab | tail -1
+          mkdir -p ../entrega
+          cp app/build/outputs/bundle/release/app-release.aab ../entrega/QuantoCobrar.aab
+          cp app/build/outputs/apk/release/app-release.apk ../entrega/QuantoCobrar.apk
+          rm -f app/release.keystore
+
+      - name: Publicar nos links de download
+        run: |
+          npx --yes wrangler@4 r2 object put leuname-downloads/quantocobrar.aab --file entrega/QuantoCobrar.aab \
+            --content-type application/octet-stream --remote
+          npx --yes wrangler@4 r2 object put leuname-downloads/quantocobrar.apk --file entrega/QuantoCobrar.apk \
+            --content-type application/vnd.android.package-archive --remote
+          {
+            echo "### Quanto Cobrar Android"
+            echo "- AAB (Play Store): https://api.leunamesoftware.com/download/quantocobrar.aab"
+            echo "- APK: https://quantocobrar.leunamesoftware.com.br/baixar"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: QuantoCobrar-Android
+          path: ANDROID/projeto-instalador-quantocobrar/entrega/
+          if-no-files-found: error
+
+      # Só funciona depois que o app existir no Play Console e o primeiro AAB tiver sido
+      # enviado à mão (regra do Google). Até lá, falha sem travar o resto.
+      - name: Enviar para a Google Play
+        id: play
+        if: env.PLAY_JSON != '' && env.TRILHA != 'nenhuma'
+        continue-on-error: true
+        uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
+          packageName: com.leunamesoftwares.quantocobrar
+          releaseFiles: ANDROID/projeto-instalador-quantocobrar/entrega/QuantoCobrar.aab
+          track: ${{ env.TRILHA }}
+          status: completed
+
+      # App ainda em rascunho no Play Console só aceita versão como rascunho.
+      - name: Enviar para a Google Play (rascunho)
+        if: steps.play.outcome == 'failure'
+        continue-on-error: true
+        uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
+          packageName: com.leunamesoftwares.quantocobrar
+          releaseFiles: ANDROID/projeto-instalador-quantocobrar/entrega/QuantoCobrar.aab
+          track: ${{ env.TRILHA }}
+          status: draft

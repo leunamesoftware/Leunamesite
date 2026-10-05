@@ -1,0 +1,29 @@
+name: Radar Preventivo — endereço radar.leunamesoftware.com.br
+
+# Liga o endereço radar.leunamesoftware.com.br ao Worker "radar-preventivo" já publicado,
+# sem republicar o app (o endereço antigo *.workers.dev continua funcionando).
+on:
+  workflow_dispatch:
+  push:
+    paths: ['.github/workflows/radar-dominio.yml']
+
+jobs:
+  dominio:
+    runs-on: ubuntu-latest
+    env:
+      CF: ${{ secrets.CF_API_TOKEN }}
+    steps:
+      - name: Ligar o endereço
+        run: |
+          H="Authorization: Bearer $CF"
+          CONTA=$(curl -fsS -H "$H" https://api.cloudflare.com/client/v4/accounts | jq -r '.result[0].id'); echo "::add-mask::$CONTA"
+          ZONA=$(curl -fsS -H "$H" "https://api.cloudflare.com/client/v4/zones?name=leunamesoftware.com.br" | jq -r '.result[0].id'); echo "::add-mask::$ZONA"
+          R=$(curl -sS -X PUT -H "$H" -H "Content-Type: application/json" "https://api.cloudflare.com/client/v4/accounts/$CONTA/workers/domains" \
+            -d "{\"environment\":\"production\",\"hostname\":\"radar.leunamesoftware.com.br\",\"service\":\"radar-preventivo\",\"zone_id\":\"$ZONA\"}")
+          echo "$R" | jq -c '{success, errors}'
+          echo "$R" | jq -e '.success' >/dev/null
+      - name: Conferir
+        run: |
+          C=000
+          for i in $(seq 30); do C=$(curl -s -o /dev/null -w '%{http_code}' https://radar.leunamesoftware.com.br/ || true); [ "$C" = 200 ] && break; sleep 10; done
+          echo "::notice::radar.leunamesoftware.com.br → $C"

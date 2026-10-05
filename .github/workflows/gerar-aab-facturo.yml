@@ -1,0 +1,171 @@
+name: Gerar AAB do Facturo (B9)
+
+# Gera o Android App Bundle (.aab) assinado do Facturo e envia à Google Play.
+# O app é offline (os arquivos vão dentro do AAB); só o link de aprovação usa a internet.
+#
+# Chave de assinatura (chave de ENVIO; a Google guarda a chave final do app):
+# - Segredo FACTURO_CHAVE_ANDROID = "senha:conteúdo-base64" (uma linha só).
+# - Sem o segredo e com "chave_nova" marcado: gera uma chave e entrega no artefato
+#   o arquivo LEIA-ISSO com a linha pronta para cadastrar o segredo.
+on:
+  workflow_dispatch:
+    inputs:
+      chave_nova:
+        description: 'Gerar chave NOVA (só na primeira vez, sem o segredo FACTURO_CHAVE_ANDROID)'
+        type: boolean
+        default: false
+      trilha:
+        description: 'Trilha na Google Play (o app precisa existir e ter o 1º AAB enviado à mão)'
+        type: choice
+        default: internal
+        options: [internal, alpha, production, nenhuma]
+
+jobs:
+  aab:
+    runs-on: ubuntu-latest
+    env:
+      PLAY_JSON: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
+    defaults:
+      run:
+        shell: bash
+        working-directory: FACTURO/app
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Testes, tipos e build do app (nada sobe com erro)
+        run: |
+          npm ci --legacy-peer-deps
+          npm run testar
+          npm run construir
+
+      - name: Criar o projeto Android (Capacitor)
+        run: |
+          npx cap add android
+          npx cap sync android
+
+      - name: Ícone e abertura do Facturo
+        run: |
+          cp nativo/MainActivity.java "$(find android/app/src/main/java -name MainActivity.java | head -1)"
+          RES=android/app/src/main/res
+          cp -r android-recursos/. "$RES/"
+          rm -f "$RES"/drawable*/splash.png "$RES"/drawable-*/splash.png
+          python3 - <<'PY'
+          import pathlib, re
+          p = pathlib.Path("android/app/src/main/res/values/styles.xml")
+          t = p.read_text(encoding="utf-8")
+          novo = ('<item name="android:background">@drawable/facturo_abertura</item>\n'
+                  '        <item name="android:windowBackground">@drawable/facturo_abertura</item>\n'
+                  '        <item name="android:windowSplashScreenBackground">@color/facturo_fundo</item>\n'
+                  '        <item name="android:windowSplashScreenAnimatedIcon">@mipmap/ic_launcher_foreground</item>\n'
+                  '        <item name="windowSplashScreenBackground">@color/facturo_fundo</item>\n'
+                  '        <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_launcher_foreground</item>')
+          t, n = re.subn(r'<item name="android:background">@drawable/splash</item>', novo, t)
+          assert n == 1, "tema de abertura do Capacitor não encontrado:\n" + t
+          t, n = re.subn(r'(<style name="AppTheme\.NoActionBar"[^>]*>)',
+                         r'\1\n        <item name="android:windowBackground">@color/facturo_fundo</item>', t)
+          assert n == 1, "AppTheme.NoActionBar não encontrado"
+          p.write_text(t, encoding="utf-8")
+          PY
+          grep -rl "@drawable/splash" android/app/src/main/res || true
+
+      - name: Preparar a chave de assinatura
+        env:
+          CHAVE: ${{ secrets.FACTURO_CHAVE_ANDROID }}
+        run: |
+          if [ -n "$CHAVE" ]; then
+            SENHA="${CHAVE%%:*}"
+            echo "::add-mask::$SENHA"
+            printf '%s' "${CHAVE#*:}" | base64 -d > android/app/release.keystore
+            echo "CHAVE_NOVA=nao" >> "$GITHUB_ENV"
+          elif [ "${{ inputs.chave_nova }}" = "true" ]; then
+            SENHA="$(openssl rand -base64 30 | tr -dc 'A-Za-z0-9' | cut -c1-28)"
+            echo "::add-mask::$SENHA"
+            keytool -genkeypair -keystore android/app/release.keystore -alias facturo \
+              -keyalg RSA -keysize 2048 -validity 10000 -storepass "$SENHA" -keypass "$SENHA" \
+              -dname "CN=LeuName Softwares, O=LeuName Softwares, C=BR"
+            echo "CHAVE_NOVA=sim" >> "$GITHUB_ENV"
+          else
+            echo "::error::Falta o segredo FACTURO_CHAVE_ANDROID. Na primeira vez, rode com 'chave_nova' marcado."
+            exit 1
+          fi
+          echo "SENHA_CHAVE=$SENHA" >> "$GITHUB_ENV"
+
+      - name: Versão e assinatura no build.gradle
+        run: |
+          python3 - <<'PY'
+          import re
+          props = dict(l.strip().split("=", 1) for l in open("versao-release.properties", encoding="utf-8") if "=" in l and not l.lstrip().startswith("#"))
+          c = "android/app/build.gradle"
+          t = open(c, encoding="utf-8").read()
+          t = re.sub(r"versionCode\s+\d+", f"versionCode {props['versionCode']}", t, count=1)
+          t = re.sub(r'versionName\s+"[^"]*"', f'versionName "{props["versionName"]}"', t, count=1)
+          assinatura = ("    signingConfigs {\n        release {\n            storeFile file('release.keystore')\n"
+                        "            storePassword System.getenv('SENHA_CHAVE')\n            keyAlias 'facturo'\n"
+                        "            keyPassword System.getenv('SENHA_CHAVE')\n        }\n    }\n")
+          t = t.replace("    buildTypes {", assinatura + "    buildTypes {", 1)
+          t, n = re.subn(r"(buildTypes \{\s*release \{)", r"\1\n            signingConfig signingConfigs.release", t, count=1)
+          assert n == 1, "bloco release não encontrado"
+          open(c, "w", encoding="utf-8").write(t)
+          print("versão", props["versionCode"], props["versionName"])
+          PY
+
+      - name: Gerar AAB e APK
+        working-directory: FACTURO/app/android
+        run: |
+          chmod +x gradlew
+          ./gradlew bundleRelease assembleRelease --no-daemon
+
+      - name: Conferir assinatura
+        run: jarsigner -verify android/app/build/outputs/bundle/release/app-release.aab | tail -1
+
+      - name: Preparar a entrega
+        run: |
+          mkdir -p entrega
+          cp android/app/build/outputs/bundle/release/app-release.aab entrega/Facturo.aab
+          cp android/app/build/outputs/apk/release/app-release.apk entrega/Facturo-instalar-no-celular.apk
+          if [ "$CHAVE_NOVA" = "sim" ]; then
+            {
+              echo "CHAVE DE ASSINATURA (ENVIO) -- Facturo"
+              echo "Guarde este arquivo em 2 lugares seguros."
+              echo
+              echo "Cadastre no GitHub (Settings -> Secrets and variables -> Actions -> New secret):"
+              echo "Nome: FACTURO_CHAVE_ANDROID"
+              echo "Valor (a linha inteira abaixo):"
+              echo
+              printf '%s:' "$SENHA_CHAVE"; base64 -w0 android/app/release.keystore; echo
+            } > entrega/LEIA-ISSO-chave-facturo.txt
+          fi
+
+      - name: AAB em link direto (enviar pela Play no celular)
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+        run: |
+          npx --yes wrangler@4 r2 object put leuname-downloads/facturo.aab \
+            --file entrega/Facturo.aab --content-type application/octet-stream --remote
+          echo "AAB: https://api.leunamesoftware.com/download/facturo.aab"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Facturo-Play-Store
+          path: FACTURO/app/entrega/
+          retention-days: 30
+
+      - name: Enviar à Google Play
+        if: env.PLAY_JSON != '' && inputs.trilha != 'nenhuma'
+        continue-on-error: true
+        uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
+          packageName: com.leunamesoftwares.facturo
+          releaseFiles: FACTURO/app/entrega/Facturo.aab
+          track: ${{ inputs.trilha }}
+          status: ${{ inputs.trilha == 'internal' && 'completed' || 'draft' }}

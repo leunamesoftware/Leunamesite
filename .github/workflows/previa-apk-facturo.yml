@@ -1,0 +1,132 @@
+name: Prévia APK do Facturo (para ver no celular)
+
+# A cada envio de código do Facturo (em qualquer branch), gera um APK de prévia
+# e publica num link fixo:  https://api.leunamesoftware.com/download/facturo-previa.apk
+# É instalado como "com.leunamesoftwares.facturo.previa", então convive com a
+# versão da Play Store sem conflito. Não usa a chave oficial.
+on:
+  workflow_dispatch:
+  push:
+    paths: ['FACTURO/app/**', '.github/workflows/previa-apk-facturo.yml']
+
+concurrency:
+  group: previa-facturo
+  cancel-in-progress: true
+
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: FACTURO/app
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Testes, tipos e build
+        run: |
+          npm ci --legacy-peer-deps
+          npm run testar
+          npm run construir
+
+      - name: Projeto Android, ícone e abertura
+        run: |
+          npx cap add android
+          npx cap sync android
+          cp nativo/MainActivity.java "$(find android/app/src/main/java -name MainActivity.java | head -1)"
+          RES=android/app/src/main/res
+          cp -r android-recursos/. "$RES/"
+          rm -f "$RES"/drawable*/splash.png
+          python3 - <<'PY'
+          import pathlib, re
+          p = pathlib.Path("android/app/src/main/res/values/styles.xml")
+          t = p.read_text(encoding="utf-8")
+          t, n = re.subn(r'<item name="android:background">@drawable/splash</item>',
+                         '<item name="android:background">@drawable/facturo_abertura</item>\n'
+                         '        <item name="android:windowSplashScreenBackground">@color/facturo_fundo</item>\n'
+                         '        <item name="android:windowSplashScreenAnimatedIcon">@mipmap/ic_launcher_foreground</item>\n'
+                         '        <item name="windowSplashScreenBackground">@color/facturo_fundo</item>\n'
+                         '        <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_launcher_foreground</item>', t)
+          assert n == 1, t
+          t, n = re.subn(r'(<style name="AppTheme\.NoActionBar"[^>]*>)',
+                         r'\1\n        <item name="android:windowBackground">@color/facturo_fundo</item>', t)
+          assert n == 1, "AppTheme.NoActionBar não encontrado"
+          p.write_text(t, encoding="utf-8")
+          s = pathlib.Path("android/app/src/main/res/values/strings.xml")
+          s.write_text(re.sub(r'(<string name="app_name">)[^<]*', r'\1Facturo Prévia', s.read_text(encoding="utf-8")), encoding="utf-8")
+          g = pathlib.Path("android/app/build.gradle")
+          t = g.read_text(encoding="utf-8")
+          t, n = re.subn(r'(applicationId\s+"com\.leunamesoftwares\.facturo)"', r'\1.previa"', t)
+          assert n == 1, "applicationId não encontrado"
+          g.write_text(t, encoding="utf-8")
+          PY
+
+      - name: Gerar APK
+        working-directory: FACTURO/app/android
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleDebug --no-daemon
+
+      - name: Publicar no link fixo
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+        run: |
+          npx --yes wrangler@4 r2 object put leuname-downloads/facturo-previa.apk \
+            --file android/app/build/outputs/apk/debug/app-debug.apk \
+            --content-type application/vnd.android.package-archive --remote
+          echo "### APK de prévia: https://api.leunamesoftware.com/download/facturo-previa.apk" >> "$GITHUB_STEP_SUMMARY"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: facturo-previa-apk
+          path: FACTURO/app/android/app/build/outputs/apk/debug/app-debug.apk
+          retention-days: 7
+
+  # Abre o APK num Android de verdade (emulador), toca como usuário e guarda fotos e erros
+  # no branch "testes-android" (para o Cloud 2 ver o que aconteceu).
+  testar-no-android:
+    needs: apk
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: facturo-previa-apk
+          path: apk
+
+      - name: Ativar aceleração (KVM)
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules && sudo udevadm trigger --name-match=kvm
+
+      - name: Rodar no emulador (Android 15)
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 35
+          target: google_apis
+          arch: x86_64
+          profile: pixel_6
+          disable-animations: true
+          script: bash FACTURO/app/testes-android/rodar.sh apk/app-debug.apk resultado
+
+      - name: Guardar fotos e log no branch testes-android
+        if: always()
+        run: |
+          git config user.name "leuname-robo"; git config user.email "robo@leunamesoftware.com.br"
+          mkdir -p /tmp/r && cp -r resultado/. /tmp/r/ 2>/dev/null || true
+          git fetch origin testes-android 2>/dev/null && git checkout -B testes-android origin/testes-android || git checkout --orphan testes-android
+          git rm -rfq . 2>/dev/null || true
+          mkdir -p facturo && cp -r /tmp/r/. facturo/
+          git add facturo && git commit -qm "Teste Android do Facturo (${GITHUB_SHA::7})" && git push -f origin testes-android
