@@ -13,21 +13,22 @@ jobs:
     steps:
       - name: Medir links
         run: |
+          # Uma linha por endereço (o GitHub mostra no máximo 10 avisos por passo).
           medir() {
+            L=""
             for i in 1 2 3; do
               R=$(curl -sS -L -o /dev/null --max-time 60 -A "Mozilla/5.0 (Linux; Android 14) WhatsApp" \
-                -w "%{http_code} redir=%{num_redirects} dns=%{time_namelookup}s conexão=%{time_connect}s tls=%{time_appconnect}s redirecionar=%{time_redirect}s 1ª-resposta=%{time_starttransfer}s total=%{time_total}s final=%{url_effective}" "$1" 2>&1)
-              echo "::warning title=$1 (vez $i)::$R"
+                -w "%{http_code} redir=%{num_redirects} 1ª-resposta=%{time_starttransfer}s total=%{time_total}s bytes=%{size_download}" "$1" 2>&1)
+              L="$L [vez $i: $R]"
             done
+            echo "::warning title=$1::$L"
           }
           medir "http://www.leunamesoftware.com.br/quantocobrar"
           medir "https://www.leunamesoftware.com.br/quantocobrar"
           medir "https://www.leunamesoftware.com.br/"
           medir "https://www.leunamesoftware.com.br/apps.json"
           medir "https://www.leunamesoftware.com.br/servicos.json"
-          medir "https://www.leunamesoftware.com.br/img/quantocobrar-192.webp"
           medir "https://www.leunamesoftware.com.br/quantocobrar/app/"
           medir "https://quantocobrar.leunamesoftware.com.br/"
           medir "http://leunamesoftware.com.br/quantocobrar"
-          echo "::warning title=DNS::$(dig +short www.leunamesoftware.com.br | tr '\n' ' ') | AAAA: $(dig +short AAAA www.leunamesoftware.com.br | tr '\n' ' ')"
-          echo "::warning title=Cabeçalhos::$(curl -sSI http://www.leunamesoftware.com.br/quantocobrar | tr '\r\n' '  ' | head -c 900)"
+          echo "::warning title=DNS e cabeçalhos::A: $(dig +short www.leunamesoftware.com.br | tr '\n' ' ') | AAAA: $(dig +short AAAA www.leunamesoftware.com.br | tr '\n' ' ') | $(curl -sSI http://www.leunamesoftware.com.br/quantocobrar | tr '\r\n' '  ' | head -c 700)"
