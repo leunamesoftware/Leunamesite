@@ -71,6 +71,22 @@ export async function entrar(deps: Dependencias, entrada: unknown, ip: string): 
   return abrirSessao(deps, u);
 }
 
+/** Entra com a conta da loja LeuApps (o mesmo login de todos os apps). Primeira vez: cria o cadastro do Radar. */
+export async function entrarPelaLeuApps(deps: Dependencias, cookie: string): Promise<SessaoCriada> {
+  const conta = deps.contaLeuApps ? await deps.contaLeuApps(cookie) : null;
+  if (!conta) throw new ErroApp('nao_autenticado', 401, 'Entre na sua conta da LeuApps.');
+  const email = conta.email.trim().toLowerCase();
+  let u = await repositorioAuth.usuarioPorEmail(deps.banco, email);
+  if (!u) {
+    const agora = deps.relogio.agora().toISOString();
+    // Senha aleatória que ninguém conhece: o acesso é pela conta da LeuApps.
+    const novo = { id: novoId(), nome: conta.nome.slice(0, 120) || email, email, senha_hash: await gerarHashSenha(gerarToken(), deps.config.pimentaSenha), tipo_conta: 'pessoa' as const, criado_em: agora, atualizado_em: agora };
+    await repositorioAuth.criarUsuario(deps.banco, novo);
+    u = { ...novo, papel: 'usuario' };
+  }
+  return abrirSessao(deps, u);
+}
+
 export async function sair(deps: Dependencias, token: string) {
   await repositorioAuth.encerrarSessao(deps.banco, await sha256(token), deps.relogio.agora().toISOString());
 }

@@ -12,6 +12,8 @@ export interface Dependencias {
   config: Config;
   relogio: Relogio;
   canaisAlerta: CanalAlerta[];
+  /** Conta da loja LeuApps aberta neste aparelho (mesmo login para todos os apps). Ausente fora da Cloudflare. */
+  contaLeuApps?: (cookie: string) => Promise<{ nome: string; email: string } | null>;
 }
 
 /** Variáveis disponíveis dentro das rotas depois do login. */

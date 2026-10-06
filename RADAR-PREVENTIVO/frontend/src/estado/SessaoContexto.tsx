@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useMemo, useState, type ReactNode } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import type { SessaoCriada, Usuario } from '@compartilhado/contratos';
 import { chamarApi, ErroApi } from '../servicos/api';
@@ -21,6 +21,18 @@ const Contexto = createContext<ValorSessao | null>(null);
 
 export function ProvedorSessao({ children }: { children: ReactNode }) {
   const [sessao, setSessao] = useState<SessaoCriada | null>(() => lerSessao());
+  // Sem sessão: tenta entrar com a conta da loja LeuApps (mesmo login de todos os apps) antes de mostrar o login.
+  const [conferindoLoja, setConferindoLoja] = useState(() => !lerSessao());
+  useEffect(() => {
+    if (!conferindoLoja) return;
+    let ativo = true;
+    const limite = setTimeout(() => ativo && setConferindoLoja(false), 4000);
+    chamarApi<SessaoCriada>('/auth/leuapps', { metodo: 'POST' })
+      .then((nova) => { if (ativo) { salvarSessao(nova); setSessao(nova); } })
+      .catch(() => undefined)
+      .finally(() => { clearTimeout(limite); if (ativo) setConferindoLoja(false); });
+    return () => { ativo = false; };
+  }, [conferindoLoja]);
 
   const iniciar = useCallback((nova: SessaoCriada) => {
     salvarSessao(nova);
@@ -60,6 +72,7 @@ export function ProvedorSessao({ children }: { children: ReactNode }) {
   );
 
   const valor = useMemo(() => ({ sessao, iniciar, atualizarUsuario, sair, api }), [sessao, iniciar, atualizarUsuario, sair, api]);
+  if (conferindoLoja) return <div className="abertura-inicial"><img src="/simbolo.svg" alt="Radar Preventivo" /></div>;
   return <Contexto.Provider value={valor}>{children}</Contexto.Provider>;
 }
 

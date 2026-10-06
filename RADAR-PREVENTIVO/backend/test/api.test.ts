@@ -52,6 +52,21 @@ beforeEach(async () => {
 });
 
 describe('autenticação', () => {
+  it('entra com a conta da loja LeuApps: usa a conta que já existe ou cria na primeira vez', async () => {
+    const token = await novaConta();
+    deps.contaLeuApps = async (cookie) => (cookie.includes('sessao=boa') ? { nome: 'Maria', email: 'MARIA@exemplo.com' } : null);
+    const semLoja = await app.request('/api/auth/leuapps', { method: 'POST', headers: { origin: 'http://localhost:5173' } });
+    expect(semLoja.status).toBe(401);
+    const r = await app.request('/api/auth/leuapps', { method: 'POST', headers: { origin: 'http://localhost:5173', cookie: 'sessao=boa' } });
+    expect(r.status).toBe(200);
+    const s = (await r.json()) as { dados: SessaoCriada };
+    expect(s.dados.usuario.email).toBe('maria@exemplo.com'); // mesma conta de antes, sem cadastro repetido
+    expect((await chamar('GET', '/api/conta', { token: s.dados.token })).status).toBe(200);
+    expect((await chamar('GET', '/api/conta', { token })).status).toBe(200);
+    deps.contaLeuApps = async () => ({ nome: 'José', email: 'jose@exemplo.com' });
+    const novo = await app.request('/api/auth/leuapps', { method: 'POST', headers: { origin: 'http://localhost:5173', cookie: 'x=1' } });
+    expect(((await novo.json()) as { dados: SessaoCriada }).dados.usuario.nome).toBe('José');
+  });
   it('cadastra, entra, acessa a conta e sai de verdade', async () => {
     const token = await novaConta();
     expect((await chamar('GET', '/api/conta', { token })).status).toBe(200);

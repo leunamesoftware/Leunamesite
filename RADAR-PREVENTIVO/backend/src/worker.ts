@@ -17,6 +17,8 @@ interface Env {
   ANEXOS: R2Bucket;
   DOWNLOADS: { get(chave: string): Promise<{ body: ReadableStream; size: number; uploaded: Date } | null> };
   ASSETS: { fetch(requisicao: Request): Promise<Response> };
+  /** Servidor de contas da loja LeuApps (ligação interna da Cloudflare). */
+  CONTAS?: { fetch(requisicao: Request): Promise<Response> };
   [variavel: string]: unknown;
 }
 
@@ -28,6 +30,14 @@ function dependencias(env: Env): Dependencias {
     config: carregarConfig(variaveis),
     relogio: relogioDoSistema,
     canaisAlerta: [canalApp],
+    // Confere no servidor de contas da loja quem está logado (o cookie da loja vale em *.leunamesoftware.com.br).
+    contaLeuApps: async (cookie) => {
+      if (!env.CONTAS || !cookie) return null;
+      const r = await env.CONTAS.fetch(new Request('https://www.leunamesoftware.com.br/api/conta', { headers: { Cookie: cookie } }));
+      if (!r.ok) return null;
+      const d = (await r.json().catch(() => null)) as { conta?: { nome?: string; email?: string } | null } | null;
+      return d?.conta?.email ? { nome: String(d.conta.nome || d.conta.email.split('@')[0]), email: String(d.conta.email) } : null;
+    },
   };
 }
 

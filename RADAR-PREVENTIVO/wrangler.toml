@@ -21,6 +21,11 @@ migrations_dir = "backend/src/banco/migracoes"
 binding = "ANEXOS"
 bucket_name = "radar-preventivo-anexos"
 
+# Servidor de contas da loja LeuApps: o Radar usa o mesmo login da loja e dos outros apps.
+[[services]]
+binding = "CONTAS"
+service = "calculadora-receitas"
+
 # Instalador Android (APK) para baixar pelo site: /baixar/RadarPreventivo.apk.
 # Bucket separado dos anexos; o gerador do APK (GitHub Actions) envia o arquivo para cá.
 [[r2_buckets]]
