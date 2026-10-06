@@ -1,0 +1,199 @@
+name: LeuApps Android — loja e apps (APK)
+
+# Gera os APKs da loja LeuApps para Android (fora da Play Store):
+#   1) LeuApps (a loja: instala, abre e desinstala os apps) → https://www.leunamesoftware.com.br/baixar/leuapps.apk
+#   2) Gestacell para a loja (abre gestacell.leunamesoftware.com.br, sempre atualizado) → leuname-downloads/gestacell.apk
+# O código da loja Android está no repositório leuname-softwarea-apps (pasta leuapps/android).
+# Chave da LeuApps: gerada na primeira vez e guardada no cofre privado leuname-chaves-privadas/leuapps.
+# Chave do Gestacell: a mesma de sempre (secrets ANDROID_KEYSTORE_*), para atualizar por cima.
+on:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: 'Branch do leuname-softwarea-apps'
+        default: 'ccr-f58cd13b-ml0bzs'
+      gestacell:
+        description: 'Gerar também o APK do Gestacell'
+        type: boolean
+        default: true
+  push:
+    paths: ['.github/workflows/leuapps-android.yml']
+
+concurrency: leuapps-android
+
+env:
+  REF: ${{ github.event.inputs.ref || 'ccr-f58cd13b-ml0bzs' }}
+  CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+
+jobs:
+  loja:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: app/leuapps/android
+    env:
+      COFRE: leuname-chaves-privadas/leuapps
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: leunamesoftware/leuname-softwarea-apps
+          ref: ${{ env.REF }}
+          path: app
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: '17' }
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - uses: gradle/actions/setup-gradle@v4
+        with: { gradle-version: '8.7' }
+
+      - name: Android SDK
+        run: |
+          SDK="${ANDROID_HOME:-/usr/local/lib/android/sdk}"
+          echo "ANDROID_HOME=$SDK" >> "$GITHUB_ENV"
+          SDKMANAGER="$(find "$SDK" -maxdepth 4 -type f -name sdkmanager | sort -V | tail -n1)"
+          yes | "$SDKMANAGER" --licenses > /dev/null || true
+          "$SDKMANAGER" --install "platforms;android-34" "build-tools;34.0.0" > /dev/null
+
+      - name: Chave de assinatura (cofre privado)
+        run: |
+          npx --yes wrangler@4 r2 bucket create leuname-chaves-privadas >/dev/null 2>&1 || true
+          set +e
+          SAIDA=$(npx --yes wrangler@4 r2 object get "$COFRE/upload.keystore" --file app/release.keystore --remote 2>&1)
+          OK=$?
+          set -e
+          if [ $OK -eq 0 ] && [ -s app/release.keystore ]; then
+            npx --yes wrangler@4 r2 object get "$COFRE/senha.txt" --file senha.txt --remote
+            SENHA=$(cat senha.txt); rm senha.txt
+            echo "Usando a chave guardada."
+          elif echo "$SAIDA" | grep -qiE "does not exist|not found|NoSuchKey"; then
+            rm -f app/release.keystore
+            SENHA="$(openssl rand -base64 24 | tr -dc 'A-Za-z0-9' | cut -c1-24)"
+            keytool -genkeypair -keystore app/release.keystore -alias leuapps \
+              -keyalg RSA -keysize 2048 -validity 10000 -storepass "$SENHA" -keypass "$SENHA" \
+              -dname "CN=LeuApps, O=LeuName Softwares, C=BR"
+            printf '%s' "$SENHA" > senha.txt
+            npx --yes wrangler@4 r2 object put "$COFRE/upload.keystore" --file app/release.keystore --remote
+            npx --yes wrangler@4 r2 object put "$COFRE/senha.txt" --file senha.txt --remote
+            rm senha.txt
+            echo "::notice::Chave nova da LeuApps criada e guardada no cofre privado (primeira vez)."
+          else
+            echo "$SAIDA"
+            echo "::error::Não consegui ler o cofre da chave. Parei para não gerar uma chave diferente."
+            exit 1
+          fi
+          echo "::add-mask::$SENHA"
+          echo "KEYSTORE_PASSWORD=$SENHA" >> "$GITHUB_ENV"
+
+      - name: Gerar o APK assinado
+        run: |
+          export VERSAO_CODIGO=$((GITHUB_RUN_NUMBER + 1)) VERSAO_NOME="1.0.${GITHUB_RUN_NUMBER}"
+          gradle assembleRelease --no-daemon
+          rm -f app/release.keystore
+          APK=app/build/outputs/apk/release/app-release.apk
+          "$ANDROID_HOME/build-tools/34.0.0/apksigner" verify --print-certs "$APK" | head -3
+          mkdir -p ../entrega && cp "$APK" ../entrega/LeuApps.apk
+          printf '{"versionCode":%s,"versionName":"%s"}' "$VERSAO_CODIGO" "$VERSAO_NOME" > ../entrega/leuapps-versao.json
+
+      - name: Publicar o download
+        working-directory: app/leuapps/entrega
+        run: |
+          npx --yes wrangler@4 r2 object put leuname-downloads/leuapps.apk --file LeuApps.apk \
+            --content-type application/vnd.android.package-archive --remote
+          npx --yes wrangler@4 r2 object put leuname-downloads/leuapps-versao.json --file leuapps-versao.json \
+            --content-type application/json --remote
+          echo "### LeuApps Android $(cat leuapps-versao.json)" >> "$GITHUB_STEP_SUMMARY"
+          echo "- APK: https://www.leunamesoftware.com.br/baixar/leuapps.apk" >> "$GITHUB_STEP_SUMMARY"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: LeuApps-Android
+          path: app/leuapps/entrega/LeuApps.apk
+
+  gestacell:
+    if: ${{ github.event_name != 'workflow_dispatch' || github.event.inputs.gestacell == 'true' }}
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: ANDROID/projeto-instalador-android
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '22' }
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: '17' }
+
+      - name: Android SDK
+        run: |
+          SDK="${ANDROID_HOME:-/usr/local/lib/android/sdk}"
+          echo "ANDROID_HOME=$SDK" >> "$GITHUB_ENV"
+          echo "ANDROID_SDK_ROOT=$SDK" >> "$GITHUB_ENV"
+          SDKMANAGER="$(find "$SDK" -maxdepth 4 -type f -name sdkmanager | sort -V | tail -n1)"
+          yes | "$SDKMANAGER" --licenses > /dev/null || true
+          "$SDKMANAGER" --install "platform-tools" "platforms;android-36" "build-tools;36.0.0" > /dev/null
+
+      - name: Abrir o Gestacell publicado (endereço próprio), sempre atualizado
+        run: |
+          python3 - <<'EOF'
+          import json
+          c = json.load(open('capacitor.config.json'))
+          c['server'] = {'url': 'https://gestacell.leunamesoftware.com.br/', 'androidScheme': 'https',
+                         'allowNavigation': ['gestacell.leunamesoftware.com.br', 'www.leunamesoftware.com.br'], 'errorPath': 'index.html'}
+          json.dump(c, open('capacitor.config.json', 'w'), indent=2)
+          print(json.dumps(c, indent=2))
+          EOF
+
+      - name: Projeto Android (Capacitor)
+        run: |
+          npm install
+          npx cap add android
+          npx cap sync android
+          sed -i 's/compileSdkVersion = 34/compileSdkVersion = 36/; s/targetSdkVersion = 34/targetSdkVersion = 36/' android/variables.gradle
+          echo "android.suppressUnsupportedCompileSdk=36" >> android/gradle.properties
+          cp nativo/MainActivity.java "$(find android/app/src/main/java -name MainActivity.java | head -1)"
+          for d in mipmap-mdpi mipmap-hdpi mipmap-xhdpi mipmap-xxhdpi mipmap-xxxhdpi; do
+            cp icones-oficiais/$d/ic_launcher*.png android/app/src/main/res/$d/
+          done
+          cp icones-oficiais/ic_launcher_background.xml android/app/src/main/res/values/ic_launcher_background.xml
+          printf '%s' "${{ secrets.ANDROID_KEYSTORE_B64_PART1 }}${{ secrets.ANDROID_KEYSTORE_B64_PART2 }}${{ secrets.ANDROID_KEYSTORE_B64_PART3 }}${{ secrets.ANDROID_KEYSTORE_B64_PART4 }}${{ secrets.ANDROID_KEYSTORE_B64_PART5 }}" | base64 -d > android/app/release.keystore
+
+      - name: Versão e assinatura
+        run: |
+          python3 - <<'EOF'
+          import os, re
+          n = 100 + int(os.environ['GITHUB_RUN_NUMBER'])  # acima das versões da Play (7)
+          p = 'android/app/build.gradle'; t = open(p).read()
+          t = re.sub(r'versionCode\s+\d+', f'versionCode {n}', t, count=1)
+          t = re.sub(r'versionName\s+"[^"]*"', f'versionName "2.0.{n}"', t, count=1)
+          assinatura = ("    signingConfigs {\n        release {\n            storeFile file('release.keystore')\n"
+                        "            storePassword System.getenv('KEYSTORE_PASSWORD')\n            keyAlias System.getenv('KEY_ALIAS')\n"
+                        "            keyPassword System.getenv('KEY_PASSWORD')\n        }\n    }\n")
+          t = t.replace('    buildTypes {', assinatura + '    buildTypes {', 1)
+          t, k = re.subn(r'(buildTypes \{\s*release \{)', r'\1\n            signingConfig signingConfigs.release', t, count=1)
+          assert k == 1
+          open(p, 'w').write(t)
+          open(os.environ['GITHUB_ENV'], 'a').write(f'GESTACELL_VERSAO={n}\n')
+          print('versão', n)
+          EOF
+
+      - name: Gerar o APK assinado
+        working-directory: ANDROID/projeto-instalador-android/android
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleRelease --no-daemon
+          rm -f app/release.keystore
+
+      - name: Publicar para a loja LeuApps
+        run: |
+          npx --yes wrangler@4 r2 object put leuname-downloads/gestacell.apk \
+            --file android/app/build/outputs/apk/release/app-release.apk \
+            --content-type application/vnd.android.package-archive --remote
+          printf '{"versionCode":%s}' "$GESTACELL_VERSAO" > /tmp/v.json
+          npx --yes wrangler@4 r2 object put leuname-downloads/gestacell-loja-versao.json --file /tmp/v.json \
+            --content-type application/json --remote
+          echo "### Gestacell para a LeuApps: versão $GESTACELL_VERSAO" >> "$GITHUB_STEP_SUMMARY"
