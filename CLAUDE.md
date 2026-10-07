@@ -15,3 +15,6 @@
 |---|---|---|---|
 | B1 | Gestacell | com.leunamesoftwares.gestacell | Produção 1.0.4 em análise; 1.0.5 (teste de 7 dias) pronta para subir depois da aprovação |
 | B2 | Radar Preventivo | com.radarpreventivo.app | Teste interno (não lançar até o dono dizer "liberado") |
+
+## Venda sem Play Store (atual)
+A conta da Play foi banida. Os apps são vendidos pela loja própria LeuApps (www.leunamesoftware.com.br) e instalados pelo navegador (link do app + `?instalar=1`, botão Instalar). Pagou → e-mail automático com o link, pelo Gmail da empresa (segredo `GMAIL_SENHA_APP` na Cloudflare). Guia completo: `COMO-FUNCIONA-A-VENDA.md` no repositório `leunamesoftware/leuname-softwarea-apps` (branch `ccr-f58cd13b-ml0bzs`).
