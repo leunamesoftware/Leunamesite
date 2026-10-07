@@ -23,12 +23,14 @@
   // direto, igual à da LeuApps. Assim o link simples do app já serve para instalar.
   var noNavegadorDoCelular = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) && window.top === window
     && !(matchMedia('(display-mode: standalone)').matches || matchMedia('(display-mode: minimal-ui)').matches || matchMedia('(display-mode: fullscreen)').matches || navigator.standalone);
-  if (p.get('instalar') !== '1' && p.get('atalho') !== '1' && !noNavegadorDoCelular) return;
-  p.delete('instalar'); p.delete('atalho');
+  // A LeuApps instalada abre o link com ?de=leuapps: ali é a janelinha do Android (com X), onde não dá para instalar.
+  var daLeuapps = p.get('de') === 'leuapps';
+  if (p.get('instalar') !== '1' && p.get('atalho') !== '1' && !noNavegadorDoCelular && !daLeuapps) return;
+  p.delete('instalar'); p.delete('atalho'); p.delete('de');
   history.replaceState(null, '', location.pathname + (p.toString() ? '?' + p : '') + location.hash);
   // Veio da loja (?instalar=1): mostra sempre a tela de instalação. Se a página está numa janela de app, é a
   // janelinha que o Android abre de dentro da LeuApps instalada: ali o Chrome não instala, só no Chrome de verdade.
-  var janelinha = matchMedia('(display-mode: standalone)').matches || matchMedia('(display-mode: minimal-ui)').matches || navigator.standalone;
+  var janelinha = daLeuapps || matchMedia('(display-mode: standalone)').matches || matchMedia('(display-mode: minimal-ui)').matches || navigator.standalone;
 
   var ua = navigator.userAgent;
   var ios = /iPhone|iPad|iPod/i.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1);
@@ -37,11 +39,6 @@
   var samsung = /SamsungBrowser/i.test(ua); // navegador "Internet" da Samsung: instala pelo menu, sem botão automático
   var onde = celular ? 'na tela do seu celular' : 'na área de trabalho do seu computador';
 
-  // Link que pede ao Android para abrir este endereço no Chrome de verdade (a janelinha não instala apps).
-  function noChrome() {
-    var u = location.host + location.pathname + '?instalar=1';
-    return 'intent://' + u + '#Intent;scheme=https;package=com.android.chrome;S.browser_fallback_url=' + encodeURIComponent('https://' + u) + ';end';
-  }
   function passos() {
     if (ios) return '<li>Toque em <b>Compartilhar</b> (o quadrado com a seta, embaixo ou em cima da tela).</li><li>Desça e toque em <b>Adicionar à Tela de Início</b>.</li><li>Toque em <b>Adicionar</b>.</li>';
     if (firefox && !celular) return '<li>Este navegador não instala apps. Abra este mesmo endereço no <b>Google Chrome</b> ou no <b>Microsoft Edge</b>.</li>';
@@ -61,16 +58,16 @@
       corpo = '<button type="button" class="li-sim" data-instalar>Instalar</button><p class="li-mini">Grátis para instalar · o ícone fica ' + onde + '</p>'
         + '<button type="button" class="li-nao" data-usar>Usar sem instalar</button>';
     } else if (novo === 'janelinha') {
-      corpo = '<p class="li-texto">Falta só abrir no Chrome, que é quem instala o <b>' + nome + '</b> sem pedir permissão:</p>'
-        + '<a class="li-sim" href="' + noChrome() + '">Abrir no Chrome</a>'
-        + '<p class="li-texto">Se não abrir, toque nos <b>⋮</b> lá em cima, à direita, e em <b>Abrir no Chrome</b>. Lá aparece o botão <b>Instalar</b>.</p>'
+      corpo = '<button type="button" class="li-sim" data-usar>Abrir o ' + nome + '</button>'
+        + '<p class="li-texto"><b>Para instalar</b> (ícone na tela do celular):</p>'
+        + '<ol class="li-passos"><li>Toque nos <b>⋮</b> lá em cima, à direita.</li><li>Toque em <b>Abrir no Chrome</b>.</li><li>No Chrome, toque em <b>Instalar</b>.</li></ol>'
         + '<button type="button" class="li-nao" data-copiar>Copiar o endereço</button>';
     } else if (novo === 'passos') {
       corpo = (celular && !ios ? '<p class="li-texto">Se o <b>' + nome + '</b> já está instalado, abra pelo ícone ' + onde + '. Se ainda não está:</p>' : '<p class="li-texto">Para colocar o <b>' + nome + '</b> ' + onde + ':</p>') + '<ol class="li-passos">' + passos() + '</ol>'
         + '<button type="button" class="li-nao" data-usar>Já instalei · abrir aqui mesmo</button>';
     } else {
       // Na 1ª visita o Chrome só libera o botão depois de uns 30 segundos na página. Pelo menu ⋮ instala na hora.
-      corpo = '<button type="button" class="li-sim" disabled><span class="li-anel li-anel-mini" aria-hidden="true"></span>Preparando… até 30 segundos</button>'
+      corpo = '<button type="button" class="li-sim" disabled><span class="li-anel li-anel-mini" aria-hidden="true"></span>Preparando… até 30 segundos</button><button type="button" class="li-nao" data-usar>Usar sem instalar</button>'
         + (celular && !ios ? '<p class="li-texto">Quer na hora? Toque nos <b>⋮</b> do Chrome (canto direito) → <b>Adicionar à tela inicial</b> → <b>Instalar</b>.</p>' : '');
     }
     tela.querySelector('.li-corpo').innerHTML = corpo;
