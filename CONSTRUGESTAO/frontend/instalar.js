@@ -19,7 +19,11 @@
   addEventListener('appinstalled', function () { pedido = null; if (tela) desenhar('pronto'); });
 
   var p = new URLSearchParams(location.search);
-  if (p.get('instalar') !== '1' && p.get('atalho') !== '1') return;
+  // No celular, aberto no navegador (fora do app instalado e fora da LeuApps): mostra a tela de instalação
+  // direto, igual à da LeuApps. Assim o link simples do app já serve para instalar.
+  var noNavegadorDoCelular = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) && window.top === window
+    && !(matchMedia('(display-mode: standalone)').matches || matchMedia('(display-mode: minimal-ui)').matches || matchMedia('(display-mode: fullscreen)').matches || navigator.standalone);
+  if (p.get('instalar') !== '1' && p.get('atalho') !== '1' && !noNavegadorDoCelular) return;
   p.delete('instalar'); p.delete('atalho');
   history.replaceState(null, '', location.pathname + (p.toString() ? '?' + p : '') + location.hash);
   // Veio da loja (?instalar=1): mostra sempre a tela de instalação. Se a página está numa janela de app, é a
@@ -52,7 +56,8 @@
         + '<p class="li-texto">Abra o app pelo ícone. Lá dentro você cria a sua conta (nome, e-mail e senha) e começa a usar.</p>'
         + '<a class="li-sim" href="' + loja + '">Voltar para a LeuApps</a><button type="button" class="li-nao" data-usar>Abrir aqui mesmo</button>';
     } else if (novo === 'botao') {
-      corpo = '<button type="button" class="li-sim" data-instalar>Instalar</button><p class="li-mini">Grátis para instalar · o ícone fica ' + onde + '</p>';
+      corpo = '<button type="button" class="li-sim" data-instalar>Instalar</button><p class="li-mini">Grátis para instalar · o ícone fica ' + onde + '</p>'
+        + '<button type="button" class="li-nao" data-usar>Usar sem instalar</button>';
     } else if (novo === 'janelinha') {
       corpo = '<p class="li-texto">Falta só abrir no Chrome, que é quem instala o <b>' + nome + '</b> sem pedir permissão:</p>'
         + '<a class="li-sim" href="' + noChrome() + '">Abrir no Chrome</a>'
