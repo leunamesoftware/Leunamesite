@@ -9,8 +9,18 @@ compatibility_date = "2026-09-19"
 # usam o MESMO servidor de licenças já existente
 # (PROJETO/servidor-licencas-cloudflare), só muda o app_id
 # ("construgestao").
+main = "worker.js"
+
+# Tudo passa pelo worker.js: ele leva /loja-api/* ao servidor de contas (CONTAS) e o resto aos arquivos.
 [assets]
 directory = "./"
+binding = "ASSETS"
+run_worker_first = true
+
+# Servidor de vendas e contas da loja LeuApps (worker do Quanto Cobrar): login, teste grátis e planos.
+[[services]]
+binding = "CONTAS"
+service = "calculadora-receitas"
 
 # Domínio customizado: subdomínio do leunamesoftware.com.br (domínio
 # que já é do lojista e já está ativo na Cloudflare) -- assim o link
