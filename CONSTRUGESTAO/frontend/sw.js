@@ -1,7 +1,7 @@
 // Service worker do ConstruGestão: habilita "Instalar app" no navegador (Chrome, Edge, Samsung Internet)
 // e deixa o app abrir sem internet. Busca sempre na rede primeiro (nunca prende uma versão antiga depois
 // de um deploy); só usa a cópia guardada quando está sem internet. Os dados ficam no IndexedDB do aparelho.
-const CACHE = 'construgestao-v3';
+const CACHE = 'construgestao-v4';
 const BASE = ['/', '/index.html', '/manifest.webmanifest', '/instalar.js', '/icon-192.png', '/icon-512.png'];
 self.addEventListener('install', (e) => {
   e.waitUntil(caches.open(CACHE).then((c) => c.addAll(BASE)).catch(() => {}).then(() => self.skipWaiting()));

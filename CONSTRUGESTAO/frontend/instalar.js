@@ -2,7 +2,7 @@
 // A loja abre o app com ?instalar=1: aparece na hora uma tela de instalação que cobre o app inteiro
 // (a pessoa não vê login nem cadastro). A conta (nome, e-mail e senha) só é criada depois,
 // quando ela abrir o app pelo ícone.
-// O mesmo arquivo é usado no Quanto Cobrar, no Gestacell, no Radar e no ConstruGestão: os dados vêm do <script data-nome data-icone data-cor>.
+// O mesmo arquivo é usado no Quanto Cobrar, no Gestacell, no Radar e no ConstruGestão (copie para os quatro ao mudar): os dados vêm do <script data-nome data-icone data-cor>.
 (function () {
   var eu = document.currentScript;
   var nome = (eu && eu.dataset.nome) || document.title;
@@ -13,7 +13,7 @@
 
   addEventListener('beforeinstallprompt', function (e) {
     e.preventDefault(); pedido = e;
-    if (tela && estado === 'esperando') pedirInstalacao(); // a pessoa já tocou em Instalar: segue direto
+    if (tela && estado === 'esperando') pedirInstalacao(); // a pessoa já tocou em Instalar: segue direto (sem três pontinhos)
     else if (tela && (estado === 'passos' || estado === 'janelinha')) desenhar('botao');
   });
   addEventListener('appinstalled', function () { pedido = null; if (tela) desenhar('pronto'); });
@@ -25,6 +25,9 @@
     && !(matchMedia('(display-mode: standalone)').matches || matchMedia('(display-mode: minimal-ui)').matches || matchMedia('(display-mode: fullscreen)').matches || navigator.standalone);
   // A LeuApps instalada abre o link com ?de=leuapps: ali é a janelinha do Android (com X), onde não dá para instalar.
   var daLeuapps = p.get('de') === 'leuapps';
+  // Quem tocou em "Usar sem instalar" não vê a tela de novo por 7 dias (o link com ?instalar=1 mostra sempre).
+  var semInstalar = 0; try { semInstalar = Number(localStorage.getItem('li-sem-instalar')) || 0; } catch (e) {}
+  if (Date.now() - semInstalar < 7 * 864e5) noNavegadorDoCelular = false;
   if (p.get('instalar') !== '1' && p.get('atalho') !== '1' && !noNavegadorDoCelular && !daLeuapps) return;
   p.delete('instalar'); p.delete('atalho'); p.delete('de');
   history.replaceState(null, '', location.pathname + (p.toString() ? '?' + p : '') + location.hash);
@@ -66,9 +69,10 @@
       corpo = (celular && !ios ? '<p class="li-texto">Se o <b>' + nome + '</b> já está instalado, abra pelo ícone ' + onde + '. Se ainda não está:</p>' : '<p class="li-texto">Para colocar o <b>' + nome + '</b> ' + onde + ':</p>') + '<ol class="li-passos">' + passos() + '</ol>'
         + '<button type="button" class="li-nao" data-usar>Já instalei · abrir aqui mesmo</button>';
     } else {
-      // Na 1ª visita o Chrome só libera o botão depois de uns 30 segundos na página. Pelo menu ⋮ instala na hora.
-      corpo = '<button type="button" class="li-sim" disabled><span class="li-anel li-anel-mini" aria-hidden="true"></span>Preparando… até 30 segundos</button><button type="button" class="li-nao" data-usar>Usar sem instalar</button>'
-        + (celular && !ios ? '<p class="li-texto">Quer na hora? Toque nos <b>⋮</b> do Chrome (canto direito) → <b>Adicionar à tela inicial</b> → <b>Instalar</b>.</p>' : '');
+      // Na 1ª visita o navegador só libera a instalação depois de alguns segundos na página. A tela espera sozinha
+      // e, quando liberar, abre a confirmação do navegador (ou mostra "Toque aqui para instalar"). Sem três pontinhos.
+      corpo = '<button type="button" class="li-sim" disabled><span class="li-anel li-anel-mini" aria-hidden="true"></span>Preparando a instalação…</button>'
+        + '<div class="li-barra-prog" aria-hidden="true"><i></i></div><p class="li-mini">Leva só alguns segundos. Não feche esta tela.</p>';
     }
     tela.querySelector('.li-corpo').innerHTML = corpo;
   }
@@ -76,7 +80,7 @@
   function pedirInstalacao() {
     var q = pedido; pedido = null;
     // Se o toque já "esfriou", o navegador recusa: volta o botão (agora pronto) para a pessoa tocar de novo.
-    var volta = function () { pedido = q; if (tela) { desenhar('botao'); var b = tela.querySelector('[data-instalar]'); if (b) b.textContent = 'Instalar agora'; } };
+    var volta = function () { pedido = q; if (tela) { desenhar('botao'); var b = tela.querySelector('[data-instalar]'); if (b) { b.textContent = 'Pronto! Toque aqui para instalar'; b.classList.add('li-pulsa'); } } };
     try { var r = q.prompt(); if (r && r.catch) r.catch(volta); } catch (e) { return volta(); }
     q.userChoice.then(function (r) { if (tela) desenhar(r.outcome === 'accepted' ? 'pronto' : 'botao'); });
   }
@@ -99,7 +103,10 @@
       + '.li-ok{width:64px;height:64px;border-radius:50%;background:#E7F6EC;color:#1E8E4E;font-size:34px;font-weight:800;display:grid;place-items:center;justify-self:center}'
       + '.li-anel{width:40px;height:40px;border-radius:50%;border:4px solid #E6E1F5;border-top-color:' + cor + ';justify-self:center;animation:li-gira 1s linear infinite}'
       + '.li-anel-mini{width:18px;height:18px;border-width:3px;border-color:rgba(255,255,255,.4);border-top-color:#fff;margin-right:10px}.li-sim:disabled{opacity:.85;cursor:default}'
-      + '@keyframes li-gira{to{transform:rotate(360deg)}}@media (prefers-reduced-motion:reduce){.li-anel{animation:none}}'
+      + '.li-barra-prog{height:6px;border-radius:99px;background:#ECE8F5;overflow:hidden}.li-barra-prog i{display:block;height:100%;width:0;background:' + cor + ';animation:li-enche 30s linear forwards}'
+      + '.li-pulsa{animation:li-pulsa 1.1s ease-in-out infinite}'
+      + '@keyframes li-gira{to{transform:rotate(360deg)}}@keyframes li-enche{to{width:96%}}@keyframes li-pulsa{50%{transform:scale(1.04)}}'
+      + '@media (prefers-reduced-motion:reduce){.li-anel,.li-pulsa{animation:none}.li-barra-prog i{animation:none;width:60%}}'
       + '.li-fatos{display:flex;justify-content:space-around;gap:8px;border-top:1px solid #ECE8F5;padding-top:14px;color:#5D5A6B;font-size:13px;text-align:center}.li-fatos b{display:block;color:#1A1630;font-size:15px}';
     document.head.appendChild(s);
     tela = document.createElement('div');
@@ -118,12 +125,13 @@
         if (navigator.clipboard) navigator.clipboard.writeText(url).then(ok, function () { b.textContent = url; }); else b.textContent = url;
         return;
       }
-      if (e.target.closest('[data-usar]')) { tela.remove(); tela = null; document.documentElement.style.overflow = ''; return; }
+      if (e.target.closest('[data-usar]')) { try { localStorage.setItem('li-sem-instalar', String(Date.now())); } catch (x) {} tela.remove(); tela = null; document.documentElement.style.overflow = ''; return; }
       if (e.target.closest('[data-instalar]')) {
         if (pedido) return pedirInstalacao();
         // O navegador ainda não liberou o botão: espera um pouco; só mostra o passo a passo se ele não liberar.
         desenhar('esperando');
-        setTimeout(function () { if (tela && estado === 'esperando') desenhar('passos'); }, 35000);
+        // Só se o navegador não liberar em 1 minuto (já instalado ou navegador sem instalação): mostra o outro jeito.
+        setTimeout(function () { if (tela && estado === 'esperando') desenhar('passos'); }, 60000);
       }
     });
     document.documentElement.style.overflow = 'hidden';
