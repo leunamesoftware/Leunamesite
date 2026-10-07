@@ -34,6 +34,7 @@
   var ios = /iPhone|iPad|iPod/i.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1);
   var celular = ios || /Android|Mobile/i.test(ua);
   var firefox = /Firefox\//.test(ua);
+  var samsung = /SamsungBrowser/i.test(ua); // navegador "Internet" da Samsung: instala pelo menu, sem botão automático
   var onde = celular ? 'na tela do seu celular' : 'na área de trabalho do seu computador';
 
   // Link que pede ao Android para abrir este endereço no Chrome de verdade (a janelinha não instala apps).
@@ -44,6 +45,7 @@
   function passos() {
     if (ios) return '<li>Toque em <b>Compartilhar</b> (o quadrado com a seta, embaixo ou em cima da tela).</li><li>Desça e toque em <b>Adicionar à Tela de Início</b>.</li><li>Toque em <b>Adicionar</b>.</li>';
     if (firefox && !celular) return '<li>Este navegador não instala apps. Abra este mesmo endereço no <b>Google Chrome</b> ou no <b>Microsoft Edge</b>.</li>';
+    if (samsung) return '<li>Toque nos <b>⋮</b> (ou <b>≡</b>) lá embaixo, no canto direito.</li><li>Toque em <b>Adicionar página a</b>.</li><li>Toque em <b>Tela inicial</b> e em <b>Adicionar</b>.</li>';
     if (celular) return '<li>Toque nos <b>⋮</b> do navegador (canto de cima).</li><li>Toque em <b>Instalar app</b> ou <b>Adicionar à tela inicial</b>.</li><li>Confirme em <b>Instalar</b>.</li>';
     return '<li>Clique no ícone de instalar <b>⊕</b> no fim da barra de endereço.</li><li>Ou abra o menu <b>⋮</b> → <b>Transmitir, salvar e compartilhar</b> → <b>Instalar ' + nome + '</b>.</li><li>Confirme em <b>Instalar</b>.</li>';
   }
@@ -127,7 +129,7 @@
     });
     document.documentElement.style.overflow = 'hidden';
     (document.body || document.documentElement).appendChild(tela);
-    desenhar(janelinha && !ios ? 'janelinha' : ios || (firefox && !celular) ? 'passos' : 'botao'); // no Chrome/Edge/Samsung: sempre o botão Instalar primeiro
+    desenhar(janelinha && !ios ? 'janelinha' : ios || samsung || (firefox && !celular) ? 'passos' : 'botao'); // no Chrome/Edge/Samsung: sempre o botão Instalar primeiro
   }
   // Abre na hora (cobre o app antes do login aparecer).
   if (document.body) abrir(); else addEventListener('DOMContentLoaded', abrir);
