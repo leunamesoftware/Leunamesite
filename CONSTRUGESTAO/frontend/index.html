@@ -1565,6 +1565,37 @@ table.dtable tbody tr:hover{ background:var(--bg-surface-alt); }
    que a gente não tenha pego acima, a página nunca fica com barra de
    rolagem lateral (que é o que fazia o app parecer "quebrado"). */
 html, body{ overflow-x:hidden; max-width:100%; }
+  .table-footer .pagination{display:none!important}
+
+/* Calculadoras e WhatsApp */
+.calc-layout{ display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:16px; align-items:start; }
+@media (max-width:900px){ .calc-layout{ grid-template-columns:1fr; } }
+.calc-card{ padding:18px; }
+.calc-grade{ display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:12px; }
+.calc-grade--3{ grid-template-columns:repeat(3,1fr); }
+.calc-larga{ grid-column:1 / -1; }
+@media (max-width:520px){ .calc-grade{ grid-template-columns:1fr; } .calc-grade--3{ grid-template-columns:1fr 1fr; } }
+.calc-nota{ font-size:12.5px; color:var(--text-secondary); margin:10px 0 0; line-height:1.45; }
+.calc-falta{ color:var(--red-500,#dc2626); font-size:12px; }
+.calc-num{ text-align:right; white-space:nowrap; }
+.calc-destaque{ display:grid; gap:2px; padding:14px 16px; border-radius:12px; background:linear-gradient(135deg,var(--orange-600,#ea580c),var(--orange-500,#f97316)); color:#fff; margin-bottom:12px; }
+.calc-destaque span{ font-size:12px; font-weight:700; opacity:.9; text-transform:uppercase; letter-spacing:.04em; }
+.calc-destaque b{ font-size:26px; line-height:1.15; }
+.calc-destaque small{ font-size:12.5px; opacity:.92; }
+.calc-destaque--claro{ background:var(--bg-app,#f4f5f7); color:var(--text-primary); }
+.calc-dois{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.calc-dois .calc-destaque{ margin-bottom:0; }
+.calc-caixa{ border:1px solid var(--border-subtle); border-radius:12px; padding:8px 14px; margin-top:12px; }
+.calc-linha{ display:flex; justify-content:space-between; gap:12px; padding:6px 0; font-size:13.5px; }
+.calc-linha.forte{ font-weight:800; font-size:14.5px; border-top:1px solid var(--border-subtle); margin-top:4px; padding-top:9px; }
+.calc-vazio{ text-align:center; padding:28px 12px; color:var(--text-secondary); }
+.calc-vazio .icon{ width:34px; height:34px; display:inline-block; color:var(--orange-500,#f97316); }
+.calc-vazio h4{ margin:8px 0 4px; color:var(--text-primary); }
+.calc-vazio p{ margin:0; font-size:13px; }
+.calc-abas{ display:flex; gap:22px; border-bottom:1px solid var(--border-subtle); margin-bottom:14px; overflow-x:auto; }
+#calcResultado table.dtable{ min-width:0; }
+#calcResultado table.dtable th, #calcResultado table.dtable td{ padding-left:8px; padding-right:8px; }
+#calcResultado .dtable td small{ color:var(--text-secondary); }
 </style>
 </head>
 <body>
@@ -1725,6 +1756,11 @@ html, body{ overflow-x:hidden; max-width:100%; }
     <button class="navitem" type="button" data-view="Orçamentos">
       <span class="icon"><svg><use href="#i-file"/></svg></span>
       Orçamentos
+      <span class="icon navitem__chev"><svg><use href="#i-chevron-right"/></svg></span>
+    </button>
+    <button class="navitem" type="button" data-view="Calculadoras">
+      <span class="icon"><svg><use href="#i-ruler"/></svg></span>
+      Calculadoras
       <span class="icon navitem__chev"><svg><use href="#i-chevron-right"/></svg></span>
     </button>
     <button class="navitem" type="button" data-view="Compras">
@@ -2047,7 +2083,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
               <span class="kpi-card__label">Total de produtos</span>
             </div>
             <p class="kpi-card__value" id="kpiProdTotal">248</p>
-            <p class="kpi-card__delta up"><span class="icon"><svg><use href="#i-trending-up"/></svg></span>+12% <span>este mês</span></p>
+            <p class="kpi-card__delta"><span>produtos</span></p>
           </div>
           <div class="kpi-card">
             <div class="kpi-card__top">
@@ -2055,7 +2091,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
               <span class="kpi-card__label">Em estoque</span>
             </div>
             <p class="kpi-card__value" id="kpiProdEmEstoque">198</p>
-            <p class="kpi-card__delta up"><span class="icon"><svg><use href="#i-trending-up"/></svg></span>+8% <span>este mês</span></p>
+            <p class="kpi-card__delta"><span>produtos</span></p>
           </div>
           <div class="kpi-card">
             <div class="kpi-card__top">
@@ -2063,7 +2099,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
               <span class="kpi-card__label">Estoque baixo</span>
             </div>
             <p class="kpi-card__value" id="kpiProdBaixo">32</p>
-            <p class="kpi-card__delta warn"><span class="icon"><svg><use href="#i-trending-up"/></svg></span>+6% <span>este mês</span></p>
+            <p class="kpi-card__delta"><span>produtos</span></p>
           </div>
           <div class="kpi-card">
             <div class="kpi-card__top">
@@ -2071,7 +2107,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
               <span class="kpi-card__label">Sem estoque</span>
             </div>
             <p class="kpi-card__value" id="kpiProdSemEstoque">18</p>
-            <p class="kpi-card__delta danger"><span class="icon"><svg><use href="#i-trending-up"/></svg></span>+2% <span>este mês</span></p>
+            <p class="kpi-card__delta"><span>produtos</span></p>
           </div>
         </section>
 
@@ -2552,7 +2588,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
               <span class="kpi-card__label">Entradas (30 dias)</span>
             </div>
             <p class="kpi-card__value" id="kpiEstEntradas30">320</p>
-            <div class="kpi-card__foot"><span class="kpi-card__unit">produtos</span><span class="kpi-card__foot-delta up"><span class="icon"><svg><use href="#i-arrow-up"/></svg></span>+12%</span></div>
+            <div class="kpi-card__foot"><span class="kpi-card__unit">produtos</span></div>
           </div>
           <div class="kpi-card">
             <div class="kpi-card__top">
@@ -2560,7 +2596,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
               <span class="kpi-card__label">Saídas (30 dias)</span>
             </div>
             <p class="kpi-card__value" id="kpiEstSaidas30">276</p>
-            <div class="kpi-card__foot"><span class="kpi-card__unit">produtos</span><span class="kpi-card__foot-delta down"><span class="icon"><svg><use href="#i-arrow-up"/></svg></span>+8%</span></div>
+            <div class="kpi-card__foot"><span class="kpi-card__unit">produtos</span></div>
           </div>
           <div class="kpi-card">
             <div class="kpi-card__top">
@@ -3219,14 +3255,14 @@ html, body{ overflow-x:hidden; max-width:100%; }
           <div class="filter-field">
             <label for="dataInicialVenda">Data inicial</label>
             <div class="date-field">
-              <input type="text" id="dataInicialVenda" value="01/09/2026">
+              <input type="text" id="dataInicialVenda" value="" placeholder="dd/mm/aaaa" inputmode="numeric">
               <span class="icon"><svg><use href="#i-calendar"/></svg></span>
             </div>
           </div>
           <div class="filter-field">
             <label for="dataFinalVenda">Data final</label>
             <div class="date-field">
-              <input type="text" id="dataFinalVenda" value="30/09/2026">
+              <input type="text" id="dataFinalVenda" value="" placeholder="dd/mm/aaaa" inputmode="numeric">
               <span class="icon"><svg><use href="#i-calendar"/></svg></span>
             </div>
           </div>
@@ -3754,7 +3790,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
             <span class="info-card__icon"><span class="icon" style="width:18px;height:18px;"><svg><use href="#i-alert-triangle"/></svg></span></span>
             <div>
               <h4>Atenção!</h4>
-              <p><strong>12 produtos</strong> estão com estoque abaixo do nível mínimo. Reponha o quanto antes para evitar a falta de produtos na sua loja.</p>
+              <p><strong id="avisoCriticos">Alguns produtos</strong> estão com estoque abaixo do nível mínimo. Reponha o quanto antes para evitar a falta de produtos na sua loja.</p>
             </div>
           </div>
           <div class="info-card info-card--warning">
@@ -3855,14 +3891,14 @@ html, body{ overflow-x:hidden; max-width:100%; }
           <div class="filter-field">
             <label for="dataInicialOrcamento">Data inicial</label>
             <div class="date-field">
-              <input type="text" id="dataInicialOrcamento" value="01/09/2026">
+              <input type="text" id="dataInicialOrcamento" value="" placeholder="dd/mm/aaaa" inputmode="numeric">
               <span class="icon"><svg><use href="#i-calendar"/></svg></span>
             </div>
           </div>
           <div class="filter-field">
             <label for="dataFinalOrcamento">Data final</label>
             <div class="date-field">
-              <input type="text" id="dataFinalOrcamento" value="30/09/2026">
+              <input type="text" id="dataFinalOrcamento" value="" placeholder="dd/mm/aaaa" inputmode="numeric">
               <span class="icon"><svg><use href="#i-calendar"/></svg></span>
             </div>
           </div>
@@ -4149,7 +4185,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
               <span class="kpi-card__label">Novos este mês</span>
             </div>
             <p class="kpi-card__value" id="kpiCliNovosMes">28</p>
-            <div class="kpi-card__foot"><span class="kpi-card__unit">+12% em relação ao mês anterior</span></div>
+            <div class="kpi-card__foot"><span class="kpi-card__unit">clientes</span></div>
           </div>
           <div class="kpi-card">
             <div class="kpi-card__top">
@@ -5180,7 +5216,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
               <span class="kpi-card__label">Faturamento total</span>
             </div>
             <p class="kpi-card__value" id="kpiHistFaturamento">R$ 284.560,90</p>
-            <div class="kpi-card__foot"><span class="kpi-card__foot-delta up"><span class="icon"><svg><use href="#i-trending-up"/></svg></span>+12% <span>em relação ao período anterior</span></span></div>
+            <div class="kpi-card__foot"><span class="kpi-card__unit">no período</span></div>
           </div>
           <div class="kpi-card">
             <div class="kpi-card__top">
@@ -5213,14 +5249,14 @@ html, body{ overflow-x:hidden; max-width:100%; }
           <div class="filter-field">
             <label for="dataInicialHistorico">Data inicial</label>
             <div class="date-field">
-              <input type="text" id="dataInicialHistorico" value="01/09/2026">
+              <input type="text" id="dataInicialHistorico" value="" placeholder="dd/mm/aaaa" inputmode="numeric">
               <span class="icon"><svg><use href="#i-calendar"/></svg></span>
             </div>
           </div>
           <div class="filter-field">
             <label for="dataFinalHistorico">Data final</label>
             <div class="date-field">
-              <input type="text" id="dataFinalHistorico" value="30/09/2026">
+              <input type="text" id="dataFinalHistorico" value="" placeholder="dd/mm/aaaa" inputmode="numeric">
               <span class="icon"><svg><use href="#i-calendar"/></svg></span>
             </div>
           </div>
@@ -5881,7 +5917,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
               <span class="kpi-card__label">Valor total</span>
             </div>
             <p class="kpi-card__value" id="kpiCompValorTotal">R$ 284.560,90</p>
-            <div class="kpi-card__foot"><span class="kpi-card__foot-delta up"><span class="icon"><svg><use href="#i-trending-up"/></svg></span>+12% <span>em relação ao período anterior</span></span></div>
+            <div class="kpi-card__foot"><span class="kpi-card__unit">no período</span></div>
           </div>
           <div class="kpi-card">
             <div class="kpi-card__top">
@@ -5914,14 +5950,14 @@ html, body{ overflow-x:hidden; max-width:100%; }
           <div class="filter-field">
             <label for="dataInicialCompra">Data inicial</label>
             <div class="date-field">
-              <input type="text" id="dataInicialCompra" value="01/09/2026">
+              <input type="text" id="dataInicialCompra" value="" placeholder="dd/mm/aaaa" inputmode="numeric">
               <span class="icon"><svg><use href="#i-calendar"/></svg></span>
             </div>
           </div>
           <div class="filter-field">
             <label for="dataFinalCompra">Data final</label>
             <div class="date-field">
-              <input type="text" id="dataFinalCompra" value="30/09/2026">
+              <input type="text" id="dataFinalCompra" value="" placeholder="dd/mm/aaaa" inputmode="numeric">
               <span class="icon"><svg><use href="#i-calendar"/></svg></span>
             </div>
           </div>
@@ -6269,14 +6305,14 @@ html, body{ overflow-x:hidden; max-width:100%; }
           <div class="filter-field">
             <label for="dataInicialRecebimento">Data inicial</label>
             <div class="date-field">
-              <input type="text" id="dataInicialRecebimento" value="01/09/2026">
+              <input type="text" id="dataInicialRecebimento" value="" placeholder="dd/mm/aaaa" inputmode="numeric">
               <span class="icon"><svg><use href="#i-calendar"/></svg></span>
             </div>
           </div>
           <div class="filter-field">
             <label for="dataFinalRecebimento">Data final</label>
             <div class="date-field">
-              <input type="text" id="dataFinalRecebimento" value="30/09/2026">
+              <input type="text" id="dataFinalRecebimento" value="" placeholder="dd/mm/aaaa" inputmode="numeric">
               <span class="icon"><svg><use href="#i-calendar"/></svg></span>
             </div>
           </div>
@@ -6620,14 +6656,14 @@ html, body{ overflow-x:hidden; max-width:100%; }
           <div class="filter-field">
             <label for="dataInicialEntrega">Data inicial</label>
             <div class="date-field">
-              <input type="text" id="dataInicialEntrega" value="01/09/2026">
+              <input type="text" id="dataInicialEntrega" value="" placeholder="dd/mm/aaaa" inputmode="numeric">
               <span class="icon"><svg><use href="#i-calendar"/></svg></span>
             </div>
           </div>
           <div class="filter-field">
             <label for="dataFinalEntrega">Data final</label>
             <div class="date-field">
-              <input type="text" id="dataFinalEntrega" value="30/09/2026">
+              <input type="text" id="dataFinalEntrega" value="" placeholder="dd/mm/aaaa" inputmode="numeric">
               <span class="icon"><svg><use href="#i-calendar"/></svg></span>
             </div>
           </div>
@@ -6916,268 +6952,57 @@ html, body{ overflow-x:hidden; max-width:100%; }
       </div>
 
       <!-- ================= VIEW: WHATSAPP ================= -->
+      <div id="view-calculadoras" class="view" hidden>
+        <div class="page-head">
+          <div>
+            <h1>Calculadoras</h1>
+            <p>Quanto material a obra precisa, o preço certo de venda e as parcelas no cartão.</p>
+          </div>
+        </div>
+        <nav class="calc-abas">
+          <button class="wa-tab is-active" type="button" data-calc-aba="material">🧱 Material da obra</button>
+          <button class="wa-tab" type="button" data-calc-aba="preco">💰 Preço de venda</button>
+          <button class="wa-tab" type="button" data-calc-aba="parcelas">💳 Parcelas</button>
+          <button class="wa-tab" type="button" data-calc-aba="taxas">⚙️ Taxas da maquininha</button>
+        </nav>
+        <div class="calc-layout">
+          <div class="card calc-card" id="calcForm"></div>
+          <div class="card calc-card" id="calcResultadoBox"><div id="calcResultado"></div></div>
+        </div>
+      </div>
+
       <div id="view-whatsapp" class="view" hidden>
         <div class="page-head">
           <div>
             <h1>WhatsApp</h1>
-            <p>Atenda seus clientes, envie orçamentos, acompanhe pedidos e muito mais, tudo em um só lugar.</p>
-          </div>
-          <div class="page-head__actions">
-            <nav class="breadcrumb">
-              <a data-nav-target="Dashboard">Dashboard</a>
-              <span class="icon"><svg><use href="#i-chevron-right"/></svg></span>
-              <span class="breadcrumb__current">WhatsApp</span>
-            </nav>
-            <div class="wa-status-row">
-              <span class="wa-status-connected"><span class="dot"></span>Conectado</span>
-              <span class="wa-status-label">WhatsApp Business</span>
-              <button class="iconbtn" type="button" id="waConfigBtn" title="Configurações"><span class="icon"><svg><use href="#i-gear"/></svg></span></button>
-              <button class="iconbtn" type="button" id="waMoreBtn" title="Mais opções"><span class="icon"><svg><use href="#i-more-vert"/></svg></span></button>
-            </div>
+            <p>Mensagens prontas para os seus clientes. O WhatsApp abre com o texto e você confere antes de enviar.</p>
           </div>
         </div>
-
-        <!-- KPIs -->
-        <section class="kpi-grid kpi-grid--5">
-          <div class="kpi-card">
-            <div class="kpi-card__top">
-              <span class="kpi-card__icon green"><span class="icon"><svg><use href="#i-chat"/></svg></span></span>
-              <span class="kpi-card__label">Conversas</span>
+        <div class="calc-layout">
+          <div class="card calc-card">
+            <div class="calc-grade">
+              <div class="field calc-larga"><label for="waCliente">Cliente</label><select id="waCliente"><option value="">Digitar o número</option></select></div>
+              <div class="field calc-larga"><label for="waNumero">Número com DDD</label><input id="waNumero" inputmode="tel" placeholder="(11) 91234-5678"></div>
+              <div class="field calc-larga"><label for="waModelo">Mensagem</label><select id="waModelo">
+                <option value="orcamento">Orçamento pronto</option>
+                <option value="pronto">Pedido separado para retirar</option>
+                <option value="entrega">Entrega a caminho</option>
+                <option value="chegou">Chegou o que o cliente pediu</option>
+                <option value="obrigado">Obrigado pela compra</option>
+                <option value="pagamento">Lembrete de pagamento</option>
+              </select></div>
+              <div class="field calc-larga"><label for="waTexto">Texto (pode mudar)</label><textarea id="waTexto" rows="5"></textarea></div>
             </div>
-            <p class="kpi-card__value">128</p>
-            <div class="kpi-card__foot"><span class="kpi-card__unit">neste mês</span></div>
+            <button class="btn btn--primary" type="button" id="waAbrir" style="margin-top:14px;width:100%;justify-content:center;">Abrir no WhatsApp</button>
           </div>
-          <div class="kpi-card">
-            <div class="kpi-card__top">
-              <span class="kpi-card__icon blue"><span class="icon"><svg><use href="#i-users"/></svg></span></span>
-              <span class="kpi-card__label">Clientes atendidos</span>
-            </div>
-            <p class="kpi-card__value">96</p>
-            <div class="kpi-card__foot"><span class="kpi-card__foot-delta up"><span class="icon"><svg><use href="#i-trending-up"/></svg></span>+12% <span>em relação ao mês anterior</span></span></div>
+          <div class="card calc-card">
+            <h4 style="margin:0 0 8px;">Como funciona</h4>
+            <p class="calc-nota" style="margin:0 0 8px;">Escolha o cliente (o telefone vem do cadastro) e a mensagem. O nome do cliente e o da sua loja já entram no texto.</p>
+            <p class="calc-nota" style="margin:0;">O ConstruGestão não lê as suas conversas e não manda nada sozinho: quem envia é você, pelo seu WhatsApp.</p>
           </div>
-          <div class="kpi-card">
-            <div class="kpi-card__top">
-              <span class="kpi-card__icon orange"><span class="icon"><svg><use href="#i-send"/></svg></span></span>
-              <span class="kpi-card__label">Mensagens enviadas</span>
-            </div>
-            <p class="kpi-card__value">842</p>
-            <div class="kpi-card__foot"><span class="kpi-card__unit">neste mês</span></div>
-          </div>
-          <div class="kpi-card">
-            <div class="kpi-card__top">
-              <span class="kpi-card__icon purple"><span class="icon"><svg><use href="#i-clock"/></svg></span></span>
-              <span class="kpi-card__label">Tempo médio de resposta</span>
-            </div>
-            <p class="kpi-card__value">3 min</p>
-            <div class="kpi-card__foot"><span class="kpi-card__unit">excelente</span></div>
-          </div>
-          <div class="kpi-card">
-            <div class="kpi-card__top">
-              <span class="kpi-card__icon" style="background:linear-gradient(135deg,#e5484d,#ef7478);"><span class="icon"><svg><use href="#i-star"/></svg></span></span>
-              <span class="kpi-card__label">Avaliação dos clientes</span>
-            </div>
-            <p class="kpi-card__value">4,8</p>
-            <div class="kpi-card__foot">
-              <span class="kpi-card__stars">
-                <span class="icon"><svg><use href="#i-star"/></svg></span><span class="icon"><svg><use href="#i-star"/></svg></span><span class="icon"><svg><use href="#i-star"/></svg></span><span class="icon"><svg><use href="#i-star"/></svg></span><span class="icon"><svg><use href="#i-star"/></svg></span>
-              </span>
-            </div>
-          </div>
-        </section>
-
-        <!-- Abas -->
-        <nav class="wa-tabs">
-          <button class="wa-tab is-active" type="button" id="waTabConversas">Conversas</button>
-          <button class="wa-tab" type="button">Mensagens Rápidas</button>
-          <button class="wa-tab" type="button">Modelos</button>
-          <button class="wa-tab" type="button">Campanhas</button>
-          <button class="wa-tab" type="button">Configurações</button>
-        </nav>
-
-        <!-- Layout de 3 colunas -->
-        <div class="wa-layout">
-          <!-- Lista de conversas -->
-          <div class="wa-panel wa-panel--conversations">
-            <div class="wa-conv-search">
-              <div class="filter-search">
-                <span class="icon"><svg><use href="#i-search"/></svg></span>
-                <input type="text" id="waConvSearchInput" placeholder="Pesquisar conversas...">
-              </div>
-              <button class="iconbtn" type="button" title="Filtrar"><span class="icon"><svg><use href="#i-filter"/></svg></span></button>
-            </div>
-            <div class="wa-conv-filters">
-              <button class="wa-filter-chip is-active" type="button">Todas (128)</button>
-              <button class="wa-filter-chip" type="button">Não lidas (5)</button>
-              <button class="wa-filter-chip" type="button">Aguardando (12)</button>
-              <button class="wa-filter-chip" type="button">Resolvidas</button>
-            </div>
-            <div class="wa-conv-items" id="waConvItems">
-              <div class="wa-conv-item is-active">
-                <span class="customer-avatar" style="background:#3b6fe0;">JS</span>
-                <span class="wa-conv-item__body">
-                  <span class="wa-conv-item__top"><span class="wa-conv-item__name">João da Silva</span><span class="wa-conv-item__time">10:24</span></span>
-                  <span class="wa-conv-item__msg">Olá, vocês têm essa peça em estoque?</span>
-                  <span class="wa-conv-item__foot"><span class="wa-unread-badge">2</span></span>
-                </span>
-              </div>
-              <div class="wa-conv-item">
-                <span class="customer-avatar" style="background:#d9a520;">MO</span>
-                <span class="wa-conv-item__body">
-                  <span class="wa-conv-item__top"><span class="wa-conv-item__name">Maria Oliveira</span><span class="wa-conv-item__time">09:50</span></span>
-                  <span class="wa-conv-item__msg">Qual o valor da tela do iPhone 11?</span>
-                  <span class="wa-conv-item__foot"><span class="wa-unread-badge">1</span></span>
-                </span>
-              </div>
-              <div class="wa-conv-item">
-                <span class="customer-avatar" style="background:#e0813f;">AC</span>
-                <span class="wa-conv-item__body">
-                  <span class="wa-conv-item__top"><span class="wa-conv-item__name">Ana Costa</span><span class="wa-conv-item__time">09:18</span></span>
-                  <span class="wa-conv-item__msg">Obrigado pelo atendimento!</span>
-                </span>
-              </div>
-              <div class="wa-conv-item">
-                <span class="customer-avatar" style="background:#1c8a7d;">CL</span>
-                <span class="wa-conv-item__body">
-                  <span class="wa-conv-item__top"><span class="wa-conv-item__name">Construmais LTDA</span><span class="wa-conv-item__time">Ontem</span></span>
-                  <span class="wa-conv-item__msg">Pode enviar o orçamento por favor?</span>
-                </span>
-              </div>
-              <div class="wa-conv-item">
-                <span class="customer-avatar" style="background:#6a49b8;">PS</span>
-                <span class="wa-conv-item__body">
-                  <span class="wa-conv-item__top"><span class="wa-conv-item__name">Pedro Santos</span><span class="wa-conv-item__time">Ontem</span></span>
-                  <span class="wa-conv-item__msg">Quando chega meu pedido?</span>
-                </span>
-              </div>
-              <div class="wa-conv-item">
-                <span class="customer-avatar" style="background:#7c4fd9;">RF</span>
-                <span class="wa-conv-item__body">
-                  <span class="wa-conv-item__top"><span class="wa-conv-item__name">Reforma Fácil</span><span class="wa-conv-item__time">18/09</span></span>
-                  <span class="wa-conv-item__msg">Tem previsão de entrega?</span>
-                </span>
-              </div>
-              <div class="wa-conv-item">
-                <span class="customer-avatar" style="background:#c4941c;">CA</span>
-                <span class="wa-conv-item__body">
-                  <span class="wa-conv-item__top"><span class="wa-conv-item__name">Carlos Almeida</span><span class="wa-conv-item__time">18/09</span></span>
-                  <span class="wa-conv-item__msg">Vocês fazem instalação?</span>
-                </span>
-              </div>
-              <div class="wa-conv-item">
-                <span class="customer-avatar" style="background:#e0527a;">LF</span>
-                <span class="wa-conv-item__body">
-                  <span class="wa-conv-item__top"><span class="wa-conv-item__name">Luciana Ferreira</span><span class="wa-conv-item__time">17/09</span></span>
-                  <span class="wa-conv-item__msg">Perfeito, muito obrigado!</span>
-                </span>
-              </div>
-              <div class="wa-conv-item">
-                <span class="customer-avatar" style="background:#2c3a5c;">MC</span>
-                <span class="wa-conv-item__body">
-                  <span class="wa-conv-item__top"><span class="wa-conv-item__name">Mega Construções</span><span class="wa-conv-item__time">17/09</span></span>
-                  <span class="wa-conv-item__msg">Aguardando retorno.</span>
-                </span>
-              </div>
-              <div class="wa-conv-item">
-                <span class="customer-avatar" style="background:#2e8fd6;">SR</span>
-                <span class="wa-conv-item__body">
-                  <span class="wa-conv-item__top"><span class="wa-conv-item__name">Sérgio Rocha</span><span class="wa-conv-item__time">16/09</span></span>
-                  <span class="wa-conv-item__msg">Vocês aceitam PIX?</span>
-                </span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Janela de chat -->
-          <div class="wa-panel wa-panel--chat">
-            <div class="wa-chat-header">
-              <span class="customer-avatar" style="background:#3b6fe0;">JS</span>
-              <span class="wa-chat-header__meta">
-                <span class="wa-chat-header__name">João da Silva <span class="badge badge--blue">Cliente</span></span>
-                <span class="wa-chat-header__phone">+55 11 91234-5678</span>
-              </span>
-              <span class="wa-chat-header__actions">
-                <button class="iconbtn" type="button" title="Etiquetas"><span class="icon"><svg><use href="#i-tag"/></svg></span></button>
-                <button class="iconbtn" type="button" title="Histórico"><span class="icon"><svg><use href="#i-clock"/></svg></span></button>
-                <button class="iconbtn" type="button" title="Mais opções"><span class="icon"><svg><use href="#i-more-vert"/></svg></span></button>
-              </span>
-            </div>
-            <div class="wa-chat-body">
-              <span class="wa-date-divider">Hoje</span>
-              <button class="wa-suggest-chip" type="button" id="waVerDadosBtn"><span class="icon"><svg><use href="#i-users"/></svg></span>Ver dados do cliente</button>
-              <div class="wa-msg wa-msg--in">Olá, boa tarde! 👋<span class="wa-msg__time">10:21</span></div>
-              <div class="wa-msg wa-msg--in">Vocês têm essa peça em estoque?<span class="wa-msg__time">10:21</span></div>
-              <div class="wa-msg wa-msg--out">Olá, João! Boa tarde! 😊<span class="wa-msg__time">10:22<span class="icon"><svg><use href="#i-check-double"/></svg></span></span></div>
-              <div class="wa-msg wa-msg--out">Qual peça você precisa? Assim já verifico no nosso estoque para você.<span class="wa-msg__time">10:22<span class="icon"><svg><use href="#i-check-double"/></svg></span></span></div>
-              <div class="wa-msg wa-msg--in">É a tela do iPhone 11 original.<span class="wa-msg__time">10:23</span></div>
-              <div class="wa-msg wa-msg--in">Qual o valor e o prazo de entrega?<span class="wa-msg__time">10:23</span></div>
-              <div class="wa-msg wa-msg--out">Temos sim! ✅<br>Valor: R$ 450,00<br>Prazo de entrega: 1 a 2 dias úteis.<br>Posso reservar para você?<span class="wa-msg__time">10:24<span class="icon"><svg><use href="#i-check-double"/></svg></span></span></div>
-            </div>
-            <div class="wa-chat-input">
-              <button class="wa-icon-plain" type="button" title="Emoji"><span class="icon"><svg><use href="#i-emoji"/></svg></span></button>
-              <input type="text" id="waMessageInput" placeholder="Digite uma mensagem...">
-              <button class="wa-icon-plain" type="button" title="Anexar"><span class="icon"><svg><use href="#i-paperclip"/></svg></span></button>
-              <button class="wa-icon-plain" type="button" title="Câmera"><span class="icon"><svg><use href="#i-camera"/></svg></span></button>
-              <button class="wa-send-btn" type="button" id="waSendBtn" title="Enviar"><span class="icon"><svg><use href="#i-send"/></svg></span></button>
-            </div>
-          </div>
-
-          <!-- Informações do cliente -->
-          <div class="wa-panel wa-panel--info">
-            <div class="wa-info-header">
-              <h3>Informações do Cliente</h3>
-              <button class="iconbtn" type="button" id="waCloseInfoBtn" title="Fechar"><span class="icon" style="width:16px;height:16px;"><svg><use href="#i-x"/></svg></span></button>
-            </div>
-            <div class="wa-info-body">
-              <div class="wa-info-profile">
-                <span class="customer-avatar" style="background:#3b6fe0; width:40px; height:40px; font-size:13px;">JS</span>
-                <span><span class="customer-name" style="display:block;">João da Silva</span><span class="badge badge--blue">Cliente</span></span>
-              </div>
-              <div class="wa-info-contact"><span class="icon"><svg><use href="#i-truck"/></svg></span>+55 11 91234-5678</div>
-              <div class="wa-info-contact"><span class="icon"><svg><use href="#i-file"/></svg></span>joao@email.com</div>
-              <div class="wa-info-contact"><span class="icon"><svg><use href="#i-map-pin"/></svg></span>São Paulo - SP</div>
-              <div class="wa-info-contact"><span class="icon"><svg><use href="#i-calendar"/></svg></span>Cliente desde 12/03/2024</div>
-
-              <div class="wa-info-section-title">Últimos Pedidos <a id="waVerTodosPedidosBtn">Ver todos</a></div>
-              <div class="wa-order-row">
-                <span><span class="wa-order-row__id">#0001258</span><span class="wa-order-row__date">20/09/2026</span></span>
-                <span><span class="price-cell">R$ 350,00</span><br><span class="badge badge--green">Entregue</span></span>
-              </div>
-              <div class="wa-order-row">
-                <span><span class="wa-order-row__id">#0001189</span><span class="wa-order-row__date">05/09/2026</span></span>
-                <span><span class="price-cell">R$ 120,00</span><br><span class="badge badge--green">Entregue</span></span>
-              </div>
-              <div class="wa-order-row">
-                <span><span class="wa-order-row__id">#0001120</span><span class="wa-order-row__date">12/08/2026</span></span>
-                <span><span class="price-cell">R$ 890,00</span><br><span class="badge badge--red">Cancelado</span></span>
-              </div>
-
-              <div class="wa-info-section-title">Observações <span class="icon" style="width:14px;height:14px;color:var(--text-tertiary);cursor:pointer;" id="waEditNotesBtn"><svg><use href="#i-pencil"/></svg></span></div>
-              <div class="wa-notes-box">Cliente prefere contato via WhatsApp. Sempre pergunta sobre promoções. Cliente VIP.</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Cards de promoção -->
-        <div class="wa-promo-grid">
-          <button class="wa-promo-card wa-promo-card--green" type="button" id="waCampanhasBtn">
-            <span class="wa-promo-card__icon"><span class="icon" style="width:20px;height:20px;"><svg><use href="#i-megaphone"/></svg></span></span>
-            <span><h4>Envio de campanhas</h4><p>Divulgue promoções e novidades para seus clientes.</p></span>
-            <span class="icon wa-promo-card__arrow"><svg><use href="#i-chevron-right"/></svg></span>
-          </button>
-          <button class="wa-promo-card wa-promo-card--amber" type="button" id="waAtendimentoBtn">
-            <span class="wa-promo-card__icon"><span class="icon" style="width:20px;height:20px;"><svg><use href="#i-bolt"/></svg></span></span>
-            <span><h4>Atendimento mais rápido</h4><p>Use mensagens rápidas e modelos para agilizar o atendimento.</p></span>
-            <span class="icon wa-promo-card__arrow"><svg><use href="#i-chevron-right"/></svg></span>
-          </button>
-          <button class="wa-promo-card wa-promo-card--blue" type="button" id="waVendasBtn">
-            <span class="wa-promo-card__icon"><span class="icon" style="width:20px;height:20px;"><svg><use href="#i-bars"/></svg></span></span>
-            <span><h4>Mais vendas</h4><p>Mantenha um relacionamento próximo e aumente suas vendas.</p></span>
-            <span class="icon wa-promo-card__arrow"><svg><use href="#i-chevron-right"/></svg></span>
-          </button>
         </div>
       </div>
 
-      <!-- ================= VIEW: NOTIFICAÇÕES ================= -->
       <div id="view-notificacoes" class="view" hidden>
         <div class="page-head">
           <div>
@@ -8419,6 +8244,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
     'Precisa Comprar': document.getElementById('view-precisacomprar'),
     'Vendas': document.getElementById('view-vendas'),
     'Orçamentos': document.getElementById('view-orcamentos'),
+    'Calculadoras': document.getElementById('view-calculadoras'),
     'Clientes': document.getElementById('view-clientes'),
     'Cliente Pediu e Não Tem': document.getElementById('view-demandaclientes'),
     'Central de Demandas': document.getElementById('view-centraldemandas'),
@@ -9015,7 +8841,9 @@ html, body{ overflow-x:hidden; max-width:100%; }
     return true;
   }
   function dataNoIntervalo(iso, inicioId, fimId) {
-    var ini = valOf(inicioId), fim = valOf(fimId);
+    // Aceita dd/mm/aaaa (como aparece na tela) ou aaaa-mm-dd.
+    var iso_ = function (v) { var m = /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/.exec(String(v || '').trim()); return m ? m[3] + '-' + ('0' + m[2]).slice(-2) + '-' + ('0' + m[1]).slice(-2) : v; };
+    var ini = iso_(valOf(inicioId)), fim = iso_(valOf(fimId));
     if (!ini && !fim) return true;
     var d = new Date(iso);
     if (isNaN(d)) return true;
@@ -10307,9 +10135,353 @@ html, body{ overflow-x:hidden; max-width:100%; }
   async function startApp() {
     document.getElementById('auth-root').innerHTML = '';
     document.querySelector('.app').style.display = '';
+    preencherCabecalho();
     wireButtons();
     await renderAll();
     syncNow().catch(function () {});
+  }
+
+
+  /* "X% do total" nos cartões de resumo: calcula com o cartão "Total ..." da mesma fileira
+     (antes eram números fixos do modelo). Roda sempre que algum número dos cartões muda. */
+  (function () {
+    var unidades = [].slice.call(document.querySelectorAll('.kpi-card__unit')).filter(function (u) { return /% do total$/.test(u.textContent.trim()); });
+    unidades.forEach(function (u) { u.setAttribute('data-pct-total', '1'); u.textContent = ''; });
+    function numero(card) { var v = card && card.querySelector('.kpi-card__value'); var t = v ? v.textContent.replace(/[^0-9,]/g, '').replace(',', '.') : ''; return t ? Number(t) : NaN; }
+    function atualizar() {
+      unidades.forEach(function (u) {
+        var card = u.closest('.kpi-card'), fileira = card && card.parentElement;
+        var total = fileira && [].slice.call(fileira.querySelectorAll('.kpi-card')).find(function (c) { var l = c.querySelector('.kpi-card__label'); return l && /^total/i.test(l.textContent.trim()); });
+        var n = numero(card), t = numero(total);
+        var txt = (isFinite(n) && isFinite(t) && t > 0) ? (Math.round(n / t * 1000) / 10).toString().replace('.', ',') + '% do total' : 'do total';
+        if (u.textContent !== txt) u.textContent = txt;
+      });
+    }
+    var espera = null;
+    new MutationObserver(function () { clearTimeout(espera); espera = setTimeout(atualizar, 60); })
+      .observe(document.body, { subtree: true, childList: true, characterData: true });
+    atualizar();
+  })();
+  /* ============================================================
+     CALCULADORAS: material da obra, preço de venda e parcelas.
+     CALC-INICIO (contas puras, testadas em scratch calc.test)
+     ============================================================ */
+  var CALC_TAXAS_PADRAO = { debito: 1.99, credito: [4.99, 6.29, 7.49, 8.69, 9.89, 10.99, 12.09, 12.99, 14.19, 15.29, 16.49, 17.59] };
+  function calcNum(v) { var n = parseFloat(String(v == null ? '' : v).replace(/\./g, function (m, i, s) { return /,/.test(s) ? '' : m; }).replace(',', '.')); return isFinite(n) && n > 0 ? n : 0; }
+  function calcCent(v) { return Math.round(v * 100) / 100; }
+  function calcUm(v) { return Math.round(v * 10) / 10; }
+  function calcNoCartao(liquido, taxaPct) { return taxaPct >= 100 ? 0 : calcCent(liquido / (1 - taxaPct / 100)); }
+  // Blocos e tijolos: medidas em cm (largura da parede, altura e comprimento da face).
+  var CALC_PECAS = {
+    bloco9: { nome: 'Bloco cerâmico 9×19×29', esp: 9, alt: 19, comp: 29, busca: ['bloco cer', 'bloco 9'] },
+    bloco14: { nome: 'Bloco cerâmico 14×19×29', esp: 14, alt: 19, comp: 29, busca: ['bloco cer', 'bloco 14'] },
+    tijolo6: { nome: 'Tijolo 6 furos 9×14×19', esp: 9, alt: 14, comp: 19, busca: ['tijolo 6', 'tijolo baiano', 'tijolo'] },
+    concreto: { nome: 'Bloco de concreto 14×19×39', esp: 14, alt: 19, comp: 39, busca: ['bloco de concreto', 'bloco concreto'] },
+    macico: { nome: 'Tijolo maciço 5×10×20 (deitado)', esp: 10, alt: 5, comp: 20, busca: ['tijolo maci', 'tijolinho'] }
+  };
+  var CALC_JUNTA = 1; // cm
+  var CALC_L_POR_SACO_ARGAMASSA = 12; // litros de argamassa por saco de 20 kg (média; confira na embalagem)
+  /** Parede: quantas peças e quanta argamassa de assentamento. */
+  function calcParede(e) {
+    var p = CALC_PECAS[e.peca] || CALC_PECAS.bloco9;
+    var area = Math.max(0, calcNum(e.comprimento) * calcNum(e.altura) - calcNum(e.aberturas));
+    var perda = calcNum(e.perdaPct) / 100;
+    var porM2 = 1 / (((p.comp + CALC_JUNTA) / 100) * ((p.alt + CALC_JUNTA) / 100));
+    var pecas = Math.ceil(area * porM2 * (1 + perda) - 1e-9);
+    // Volume das juntas por m²: fiadas (horizontal) + entre peças (vertical), na largura da parede.
+    var j = CALC_JUNTA / 100, esp = p.esp / 100;
+    var juntaM2 = esp * ((1 / ((p.alt + CALC_JUNTA) / 100)) * j + porM2 * (p.alt / 100) * j);
+    var argamassaL = area * juntaM2 * 1000 * (1 + perda);
+    return { area: calcCent(area), porM2: calcUm(porM2), pecas: pecas, peca: p, argamassaL: Math.round(argamassaL), sacosArgamassa: Math.ceil(argamassaL / CALC_L_POR_SACO_ARGAMASSA - 1e-9) };
+  }
+  /** Contrapiso: argamassa traço 1:3 (cimento e areia). Por m³: ~486 kg de cimento e 1,2 m³ de areia. */
+  function calcContrapiso(e) {
+    var area = calcNum(e.area), esp = calcNum(e.espessura) / 100, perda = calcNum(e.perdaPct) / 100;
+    var vol = area * esp * (1 + perda);
+    return { area: area, volume: Math.round(vol * 1000) / 1000, sacosCimento: Math.ceil(vol * 486 / 50 - 1e-9), areiaM3: Math.round(vol * 1.2 * 100) / 100 };
+  }
+  /** Concreto traço 1:2:3 (cimento, areia, brita). Por m³: ~7 sacos de cimento, 0,6 m³ de areia, 0,8 m³ de brita. */
+  function calcConcreto(e) {
+    var vol = calcNum(e.comprimento) * calcNum(e.largura) * calcNum(e.espessura) / 100 * (1 + calcNum(e.perdaPct) / 100);
+    return { volume: Math.round(vol * 1000) / 1000, sacosCimento: Math.ceil(vol * 7 - 1e-9), areiaM3: Math.round(vol * 0.6 * 100) / 100, britaM3: Math.round(vol * 0.8 * 100) / 100, aguaL: Math.round(vol * 180) };
+  }
+  /** Piso ou revestimento: caixas e argamassa colante (~5 kg por m², desempenadeira de 8 mm). */
+  function calcPiso(e) {
+    var area = calcNum(e.area), perda = calcNum(e.perdaPct) / 100, porCaixa = calcNum(e.m2Caixa);
+    var comPerda = area * (1 + perda);
+    return { area: area, m2ComPerda: calcCent(comPerda), caixas: porCaixa ? Math.ceil(comPerda / porCaixa - 1e-9) : 0, sacosColante: Math.ceil(area * 5 / 20 - 1e-9) };
+  }
+  /** Pintura: litros pelo rendimento (m² por litro em cada demão) e a combinação de latas de 18 L e galões de 3,6 L. */
+  function calcPintura(e) {
+    var area = calcNum(e.area), demaos = calcNum(e.demaos) || 1, rend = calcNum(e.rendimento);
+    var litros = rend ? area * demaos / rend : 0;
+    var latas = Math.floor(litros / 18 + 1e-9), resto = litros - latas * 18, galoes = Math.ceil(resto / 3.6 - 1e-9);
+    if (galoes * 3.6 >= 18 - 1e-9) { latas += 1; galoes = 0; } // 5 galões já passam de uma lata: compre a lata
+    return { area: area, litros: calcUm(litros), latas: latas, galoes: galoes };
+  }
+  /** Preço de venda: custo real (compra + frete/descarga + perdas) e o preço para ter o lucro que você quer. */
+  function calcPreco(e, taxas) {
+    var custoBase = calcNum(e.custo) + calcNum(e.frete);
+    var custo = custoBase * (1 + calcNum(e.perdaPct) / 100);
+    var forma = e.forma || 'vista';
+    var taxaPct = forma === 'vista' ? 0 : forma === 'debito' ? taxas.debito : (taxas.credito[Number(forma) - 1] || 0);
+    var impostoPct = calcNum(e.impostoPct), lucroPct = calcNum(e.lucroPct);
+    var resto = 1 - (taxaPct + impostoPct) / 100;
+    var minimo = resto > 0 ? calcCent(custo / resto) : 0;
+    var sugerido = resto - lucroPct / 100 > 0 ? calcCent(custo / (resto - lucroPct / 100)) : 0;
+    var preco = calcNum(e.preco) || sugerido;
+    var desconto = calcNum(e.descontoPct);
+    var comDesconto = calcCent(preco * (1 - desconto / 100));
+    var lucroDe = function (pv) { return calcCent(pv - custo - pv * taxaPct / 100 - pv * impostoPct / 100); };
+    return { custo: calcCent(custo), taxaPct: taxaPct, minimo: minimo, sugerido: sugerido, preco: preco, lucro: lucroDe(preco), margem: preco ? lucroDe(preco) / preco * 100 : 0,
+      desconto: desconto, comDesconto: comDesconto, lucroComDesconto: lucroDe(comDesconto) };
+  }
+  function calcParcelas(valor, modo, taxas) {
+    valor = calcNum(valor);
+    function linha(nome, t, vezes) {
+      var total = modo === 'receber' ? calcNoCartao(valor, t) : valor;
+      var liquido = modo === 'receber' ? valor : calcCent(valor * (1 - t / 100));
+      return { nome: nome, vezes: vezes, taxa: t, total: total, parcela: calcCent(total / vezes), liquido: liquido };
+    }
+    return [linha('Débito', taxas.debito, 1)].concat(taxas.credito.map(function (t, i) { return linha(i ? 'Crédito ' + (i + 1) + 'x' : 'Crédito à vista', t, i + 1); }));
+  }
+  /* CALC-FIM */
+
+  // Procura no cadastro um produto que combine com o material (para já dar o preço do orçamento).
+  function calcAcharProduto(produtos, termos) {
+    var sem = function (s) { return String(s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, ''); };
+    for (var i = 0; i < termos.length; i++) {
+      var t = sem(termos[i]);
+      var p = produtos.find(function (x) { return sem(x.nome).indexOf(t) !== -1; });
+      if (p) return p;
+    }
+    return null;
+  }
+  async function calcTaxas() {
+    var c = await idbGet('config', 'maquininha');
+    if (!c || !Array.isArray(c.credito) || c.credito.length !== 12) return CALC_TAXAS_PADRAO;
+    return { debito: Number(c.debito) || 0, credito: c.credito.map(function (t) { return Number(t) || 0; }) };
+  }
+  var CALC = {
+    aba: 'material', obra: 'parede',
+    parede: { peca: 'bloco9', comprimento: '', altura: '2,8', aberturas: '', perdaPct: '10' },
+    contrapiso: { area: '', espessura: '5', perdaPct: '10' },
+    concreto: { comprimento: '', largura: '', espessura: '10', perdaPct: '5' },
+    piso: { area: '', m2Caixa: '2,5', perdaPct: '10' },
+    pintura: { area: '', demaos: '2', rendimento: '12' },
+    preco: { custo: '', frete: '', perdaPct: '2', impostoPct: '0', lucroPct: '25', forma: 'vista', preco: '', descontoPct: '5' },
+    parcelas: { valor: '', modo: 'receber' }
+  };
+  var calcPct = function (v) { return Number(v).toLocaleString('pt-BR', { maximumFractionDigits: 2 }) + '%'; };
+  var calcQ = function (v, d) { return Number(v).toLocaleString('pt-BR', { maximumFractionDigits: d == null ? 2 : d }); };
+  function calcCampo(id, rotulo, valor, chave, extra) {
+    return '<div class="field"><label for="' + id + '">' + rotulo + '</label><input id="' + id + '" data-calc="' + chave + '" inputmode="decimal" value="' + esc(valor) + '"' + (extra || '') + '></div>';
+  }
+  function calcLinha(rotulo, valor, forte) {
+    return '<div class="calc-linha' + (forte ? ' forte' : '') + '"><span>' + rotulo + '</span><span>' + valor + '</span></div>';
+  }
+  function calcFormHTML(taxas) {
+    if (CALC.aba === 'material') {
+      var o = CALC.obra, e = CALC[o], h = '<div class="field"><label for="calcObra">O que o cliente vai fazer?</label><select id="calcObra">' +
+        [['parede', '🧱 Parede (blocos ou tijolos)'], ['contrapiso', '🟫 Contrapiso'], ['concreto', '🏗️ Concreto (laje, calçada, piso)'], ['piso', '🔲 Piso ou revestimento'], ['pintura', '🎨 Pintura']]
+          .map(function (x) { return '<option value="' + x[0] + '"' + (o === x[0] ? ' selected' : '') + '>' + x[1] + '</option>'; }).join('') + '</select></div><div class="calc-grade">';
+      if (o === 'parede') h += '<div class="field calc-larga"><label for="calcPeca">Bloco ou tijolo</label><select id="calcPeca" data-calc="peca">' + Object.keys(CALC_PECAS).map(function (k) { return '<option value="' + k + '"' + (e.peca === k ? ' selected' : '') + '>' + CALC_PECAS[k].nome + '</option>'; }).join('') + '</select></div>' +
+        calcCampo('calcComp', 'Comprimento das paredes (m)', e.comprimento, 'comprimento', ' placeholder="ex.: 12"') + calcCampo('calcAlt', 'Altura (m)', e.altura, 'altura') +
+        calcCampo('calcAbert', 'Portas e janelas (m², desconta)', e.aberturas, 'aberturas', ' placeholder="ex.: 3,5"') + calcCampo('calcPerda', 'Perda (%)', e.perdaPct, 'perdaPct');
+      if (o === 'contrapiso') h += calcCampo('calcArea', 'Área (m²)', e.area, 'area', ' placeholder="ex.: 30"') + calcCampo('calcEsp', 'Espessura (cm)', e.espessura, 'espessura') + calcCampo('calcPerda', 'Perda (%)', e.perdaPct, 'perdaPct');
+      if (o === 'concreto') h += calcCampo('calcComp', 'Comprimento (m)', e.comprimento, 'comprimento', ' placeholder="ex.: 6"') + calcCampo('calcLarg', 'Largura (m)', e.largura, 'largura', ' placeholder="ex.: 4"') +
+        calcCampo('calcEsp', 'Espessura (cm)', e.espessura, 'espessura') + calcCampo('calcPerda', 'Perda (%)', e.perdaPct, 'perdaPct');
+      if (o === 'piso') h += calcCampo('calcArea', 'Área (m²)', e.area, 'area', ' placeholder="ex.: 25"') + calcCampo('calcCaixa', 'm² por caixa', e.m2Caixa, 'm2Caixa') + calcCampo('calcPerda', 'Perda (%)', e.perdaPct, 'perdaPct');
+      if (o === 'pintura') h += calcCampo('calcArea', 'Área das paredes (m²)', e.area, 'area', ' placeholder="ex.: 80"') + calcCampo('calcDem', 'Demãos', e.demaos, 'demaos') + calcCampo('calcRend', 'Rendimento (m² por litro, por demão)', e.rendimento, 'rendimento');
+      return h + '</div><p class="calc-nota">As quantidades são estimativas com as medidas mais usadas. Confira o rendimento na embalagem de cada produto.</p>';
+    }
+    if (CALC.aba === 'preco') {
+      var p = CALC.preco;
+      return '<div class="calc-grade">' + calcCampo('calcCusto', 'Custo de compra (R$ por unidade)', p.custo, 'custo', ' placeholder="ex.: 28,50"') + calcCampo('calcFrete', 'Frete e descarga (R$ por unidade)', p.frete, 'frete', ' placeholder="ex.: 1,20"') +
+        calcCampo('calcPerdas', 'Perdas e quebras (%)', p.perdaPct, 'perdaPct') + calcCampo('calcImp', 'Imposto (%) — MEI: 0', p.impostoPct, 'impostoPct') +
+        calcCampo('calcLucro', 'Lucro que você quer (% do preço)', p.lucroPct, 'lucroPct') +
+        '<div class="field"><label for="calcForma">Forma de pagamento</label><select id="calcForma" data-calc="forma"><option value="vista"' + (p.forma === 'vista' ? ' selected' : '') + '>Pix ou dinheiro</option><option value="debito"' + (p.forma === 'debito' ? ' selected' : '') + '>Débito</option>' +
+        taxas.credito.map(function (t, i) { return '<option value="' + (i + 1) + '"' + (p.forma === String(i + 1) ? ' selected' : '') + '>Crédito ' + (i ? (i + 1) + 'x' : 'à vista') + '</option>'; }).join('') + '</select></div>' +
+        calcCampo('calcPrecoAtual', 'Seu preço hoje (R$, opcional)', p.preco, 'preco', ' placeholder="deixe vazio para usar o sugerido"') + calcCampo('calcDesc', 'Desconto para compra grande (%)', p.descontoPct, 'descontoPct') + '</div>';
+    }
+    if (CALC.aba === 'parcelas') {
+      var q = CALC.parcelas;
+      return '<div class="field"><label for="calcModo">O que você quer saber?</label><select id="calcModo" data-calc="modo"><option value="receber"' + (q.modo === 'receber' ? ' selected' : '') + '>Quero receber limpo… quanto cobro?</option><option value="cobrar"' + (q.modo === 'cobrar' ? ' selected' : '') + '>Vou cobrar… quanto sobra para mim?</option></select></div>' +
+        '<div style="margin-top:10px;">' + calcCampo('calcValor', 'Valor (R$)', q.valor, 'valor', ' placeholder="0,00"') + '</div>';
+    }
+    return '<p class="calc-nota" style="margin-top:0;">Confira no app ou no contrato da sua maquininha e troque os números. Os que vêm aqui são só um exemplo.</p><div class="calc-grade calc-grade--3">' +
+      '<div class="field"><label for="calcTxDeb">Débito (%)</label><input id="calcTxDeb" inputmode="decimal" value="' + String(taxas.debito).replace('.', ',') + '"></div>' +
+      taxas.credito.map(function (t, i) { return '<div class="field"><label for="calcTx' + (i + 1) + '">' + (i ? 'Crédito ' + (i + 1) + 'x' : 'Crédito à vista') + ' (%)</label><input id="calcTx' + (i + 1) + '" inputmode="decimal" value="' + String(t).replace('.', ',') + '"></div>'; }).join('') +
+      '</div><div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:14px;"><button class="btn btn--primary" type="button" id="calcTxSalvar">Salvar taxas</button><button class="btn btn--secondary" type="button" id="calcTxPadrao">Voltar aos números de exemplo</button></div>';
+  }
+  // Lista de materiais da obra (para o resultado, o WhatsApp e o orçamento).
+  function calcMateriais() {
+    var o = CALC.obra, e = CALC[o], r, l = [];
+    if (o === 'parede') { r = calcParede(e); if (!r.area) return null; l.push({ nome: r.peca.nome, qtd: r.pecas, un: 'un', busca: r.peca.busca }, { nome: 'Argamassa de assentamento 20 kg', qtd: r.sacosArgamassa, un: 'sacos', busca: ['argamassa de assent', 'argamassa assent', 'argamassa p/ assent'] });
+      r.resumo = calcQ(r.area) + ' m² de parede · ' + calcQ(r.porM2, 1) + ' peças por m²'; }
+    if (o === 'contrapiso') { r = calcContrapiso(e); if (!r.volume) return null; l.push({ nome: 'Cimento 50 kg', qtd: r.sacosCimento, un: 'sacos', busca: ['cimento'] }, { nome: 'Areia média', qtd: r.areiaM3, un: 'm³', busca: ['areia'] });
+      r.resumo = calcQ(r.volume, 3) + ' m³ de argamassa (traço 1:3)'; }
+    if (o === 'concreto') { r = calcConcreto(e); if (!r.volume) return null; l.push({ nome: 'Cimento 50 kg', qtd: r.sacosCimento, un: 'sacos', busca: ['cimento'] }, { nome: 'Areia média', qtd: r.areiaM3, un: 'm³', busca: ['areia'] }, { nome: 'Brita 1', qtd: r.britaM3, un: 'm³', busca: ['brita', 'pedra'] });
+      r.resumo = calcQ(r.volume, 3) + ' m³ de concreto (traço 1:2:3) · cerca de ' + r.aguaL + ' L de água'; }
+    if (o === 'piso') { r = calcPiso(e); if (!r.area) return null; if (r.caixas) l.push({ nome: 'Piso ou revestimento (caixas)', qtd: r.caixas, un: 'caixas', busca: ['porcelanato', 'piso', 'ceramica', 'revestimento'] });
+      l.push({ nome: 'Argamassa colante 20 kg', qtd: r.sacosColante, un: 'sacos', busca: ['argamassa colante', 'argamassa ac', 'ac-i', 'ac-ii', 'ac-iii'] });
+      r.resumo = calcQ(r.m2ComPerda) + ' m² com a perda'; }
+    if (o === 'pintura') { r = calcPintura(e); if (!r.litros) return null; if (r.latas) l.push({ nome: 'Tinta lata 18 L', qtd: r.latas, un: 'latas', busca: ['tinta', '18l', '18 l'] }); if (r.galoes) l.push({ nome: 'Tinta galão 3,6 L', qtd: r.galoes, un: 'galões', busca: ['galao', '3,6'] });
+      r.resumo = calcQ(r.litros, 1) + ' litros de tinta no total'; }
+    return { r: r, itens: l };
+  }
+  async function calcResultadoHTML() {
+    var taxas = await calcTaxas();
+    if (CALC.aba === 'material') {
+      var m = calcMateriais();
+      if (!m) return '<div class="calc-vazio"><span class="icon"><svg><use href="#i-ruler"/></svg></span><h4>Digite as medidas</h4><p>A lista de material e o valor aparecem aqui na hora.</p></div>';
+      var produtos = await idbAll('produtos'), total = 0, faltam = 0;
+      var linhas = m.itens.map(function (it) {
+        var p = calcAcharProduto(produtos, it.busca); it.produto = p;
+        var sub = p ? calcCent(it.qtd * Number(p.preco || 0)) : 0; total += sub; if (!p) faltam++;
+        return '<tr><td><b>' + esc(it.nome) + '</b>' + (p ? '<br><small>' + esc(p.nome) + ' · ' + fmtBRL(p.preco) + '</small>' : '<br><small class="calc-falta">não achei no seu cadastro</small>') + '</td><td class="calc-num">' + calcQ(it.qtd) + ' ' + it.un + '</td><td class="calc-num">' + (p ? fmtBRL(sub) : '—') + '</td></tr>';
+      }).join('');
+      CALC.ultimo = m;
+      return '<div class="calc-destaque"><span>Total estimado</span><b>' + fmtBRL(total) + '</b><small>' + esc(m.r.resumo) + '</small></div>' +
+        '<div class="table-wrap"><table class="dtable"><thead><tr><th>Material</th><th class="calc-num">Quantidade</th><th class="calc-num">Valor</th></tr></thead><tbody>' + linhas + '</tbody></table></div>' +
+        (faltam ? '<p class="calc-nota">O valor só soma o que está cadastrado. Confira se a unidade do produto (saco, m³, unidade) é a mesma da lista.</p>' : '<p class="calc-nota">Confira se a unidade de cada produto (saco, m³, unidade) é a mesma da lista.</p>') +
+        '<div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;"><button class="btn btn--primary" type="button" id="calcCriarOrc">Criar orçamento</button><button class="btn btn--secondary" type="button" id="calcZap">Mandar no WhatsApp</button><button class="btn btn--secondary" type="button" id="calcCopiar">Copiar lista</button></div>';
+    }
+    if (CALC.aba === 'preco') {
+      var r = calcPreco(CALC.preco, taxas);
+      if (!r.custo) return '<div class="calc-vazio"><span class="icon"><svg><use href="#i-dollar"/></svg></span><h4>Digite o custo de compra</h4><p>O preço certo, o preço mínimo e o lucro aparecem aqui.</p></div>';
+      var ruim = r.lucro < 0;
+      return '<div class="calc-dois"><div class="calc-destaque"><span>Preço sugerido</span><b>' + fmtBRL(r.sugerido) + '</b><small>para ganhar ' + calcPct(calcNum(CALC.preco.lucroPct)) + ' do preço</small></div>' +
+        '<div class="calc-destaque calc-destaque--claro"><span>Preço mínimo</span><b>' + fmtBRL(r.minimo) + '</b><small>abaixo disso é prejuízo</small></div></div>' +
+        (ruim ? '<div class="alert alert--danger" style="margin-top:12px;">Vendendo por ' + fmtBRL(r.preco) + ' você perde ' + fmtBRL(-r.lucro) + ' por unidade. Cobre pelo menos ' + fmtBRL(r.minimo) + '.</div>' : '') +
+        '<div class="calc-caixa">' + calcLinha('Custo real por unidade', fmtBRL(r.custo)) + calcLinha('Preço de venda', fmtBRL(r.preco)) + (r.taxaPct ? calcLinha('Taxa da maquininha (' + calcPct(r.taxaPct) + ')', fmtBRL(r.preco * r.taxaPct / 100)) : '') +
+        calcLinha('Sobra por unidade', fmtBRL(r.lucro) + ' (' + calcPct(Math.round(r.margem * 10) / 10) + ')', true) + '</div>' +
+        (r.desconto ? '<div class="calc-caixa">' + calcLinha('Com ' + calcPct(r.desconto) + ' de desconto', fmtBRL(r.comDesconto)) + calcLinha('Sobra por unidade com desconto', fmtBRL(r.lucroComDesconto), true) +
+          (r.lucroComDesconto < 0 ? '<p class="calc-falta" style="margin:6px 0 0;">Com esse desconto você perde dinheiro.</p>' : '') + '</div>' : '');
+    }
+    if (CALC.aba === 'parcelas') {
+      var q = CALC.parcelas;
+      if (!calcNum(q.valor)) return '<div class="calc-vazio"><span class="icon"><svg><use href="#i-card"/></svg></span><h4>Digite um valor</h4><p>A tabela do débito até 12x aparece aqui.</p></div>';
+      return '<div class="table-wrap"><table class="dtable"><thead><tr><th>Forma</th><th class="calc-num">Cliente paga</th><th class="calc-num">Você recebe</th></tr></thead><tbody>' +
+        calcParcelas(q.valor, q.modo, taxas).map(function (l) { return '<tr><td>' + l.nome + '<br><small>taxa ' + calcPct(l.taxa) + '</small></td><td class="calc-num">' + fmtBRL(l.total) + (l.vezes > 1 ? '<br><small>' + l.vezes + 'x ' + fmtBRL(l.parcela) + '</small>' : '') + '</td><td class="calc-num"><b>' + fmtBRL(l.liquido) + '</b></td></tr>'; }).join('') +
+        '</tbody></table></div>';
+    }
+    return '';
+  }
+  function calcTextoLista() {
+    var m = CALC.ultimo; if (!m) return '';
+    var loja = (STATE.loja && STATE.loja.nome) || '';
+    return ['*Lista de material' + (loja ? ' — ' + loja : '') + '*', m.r.resumo, ''].concat(m.itens.map(function (it) { return '• ' + it.nome + ': ' + calcQ(it.qtd) + ' ' + it.un + (it.produto ? ' — ' + fmtBRL(it.qtd * Number(it.produto.preco || 0)) : ''); }))
+      .concat(['', 'Valores sujeitos a confirmação.']).join('\n');
+  }
+  async function renderCalculadoras() {
+    var box = document.getElementById('calcForm'); if (!box) return;
+    var taxas = await calcTaxas();
+    document.querySelectorAll('[data-calc-aba]').forEach(function (b) { b.classList.toggle('is-active', b.getAttribute('data-calc-aba') === CALC.aba); });
+    box.innerHTML = calcFormHTML(taxas);
+    document.getElementById('calcResultadoBox').hidden = CALC.aba === 'taxas';
+    await calcAtualizar();
+    var obra = document.getElementById('calcObra');
+    if (obra) obra.onchange = function () { CALC.obra = obra.value; renderCalculadoras(); };
+    box.querySelectorAll('[data-calc]').forEach(function (el) {
+      el.addEventListener(el.tagName === 'SELECT' ? 'change' : 'input', function () {
+        var alvo = CALC.aba === 'material' ? CALC[CALC.obra] : CALC[CALC.aba];
+        alvo[el.getAttribute('data-calc')] = el.value; calcAtualizar();
+      });
+    });
+    var salvar = document.getElementById('calcTxSalvar');
+    if (salvar) salvar.onclick = async function () {
+      var ler = function (id) { var n = parseFloat(String(document.getElementById(id).value).replace(',', '.')); return isFinite(n) && n >= 0 && n < 100 ? n : null; };
+      var debito = ler('calcTxDeb'), credito = Array.from({ length: 12 }, function (_, i) { return ler('calcTx' + (i + 1)); });
+      if (debito == null || credito.some(function (t) { return t == null; })) { toast('Confira as taxas: use números entre 0 e 99, como 4,99.', 'error'); return; }
+      await idbPut('config', { id: 'maquininha', debito: debito, credito: credito, atualizado_em: nowISO() });
+      await logAction('configuracoes_salvas', 'Taxas da maquininha atualizadas');
+      toast('Taxas salvas. As calculadoras já usam os números novos.');
+    };
+    var padrao = document.getElementById('calcTxPadrao');
+    if (padrao) padrao.onclick = async function () { await idbPut('config', { id: 'maquininha', debito: CALC_TAXAS_PADRAO.debito, credito: CALC_TAXAS_PADRAO.credito.slice(), atualizado_em: nowISO() }); renderCalculadoras(); };
+  }
+  var calcFila = Promise.resolve();
+  function calcAtualizar() {
+    calcFila = calcFila.then(async function () {
+      var res = document.getElementById('calcResultado'); if (!res) return;
+      res.innerHTML = await calcResultadoHTML();
+      var zap = document.getElementById('calcZap'), copiar = document.getElementById('calcCopiar'), criar = document.getElementById('calcCriarOrc');
+      if (zap) zap.onclick = function () { window.open('https://wa.me/?text=' + encodeURIComponent(calcTextoLista()), '_blank'); };
+      if (copiar) copiar.onclick = async function () { try { await navigator.clipboard.writeText(calcTextoLista()); toast('Lista copiada.'); } catch (e) { toast('Não deu para copiar. Use o botão do WhatsApp.', 'error'); } };
+      if (criar) criar.onclick = async function () {
+        var m = CALC.ultimo, itens = m.itens.filter(function (it) { return it.produto; });
+        if (!itens.length) { toast('Nenhum material da lista está no seu cadastro de produtos.', 'error'); return; }
+        var todos = await idbAll('orcamentos');
+        var orc = { id: uid(), numero: nextNumber('', todos).replace(/^0+/, '') || '1', cliente_id: null,
+          itens: itens.map(function (it) { return { produto_id: it.produto.id, nome: it.produto.nome, qtd: Math.ceil(it.qtd), preco: Number(it.produto.preco || 0) }; }),
+          validade: new Date(Date.now() + 7 * 864e5).toLocaleDateString('pt-BR'), status: 'Pendente', criado_em: nowISO() };
+        orc.total = orc.itens.reduce(function (s, it) { return s + it.qtd * it.preco; }, 0);
+        await idbPut('orcamentos', orc);
+        await logAction('orcamento_criado', 'Orçamento #' + orc.numero + ' pela calculadora de material');
+        toast('Orçamento #' + orc.numero + ' criado. Abra em Orçamentos para escolher o cliente.');
+        try { await renderAll(); } catch (e) {}
+      };
+    });
+    return calcFila;
+  }
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest('[data-calc-aba]'); if (b) { CALC.aba = b.getAttribute('data-calc-aba'); renderCalculadoras(); }
+    if (e.target.closest('[data-view="Calculadoras"],[data-nav-target="Calculadoras"]')) renderCalculadoras();
+  });
+
+  /* ============================================================
+     WHATSAPP: mensagens prontas para os clientes. O app não lê nem
+     manda nada sozinho: abre o WhatsApp com o texto, e a pessoa confere
+     e envia.
+     ============================================================ */
+  var WA_MODELOS = {
+    orcamento: { nome: 'Orçamento pronto', texto: 'Olá, {nome}! Aqui é da {loja}. Seu orçamento está pronto. Posso te mandar os valores?' },
+    pronto: { nome: 'Pedido separado para retirar', texto: 'Olá, {nome}! Seu pedido já está separado aqui na {loja}. Pode retirar quando quiser.' },
+    entrega: { nome: 'Entrega a caminho', texto: 'Olá, {nome}! Seu material saiu para entrega e chega hoje. Qualquer coisa, é só chamar.' },
+    chegou: { nome: 'Chegou o que o cliente pediu', texto: 'Olá, {nome}! Chegou o produto que você procurou aqui na {loja}. Quer que eu separe para você?' },
+    obrigado: { nome: 'Obrigado pela compra', texto: 'Olá, {nome}! Obrigado pela compra na {loja}. Ficou tudo certo com o material?' },
+    pagamento: { nome: 'Lembrete de pagamento', texto: 'Olá, {nome}! Passando para lembrar do pagamento combinado com a {loja}. Se já pagou, desconsidere. Obrigado!' }
+  };
+  function waNumero(tel) { var d = String(tel || '').replace(/\D/g, ''); if (d.length === 10 || d.length === 11) d = '55' + d; return d.length >= 12 ? d : ''; }
+  async function renderWhatsApp() {
+    var sel = document.getElementById('waCliente'); if (!sel) return;
+    var clientes = (await idbAll('clientes')).filter(function (c) { return c.status !== 'inativo'; }).sort(function (a, b) { return String(a.nome).localeCompare(String(b.nome)); });
+    var atual = sel.value;
+    sel.innerHTML = '<option value="">Digitar o número</option>' + clientes.map(function (c) { return '<option value="' + c.id + '" data-tel="' + esc(c.telefone || '') + '" data-nome="' + esc(c.nome) + '">' + esc(c.nome) + (c.telefone ? ' · ' + esc(c.telefone) : ' · sem telefone') + '</option>'; }).join('');
+    sel.value = atual;
+    waMontarTexto();
+  }
+  function waMontarTexto() {
+    var sel = document.getElementById('waCliente'), mod = document.getElementById('waModelo'), txt = document.getElementById('waTexto'), num = document.getElementById('waNumero');
+    if (!sel || !mod || !txt) return;
+    var op = sel.options[sel.selectedIndex];
+    var nome = op && op.value ? String(op.getAttribute('data-nome') || '').split(' ')[0] : '';
+    num.closest('.field').hidden = Boolean(op && op.value);
+    var m = WA_MODELOS[mod.value];
+    if (m) txt.value = m.texto.replace('{nome}', nome || '').replace('Olá, !', 'Olá!').replace('{loja}', (STATE.loja && STATE.loja.nome) || 'nossa loja');
+  }
+  document.addEventListener('change', function (e) { if (e.target.id === 'waCliente' || e.target.id === 'waModelo') waMontarTexto(); });
+  document.addEventListener('click', function (e) {
+    if (e.target.closest('[data-view="WhatsApp"],[data-nav-target="WhatsApp"]')) renderWhatsApp();
+    if (e.target.id === 'waAbrir') {
+      var sel = document.getElementById('waCliente'), op = sel.options[sel.selectedIndex];
+      var numero = waNumero(op && op.value ? op.getAttribute('data-tel') : document.getElementById('waNumero').value);
+      if (!numero) { toast(op && op.value ? 'Este cliente não tem telefone no cadastro.' : 'Digite o número com DDD.', 'error'); return; }
+      window.open('https://wa.me/' + numero + '?text=' + encodeURIComponent(document.getElementById('waTexto').value), '_blank');
+    }
+  });
+
+  // Nome de quem entrou e da loja no menu e no topo (antes ficava o nome do modelo).
+  function preencherCabecalho() {
+    var u = STATE.user || {}, l = STATE.loja || {};
+    var partes = String(u.nome || '').trim().split(/\s+/).filter(Boolean);
+    var set = function (sel, t) { document.querySelectorAll(sel).forEach(function (el) { el.textContent = t; }); };
+    set('.userchip__name', u.nome || '');
+    set('.userchip__avatar', ((partes[0] || '?')[0] + (partes.length > 1 ? partes[partes.length - 1][0] : '')).toUpperCase());
+    set('.userchip__role', u.papel ? u.papel.charAt(0).toUpperCase() + u.papel.slice(1) : '');
+    set('.storepick__name', l.nome || 'Minha loja');
+    set('.storepick__sub', 'Sua loja');
   }
 
   var __booted = false;
@@ -11698,9 +11870,11 @@ html, body{ overflow-x:hidden; max-width:100%; }
     setKpi('kpiPCValorEstimado', fmtBRL(valorEstimado));
     var fornecedoresUnicos = {}; criticos.forEach(function(p){ if (p.fornecedor_id) fornecedoresUnicos[p.fornecedor_id] = true; });
     setKpi('kpiPCFornecedores', Object.keys(fornecedoresUnicos).length);
-    setKpi('kpiECCriticos', outCount);
-    setKpi('kpiECEmRisco', lowCount);
-    setKpi('kpiECNormal', okCount);
+    // Críticos = no mínimo ou abaixo (inclui sem estoque); em risco = ainda acima, mas até 50% acima do mínimo.
+    var emRisco = produtos.filter(function(p){ var a = Number(p.estoque_atual||0), m = Number(p.estoque_minimo||0); return calcularStatusEstoque(a, m) === 'ok' && m > 0 && a <= m * 1.5; }).length;
+    setKpi('kpiECCriticos', criticos.length);
+    setKpi('kpiECEmRisco', emRisco);
+    setKpi('kpiECNormal', produtos.length - criticos.length - emRisco);
     setKpi('kpiECTotal', produtos.length);
 
     var abaixoMinimo = criticos.filter(function(p){ return calcularStatusEstoque(Number(p.estoque_atual||0), Number(p.estoque_minimo||0)) === 'low' && Number(p.estoque_atual||0) > Number(p.estoque_minimo||0) * 0.5; }).length;
@@ -11794,6 +11968,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
           '</div></td></tr>';
       }).join('') : '<tr><td colspan="11" style="text-align:center;padding:24px;color:var(--text-tertiary);">' + (criticos.length ? 'Nenhum produto encontrado com esses filtros.' : 'Nada precisa ser comprado agora. 🎉') + '</td></tr>';
       setRodape('rodapeComprar', listaP.length, 'produtos críticos');
+      var avisoCrit = document.getElementById('avisoCriticos'); if (avisoCrit) avisoCrit.textContent = criticos.length + (criticos.length === 1 ? ' produto' : ' produtos');
     }
   }
   async function renderHistoricoVendas(){
