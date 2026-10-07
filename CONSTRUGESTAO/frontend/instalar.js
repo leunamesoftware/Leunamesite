@@ -129,7 +129,7 @@
     });
     document.documentElement.style.overflow = 'hidden';
     (document.body || document.documentElement).appendChild(tela);
-    desenhar(janelinha && !ios ? 'janelinha' : ios || samsung || (firefox && !celular) ? 'passos' : 'botao'); // no Chrome/Edge/Samsung: sempre o botão Instalar primeiro
+    desenhar(janelinha && !ios ? 'janelinha' : ios || (firefox && !celular) ? 'passos' : 'botao'); // Samsung Internet também libera o botão Instalar // no Chrome/Edge/Samsung: sempre o botão Instalar primeiro
   }
   // Abre na hora (cobre o app antes do login aparecer).
   if (document.body) abrir(); else addEventListener('DOMContentLoaded', abrir);
