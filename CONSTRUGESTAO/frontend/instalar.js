@@ -46,7 +46,7 @@
     if (ios) return '<li>Toque em <b>Compartilhar</b> (o quadrado com a seta, embaixo ou em cima da tela).</li><li>Desça e toque em <b>Adicionar à Tela de Início</b>.</li><li>Toque em <b>Adicionar</b>.</li>';
     if (firefox && !celular) return '<li>Este navegador não instala apps. Abra este mesmo endereço no <b>Google Chrome</b> ou no <b>Microsoft Edge</b>.</li>';
     if (samsung) return '<li>Toque nos <b>⋮</b> (ou <b>≡</b>) lá embaixo, no canto direito.</li><li>Toque em <b>Adicionar página a</b>.</li><li>Toque em <b>Tela inicial</b> e em <b>Adicionar</b>.</li>';
-    if (celular) return '<li>Toque nos <b>⋮</b> do navegador (canto de cima).</li><li>Toque em <b>Instalar app</b> ou <b>Adicionar à tela inicial</b>.</li><li>Confirme em <b>Instalar</b>.</li>';
+    if (celular) return '<li>Toque nos <b>⋮</b> do Chrome (no canto direito, em cima ou embaixo).</li><li>Toque em <b>Instalar app</b> ou <b>Adicionar à tela inicial</b>.</li><li>Confirme em <b>Instalar</b>.</li>';
     return '<li>Clique no ícone de instalar <b>⊕</b> no fim da barra de endereço.</li><li>Ou abra o menu <b>⋮</b> → <b>Transmitir, salvar e compartilhar</b> → <b>Instalar ' + nome + '</b>.</li><li>Confirme em <b>Instalar</b>.</li>';
   }
 
@@ -69,7 +69,9 @@
       corpo = (celular && !ios ? '<p class="li-texto">Se o <b>' + nome + '</b> já está instalado, abra pelo ícone ' + onde + '. Se ainda não está:</p>' : '<p class="li-texto">Para colocar o <b>' + nome + '</b> ' + onde + ':</p>') + '<ol class="li-passos">' + passos() + '</ol>'
         + '<button type="button" class="li-nao" data-usar>Já instalei · abrir aqui mesmo</button>';
     } else {
-      corpo = '<button type="button" class="li-sim" disabled><span class="li-anel li-anel-mini" aria-hidden="true"></span>Preparando…</button><p class="li-mini">Só um instante</p>';
+      // Na 1ª visita o Chrome só libera o botão depois de uns 30 segundos na página. Pelo menu ⋮ instala na hora.
+      corpo = '<button type="button" class="li-sim" disabled><span class="li-anel li-anel-mini" aria-hidden="true"></span>Preparando… até 30 segundos</button>'
+        + (celular && !ios ? '<p class="li-texto">Quer na hora? Toque nos <b>⋮</b> do Chrome (canto direito) → <b>Adicionar à tela inicial</b> → <b>Instalar</b>.</p>' : '');
     }
     tela.querySelector('.li-corpo').innerHTML = corpo;
   }
@@ -77,7 +79,7 @@
   function pedirInstalacao() {
     var q = pedido; pedido = null;
     // Se o toque já "esfriou", o navegador recusa: volta o botão (agora pronto) para a pessoa tocar de novo.
-    var volta = function () { pedido = q; if (tela) desenhar('botao'); };
+    var volta = function () { pedido = q; if (tela) { desenhar('botao'); var b = tela.querySelector('[data-instalar]'); if (b) b.textContent = 'Instalar agora'; } };
     try { var r = q.prompt(); if (r && r.catch) r.catch(volta); } catch (e) { return volta(); }
     q.userChoice.then(function (r) { if (tela) desenhar(r.outcome === 'accepted' ? 'pronto' : 'botao'); });
   }
@@ -124,7 +126,7 @@
         if (pedido) return pedirInstalacao();
         // O navegador ainda não liberou o botão: espera um pouco; só mostra o passo a passo se ele não liberar.
         desenhar('esperando');
-        setTimeout(function () { if (tela && estado === 'esperando') desenhar('passos'); }, 5000);
+        setTimeout(function () { if (tela && estado === 'esperando') desenhar('passos'); }, 35000);
       }
     });
     document.documentElement.style.overflow = 'hidden';
