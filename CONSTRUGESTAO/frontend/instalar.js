@@ -32,6 +32,11 @@
   var firefox = /Firefox\//.test(ua);
   var onde = celular ? 'na tela do seu celular' : 'na área de trabalho do seu computador';
 
+  // Link que pede ao Android para abrir este endereço no Chrome de verdade (a janelinha não instala apps).
+  function noChrome() {
+    var u = location.host + location.pathname + '?instalar=1';
+    return 'intent://' + u + '#Intent;scheme=https;package=com.android.chrome;S.browser_fallback_url=' + encodeURIComponent('https://' + u) + ';end';
+  }
   function passos() {
     if (ios) return '<li>Toque em <b>Compartilhar</b> (o quadrado com a seta, embaixo ou em cima da tela).</li><li>Desça e toque em <b>Adicionar à Tela de Início</b>.</li><li>Toque em <b>Adicionar</b>.</li>';
     if (firefox && !celular) return '<li>Este navegador não instala apps. Abra este mesmo endereço no <b>Google Chrome</b> ou no <b>Microsoft Edge</b>.</li>';
@@ -50,7 +55,9 @@
       corpo = '<button type="button" class="li-sim" data-instalar>Instalar</button><p class="li-mini">Grátis para instalar · o ícone fica ' + onde + '</p>';
     } else if (novo === 'janelinha') {
       corpo = '<p class="li-texto">Falta só abrir no Chrome, que é quem instala o <b>' + nome + '</b> sem pedir permissão:</p>'
-        + '<ol class="li-passos"><li>Toque nos <b>⋮</b> lá em cima, à direita.</li><li>Toque em <b>Abrir no Chrome</b>.</li><li>Toque em <b>Instalar</b> e confirme.</li></ol>';
+        + '<a class="li-sim" href="' + noChrome() + '">Abrir no Chrome</a>'
+        + '<p class="li-texto">Se não abrir, toque nos <b>⋮</b> lá em cima, à direita, e em <b>Abrir no Chrome</b>. Lá aparece o botão <b>Instalar</b>.</p>'
+        + '<button type="button" class="li-nao" data-copiar>Copiar o endereço</button>';
     } else if (novo === 'passos') {
       corpo = (celular && !ios ? '<p class="li-texto">Se o <b>' + nome + '</b> já está instalado, abra pelo ícone ' + onde + '. Se ainda não está:</p>' : '<p class="li-texto">Para colocar o <b>' + nome + '</b> ' + onde + ':</p>') + '<ol class="li-passos">' + passos() + '</ol>'
         + '<button type="button" class="li-nao" data-usar>Já instalei · abrir aqui mesmo</button>';
@@ -99,6 +106,12 @@
       + '<div class="li-fatos"><span><b>L</b>Classificação Livre</span><span><b>Sem anúncios</b>no app</span><span><b>Sua conta</b>criada no app</span></div></div>';
     tela.addEventListener('click', function (e) {
       if (e.target.closest('[data-voltar]')) { if (document.referrer && history.length > 1) history.back(); else location.href = loja; return; }
+      if (e.target.closest('[data-copiar]')) {
+        var b = e.target.closest('[data-copiar]'), url = 'https://' + location.host + location.pathname + '?instalar=1';
+        var ok = function () { b.textContent = 'Endereço copiado: cole no Chrome'; };
+        if (navigator.clipboard) navigator.clipboard.writeText(url).then(ok, function () { b.textContent = url; }); else b.textContent = url;
+        return;
+      }
       if (e.target.closest('[data-usar]')) { tela.remove(); tela = null; document.documentElement.style.overflow = ''; return; }
       if (e.target.closest('[data-instalar]')) {
         if (pedido) return pedirInstalacao();
