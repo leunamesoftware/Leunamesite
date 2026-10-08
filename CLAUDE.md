@@ -1,4 +1,6 @@
-# Padrões LeuName Softwares (Google Play)
+# Padrões LeuName Softwares
+
+> **A conta da Play Store foi banida (2026).** A venda agora é pela loja própria LeuApps. **Leia primeiro `PROXIMO-CLAUDE.md` no repositório `leunamesoftware/leuname-softwarea-apps` (branch `ccr-f58cd13b-ml0bzs`).** As regras de Play abaixo ficam só como histórico.
 
 - Conta Play Console: organização (SUPER MISTO TEMPEROS LTDA, D-U-N-S 939102424).
 - Publicação automática: secret `PLAY_SERVICE_ACCOUNT_JSON` (conta de serviço leuplay-publicador). Nunca colocar a chave no código.
