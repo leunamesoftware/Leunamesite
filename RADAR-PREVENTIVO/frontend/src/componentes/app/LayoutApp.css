@@ -33,7 +33,7 @@
 }
 
 /* ===== Computador: navegação na lateral e conteúdo largo (o celular continua igual) ===== */
-@media (min-width: 900px) {
+@media (min-width: 900px) and (orientation: landscape) {
   .app { padding-left: 248px; }
   .app__conteudo { max-width: 1160px; padding: 28px 36px 48px; }
 
@@ -45,7 +45,7 @@
 }
 
 /* Tela larga: painéis do Radar lado a lado e listas em duas colunas. */
-@media (min-width: 1200px) {
+@media (min-width: 1200px) and (orientation: landscape) {
   /* Radar: contadores em cima, painéis lado a lado. */
   .app .tela-radar { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px 22px; align-items: start; }
   .app .tela-radar > .app-subtitulo { margin-top: -10px; }
