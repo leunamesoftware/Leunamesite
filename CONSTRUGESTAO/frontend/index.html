@@ -9001,7 +9001,10 @@ html, body{ overflow-x:hidden; max-width:100%; }
   var TRIAL_DIAS = 7;
   var TRIAL_INICIO_LS_KEY = 'construgestao_teste_inicio';
   var CONTA_EXPIRA_LS_KEY = 'construgestao_conta_expira_em';
-  var __testesConta = {};
+  var DA_CONTA_LS_KEY = 'construgestao_da_conta'; // '1' = o acesso veio da conta da loja (confere a conta ao abrir)
+  var __testesConta = {}, __motivoConta = null;
+  // Trava de aparelhos: cada conta usa 1 celular + 1 computador. Entrou em outro, este é desconectado.
+  var MSG_OUTRO_APARELHO = 'Sua conta entrou em outro aparelho e este foi desconectado (cada conta usa 1 celular e 1 computador). Entre de novo para usar aqui: o outro será desconectado.';
   function isTrialKey(k) { return /^LEU-TRIA-/.test(String(k || '').toUpperCase()); }
   function trialExpirado() {
     var k = lsGet(LICENSE_LS_KEY); if (!isTrialKey(k)) return false;
@@ -9018,26 +9021,28 @@ html, body{ overflow-x:hidden; max-width:100%; }
     try {
       var r = await fetch('/loja-api/conta/apps', { cache: 'no-store', credentials: 'same-origin' });
       if (!r.ok) return null;
-      var d = await r.json(); __testesConta = (d && d.testes) || {};
+      var d = await r.json(); __testesConta = (d && d.testes) || {}; __motivoConta = (d && d.motivo) || null;
       var g = d && d.apps && d.apps.construgestao;
       if (g && g.chave && await licenseKeyValid(g.chave)) {
-        lsSet(LICENSE_LS_KEY, g.chave); lsSet(LICENSE_REVOKED_LS_KEY, ''); lsSet(CONTA_EXPIRA_LS_KEY, g.expiraEm || ''); return true;
+        lsSet(LICENSE_LS_KEY, g.chave); lsSet(LICENSE_REVOKED_LS_KEY, ''); lsSet(CONTA_EXPIRA_LS_KEY, g.expiraEm || ''); lsSet(DA_CONTA_LS_KEY, '1'); return true;
       }
       if (g && g.teste) {
         var k = lsGet(LICENSE_LS_KEY);
         if (!isTrialKey(k) || !(await licenseKeyValid(k))) k = await gerarChaveTeste();
         lsSet(LICENSE_LS_KEY, k); lsSet(LICENSE_REVOKED_LS_KEY, '');
-        lsSet(TRIAL_INICIO_LS_KEY, String(new Date(g.expiraEm).getTime() - TRIAL_DIAS * 86400000)); lsSet(CONTA_EXPIRA_LS_KEY, g.expiraEm); return true;
+        lsSet(TRIAL_INICIO_LS_KEY, String(new Date(g.expiraEm).getTime() - TRIAL_DIAS * 86400000)); lsSet(CONTA_EXPIRA_LS_KEY, g.expiraEm); lsSet(DA_CONTA_LS_KEY, '1'); return true;
       }
       return false;
     } catch (e) { return null; }
   }
-  /* Mensal, anual ou teste: confere na conta se ainda vale. Sem internet, vale até a data guardada (+1 dia). */
+  /* Confere na conta (com internet) se ainda vale: plano com prazo e também o vitalício (trava de aparelhos).
+     Sem internet: o vitalício continua; mensal, anual ou teste valem até a data guardada (+1 dia). */
   async function acessoDaContaValendo() {
     var expira = lsGet(CONTA_EXPIRA_LS_KEY);
-    if (!expira) return true; // pagamento único ou chave antiga
+    if (!expira && lsGet(DA_CONTA_LS_KEY) !== '1') return true; // chave antiga, sem conta
     var ok = await chaveDaConta();
     if (ok !== null) return ok;
+    if (!expira) return true;
     return Date.now() < new Date(expira).getTime() + 86400000;
   }
   /* Entra na conta da loja; se não der e for o e-mail do dono, tenta a senha da Área do Dono. */
@@ -9083,7 +9088,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
           '<p style="font-weight:700;font-size:14px;margin:0;">Já tem conta? Entre</p>' + campo('cg-email', 'E-mail', 'email', 'username', 'voce@email.com') + campo('cg-senha', 'Senha', 'password', 'current-password') +
           '<div id="cg-erro" class="alert alert--danger" style="display:none;margin-top:10px;"></div>' +
           '<button class="btn btn--secondary" id="cg-entrar" type="button" style="width:100%;justify-content:center;margin-top:14px;">Entrar</button>' +
-          '<p style="text-align:center;font-size:13px;margin:12px 0 0;"><a href="https://quantocobrar.leunamesoftware.com.br/recuperar">Esqueci a senha</a></p>') +
+          '<p style="text-align:center;font-size:13px;margin:12px 0 0;"><a href="https://www.leunamesoftware.com.br/loja/esqueci">Esqueci a senha</a></p>') +
       '<p style="text-align:center;font-size:12px;color:var(--text-secondary);margin:14px 0 0;">A mesma conta de todos os apps da LeuApps.</p>'
     );
     var erro = function (t) { var b = document.getElementById('cg-erro'); b.textContent = t; b.style.display = ''; };
@@ -10602,7 +10607,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
       var tinha = lsGet(LICENSE_LS_KEY);
       if (!(await chaveDaConta())) {
         lsSet(LICENSE_LS_KEY, ''); lsSet(CONTA_EXPIRA_LS_KEY, '');
-        renderLicenseGate(tinha ? (isTrialKey(tinha) ? 'O seu teste grátis terminou. Escolha um plano para continuar usando.' : 'O seu plano terminou. Escolha um plano para continuar usando.') : '');
+        renderLicenseGate(__motivoConta === 'outro_aparelho' ? MSG_OUTRO_APARELHO : tinha ? (isTrialKey(tinha) ? 'O seu teste grátis terminou. Escolha um plano para continuar usando.' : 'O seu plano terminou. Escolha um plano para continuar usando.') : '');
         return;
       }
     }
@@ -12461,6 +12466,13 @@ html, body{ overflow-x:hidden; max-width:100%; }
   }
   atualizarUIInstalarApp();
 
+  // App aberto há tempo: ao voltar para ele (no máximo a cada 5 min), confere se a conta ainda vale neste aparelho.
+  var __ultimaConferencia = Date.now();
+  document.addEventListener('visibilitychange', function () {
+    if (document.visibilityState !== 'visible' || !navigator.onLine || lsGet(DA_CONTA_LS_KEY) !== '1' || Date.now() - __ultimaConferencia < 300000) return;
+    __ultimaConferencia = Date.now();
+    chaveDaConta().then(function (ok) { if (ok === false) location.reload(); });
+  });
   if (document.readyState === 'complete' || document.readyState === 'interactive') { boot(); }
   else { document.addEventListener('DOMContentLoaded', boot); }
   window.addEventListener('online', function () { syncNow().catch(function () {}); });
