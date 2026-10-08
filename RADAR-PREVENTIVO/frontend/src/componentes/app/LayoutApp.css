@@ -31,3 +31,25 @@
   line-height: 1.35;
   color: #9fb2d4;
 }
+
+/* ===== Computador: navegação na lateral e conteúdo largo (o celular continua igual) ===== */
+@media (min-width: 1024px) {
+  .app { padding-left: 248px; }
+  .app__conteudo { max-width: 1160px; padding: 28px 36px 48px; }
+
+  .navegacao { left: 0; top: 0; bottom: 0; width: 248px; transform: none; padding: 24px 14px; }
+  .navegacao__lista { display: flex; flex-direction: column; gap: 6px; height: 100%; padding: 14px 10px; border-radius: 24px; }
+  .navegacao__item { flex-direction: row; justify-content: flex-start; gap: 14px; padding: 14px 16px; font-size: 1rem; }
+  .navegacao__icone svg { width: 24px; height: 24px; }
+  .navegacao__item--ativo::after { top: 22%; bottom: 22%; left: 4px; right: auto; width: 3px; height: auto; }
+
+  /* Radar: contadores em cima, painéis lado a lado. */
+  .app .tela-radar { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px 22px; align-items: start; }
+  .app .tela-radar > .app-subtitulo { margin-top: -10px; }
+  .app .tela-radar > * { grid-column: 1 / -1; }
+  .app .tela-radar > .secao-radar { grid-column: auto; }
+
+  /* Documentos e alertas: cartões em duas colunas. */
+  .app .tela-documentos__lista, .app .tela-alertas__lista { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+  .app .tela-documentos__lista > li, .app .tela-alertas__lista > li { margin: 0; }
+}
