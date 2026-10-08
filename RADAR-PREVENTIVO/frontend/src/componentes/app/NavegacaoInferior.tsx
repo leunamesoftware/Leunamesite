@@ -1,6 +1,7 @@
 import { NavLink } from 'react-router-dom';
 import { IconeDocumento, IconePessoa, IconeRadar, IconeSino } from '../icones/Icones';
 import { Contador } from './Contador';
+import { MarcaHorizontal } from '../marca/MarcaHorizontal';
 import { rotas } from '../../rotas';
 import './NavegacaoInferior.css';
 
@@ -15,6 +16,8 @@ export function NavegacaoInferior({ alertasNaoLidos }: { alertasNaoLidos: number
   return (
     <nav className="navegacao" aria-label="Navegação principal">
       <ul className="navegacao__lista">
+        {/* Só no computador (menu lateral): a marca no topo do menu. */}
+        <li className="navegacao__marca" aria-hidden="true"><MarcaHorizontal /></li>
         {ITENS.map(({ para, nome, Icone }) => (
           <li key={para}>
             <NavLink to={para} className={({ isActive }) => `navegacao__item ${isActive ? 'navegacao__item--ativo' : ''}`}>

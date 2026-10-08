@@ -42,6 +42,9 @@
   .navegacao__item { flex-direction: row; justify-content: flex-start; gap: 14px; padding: 14px 16px; font-size: 1rem; }
   .navegacao__icone svg { width: 24px; height: 24px; }
   .navegacao__item--ativo::after { top: 22%; bottom: 22%; left: 4px; right: auto; width: 3px; height: auto; }
+  .navegacao__marca { display: block; padding: 8px 6px 22px; --marca-tamanho: 19px; }
+  /* No computador a marca já está no menu: o cabeçalho de cada tela não repete o logo grande. */
+  .app__conteudo .marca-horizontal { visibility: hidden; }
 }
 
 /* Tela larga: painéis do Radar lado a lado e listas em duas colunas. */
@@ -55,4 +58,9 @@
   /* Documentos e alertas: cartões em duas colunas. */
   .app .tela-documentos__lista, .app .tela-alertas__lista { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
   .app .tela-documentos__lista > li, .app .tela-alertas__lista > li { margin: 0; }
+}
+
+/* Tela grande: aproveita a largura (sem faixas vazias dos lados). */
+@media (min-width: 1500px) and (orientation: landscape) {
+  .app__conteudo { max-width: 1440px; }
 }
