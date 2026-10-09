@@ -67,6 +67,8 @@ jobs:
             sleep 10
           done
           curl -fsS -o /dev/null -w "app: %{http_code}\n" https://leuburger.leunamesoftware.com.br/
+          curl -fsS -o /dev/null -w "app dos clientes: %{http_code}\n" https://leuburger.leunamesoftware.com.br/pedir/
+          echo "::warning::LeuPede em São Paulo: $(curl -fsS 'https://leuburger.leunamesoftware.com.br/api/publico/app/lojas?cidade=S%C3%A3o%20Paulo' | jq -r '[.lojas[].nome] | join(", ")')"
           {
             echo "### LeuBurger PDV publicado"
             echo "- App: https://leuburger.leunamesoftware.com.br/"
