@@ -11,7 +11,7 @@ on:
         description: 'Branch do LeuBurger'
         default: 'ccr-f58cd13b-ml0bzs'
       demo:
-        description: 'Carregar as lojas de demonstração do LeuPede (sim/nao)'
+        description: 'Lojas de demonstração do Pedêê: sim (carrega), trocar (apaga e carrega de novo), remover (apaga tudo), nao'
         default: 'nao'
   push:
     paths: ['.github/workflows/leuburger-publicar.yml']
@@ -56,7 +56,11 @@ jobs:
         run: |
           npx wrangler d1 migrations apply leuburger --remote
           npx wrangler deploy
-          if [ "${{ github.event.inputs.demo }}" = "sim" ] && [ -f demo/lojas-demo.sql ]; then
+          DEMO="${{ github.event.inputs.demo }}"
+          if { [ "$DEMO" = "remover" ] || [ "$DEMO" = "trocar" ]; } && [ -f demo/remover-demo.sql ]; then
+            npx wrangler d1 execute leuburger --remote --file demo/remover-demo.sql
+          fi
+          if { [ "$DEMO" = "sim" ] || [ "$DEMO" = "trocar" ]; } && [ -f demo/lojas-demo.sql ]; then
             npx wrangler d1 execute leuburger --remote --file demo/lojas-demo.sql
           fi
 
