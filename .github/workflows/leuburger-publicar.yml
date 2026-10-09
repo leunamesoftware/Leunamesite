@@ -1,0 +1,67 @@
+name: LeuBurger PDV — testar e publicar
+
+# Publica o LeuBurger PDV (código no repositório leuname-softwarea-apps, pasta leuburger/).
+#   Worker "leuburger" → leuburger.leunamesoftware.com.br
+#   D1 leuburger (lanchonetes, cardápio, vendas, caixa)
+# As contas e o acesso (teste, mensal, vitalício) vêm da loja LeuApps (worker calculadora-receitas).
+on:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: 'Branch do LeuBurger'
+        default: 'ccr-f58cd13b-ml0bzs'
+  push:
+    paths: ['.github/workflows/leuburger-publicar.yml']
+
+concurrency: leuburger-publicar
+
+env:
+  REF: ${{ github.event.inputs.ref || 'ccr-f58cd13b-ml0bzs' }}
+
+jobs:
+  publicar:
+    runs-on: ubuntu-latest
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+    defaults:
+      run:
+        working-directory: app/leuburger
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: leunamesoftware/leuname-softwarea-apps
+          ref: ${{ env.REF }}
+          path: app
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Testes e montagem
+        run: |
+          npm ci
+          npm test
+          npm run construir
+
+      - name: Conta da Cloudflare
+        run: |
+          CONTA=$(curl -fsS -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" "https://api.cloudflare.com/client/v4/accounts" | jq -r '.result[0].id')
+          echo "::add-mask::$CONTA"
+          echo "CLOUDFLARE_ACCOUNT_ID=$CONTA" >> "$GITHUB_ENV"
+
+      - name: Banco e publicação
+        run: |
+          npx wrangler d1 migrations apply leuburger --remote
+          npx wrangler deploy
+
+      - name: Conferir no ar
+        run: |
+          for i in 1 2 3 4 5 6 7 8 9 10 11 12; do
+            if curl -fsS https://leuburger.leunamesoftware.com.br/api/saude; then echo; break; fi
+            sleep 10
+          done
+          curl -fsS -o /dev/null -w "app: %{http_code}\n" https://leuburger.leunamesoftware.com.br/
+          {
+            echo "### LeuBurger PDV publicado"
+            echo "- App: https://leuburger.leunamesoftware.com.br/"
+          } >> "$GITHUB_STEP_SUMMARY"
