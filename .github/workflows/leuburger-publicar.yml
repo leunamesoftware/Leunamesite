@@ -10,6 +10,9 @@ on:
       ref:
         description: 'Branch do LeuBurger'
         default: 'ccr-f58cd13b-ml0bzs'
+      demo:
+        description: 'Carregar as lojas de demonstração do LeuPede (sim/nao)'
+        default: 'nao'
   push:
     paths: ['.github/workflows/leuburger-publicar.yml']
 
@@ -53,6 +56,9 @@ jobs:
         run: |
           npx wrangler d1 migrations apply leuburger --remote
           npx wrangler deploy
+          if [ "${{ github.event.inputs.demo }}" = "sim" ] && [ -f demo/lojas-demo.sql ]; then
+            npx wrangler d1 execute leuburger --remote --file demo/lojas-demo.sql
+          fi
 
       - name: Conferir no ar
         run: |
