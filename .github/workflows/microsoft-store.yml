@@ -12,7 +12,7 @@ on:
       pacote: { description: 'Package/Identity/Name', default: 'Leunamesoftware.Gestacell' }
       editor: { description: 'Package/Identity/Publisher', default: 'CN=83C078D6-4CCB-43A0-BC05-DD91FD6BD64C' }
       editor_nome: { description: 'PublisherDisplayName', default: 'Leunamesoftware' }
-      versao: { description: 'Versão (subir a cada envio novo)', default: '1.0.0' }
+      versao: { description: 'Versão (subir a cada envio novo)', default: '1.0.1' }
 
 jobs:
   pacote:
@@ -40,11 +40,9 @@ jobs:
           m = re.search(r'<link[^>]+rel=["\']manifest["\'][^>]*href=["\']([^"\']+)', html) or re.search(r'href=["\']([^"\']+)["\'][^>]*rel=["\']manifest', html)
           manifesto = urllib.parse.urljoin(url, m.group(1)) if m else None
           v = os.environ['VERSAO']
-          maj, mi, pat = (int(x) for x in v.split('.'))
-          classica = f'{max(0, maj - 1)}.9.{pat}'  # o pacote clássico precisa de versão menor que o principal
           corpo = {
             'name': os.environ['NOME'], 'packageId': os.environ['PACOTE'], 'url': url, 'version': v,
-            'allowSigning': True, 'classicPackage': {'generate': True, 'version': classica},
+            'allowSigning': True, 'classicPackage': {'generate': False},  # só Windows 10/11 atuais (sem o pacote antigo)
             'edgeChannel': 'stable', 'manifestUrl': manifesto,
             'publisher': {'displayName': os.environ['EDITOR_NOME'], 'commonName': os.environ['EDITOR']},
             'resourceLanguage': 'pt-BR',
