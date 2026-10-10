@@ -59,7 +59,7 @@ jobs:
           done
           [ $ok = 1 ] || { echo "::error::O PWABuilder não gerou o pacote. Veja os avisos acima."; exit 1; }
           echo "::notice::Arquivos no pacote: $(unzip -Z1 pacote.zip | tr '\n' ' ')"
-          mkdir -p saida && unzip -o -q pacote.zip -d saida || { echo '::error::Não consegui abrir o zip.'; exit 1; }
+          mkdir -p saida && unzip -o -q pacote.zip '*.msixbundle' -d saida || true  # o zip traz um caminho com \ que o unzip reclama
           B=$(find saida \( -name '*.msixbundle' -o -name '*.msix' \) ! -name '*classic*' | head -1)
           [ -n "$B" ] || { echo "::error::Não veio o .msixbundle no pacote."; exit 1; }
           cp "$B" "$APP.${B##*.}"; echo "EXT=${B##*.}" >> "$GITHUB_ENV"
@@ -69,7 +69,8 @@ jobs:
           npx --yes wrangler@4 r2 object put "leuname-downloads/microsoft/$APP.$EXT" --file "$APP.$EXT" --content-type application/octet-stream --remote
           npx --yes wrangler@4 r2 object put "leuname-downloads/microsoft/$APP.zip" --file pacote.zip --content-type application/zip --remote
           echo "### Pacote da Microsoft Store: $APP" >> "$GITHUB_STEP_SUMMARY"
-          echo "- https://www.leunamesoftware.com.br/baixar/microsoft/$APP.$EXT"; echo "::notice::Baixar: https://www.leunamesoftware.com.br/baixar/microsoft/$APP.$EXT" >> "$GITHUB_STEP_SUMMARY"
+          echo "- https://www.leunamesoftware.com.br/baixar/microsoft/$APP.$EXT" >> "$GITHUB_STEP_SUMMARY"
+          echo "::notice::Baixar: https://www.leunamesoftware.com.br/baixar/microsoft/$APP.$EXT"
       - uses: actions/upload-artifact@v4
         with:
           name: microsoft-${{ github.event.inputs.app }}
