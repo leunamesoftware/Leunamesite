@@ -47,7 +47,7 @@ jobs:
             'allowSigning': True, 'classicPackage': {'generate': True, 'version': classica},
             'edgeChannel': 'stable', 'manifestUrl': manifesto,
             'publisher': {'displayName': os.environ['EDITOR_NOME'], 'commonName': os.environ['EDITOR']},
-            'resourceLanguage': ['pt-BR'], 'targetDeviceFamilies': ['Desktop'],
+            'resourceLanguage': 'pt-BR',
           }
           print(json.dumps(corpo, indent=2, ensure_ascii=False))
           json.dump(corpo, open('corpo.json', 'w'))
