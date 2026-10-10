@@ -1,0 +1,78 @@
+name: Microsoft Store — pacote do app (MSIX pelo PWABuilder)
+
+# Gera o pacote do Windows de um app da LeuApps (PWA) para enviar no Partner Center e deixa para baixar em
+# https://www.leunamesoftware.com.br/baixar/microsoft/<app>.msixbundle (e o .zip completo).
+# Os 3 códigos vêm do Partner Center → Gerenciamento do produto → Identidade do produto (não são segredo).
+on:
+  workflow_dispatch:
+    inputs:
+      app: { description: 'Nome do arquivo (ex.: gestacell)', default: 'gestacell' }
+      nome: { description: 'Nome do app na loja', default: 'Gestacell' }
+      url: { description: 'Endereço do app (PWA)', default: 'https://gestacell.leunamesoftware.com.br/' }
+      pacote: { description: 'Package/Identity/Name', default: 'Leunamesoftware.Gestacell' }
+      editor: { description: 'Package/Identity/Publisher', default: 'CN=83C078D6-4CCB-43A0-BC05-DD91FD6BD64C' }
+      editor_nome: { description: 'PublisherDisplayName', default: 'Leunamesoftware' }
+      versao: { description: 'Versão (subir a cada envio novo)', default: '1.0.0' }
+
+jobs:
+  pacote:
+    runs-on: ubuntu-latest
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+      APP: ${{ github.event.inputs.app }}
+    steps:
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - name: Gerar o pacote no PWABuilder
+        env:
+          NOME: ${{ github.event.inputs.nome }}
+          URL: ${{ github.event.inputs.url }}
+          PACOTE: ${{ github.event.inputs.pacote }}
+          EDITOR: ${{ github.event.inputs.editor }}
+          EDITOR_NOME: ${{ github.event.inputs.editor_nome }}
+          VERSAO: ${{ github.event.inputs.versao }}
+        run: |
+          python3 - <<'PY'
+          import json, os, re, urllib.parse, urllib.request
+          url = os.environ['URL']
+          # Acha o manifesto do app na página.
+          html = urllib.request.urlopen(urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})).read().decode('utf-8', 'ignore')
+          m = re.search(r'<link[^>]+rel=["\']manifest["\'][^>]*href=["\']([^"\']+)', html) or re.search(r'href=["\']([^"\']+)["\'][^>]*rel=["\']manifest', html)
+          manifesto = urllib.parse.urljoin(url, m.group(1)) if m else None
+          v = os.environ['VERSAO']
+          maj, mi, pat = (int(x) for x in v.split('.'))
+          classica = f'{max(0, maj - 1)}.9.{pat}'  # o pacote clássico precisa de versão menor que o principal
+          corpo = {
+            'name': os.environ['NOME'], 'packageId': os.environ['PACOTE'], 'url': url, 'version': v,
+            'allowSigning': True, 'classicPackage': {'generate': True, 'version': classica},
+            'edgeChannel': 'stable', 'manifestUrl': manifesto,
+            'publisher': {'displayName': os.environ['EDITOR_NOME'], 'commonName': os.environ['EDITOR']},
+            'resourceLanguage': ['pt-BR'], 'targetDeviceFamilies': ['Desktop'],
+          }
+          print(json.dumps(corpo, indent=2, ensure_ascii=False))
+          json.dump(corpo, open('corpo.json', 'w'))
+          PY
+          ok=0
+          for base in https://pwabuilder-windows-docker.azurewebsites.net https://pwabuilder-winserver.centralus.cloudapp.azure.com; do
+            code=$(curl -sS -m 600 -X POST "$base/msix/generatezip" -H 'Content-Type: application/json' --data @corpo.json -o pacote.zip -w '%{http_code}' || true)
+            echo "$base → $code"
+            if [ "$code" = "200" ] && unzip -l pacote.zip >/dev/null 2>&1; then ok=1; break; fi
+            echo "::warning::$base respondeu $code: $(head -c 600 pacote.zip | tr '\n' ' ')"
+          done
+          [ $ok = 1 ] || { echo "::error::O PWABuilder não gerou o pacote. Veja os avisos acima."; exit 1; }
+          unzip -l pacote.zip
+          mkdir -p saida && unzip -o -q pacote.zip -d saida
+          B=$(find saida -name '*.msixbundle' ! -name '*classic*' | head -1)
+          [ -n "$B" ] || { echo "::error::Não veio o .msixbundle no pacote."; exit 1; }
+          cp "$B" "$APP.msixbundle"
+          ls -la "$APP.msixbundle"
+      - name: Publicar o download
+        run: |
+          npx --yes wrangler@4 r2 object put "leuname-downloads/microsoft/$APP.msixbundle" --file "$APP.msixbundle" --content-type application/octet-stream --remote
+          npx --yes wrangler@4 r2 object put "leuname-downloads/microsoft/$APP.zip" --file pacote.zip --content-type application/zip --remote
+          echo "### Pacote da Microsoft Store: $APP" >> "$GITHUB_STEP_SUMMARY"
+          echo "- https://www.leunamesoftware.com.br/baixar/microsoft/$APP.msixbundle" >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: microsoft-${{ github.event.inputs.app }}
+          path: pacote.zip
