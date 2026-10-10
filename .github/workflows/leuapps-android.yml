@@ -3,6 +3,7 @@ name: LeuApps Android — loja e apps (APK)
 # Gera os APKs da loja LeuApps para Android (fora da Play Store):
 #   1) LeuApps (a loja: instala, abre e desinstala os apps) → https://www.leunamesoftware.com.br/baixar/leuapps.apk
 #   2) Gestacell para a loja (abre gestacell.leunamesoftware.com.br, sempre atualizado) → leuname-downloads/gestacell.apk
+#   3) Pedêê Entregador (leuburger/android-entregador: GPS nativo, sempre atualizado) → /baixar/pedee-entregador.apk
 # O código da loja Android está no repositório leuname-softwarea-apps (pasta leuapps/android).
 # Chave da LeuApps: gerada na primeira vez e guardada no cofre privado leuname-chaves-privadas/leuapps.
 # Chave do Gestacell: a mesma de sempre (secrets ANDROID_KEYSTORE_*), para atualizar por cima.
@@ -14,6 +15,10 @@ on:
         default: 'ccr-f58cd13b-ml0bzs'
       gestacell:
         description: 'Gerar também o APK do Gestacell'
+        type: boolean
+        default: true
+      entregador:
+        description: 'Gerar também o APK do Pedêê Entregador'
         type: boolean
         default: true
   push:
@@ -197,3 +202,83 @@ jobs:
           npx --yes wrangler@4 r2 object put leuname-downloads/gestacell-loja-versao.json --file /tmp/v.json \
             --content-type application/json --remote
           echo "### Gestacell para a LeuApps: versão $GESTACELL_VERSAO" >> "$GITHUB_STEP_SUMMARY"
+
+  entregador:
+    if: ${{ github.event_name != 'workflow_dispatch' || github.event.inputs.entregador == 'true' }}
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: app/leuburger/android-entregador
+    env:
+      COFRE: leuname-chaves-privadas/pedee-entregador
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: leunamesoftware/leuname-softwarea-apps
+          ref: ${{ env.REF }}
+          path: app
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: '17' }
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - uses: gradle/actions/setup-gradle@v4
+        with: { gradle-version: '8.7' }
+
+      - name: Android SDK
+        run: |
+          SDK="${ANDROID_HOME:-/usr/local/lib/android/sdk}"
+          echo "ANDROID_HOME=$SDK" >> "$GITHUB_ENV"
+          SDKMANAGER="$(find "$SDK" -maxdepth 4 -type f -name sdkmanager | sort -V | tail -n1)"
+          yes | "$SDKMANAGER" --licenses > /dev/null || true
+          "$SDKMANAGER" --install "platforms;android-34" "build-tools;34.0.0" > /dev/null
+
+      - name: Chave de assinatura (cofre privado)
+        run: |
+          npx --yes wrangler@4 r2 bucket create leuname-chaves-privadas >/dev/null 2>&1 || true
+          set +e
+          SAIDA=$(npx --yes wrangler@4 r2 object get "$COFRE/upload.keystore" --file app/release.keystore --remote 2>&1)
+          OK=$?
+          set -e
+          if [ $OK -eq 0 ] && [ -s app/release.keystore ]; then
+            npx --yes wrangler@4 r2 object get "$COFRE/senha.txt" --file senha.txt --remote
+            SENHA=$(cat senha.txt); rm senha.txt
+            echo "Usando a chave guardada."
+          elif echo "$SAIDA" | grep -qiE "does not exist|not found|NoSuchKey"; then
+            rm -f app/release.keystore
+            SENHA="$(openssl rand -base64 24 | tr -dc 'A-Za-z0-9' | cut -c1-24)"
+            keytool -genkeypair -keystore app/release.keystore -alias pedee \
+              -keyalg RSA -keysize 2048 -validity 10000 -storepass "$SENHA" -keypass "$SENHA" \
+              -dname "CN=Pedee Entregador, O=LeuName Softwares, C=BR"
+            printf '%s' "$SENHA" > senha.txt
+            npx --yes wrangler@4 r2 object put "$COFRE/upload.keystore" --file app/release.keystore --remote
+            npx --yes wrangler@4 r2 object put "$COFRE/senha.txt" --file senha.txt --remote
+            rm senha.txt
+            echo "::notice::Chave nova do Pedêê Entregador criada e guardada no cofre privado (primeira vez)."
+          else
+            echo "$SAIDA"
+            echo "::error::Não consegui ler o cofre da chave. Parei para não gerar uma chave diferente."
+            exit 1
+          fi
+          echo "::add-mask::$SENHA"
+          echo "KEYSTORE_PASSWORD=$SENHA" >> "$GITHUB_ENV"
+
+      - name: Gerar o APK assinado
+        run: |
+          export VERSAO_CODIGO=$((GITHUB_RUN_NUMBER + 1)) VERSAO_NOME="1.0.${GITHUB_RUN_NUMBER}"
+          gradle assembleRelease --no-daemon
+          rm -f app/release.keystore
+          APK=app/build/outputs/apk/release/app-release.apk
+          "$ANDROID_HOME/build-tools/34.0.0/apksigner" verify --print-certs "$APK" | head -3
+          mkdir -p ../entrega && cp "$APK" ../entrega/PedeeEntregador.apk
+          printf '{"versionCode":%s,"versionName":"%s"}' "$VERSAO_CODIGO" "$VERSAO_NOME" > ../entrega/pedee-entregador-versao.json
+
+      - name: Publicar o download
+        working-directory: app/leuburger/entrega
+        run: |
+          npx --yes wrangler@4 r2 object put leuname-downloads/pedee-entregador.apk --file PedeeEntregador.apk \
+            --content-type application/vnd.android.package-archive --remote
+          npx --yes wrangler@4 r2 object put leuname-downloads/pedee-entregador-versao.json --file pedee-entregador-versao.json \
+            --content-type application/json --remote
+          echo "### Pedêê Entregador Android $(cat pedee-entregador-versao.json)" >> "$GITHUB_STEP_SUMMARY"
+          echo "- APK: https://www.leunamesoftware.com.br/baixar/pedee-entregador.apk" >> "$GITHUB_STEP_SUMMARY"
