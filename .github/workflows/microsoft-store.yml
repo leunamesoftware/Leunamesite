@@ -32,7 +32,7 @@ jobs:
           EDITOR_NOME: ${{ github.event.inputs.editor_nome }}
           VERSAO: ${{ github.event.inputs.versao }}
         run: |
-          python3 - <<'PY'
+          python3 - 2> erro.txt <<'PY' || { echo "::error::Montar o pedido: $(tail -3 erro.txt | tr '\n' ' ')"; exit 1; }
           import json, os, re, urllib.parse, urllib.request
           url = os.environ['URL']
           # Acha o manifesto do app na página.
@@ -58,18 +58,18 @@ jobs:
             echo "::warning::$base respondeu $code: $(head -c 600 pacote.zip | tr '\n' ' ')"
           done
           [ $ok = 1 ] || { echo "::error::O PWABuilder não gerou o pacote. Veja os avisos acima."; exit 1; }
-          unzip -l pacote.zip
-          mkdir -p saida && unzip -o -q pacote.zip -d saida
-          B=$(find saida -name '*.msixbundle' ! -name '*classic*' | head -1)
+          echo "::notice::Arquivos no pacote: $(unzip -Z1 pacote.zip | tr '\n' ' ')"
+          mkdir -p saida && unzip -o -q pacote.zip -d saida || { echo '::error::Não consegui abrir o zip.'; exit 1; }
+          B=$(find saida \( -name '*.msixbundle' -o -name '*.msix' \) ! -name '*classic*' | head -1)
           [ -n "$B" ] || { echo "::error::Não veio o .msixbundle no pacote."; exit 1; }
-          cp "$B" "$APP.msixbundle"
-          ls -la "$APP.msixbundle"
+          cp "$B" "$APP.${B##*.}"; echo "EXT=${B##*.}" >> "$GITHUB_ENV"
+          ls -la "$APP".*
       - name: Publicar o download
         run: |
-          npx --yes wrangler@4 r2 object put "leuname-downloads/microsoft/$APP.msixbundle" --file "$APP.msixbundle" --content-type application/octet-stream --remote
+          npx --yes wrangler@4 r2 object put "leuname-downloads/microsoft/$APP.$EXT" --file "$APP.$EXT" --content-type application/octet-stream --remote
           npx --yes wrangler@4 r2 object put "leuname-downloads/microsoft/$APP.zip" --file pacote.zip --content-type application/zip --remote
           echo "### Pacote da Microsoft Store: $APP" >> "$GITHUB_STEP_SUMMARY"
-          echo "- https://www.leunamesoftware.com.br/baixar/microsoft/$APP.msixbundle" >> "$GITHUB_STEP_SUMMARY"
+          echo "- https://www.leunamesoftware.com.br/baixar/microsoft/$APP.$EXT"; echo "::notice::Baixar: https://www.leunamesoftware.com.br/baixar/microsoft/$APP.$EXT" >> "$GITHUB_STEP_SUMMARY"
       - uses: actions/upload-artifact@v4
         with:
           name: microsoft-${{ github.event.inputs.app }}
