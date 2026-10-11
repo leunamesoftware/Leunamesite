@@ -92,3 +92,13 @@ saida = site / 'js' / 'catalogo.js'
 saida.write_text('/* Gerado por ferramentas/gerar_catalogo.py a partir da loja (apps.json, servicos.json, cursos.json). Não edite à mão. */\n'
                  'window.LEU_CATALOGO = ' + json.dumps(produtos, ensure_ascii=False, indent=1) + ';\n')
 print(f'{len(produtos)} produtos em {saida}')
+
+# Mapa do site para o Google: só as páginas que existem de verdade (rode de novo quando um produto mudar).
+BASE = 'https://www.leunamesoftware.com.br/'
+CATS = ['pdv', 'delivery', 'receitas', 'utilidades', 'sites', 'design', 'cursos']
+urls = ['', 'categoria.html'] + [f'categoria.html?slug={c}' for c in CATS]
+urls += [(f"curso.html?id={p['id'][6:]}" if p['kind'] == 'curso' else f"producto.html?id={p['id']}") for p in produtos]
+urls += ['sobre-nosotros.html', 'contacto.html', 'preguntas-frecuentes.html', 'terminos-de-uso.html', 'politica-de-privacidad.html', 'politica-de-reembolso.html']
+(site / 'sitemap.xml').write_text('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+    + ''.join(f'  <url><loc>{BASE}{u.replace("&", "&amp;")}</loc></url>\n' for u in urls) + '</urlset>\n')
+print(f'{len(urls)} páginas no sitemap.xml')

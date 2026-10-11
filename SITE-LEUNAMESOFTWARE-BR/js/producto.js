@@ -122,6 +122,7 @@
       if (relatedSection) relatedSection.hidden = true;
       if (notFoundEl) notFoundEl.hidden = false;
       document.title = 'Produto não encontrado — LeuName Softwares';
+      var mr = document.createElement('meta'); mr.name = 'robots'; mr.content = 'noindex'; document.head.appendChild(mr);
       return;
     }
 
