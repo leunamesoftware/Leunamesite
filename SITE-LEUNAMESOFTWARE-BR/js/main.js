@@ -71,7 +71,11 @@
     }
     function resetTimer() {
       clearTimeout(outerTimer);
-      outerTimer = setTimeout(function () { goTo(current + 1); }, 5000);
+      // Passa sozinho para o próximo e religa o relógio (antes trocava uma vez só e parava).
+      outerTimer = setTimeout(function () {
+        if (!document.hidden) goTo(current + 1);
+        resetTimer();
+      }, 4500);
     }
 
     dots.forEach(function (dot, idx) { dot.addEventListener('click', function () { goTo(idx); resetTimer(); }); });
