@@ -9,7 +9,7 @@ jobs:
           B=https://www.leunamesoftware.com.br
           H=$(curl -sS "$B/")
           echo "::warning title=pagina::$(echo "$H" | grep -o '<title>[^<]*' | head -1) | css=$(echo "$H" | grep -o 'href="[^"]*css[^"]*"' | head -3 | tr '\n' ' ') | bytes=$(echo -n "$H" | wc -c)"
-          for p in /img/destaques/gestacell-v5.webp /img/telas/gestacell-play-1.webp /apps /instalar/gestacell /apps.json /js/catalogo.js; do
+          for p in /img/destaques/gestacell-v5.webp /apps /instalar/gestacell /js/catalogo.js /loja/comprar?app=gestacell&plano=mensal /quantocobrar; do
             R=$(curl -sS -o /tmp/r -w "%{http_code} %{content_type} %{size_download}" "$B$p")
             echo "::warning title=$p::$R | $(head -c 90 /tmp/r | tr '\n\r' '  ' | tr -cd '[:print:] ')"
           done
