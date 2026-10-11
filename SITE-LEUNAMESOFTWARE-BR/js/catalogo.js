@@ -330,8 +330,13 @@ window.LEU_CATALOGO = [
    "/img/modelos/agencia-de-viagens-tela-1.webp",
    "/img/modelos/agencia-de-viagens-tela-2.webp",
    "/img/modelos/agencia-de-viagens-tela-3.webp",
-   "/img/modelos/agencia-de-viagens-tela-4.webp",
-   "/img/modelos/agencia-de-viagens-tela-5.webp"
+   "/img/modelos/agencia-de-viagens-tela-4.webp"
+  ],
+  "photosCel": [
+   "/img/modelos/agencia-de-viagens-cel-1.webp",
+   "/img/modelos/agencia-de-viagens-cel-2.webp",
+   "/img/modelos/agencia-de-viagens-cel-3.webp",
+   "/img/modelos/agencia-de-viagens-cel-4.webp"
   ],
   "installUrl": "/modelos/agencia-de-viagens/",
   "buyUrl": "/loja/comprar?app=tpl_agencia&plano=unico",

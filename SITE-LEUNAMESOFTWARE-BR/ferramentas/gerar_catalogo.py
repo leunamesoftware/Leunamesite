@@ -77,7 +77,8 @@ for t in (json.loads(tpl_cat.read_text()) if tpl_cat.exists() else []):
     produtos.append({'id': 'site-' + t['id'], 'kind': 'template', 'name': t['nome'], 'category': 'sites', 'price': t['preco'],
                      'priceText': preco, 'trial': '', 'short': t['resumo'], 'description': t['descricao'], 'features': t['recursos'], 'plans': [],
                      'imageUrl': f"/img/modelos/{t['id']}-banner.webp", 'icon': f"/img/modelos/{t['id']}-192.png",
-                     'photos': [f"/img/modelos/{t['id']}-tela-{i}.webp" for i in range(1, 6)],
+                     'photos': [f"/img/modelos/{t['id']}-tela-{i}.webp" for i in range(1, 5)],
+                     'photosCel': [f"/img/modelos/{t['id']}-cel-{i}.webp" for i in range(1, 5)],
                      'installUrl': f"/modelos/{t['id']}/", 'buyUrl': f"/loja/comprar?app={t['plano']}&plano=unico",
                      'parcelas': t['parcelas'], 'emBreve': False, 'tag': 'novedad', 'segmento': t['segmento']})
 

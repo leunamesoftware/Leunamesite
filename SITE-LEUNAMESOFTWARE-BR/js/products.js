@@ -81,10 +81,18 @@
       (product.icon ? '<img src="' + product.icon + '" alt="" loading="lazy">' : '<span class="prod-visual-icon">' + cat.icon + '</span>') + '</div>';
   }
 
+  // Botão do card: diz ao cliente o que acontece ao tocar.
+  function acaoDoCard(p) {
+    if (p.emBreve) return 'Ver detalhes';
+    if (p.kind === 'template') return 'Ver site e comprar';
+    if (p.kind === 'servico') return 'Pedir orçamento';
+    if (p.kind === 'curso') return 'Começar grátis';
+    return 'Ver e testar grátis';
+  }
+
   function productCardHTML(product) {
     var selo = product.emBreve ? '<span class="product-tag pc-embreve">Em breve</span>'
-      : product.kind === 'servico' ? '<span class="product-real-badge">Orçamento grátis</span>'
-      : product.kind === 'template' ? '<span class="product-real-badge">Site pronto</span>' : '';
+      : product.kind === 'servico' ? '<span class="product-real-badge">Orçamento grátis</span>' : '';
     return (
       '<a class="product-card' + (product.emBreve ? ' is-embreve' : '') + '" href="' + (product.kind === 'curso' ? product.installUrl : 'producto.html?id=' + product.id) + '">' +
         '<div class="product-card-media">' + productVisualHTML(product) + selo + '</div>' +
@@ -93,6 +101,7 @@
           (product.segmento ? '<span class="pc-seg">Para ' + product.segmento.charAt(0).toLowerCase() + product.segmento.slice(1) + '</span>' : '') +
           '<span class="pc-resumo">' + product.short + '</span>' +
           '<p class="product-card-price">' + priceHTML(product) + '</p>' +
+          '<span class="pc-acao">' + acaoDoCard(product) + '</span>' +
         '</div>' +
       '</a>'
     );

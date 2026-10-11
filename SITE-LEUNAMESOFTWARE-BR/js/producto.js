@@ -76,15 +76,21 @@
     document.body.style.overflow = 'hidden';
   }
 
+  // Celular vê as telas do celular (em pé); computador vê as do computador.
+  function fotosDoProduto(product) {
+    var cel = window.matchMedia && window.matchMedia('(max-width: 700px)').matches;
+    return (cel && product.photosCel && product.photosCel.length) ? product.photosCel : (product.photos || []);
+  }
+
   function galleryHTML(product) {
-    var photos = product.photos || [];
+    var photos = fotosDoProduto(product);
     var thumbsHTML = photos.map(function (src, i) {
       return '<button type="button" class="prod-gallery-thumb" data-photo-index="' + i + '">' +
         '<img src="' + src + '" alt="Tela de ' + product.name + '" loading="lazy">' +
       '</button>';
     }).join('');
     var titulo = product.kind === 'app' ? 'Veja as telas do app' : product.kind === 'template' ? 'Veja as telas do site' : 'Veja os exemplos';
-    return window.LeuStore.productVisualHTML(product) + (thumbsHTML ? '<p class="pd-telas-tit">' + titulo + ' (' + photos.length + ') <span>· toque para ampliar</span></p><div class="prod-gallery-thumbs">' + thumbsHTML + '</div>' : '');
+    return window.LeuStore.productVisualHTML(product) + (thumbsHTML ? '<p class="pd-telas-tit">' + titulo + ' (' + photos.length + ') <span>· toque para ampliar</span></p><div class="prod-gallery-thumbs' + (product.kind === 'template' && photos === product.photos ? ' deitadas' : '') + '">' + thumbsHTML + '</div>' : '');
   }
 
   // Botões do produto: app (Baixar / Instalar + planos no Mercado Pago), serviço (orçamento) e curso (Começar).
@@ -92,9 +98,9 @@
     if (product.emBreve) return '<div class="product-actions"><button class="btn btn-primary" type="button" disabled>Em breve</button>' +
       '<a class="btn btn-outline" href="https://wa.me/5524998721557?text=' + encodeURIComponent('Olá! Quero ser avisado quando lançar o ' + product.name + '.') + '" target="_blank" rel="noopener">Me avise no WhatsApp</a></div>';
     if (product.kind === 'servico') return '<div class="product-actions"><a class="btn btn-cart" href="' + product.whatsapp + '" target="_blank" rel="noopener">Pedir orçamento grátis</a></div>';
-    if (product.kind === 'template') return '<div class="product-actions pd-tpl"><a class="btn btn-primary" href="' + product.buyUrl + '">Comprar por ' + product.priceText + '</a>' +
+    if (product.kind === 'template') return '<div class="product-actions pd-tpl"><a class="btn btn-primary" href="' + product.buyUrl + '">Comprar agora</a>' +
       '<a class="btn btn-outline" href="' + product.installUrl + '" target="_blank" rel="noopener">👁️ Ver demonstração ao vivo</a></div>' +
-      '<p class="pd-nota">Pix ou até ' + (product.parcelas || 1) + 'x no cartão pelo Mercado Pago. Assim que o pagamento é aprovado, a <b>pasta completa do site (ZIP)</b> chega no seu e-mail, com o manual passo a passo. Licença para 1 empresa e 1 domínio.</p>';
+      '<p class="pd-nota">📦 A pasta completa do site (ZIP) chega no seu e-mail logo após o pagamento, com o manual. Licença para 1 empresa e 1 domínio.</p>';
     if (product.kind === 'curso') return '<div class="product-actions"><a class="btn btn-primary" href="' + product.installUrl + '">Começar grátis</a></div>';
     var teste = product.trial || 'grátis';
     return '<div class="product-actions pd-um-botao"><a class="btn btn-primary" href="' + product.installUrl + '">Baixar e testar ' + teste + '</a></div>' +
@@ -147,7 +153,7 @@
     if (breadcrumbCat && cat) { breadcrumbCat.textContent = cat.name; breadcrumbCat.href = 'categoria.html?slug=' + cat.slug; }
     if (breadcrumbName) breadcrumbName.textContent = product.name;
 
-    var productPhotos = product.photos || [];
+    var productPhotos = fotosDoProduto(product);
 
     detailEl.innerHTML =
       '<div class="product-gallery">' + galleryHTML(product) + '</div>' +
@@ -156,7 +162,8 @@
         (product.emBreve ? '<span class="cat-tag" style="background:#fff4e5;color:#b45309;margin-left:8px;">Em breve</span>' : '') +
         '<h1>' + product.name + '</h1>' +
         '<p class="short-desc">' + product.short + '</p>' +
-        (product.kind === 'app' && !product.emBreve && product.plans.length ? '<p class="pd-depois">Depois do teste, ' + Store.priceHTML(product) + '</p>' : '<div class="price-row"><span class="price-big">' + Store.priceHTML(product) + '</span></div>') +
+        (product.kind === 'app' && !product.emBreve && product.plans.length ? '<p class="pd-depois">Depois do teste, ' + Store.priceHTML(product) + '</p>' : '<div class="price-row"><span class="price-big">' + Store.priceHTML(product) + '</span>' +
+          (product.kind === 'template' && product.parcelas > 1 ? '<span class="pd-parc">ou ' + product.parcelas + 'x de R$ ' + (product.price / product.parcelas).toFixed(2).replace('.', ',') + ' no cartão · Pix</span>' : '') + '</div>') +
         acoesHTML(product) +
         '<div class="trust-row">' +
           '<div class="trust-item"><span class="trust-ic"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3 4.5 6v6c0 4.5 3.2 7.9 7.5 9 4.3-1.1 7.5-4.5 7.5-9V6L12 3Z"/></svg></span><div><h4>Compra segura</h4></div></div>' +

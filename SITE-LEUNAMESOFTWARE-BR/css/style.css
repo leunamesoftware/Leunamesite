@@ -1121,3 +1121,10 @@ body > .site-footer{ flex-shrink:0; }
 .sob-medida-img{ display:block; margin:0 0 22px; border-radius:var(--radius-l); overflow:hidden; box-shadow:var(--shadow-pop); line-height:0; }
 .sob-medida-img img{ width:100%; height:auto; display:block; }
 .sob-medida-img:hover{ transform:translateY(-1px); }
+.pd-parc{ display:block; font-size:14px; color:var(--ink-600); margin-top:2px; }
+.prod-gallery-thumbs.deitadas .prod-gallery-thumb{ width:min(48%,280px); aspect-ratio:16/10; }
+.pc-acao{ display:block; margin-top:10px; padding:9px 10px; border-radius:var(--radius-pill); background:var(--blue-500); color:#fff; font-weight:700; font-size:13.5px; text-align:center; }
+.product-card:hover .pc-acao{ background:var(--blue-600); }
+.product-card.is-embreve .pc-acao{ background:var(--gray-100); color:var(--ink-600); }
+.product-card-body{ display:flex; flex-direction:column; } .product-card-body .pc-acao{ margin-top:auto; }
+.product-card-body .product-card-price{ margin-bottom:10px; }
