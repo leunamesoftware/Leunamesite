@@ -101,7 +101,9 @@
         document.getElementById('catGridResults').insertAdjacentElement('afterend', veja);
       }
       var outros = Store.getProductsByCategory('todos').filter(function (p) { return list.indexOf(p) < 0; }).slice(0, 6);
-      if (slug && list.length < 4 && outros.length) {
+      // Sites prontos, Logomarcas e Banners mostram só os modelos deles (pedido do dono).
+      var semVeja = ['sites', 'logomarcas', 'banners', 'design', 'diseno'].indexOf(slug) >= 0;
+      if (slug && !semVeja && list.length < 4 && outros.length) {
         veja.innerHTML = '<h2 class="section-title" style="font-size:20px;margin:36px 0 16px">Veja também</h2><div class="product-grid" id="vejaGrid"></div>';
         Store.mountProductGrid('vejaGrid', outros);
       } else veja.innerHTML = '';
