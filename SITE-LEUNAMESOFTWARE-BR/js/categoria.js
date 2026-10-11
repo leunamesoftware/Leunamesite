@@ -34,39 +34,28 @@
     var applyBtn = document.getElementById('filterApply');
     var resultCount = document.getElementById('catResultCount');
 
-    // Logomarcas e Banners: banner da categoria no lugar da faixa azul (toque = orçamento no WhatsApp).
-    // Para pôr o banner de outra categoria, acrescente aqui: imagem do computador, do celular e o pedido.
+    // Banner da categoria no lugar da faixa azul (toque = orçamento no WhatsApp).
+    // Para pôr o banner de outra categoria, acrescente aqui: imagens (computador e celular), tamanhos, pedido e texto.
+    // botao: false quando a própria imagem já tem o botão de orçamento.
+    var DESIGN = { pc: '/img/destaques/design-novo-visual.webp', pcTam: [1800, 750], cel: '/img/destaques/design-novo-visual-cel.webp', celTam: [980, 769],
+      alt: 'Sua marca com um novo visual. Logotipos, banners e artes profissionais para o seu negócio.', botao: true };
     var BANNER_TOPO = {
-      logomarcas: { pc: '/img/destaques/design-novo-visual.webp', cel: '/img/destaques/design-novo-visual-cel.webp', pedido: 'uma logomarca' },
-      banners: { pc: '/img/destaques/design-novo-visual.webp', cel: '/img/destaques/design-novo-visual-cel.webp', pedido: 'um banner' }
+      logomarcas: Object.assign({ pedido: 'uma logomarca para o meu negócio' }, DESIGN),
+      banners: Object.assign({ pedido: 'um banner para o meu negócio' }, DESIGN),
+      sites: { pc: '/img/destaques/site-sob-medida.webp', pcTam: [1600, 576], cel: '/img/destaques/site-sob-medida-cel.webp', celTam: [720, 530],
+        alt: 'Seu site sob medida, para qualquer tipo de negócio. Orçamento grátis.', pedido: 'um site para a minha empresa', botao: false }
     };
     var topo = cat && !query && BANNER_TOPO[cat.slug];
     if (topo) {
       var hero = document.querySelector('.page-hero');
       var wrap = document.createElement('div');
       wrap.className = 'cat-banner-topo container';
-      wrap.innerHTML = '<a href="https://wa.me/5524998721557?text=' + encodeURIComponent('Olá, LeuName Softwares! Vim pelo site e quero um orçamento de ' + topo.pedido + ' para o meu negócio.') + '" target="_blank" rel="noopener" aria-label="Sua marca com um novo visual: logotipos, banners e artes profissionais. Pedir orçamento grátis no WhatsApp">' +
-        '<picture><source media="(max-width:700px)" srcset="' + topo.cel + '" width="980" height="769">' +
-        '<img src="' + topo.pc + '" width="1800" height="750" alt="Sua marca com um novo visual. Logotipos, banners e artes profissionais para o seu negócio."></picture>' +
-        '<span class="cbt-cta">Pedir orçamento grátis</span></a>';
+      wrap.innerHTML = '<a href="https://wa.me/5524998721557?text=' + encodeURIComponent('Olá, LeuName Softwares! Vim pelo site e quero um orçamento de ' + topo.pedido + '.') + '" target="_blank" rel="noopener" aria-label="' + topo.alt + ' Pedir orçamento grátis no WhatsApp">' +
+        '<picture><source media="(max-width:700px)" srcset="' + topo.cel + '" width="' + topo.celTam[0] + '" height="' + topo.celTam[1] + '">' +
+        '<img src="' + topo.pc + '" width="' + topo.pcTam[0] + '" height="' + topo.pcTam[1] + '" alt="' + topo.alt + '"></picture>' +
+        (topo.botao ? '<span class="cbt-cta">Pedir orçamento grátis</span>' : '') + '</a>';
       hero.parentNode.insertBefore(wrap, hero);
       hero.classList.add('page-hero-titulo');
-    }
-
-    // Sites: banner de site sob medida (orçamento no WhatsApp) acima dos templates prontos.
-    if (slug === 'sites' && !query) {
-      var msg = encodeURIComponent('Olá, LeuName Softwares! Vim pelo site e quero um orçamento de site para a minha empresa.');
-      var ban = document.createElement('a');
-      ban.className = 'sob-medida-img';
-      ban.href = 'https://wa.me/5524998721557?text=' + msg;
-      ban.target = '_blank'; ban.rel = 'noopener';
-      ban.setAttribute('aria-label', 'Site sob medida para qualquer tipo de negócio: pedir orçamento grátis no WhatsApp');
-      ban.innerHTML = '<img src="/img/destaques/site-sob-medida.webp" width="1600" height="576" alt="Seu site sob medida, para qualquer tipo de negócio. Orçamento grátis.">';
-      var alvo = document.querySelector('.cat-toolbar');
-      alvo.parentNode.insertBefore(ban, alvo);
-      var tit = document.createElement('h2');
-      tit.className = 'sm-titulo'; tit.textContent = 'Sites prontos: compre e receba no e-mail';
-      alvo.parentNode.insertBefore(tit, alvo);
     }
 
     // Filtro por tipo de negócio (Loja de celular, Mercado...), quando a categoria tem mais de um.
