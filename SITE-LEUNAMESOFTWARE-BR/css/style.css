@@ -1128,3 +1128,5 @@ body > .site-footer{ flex-shrink:0; }
 .product-card.is-embreve .pc-acao{ background:var(--gray-100); color:var(--ink-600); }
 .product-card-body{ display:flex; flex-direction:column; } .product-card-body .pc-acao{ margin-top:auto; }
 .product-card-body .product-card-price{ margin-bottom:10px; }
+.sites-banner{ display:block; margin:0 0 22px; border-radius:var(--radius-l); overflow:hidden; box-shadow:var(--shadow-pop); line-height:0; }
+.sites-banner img{ width:100%; height:auto; display:block; }

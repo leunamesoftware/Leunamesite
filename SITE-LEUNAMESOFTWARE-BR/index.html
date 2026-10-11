@@ -145,6 +145,30 @@
   </div>
 </section>
 
+<section class="section sec-sites" style="padding-top:0;">
+  <div class="container">
+    <a class="sites-banner" href="categoria.html?slug=sites" aria-label="Sites prontos para sua loja: escolher meu site">
+      <img src="/img/destaques/sites-prontos.webp" width="1600" height="576" alt="Sites prontos para sua loja. Escolha o modelo, coloque seus dados e publique. A partir de R$ 280." loading="lazy">
+    </a>
+    <div class="section-head">
+      <div>
+        <h2 class="section-title">Escolha o seu site pronto</h2>
+        <p class="section-sub">Deslize para ver os modelos. Toque para ver a demonstração ao vivo.</p>
+      </div>
+      <a class="section-link" href="categoria.html?slug=sites">Ver todos →</a>
+    </div>
+    <div class="carousel-wrap">
+      <button class="carousel-arrow carousel-arrow-prev" type="button" data-carousel-prev="sitesGrid" aria-label="Ver sites anteriores">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4"><path d="m15 18-6-6 6-6"/></svg>
+      </button>
+      <div class="product-carousel" id="sitesGrid"></div>
+      <button class="carousel-arrow carousel-arrow-next" type="button" data-carousel-next="sitesGrid" aria-label="Ver mais sites">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4"><path d="m9 18 6-6-6-6"/></svg>
+      </button>
+    </div>
+  </div>
+</section>
+
 <section class="section" style="padding-top:0;">
   <div class="container">
     <div class="section-head">
@@ -314,6 +338,7 @@
     if (!window.LeuStore) return;
     var all = LeuStore.PRODUCTS;
     LeuStore.mountCategoryGrid('catGrid');
+    LeuStore.mountProductGrid('sitesGrid', all.filter(function (p) { return p.kind === 'template'; }));
     LeuStore.mountProductGrid('featuredGrid', all.filter(function (p) { return p.kind === 'app' && !p.emBreve; }));
     LeuStore.mountProductGrid('newArrivalsGrid', all.filter(function (p) { return p.tag === 'novedad'; }).concat(all.filter(function (p) { return p.emBreve; })));
   });
