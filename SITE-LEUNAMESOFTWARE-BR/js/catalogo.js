@@ -297,8 +297,8 @@ window.LEU_CATALOGO = [
    "Sem comissão por pedido"
   ],
   "plans": [],
-  "imageUrl": "/img/destaques/leuburger.webp",
-  "icon": "/img/leuburger-192.png",
+  "imageUrl": null,
+  "icon": null,
   "photos": [],
   "installUrl": null,
   "emBreve": true,

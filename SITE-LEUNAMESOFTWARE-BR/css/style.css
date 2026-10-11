@@ -993,3 +993,6 @@ h1,h2,h3,h4{ font-family:var(--font-head); margin:0; }
 body{ min-height:100vh; min-height:100dvh; display:flex; flex-direction:column; }
 body > main{ flex:1 0 auto; }
 body > .site-footer{ flex-shrink:0; }
+.pv-icone .prod-visual-icon svg{ width:64px; height:64px; }
+.prod-visual-pink.pv-icone{ background:linear-gradient(135deg,#ffe4ec,#ffc9d6); color:#d63964; }
+.prod-visual-pink.pv-icone .prod-visual-icon{ color:#d63964; max-width:80px; }

@@ -66,7 +66,8 @@ produtos.append({'id': 'delivery-restaurante', 'kind': 'app', 'name': 'Delivery 
                  'priceText': 'Em breve', 'trial': '', 'short': 'Cardápio online, pedidos e entregas da sua loja, sem comissão por pedido.',
                  'description': 'Delivery próprio para pizzaria, lanchonete e hamburgueria: cardápio online com fotos, pedidos direto para a sua loja, acompanhamento da entrega e sem comissão por pedido. Em breve.',
                  'features': ['Cardápio online', 'Pedidos direto na loja', 'Acompanhar a entrega', 'Sem comissão por pedido'], 'plans': [],
-                 'imageUrl': '/img/destaques/leuburger.webp', 'icon': '/img/leuburger-192.png', 'photos': [], 'installUrl': None, 'emBreve': True, 'tag': None,
+                 # Sem banner próprio ainda: aparece com o ícone de entrega (não repete a imagem do PDV).
+                 'imageUrl': None, 'icon': None, 'photos': [], 'installUrl': None, 'emBreve': True, 'tag': None,
                  'segmento': 'Pizzaria, lanchonete e hamburgueria'})
 
 zap = servicos.get('whatsapp', '5524998721557')
