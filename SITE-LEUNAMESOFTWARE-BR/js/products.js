@@ -137,6 +137,7 @@
   var SVG = function (d) { return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">' + d + '</svg>'; };
   var NEGOCIOS = [
     { slug: 'pizzaria', nome: 'Pizzaria', chaves: ['pizzaria'], cores: ['#b91c1c', '#ef4444'], icon: SVG('<path d="M12 3 3 19.5c5.7 2 12.3 2 18 0L12 3Z"/><circle cx="11" cy="12" r="1.2"/><circle cx="14" cy="16" r="1.2"/><circle cx="9" cy="16.5" r="1.2"/>') },
+    { slug: 'restaurante', nome: 'Restaurante', chaves: ['restaurante'], cores: ['#78350f', '#d4a017'], icon: SVG('<path d="M4 17h16"/><path d="M5.5 17a6.5 6.5 0 0 1 13 0"/><path d="M12 8.5V7"/><path d="M10.5 7h3"/><path d="M3 20h18"/>') },
     { slug: 'lanchonete', nome: 'Lanchonete e hamburgueria', curto: 'Lanchonete', chaves: ['lanchonete', 'hamburgueria'], cores: ['#c2410c', '#f59e0b'], icon: SVG('<path d="M4 11a8 6 0 0 1 16 0H4Z"/><path d="M3.5 14h17"/><path d="M5 17h14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2Z"/>') },
     { slug: 'mercado', nome: 'Mercado e mercearia', curto: 'Mercado', chaves: ['mercado'], cores: ['#1d4ed8', '#f97316'], icon: SVG('<circle cx="9" cy="20" r="1.4"/><circle cx="17" cy="20" r="1.4"/><path d="M3 4h2l2.4 11h11l2-8H6.2"/>') },
     { slug: 'loja-de-celular', nome: 'Loja de celular', chaves: ['celular'], ids: ['curso-gestao-loja-celular'], cores: ['#0e7490', '#22d3ee'], icon: SVG('<rect x="7" y="2.5" width="10" height="19" rx="2.5"/><path d="M11 18.5h2"/>') },
@@ -220,7 +221,7 @@
   // Cabeçalho, barra do celular e rodapé com as categorias de verdade (iguais em todas as páginas).
   // Barra de cima (computador e celular): só o que a LeuName cria e vende. As outras categorias ficam
   // embaixo, em "Explore por categoria", no menu "Todas as categorias" e no rodapé.
-  var NO_TOPO = ['pdv', 'sites', 'logomarcas', 'banners'];
+  var NO_TOPO = ['pdv', 'sites', 'logomarcas', 'banners', 'cursos'];
   var TOPO = CATEGORIES.filter(function (c) { return NO_TOPO.indexOf(c.slug) >= 0; });
   function montarCategorias() {
     var links = document.querySelector('.cat-links');

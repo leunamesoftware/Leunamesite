@@ -371,6 +371,31 @@ window.LEU_CATALOGO = [
   "whatsapp": "https://wa.me/5524998721557?text=Olá,%20LeuName%20Softwares!%20Vim%20pelo%20site%20e%20quero%20um%20orçamento%20de%20banner%20sob%20encomenda%20para%20pizzaria."
  },
  {
+  "id": "servico-banners-restaurante",
+  "kind": "servico",
+  "name": "Banner sob encomenda para restaurante",
+  "category": "banners",
+  "price": 0,
+  "priceText": "Orçamento grátis",
+  "trial": "",
+  "short": "Banner para restaurante: marca elegante, prato em destaque e as vantagens da casa.",
+  "description": "Banner para restaurante: marca elegante, prato em destaque e as vantagens da casa. Este é um modelo de amostra: fazemos o seu com a sua marca, seus produtos e seus preços. Peça o orçamento pelo WhatsApp.",
+  "features": [],
+  "plans": [],
+  "imageUrl": "/img/servicos/banner-restaurante.webp",
+  "icon": null,
+  "photos": [
+   "/img/servicos/banner-restaurante.webp",
+   "/img/servicos/banner-restaurante-2.webp",
+   "/img/servicos/banner-restaurante-3.webp"
+  ],
+  "installUrl": null,
+  "emBreve": false,
+  "tag": null,
+  "segmento": "Restaurante",
+  "whatsapp": "https://wa.me/5524998721557?text=Olá,%20LeuName%20Softwares!%20Vim%20pelo%20site%20e%20quero%20um%20orçamento%20de%20banner%20sob%20encomenda%20para%20restaurante."
+ },
+ {
   "id": "servico-logomarcas",
   "kind": "servico",
   "name": "Logomarcas sob encomenda",
