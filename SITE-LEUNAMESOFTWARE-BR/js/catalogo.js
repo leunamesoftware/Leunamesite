@@ -395,7 +395,7 @@ window.LEU_CATALOGO = [
   "imageUrl": null,
   "icon": "/img/cursos/preco-certo-v2.webp",
   "photos": [],
-  "installUrl": "/apps#curso/preco-certo",
+  "installUrl": "curso.html?id=preco-certo",
   "emBreve": false,
   "tag": null,
   "segmento": ""
@@ -417,7 +417,7 @@ window.LEU_CATALOGO = [
   "imageUrl": null,
   "icon": "/img/cursos/whatsapp-vendas-v2.webp",
   "photos": [],
-  "installUrl": "/apps#curso/whatsapp-vendas",
+  "installUrl": "curso.html?id=whatsapp-vendas",
   "emBreve": false,
   "tag": null,
   "segmento": ""
@@ -439,7 +439,7 @@ window.LEU_CATALOGO = [
   "imageUrl": null,
   "icon": "/img/cursos/gestao-loja-celular.webp",
   "photos": [],
-  "installUrl": "/apps#curso/gestao-loja-celular",
+  "installUrl": "curso.html?id=gestao-loja-celular",
   "emBreve": false,
   "tag": null,
   "segmento": ""
@@ -461,7 +461,7 @@ window.LEU_CATALOGO = [
   "imageUrl": null,
   "icon": "/img/cursos/construcao.webp",
   "photos": [],
-  "installUrl": "/apps#curso/loja-construcao",
+  "installUrl": "curso.html?id=loja-construcao",
   "emBreve": false,
   "tag": null,
   "segmento": ""

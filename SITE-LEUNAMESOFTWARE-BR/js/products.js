@@ -83,7 +83,7 @@
     var selo = product.emBreve ? '<span class="product-tag pc-embreve">Em breve</span>'
       : product.kind === 'servico' ? '<span class="product-real-badge">Orçamento grátis</span>' : '';
     return (
-      '<a class="product-card' + (product.emBreve ? ' is-embreve' : '') + '" href="producto.html?id=' + product.id + '">' +
+      '<a class="product-card' + (product.emBreve ? ' is-embreve' : '') + '" href="' + (product.kind === 'curso' ? product.installUrl : 'producto.html?id=' + product.id) + '">' +
         '<div class="product-card-media">' + productVisualHTML(product) + selo + '</div>' +
         '<div class="product-card-body">' +
           '<span class="product-card-name">' + product.name + '</span>' +

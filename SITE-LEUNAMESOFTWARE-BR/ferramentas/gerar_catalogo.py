@@ -85,7 +85,7 @@ for c in cursos:
     produtos.append({'id': 'curso-' + c['id'], 'kind': 'curso', 'name': c['nome'], 'category': 'cursos', 'price': 0,
                      'priceText': c.get('preco', 'Grátis'), 'trial': '', 'short': c.get('resumo', ''), 'description': c.get('resumo', ''),
                      'features': [f"{len(c.get('aulas', []))} {c.get('unidade', 'aulas')}"], 'plans': [],
-                     'imageUrl': None, 'icon': c.get('icone'), 'photos': [], 'installUrl': '/apps#curso/' + c['id'],
+                     'imageUrl': None, 'icon': c.get('icone'), 'photos': [], 'installUrl': 'curso.html?id=' + c['id'],
                      'emBreve': False, 'tag': None, 'segmento': ''})
 
 saida = site / 'js' / 'catalogo.js'
