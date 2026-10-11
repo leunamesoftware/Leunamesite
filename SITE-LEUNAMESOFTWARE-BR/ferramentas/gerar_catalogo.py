@@ -87,7 +87,7 @@ for s in servicos.get('itens', []):
     if s['id'] == 'templates':  # site sob medida: vira o banner de orçamento da categoria Sites (categoria.js), não produto
         continue
     produtos.append({'id': 'servico-' + s['id'], 'kind': 'servico', 'name': ('Site' if s['id'] == 'templates' else s['nome']) + ' sob encomenda',
-                     'category': 'sites' if s['id'] == 'templates' else 'design', 'price': 0, 'priceText': 'Orçamento grátis', 'trial': '',
+                     'category': {'logomarcas': 'logomarcas', 'banners': 'banners'}.get(s['id'], 'logomarcas'), 'price': 0, 'priceText': 'Orçamento grátis', 'trial': '',
                      'short': s['resumo'], 'description': s['resumo'] + ' Criamos do zero, com a sua marca. Peça o orçamento pelo WhatsApp.',
                      'features': [], 'plans': [], 'imageUrl': s['imagens'][0], 'icon': None, 'photos': s['imagens'],
                      'installUrl': None, 'emBreve': False, 'tag': None, 'segmento': 'Qualquer negócio',
@@ -109,7 +109,7 @@ print(f'{len(produtos)} produtos em {saida}')
 
 # Mapa do site para o Google: só as páginas que existem de verdade (rode de novo quando um produto mudar).
 BASE = 'https://www.leunamesoftware.com.br/'
-CATS = ['pdv', 'delivery', 'receitas', 'utilidades', 'sites', 'design', 'cursos']
+CATS = ['pdv', 'delivery', 'receitas', 'utilidades', 'sites', 'logomarcas', 'banners', 'cursos']
 urls = ['', 'categoria.html'] + [f'categoria.html?slug={c}' for c in CATS]
 urls += [(f"curso.html?id={p['id'][6:]}" if p['kind'] == 'curso' else f"producto.html?id={p['id']}") for p in produtos]
 urls += ['sobre-nosotros.html', 'contacto.html', 'preguntas-frecuentes.html', 'terminos-de-uso.html', 'politica-de-privacidad.html', 'politica-de-reembolso.html']

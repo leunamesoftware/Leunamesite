@@ -14,7 +14,8 @@
     receitas: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 10c0-3 2.5-6 6-6s6 3 6 6"/><path d="M4 10h16l-1.2 9a2 2 0 0 1-2 1.8H7.2a2 2 0 0 1-2-1.8L4 10Z"/></svg>',
     utilidades: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="5" width="16" height="16" rx="2"/><path d="M16 3v4M8 3v4M4 11h16"/></svg>',
     sites: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.2"/><rect x="14" y="3" width="7" height="7" rx="1.2"/><rect x="3" y="14" width="7" height="7" rx="1.2"/><rect x="14" y="14" width="7" height="7" rx="1.2"/></svg>',
-    design: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3a9 9 0 1 0 0 18c1.1 0 1.5-.7 1.5-1.4 0-.4-.2-.7-.4-1-.2-.3-.4-.6-.4-1 0-.8.6-1.4 1.4-1.4H16a4 4 0 0 0 4-4c0-5-3.6-9-8-9Z"/><circle cx="7.5" cy="10.5" r="1"/><circle cx="12" cy="7.5" r="1"/><circle cx="16.5" cy="10.5" r="1"/></svg>',
+    logomarcas: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.4 6.8 19.1l1-5.8-4.3-4.1 5.9-.9L12 3Z"/></svg>',
+    banners: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="8.5" cy="10" r="1.5"/><path d="m21 16-5-5-8 8"/></svg>',
     cursos: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H12v18H6.5A2.5 2.5 0 0 1 4 18.5v-13Z"/><path d="M20 5.5A2.5 2.5 0 0 0 17.5 3H12v18h5.5a2.5 2.5 0 0 0 2.5-2.5v-13Z"/></svg>'
   };
 
@@ -24,7 +25,8 @@
     { slug: 'receitas', name: 'Receitas e Calculadoras', curto: 'Receitas', color: 'amber', icon: ICONS.receitas },
     { slug: 'utilidades', name: 'Gestão e Utilidades', curto: 'Gestão', color: 'green', icon: ICONS.utilidades },
     { slug: 'sites', name: 'Sites prontos', curto: 'Sites prontos', color: 'green', icon: ICONS.sites },
-    { slug: 'design', name: 'Logos e Design', curto: 'Design', color: 'purple', icon: ICONS.design },
+    { slug: 'logomarcas', name: 'Logomarcas', curto: 'Logomarcas', color: 'purple', icon: ICONS.logomarcas },
+    { slug: 'banners', name: 'Banners', curto: 'Banners', color: 'pink', icon: ICONS.banners },
     { slug: 'cursos', name: 'Cursos grátis', curto: 'Cursos grátis', color: 'gray', icon: ICONS.cursos }
   ];
 
@@ -45,16 +47,23 @@
       { q: 'Posso usar em mais de uma empresa?', a: 'Cada compra é a licença de 1 empresa e 1 domínio. Para outra empresa, é só comprar outra licença.' },
       { q: 'Preciso saber programar?', a: 'Não. O manual mostra passo a passo como editar e publicar. Se preferir, fazemos tudo para você: peça um orçamento pelo WhatsApp.' }
     ],
-    design: [
-      { q: 'Como peço a minha logo ou banner?', a: 'Toque em Pedir orçamento e fale com a gente no WhatsApp. O orçamento é grátis.' },
+    logomarcas: [
+      { q: 'Como peço a minha logomarca?', a: 'Veja os modelos, toque em Pedir orçamento e fale com a gente no WhatsApp. O orçamento é grátis. Criamos a logo com o nome e o estilo do seu negócio.' },
       { q: 'Posso usar nas redes sociais e na fachada?', a: 'Sim, entregamos os arquivos prontos para redes sociais, impressão e fachada.' }
+    ],
+    banners: [
+      { q: 'Como peço o meu banner?', a: 'Escolha um modelo, toque em Pedir orçamento e fale com a gente no WhatsApp. O orçamento é grátis. Fazemos o banner com a sua marca, seus produtos e seus preços.' },
+      { q: 'Serve para Instagram, WhatsApp e impressão?', a: 'Sim, entregamos no tamanho certo para onde você vai usar: redes sociais, WhatsApp, fachada ou impressão.' }
     ],
     cursos: [
       { q: 'Os cursos são grátis?', a: 'Sim. Toque em Começar e faça as aulas no celular ou no computador.' }
     ]
   };
 
+  // Endereços antigos (Design) levam para Logomarcas.
+  var APELIDOS = { design: 'logomarcas', diseno: 'logomarcas' };
   function getCategory(slug) {
+    slug = APELIDOS[slug] || slug;
     for (var i = 0; i < CATEGORIES.length; i++) if (CATEGORIES[i].slug === slug) return CATEGORIES[i];
     return null;
   }
@@ -65,6 +74,7 @@
   // "Todos os produtos" é a loja: os cursos grátis ficam só na categoria deles, sem misturar.
   function getProductsByCategory(slug) {
     if (!slug || slug === 'todos') return PRODUCTS.filter(function (p) { return p.kind !== 'curso'; });
+    slug = APELIDOS[slug] || slug;
     return PRODUCTS.filter(function (p) { return p.category === slug; });
   }
   function formatPrice(value) {
