@@ -142,15 +142,19 @@
   }
 
   // Cabeçalho, barra do celular e rodapé com as categorias de verdade (iguais em todas as páginas).
+  // Barra de cima (computador e celular): só o que a LeuName cria e vende. As outras categorias ficam
+  // embaixo, em "Explore por categoria", no menu "Todas as categorias" e no rodapé.
+  var NO_TOPO = ['pdv', 'sites', 'logomarcas', 'banners'];
+  var TOPO = CATEGORIES.filter(function (c) { return NO_TOPO.indexOf(c.slug) >= 0; });
   function montarCategorias() {
     var links = document.querySelector('.cat-links');
-    if (links) links.innerHTML = CATEGORIES.map(function (c) {
+    if (links) links.innerHTML = TOPO.map(function (c) {
       return '<li><a href="categoria.html?slug=' + c.slug + '"><span class="cat-ic cat-ic-' + c.color + '">' + c.icon + '</span>' + c.name + '</a></li>';
     }).join('');
     var rolar = document.querySelector('.mobile-cat-scroll');
     if (rolar) {
       rolar.removeAttribute('aria-hidden');
-      rolar.innerHTML = CATEGORIES.map(function (c) {
+      rolar.innerHTML = TOPO.map(function (c) {
         return '<a href="categoria.html?slug=' + c.slug + '"><span class="cat-ic cat-ic-' + c.color + '">' + c.icon + '</span>' + c.curto + '</a>';
       }).join('');
     }
