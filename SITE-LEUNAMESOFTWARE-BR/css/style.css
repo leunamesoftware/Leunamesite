@@ -1118,3 +1118,6 @@ body > .site-footer{ flex-shrink:0; }
 .sm-cel i{ display:block; height:34px; border-radius:6px; background:linear-gradient(135deg,#ffd27a,#e2694a); } .sm-cel b{ display:block; height:7px; border-radius:4px; background:#d5dbe6; }
 .sm-titulo{ font-family:var(--font-head); font-size:20px; margin:4px 0 12px; color:var(--ink-900); }
 @media (max-width:720px){ .sob-medida{ grid-template-columns:1fr; padding:22px 20px; } .sm-arte{ display:none; } .sob-medida h2{ font-size:22px; } .sm-btn{ display:block; text-align:center; } }
+.sob-medida-img{ display:block; margin:0 0 22px; border-radius:var(--radius-l); overflow:hidden; box-shadow:var(--shadow-pop); line-height:0; }
+.sob-medida-img img{ width:100%; height:auto; display:block; }
+.sob-medida-img:hover{ transform:translateY(-1px); }

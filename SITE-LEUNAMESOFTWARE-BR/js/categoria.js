@@ -38,14 +38,11 @@
     if (slug === 'sites' && !query) {
       var msg = encodeURIComponent('Olá, LeuName Softwares! Vim pelo site e quero um orçamento de site para a minha empresa.');
       var ban = document.createElement('a');
-      ban.className = 'sob-medida';
+      ban.className = 'sob-medida-img';
       ban.href = 'https://wa.me/5524998721557?text=' + msg;
       ban.target = '_blank'; ban.rel = 'noopener';
-      ban.innerHTML = '<div class="sm-texto"><span class="sm-pill">Site sob medida</span>' +
-        '<h2>Quer um site só seu, do seu jeito?</h2>' +
-        '<p>Criamos o site da sua empresa do zero, com a sua marca, pronto para vender no celular e no computador.</p>' +
-        '<span class="sm-btn">💬 Pedir orçamento grátis no WhatsApp</span></div>' +
-        '<div class="sm-arte" aria-hidden="true"><span class="sm-tela"><i></i><i></i><i></i><b></b><b></b><b></b></span><span class="sm-cel"><i></i><b></b><b></b></span></div>';
+      ban.setAttribute('aria-label', 'Site sob medida para qualquer tipo de negócio: pedir orçamento grátis no WhatsApp');
+      ban.innerHTML = '<img src="/img/destaques/site-sob-medida.webp" width="1600" height="576" alt="Seu site sob medida, para qualquer tipo de negócio. Orçamento grátis.">';
       var alvo = document.querySelector('.cat-toolbar');
       alvo.parentNode.insertBefore(ban, alvo);
       var tit = document.createElement('h2');
