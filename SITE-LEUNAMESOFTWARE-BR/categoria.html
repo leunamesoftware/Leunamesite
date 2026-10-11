@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=1100">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="icon" type="image/png" sizes="192x192" href="/assets/img/icon-192.png">
 <link rel="apple-touch-icon" href="/assets/img/icon-192.png">
 <meta name="application-name" content="LeuName Softwares">
@@ -120,7 +120,8 @@
 </div>
 
 <div class="container cat-layout">
-  <aside class="filters">
+  <aside class="filters" id="filtrosPainel" aria-label="Filtros">
+    <div class="filtros-topo"><b>Filtrar</b><button type="button" class="filtros-fechar" id="filtrosFechar" aria-label="Fechar filtros">✕</button></div>
     <h3>Categorias</h3>
     <nav class="filters-cats" id="filtersCats"></nav>
     <h3 style="margin-top:22px;">Preço</h3>
@@ -142,6 +143,7 @@
 
   <div>
     <div class="cat-toolbar">
+      <button type="button" class="btn-filtrar" id="filtrosAbrir"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M7 12h10M10 18h4"/></svg>Filtrar</button>
       <span class="cat-result-count" id="catResultCount"></span>
     </div>
     <div class="product-grid" id="catGridResults"></div>
@@ -236,5 +238,17 @@
 <script src="js/main.js"></script>
 <script src="js/site-config.js"></script>
 <script src="js/categoria.js"></script>
+<div class="filtros-fundo" id="filtrosFundo" hidden></div>
+<script>
+  // Celular: o menu de filtros abre pelo lado, por cima da página.
+  (function () {
+    var painel = document.getElementById('filtrosPainel'), fundo = document.getElementById('filtrosFundo');
+    function abrir(sim) { painel.classList.toggle('aberto', sim); fundo.hidden = !sim; document.body.style.overflow = sim ? 'hidden' : ''; }
+    document.getElementById('filtrosAbrir').addEventListener('click', function () { abrir(true); });
+    document.getElementById('filtrosFechar').addEventListener('click', function () { abrir(false); });
+    fundo.addEventListener('click', function () { abrir(false); });
+    document.getElementById('filterApply').addEventListener('click', function () { abrir(false); });
+  })();
+</script>
 </body>
 </html>
