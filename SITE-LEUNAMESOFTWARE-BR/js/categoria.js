@@ -18,7 +18,7 @@
     document.getElementById('catBreadName').textContent = cat ? cat.name : 'Todos os produtos';
     document.getElementById('catDesc').textContent = query
       ? 'Resultados da busca por "' + query + '".'
-      : (cat ? 'Explore todos os nossos produtos de ' + cat.name.toLowerCase() + '.' : 'Explore nosso catálogo completo de produtos digitais.');
+      : (cat ? 'Explore todos os nossos produtos de ' + cat.name + '.' : 'Explore nosso catálogo completo de produtos digitais.');
     document.title = (cat ? cat.name : 'Todos os produtos') + ' — LeuName Softwares';
 
     var filtersCats = document.getElementById('filtersCats');
@@ -34,10 +34,32 @@
     var applyBtn = document.getElementById('filterApply');
     var resultCount = document.getElementById('catResultCount');
 
+    // Filtro por tipo de negócio (Loja de celular, Mercado...), quando a categoria tem mais de um.
+    var segmento = '';
+    var segs = [];
+    (slug ? Store.getProductsByCategory(slug) : []).forEach(function (p) { if (p.segmento && segs.indexOf(p.segmento) < 0) segs.push(p.segmento); });
+    if (segs.length > 1) {
+      var barra = document.createElement('div');
+      barra.className = 'seg-chips';
+      barra.setAttribute('role', 'group');
+      barra.setAttribute('aria-label', 'Tipo de negócio');
+      barra.innerHTML = ['<button type="button" class="is-active" data-seg="">Todos</button>'].concat(segs.map(function (s) {
+        return '<button type="button" data-seg="' + s + '">' + s + '</button>';
+      })).join('');
+      resultCount.parentNode.insertBefore(barra, resultCount);
+      barra.addEventListener('click', function (e) {
+        var b = e.target.closest('[data-seg]'); if (!b) return;
+        segmento = b.getAttribute('data-seg');
+        barra.querySelectorAll('button').forEach(function (x) { x.classList.toggle('is-active', x === b); });
+        render();
+      });
+    }
+
     function baseList() {
       var list = slug ? Store.getProductsByCategory(slug) : Store.PRODUCTS.slice();
+      if (segmento) list = list.filter(function (p) { return p.segmento === segmento; });
       if (query) {
-        list = list.filter(function (p) { return p.name.toLowerCase().indexOf(query) !== -1 || p.short.toLowerCase().indexOf(query) !== -1; });
+        list = list.filter(function (p) { return p.name.toLowerCase().indexOf(query) !== -1 || p.short.toLowerCase().indexOf(query) !== -1 || (p.segmento || '').toLowerCase().indexOf(query) !== -1; });
       }
       return list;
     }

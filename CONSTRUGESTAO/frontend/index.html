@@ -8999,7 +8999,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
     '</div>';
   }
 
-  /* ---- Conta da loja LeuApps: o acesso (teste grátis de 7 dias, mensal, anual ou para sempre)
+  /* ---- Conta da loja LeuApps: o acesso (teste grátis de 3 dias, mensal, anual ou para sempre)
      fica na conta do cliente (e-mail + senha, a mesma de todos os apps). A chave é só controle interno. ---- */
   var LOJA_COMPRA = 'https://www.leunamesoftware.com.br/loja/comprar?app=construgestao';
   var TRIAL_DIAS = 7;
@@ -9079,14 +9079,14 @@ html, body{ overflow-x:hidden; max-width:100%; }
     var campo = function (id, rotulo, tipo, auto, ph) { return '<div class="field" style="margin-top:10px;"><label for="' + id + '">' + rotulo + '</label><input id="' + id + '" type="' + tipo + '" autocomplete="' + auto + '"' + (ph ? ' placeholder="' + ph + '"' : '') + '></div>'; };
     root.innerHTML = authShellHTML(
       '<p style="font-size:13px;color:var(--text-secondary);text-align:center;margin:0 0 14px;">Vendas, estoque, orçamentos e entregas da sua loja de material de construção.<br>' +
-        (testeAcabou ? 'Planos a partir de <b>R$ 19,90/mês</b>.' : '<b>7 dias grátis</b> para testar. Depois, a partir de R$ 19,90/mês.') + '</p>' +
+        (testeAcabou ? 'Planos a partir de <b>R$ 19,90/mês</b>.' : '<b>3 dias grátis</b> para testar. Depois, a partir de R$ 19,90/mês.') + '</p>' +
       (errMsg ? '<div class="alert alert--danger" style="margin-bottom:12px;">' + esc(errMsg) + '</div>' : '') +
       (criando
         ? '<p style="font-weight:700;font-size:14px;margin:0 0 4px;">Crie a sua conta para testar grátis</p>' + campo('cg-nome', 'Seu nome', 'text', 'name') + campo('cg-email', 'E-mail', 'email', 'email', 'voce@email.com') + campo('cg-senha', 'Crie uma senha', 'password', 'new-password', 'Mínimo 6 caracteres') +
           '<div id="cg-erro" class="alert alert--danger" style="display:none;margin-top:10px;"></div>' +
-          '<button class="btn btn--primary" id="cg-entrar" type="button" style="width:100%;justify-content:center;margin-top:14px;">Começar 7 dias grátis</button>' +
+          '<button class="btn btn--primary" id="cg-entrar" type="button" style="width:100%;justify-content:center;margin-top:14px;">Começar 3 dias grátis</button>' +
           '<p style="text-align:center;font-size:13px;margin:12px 0 0;"><a href="#" id="cg-modo">Já tenho conta: entrar</a></p>'
-        : (testeAcabou ? '' : '<button class="btn btn--primary" id="cg-testar" type="button" style="width:100%;justify-content:center;">🎁 Testar 7 dias grátis</button>') +
+        : (testeAcabou ? '' : '<button class="btn btn--primary" id="cg-testar" type="button" style="width:100%;justify-content:center;">🎁 Testar 3 dias grátis</button>') +
           '<a class="btn ' + (testeAcabou ? 'btn--primary' : 'btn--secondary') + '" href="' + LOJA_COMPRA + '" style="width:100%;justify-content:center;text-decoration:none;margin-top:10px;">🛒 Ver planos · a partir de R$ 19,90/mês</a>' +
           '<div style="border-top:1px solid var(--border-subtle);margin:18px 0 6px;"></div>' +
           '<p style="font-weight:700;font-size:14px;margin:0;">Já tem conta? Entre</p>' + campo('cg-email', 'E-mail', 'email', 'username', 'voce@email.com') + campo('cg-senha', 'Senha', 'password', 'current-password') +
@@ -9101,10 +9101,10 @@ html, body{ overflow-x:hidden; max-width:100%; }
     var depoisDaConta = async function (querTeste) {
       if (await chaveDaConta()) return liberar('ConstruGestão liberado!');
       var t0 = __testesConta && __testesConta.construgestao;
-      if (!querTeste && t0) throw new Error(t0.acabou ? 'O teste grátis desta conta terminou. Escolha um plano para continuar.' : 'Esta conta ainda não tem o ConstruGestão.');
+      if (!querTeste && t0) throw new Error(t0.acabou ? 'O teste grátis já foi usado nesta conta ou neste aparelho. Escolha um plano para continuar.' : 'Esta conta ainda não tem o ConstruGestão.');
       var t = await comecarTesteGratis();
-      if (t === 'ok') return liberar('Teste grátis de 7 dias liberado!');
-      if (t === 'acabou') return renderLicenseGate('O teste grátis desta conta terminou. Escolha um plano para continuar.');
+      if (t === 'ok') return liberar('Teste grátis de 3 dias liberado!');
+      if (t === 'acabou') return renderLicenseGate('O teste grátis já foi usado nesta conta ou neste aparelho. Escolha um plano para continuar.');
       throw new Error('Não deu para liberar agora. Tente de novo.');
     };
     var btn = document.getElementById('cg-entrar'), rotulo = btn.textContent;
@@ -9130,10 +9130,10 @@ html, body{ overflow-x:hidden; max-width:100%; }
       try {
         var t = await comecarTesteGratis();
         if (t === 'sem_conta') return renderLicenseGate('', 'criar');
-        if (t === 'ok') return liberar('Teste grátis de 7 dias liberado!');
-        if (t === 'acabou') return renderLicenseGate('O teste grátis desta conta terminou. Escolha um plano para continuar.');
+        if (t === 'ok') return liberar('Teste grátis de 3 dias liberado!');
+        if (t === 'acabou') return renderLicenseGate('O teste grátis já foi usado nesta conta ou neste aparelho. Escolha um plano para continuar.');
         throw new Error('Não deu para liberar agora. Tente de novo.');
-      } catch (e) { erro(navigator.onLine ? e.message : 'Sem internet. Conecte-se e tente de novo.'); testar.disabled = false; testar.textContent = '🎁 Testar 7 dias grátis'; }
+      } catch (e) { erro(navigator.onLine ? e.message : 'Sem internet. Conecte-se e tente de novo.'); testar.disabled = false; testar.textContent = '🎁 Testar 3 dias grátis'; }
     };
   }
 
@@ -10606,7 +10606,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
     if (__booted) return; __booted = true;
     document.querySelector('.app').style.display = 'none';
     try { await openDB(); } catch (e) { console.error('Falha ao abrir banco local', e); }
-    // Abre com o acesso da conta da loja (teste grátis de 7 dias, mensal, anual ou para sempre) ou chave antiga.
+    // Abre com o acesso da conta da loja (teste grátis de 3 dias, mensal, anual ou para sempre) ou chave antiga.
     if (!(await isLicenseActivated()) || trialExpirado() || !(await acessoDaContaValendo())) {
       var tinha = lsGet(LICENSE_LS_KEY);
       if (!(await chaveDaConta())) {

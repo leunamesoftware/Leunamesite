@@ -86,6 +86,7 @@
         '<div class="product-card-media">' + productVisualHTML(product) + selo + '</div>' +
         '<div class="product-card-body">' +
           '<span class="product-card-name">' + product.name + '</span>' +
+          (product.segmento ? '<span class="pc-seg">Para ' + product.segmento.charAt(0).toLowerCase() + product.segmento.slice(1) + '</span>' : '') +
           '<span class="pc-resumo">' + product.short + '</span>' +
           '<p class="product-card-price">' + priceHTML(product) + '</p>' +
         '</div>' +

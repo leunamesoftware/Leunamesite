@@ -975,3 +975,8 @@ h1,h2,h3,h4{ font-family:var(--font-head); margin:0; }
 .product-info .pd-um-botao{ grid-template-columns:1fr; }
 .product-info .pd-um-botao .btn{ padding:16px 20px; font-size:17px; }
 .pd-depois{ margin-top:10px; font-size:15px; color:var(--ink-600); }
+.pc-seg{ font-size:12px; font-weight:600; color:var(--blue-600); }
+.seg-chips{ display:flex; gap:8px; overflow-x:auto; scrollbar-width:none; margin-bottom:14px; padding-bottom:2px; }
+.seg-chips::-webkit-scrollbar{ display:none; }
+.seg-chips button{ flex:none; padding:8px 14px; border-radius:var(--radius-pill); border:1.5px solid var(--gray-200); background:var(--white); font-size:13.5px; font-weight:600; color:var(--ink-600); cursor:pointer; }
+.seg-chips button.is-active{ background:var(--blue-500); border-color:var(--blue-500); color:var(--white); }

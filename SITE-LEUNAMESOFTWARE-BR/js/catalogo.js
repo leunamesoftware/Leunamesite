@@ -7,7 +7,7 @@ window.LEU_CATALOGO = [
   "category": "receitas",
   "price": 2.99,
   "priceText": "a partir de R$ 2,99/mês",
-  "trial": "2 dias grátis",
+  "trial": "3 dias grátis",
   "short": "Livro de receitas com custo, preço e lucro calculados na hora.",
   "description": "Livro de receitas que vendem com a calculadora em cada página. Você vê quanto rende, quanto custa, quanto cobrar e quanto lucra, sem fazer conta.",
   "features": [
@@ -50,7 +50,8 @@ window.LEU_CATALOGO = [
   ],
   "installUrl": "/instalar/quantocobrar",
   "emBreve": false,
-  "tag": "novedad"
+  "tag": "novedad",
+  "segmento": "Confeitaria e salgados"
  },
  {
   "id": "gestacell",
@@ -59,7 +60,7 @@ window.LEU_CATALOGO = [
   "category": "pdv",
   "price": 19.9,
   "priceText": "a partir de R$ 19,90/mês",
-  "trial": "7 dias grátis",
+  "trial": "3 dias grátis",
   "short": "Vendas, ordens de serviço, estoque e financeiro da loja de celular.",
   "description": "Sistema completo para loja de celular e assistência técnica. Funciona no celular e no computador, até sem internet.",
   "features": [
@@ -103,7 +104,8 @@ window.LEU_CATALOGO = [
   ],
   "installUrl": "/instalar/gestacell",
   "emBreve": false,
-  "tag": "novedad"
+  "tag": "novedad",
+  "segmento": "Loja de celular"
  },
  {
   "id": "radar",
@@ -112,7 +114,7 @@ window.LEU_CATALOGO = [
   "category": "utilidades",
   "price": 9.9,
   "priceText": "a partir de R$ 9,90/mês",
-  "trial": "7 dias grátis",
+  "trial": "3 dias grátis",
   "short": "Avisa antes de vencer: documentos, contas e prazos da empresa.",
   "description": "Avisa antes de vencer: documentos, contas e prazos da sua empresa, tudo num lugar só.",
   "features": [
@@ -155,7 +157,8 @@ window.LEU_CATALOGO = [
   ],
   "installUrl": "/instalar/radar",
   "emBreve": false,
-  "tag": "novedad"
+  "tag": "novedad",
+  "segmento": "Qualquer empresa"
  },
  {
   "id": "construgestao",
@@ -164,7 +167,7 @@ window.LEU_CATALOGO = [
   "category": "pdv",
   "price": 19.9,
   "priceText": "a partir de R$ 19,90/mês",
-  "trial": "7 dias grátis",
+  "trial": "3 dias grátis",
   "short": "Vendas, estoque, clientes e financeiro da loja de material de construção.",
   "description": "Sistema de gestão para loja de material de construção: vendas, orçamentos, entregas, estoque com aviso do que precisa comprar, clientes, fornecedores e calculadoras de material da obra e de preço. Funciona no celular e no computador.",
   "features": [
@@ -201,7 +204,8 @@ window.LEU_CATALOGO = [
   ],
   "installUrl": "/instalar/construgestao",
   "emBreve": false,
-  "tag": null
+  "tag": null,
+  "segmento": "Material de construção"
  },
  {
   "id": "mercagestao",
@@ -210,7 +214,7 @@ window.LEU_CATALOGO = [
   "category": "pdv",
   "price": 39.9,
   "priceText": "a partir de R$ 39,90/mês",
-  "trial": "7 dias grátis",
+  "trial": "3 dias grátis",
   "short": "Caixa com leitor de código de barras, cupom, NFC-e, estoque, validade e fiado.",
   "description": "Sistema de caixa e gestão para mercado, mercearia e mini-mercado. Leitor de código de barras (de mão ou câmera do celular), etiqueta da balança, cupom na impressora térmica, NFC-e, estoque com validade e perdas, fiado com limite, importação do XML da nota do fornecedor e relatórios de lucro. Funciona no computador e no celular, até sem internet.",
   "features": [
@@ -247,7 +251,8 @@ window.LEU_CATALOGO = [
   ],
   "installUrl": "/instalar/mercagestao",
   "emBreve": false,
-  "tag": null
+  "tag": null,
+  "segmento": "Mercado e mercearia"
  },
  {
   "id": "leuburger",
@@ -257,7 +262,7 @@ window.LEU_CATALOGO = [
   "price": 29.9,
   "priceText": "Em breve",
   "trial": "",
-  "short": "Receba os pedidos da sua lanchonete, cadastre o cardápio e escolha o entregador. 30 dias grátis.",
+  "short": "Receba os pedidos da sua lanchonete, cadastre o cardápio e escolha o entregador. 3 dias grátis.",
   "description": "App do lojista do Pedêê. Cadastre sua loja pelo WhatsApp, monte o cardápio, receba os pedidos com aviso sonoro, aceite, avise que está pronto e escolha o entregador da sua loja. Sem comissão: R$ 29,90 por mês, com o primeiro mês grátis. Inclui o painel completo com caixa e estoque.",
   "features": [
    "📲 Pedidos chegando com aviso sonoro",
@@ -275,7 +280,8 @@ window.LEU_CATALOGO = [
   ],
   "installUrl": null,
   "emBreve": true,
-  "tag": null
+  "tag": null,
+  "segmento": "Lanchonete e restaurante"
  },
  {
   "id": "pedee",
@@ -303,7 +309,8 @@ window.LEU_CATALOGO = [
   ],
   "installUrl": null,
   "emBreve": true,
-  "tag": null
+  "tag": null,
+  "segmento": "Quem pede comida"
  },
  {
   "id": "pedee-entregador",
@@ -330,7 +337,8 @@ window.LEU_CATALOGO = [
   ],
   "installUrl": null,
   "emBreve": true,
-  "tag": null
+  "tag": null,
+  "segmento": "Entregador"
  },
  {
   "id": "pdv-lanchonete",
@@ -355,7 +363,8 @@ window.LEU_CATALOGO = [
   "photos": [],
   "installUrl": null,
   "emBreve": true,
-  "tag": null
+  "tag": null,
+  "segmento": "Lanchonete e pizzaria"
  },
  {
   "id": "servico-logomarcas",
@@ -379,6 +388,7 @@ window.LEU_CATALOGO = [
   "installUrl": null,
   "emBreve": false,
   "tag": null,
+  "segmento": "Qualquer negócio",
   "whatsapp": "https://wa.me/5524998721557?text=Olá,%20LeuName%20Softwares!%20Vim%20pelo%20site%20e%20quero%20um%20orçamento%20de%20logomarcas."
  },
  {
@@ -402,6 +412,7 @@ window.LEU_CATALOGO = [
   "installUrl": null,
   "emBreve": false,
   "tag": null,
+  "segmento": "Qualquer negócio",
   "whatsapp": "https://wa.me/5524998721557?text=Olá,%20LeuName%20Softwares!%20Vim%20pelo%20site%20e%20quero%20um%20orçamento%20de%20templates%20de%20site."
  },
  {
@@ -425,6 +436,7 @@ window.LEU_CATALOGO = [
   "installUrl": null,
   "emBreve": false,
   "tag": null,
+  "segmento": "Qualquer negócio",
   "whatsapp": "https://wa.me/5524998721557?text=Olá,%20LeuName%20Softwares!%20Vim%20pelo%20site%20e%20quero%20um%20orçamento%20de%20banners%20e%20imagens."
  },
  {
@@ -446,7 +458,8 @@ window.LEU_CATALOGO = [
   "photos": [],
   "installUrl": "/apps#curso/preco-certo",
   "emBreve": false,
-  "tag": null
+  "tag": null,
+  "segmento": ""
  },
  {
   "id": "curso-whatsapp-vendas",
@@ -467,7 +480,8 @@ window.LEU_CATALOGO = [
   "photos": [],
   "installUrl": "/apps#curso/whatsapp-vendas",
   "emBreve": false,
-  "tag": null
+  "tag": null,
+  "segmento": ""
  },
  {
   "id": "curso-gestao-loja-celular",
@@ -488,7 +502,8 @@ window.LEU_CATALOGO = [
   "photos": [],
   "installUrl": "/apps#curso/gestao-loja-celular",
   "emBreve": false,
-  "tag": null
+  "tag": null,
+  "segmento": ""
  },
  {
   "id": "curso-loja-construcao",
@@ -509,6 +524,7 @@ window.LEU_CATALOGO = [
   "photos": [],
   "installUrl": "/apps#curso/loja-construcao",
   "emBreve": false,
-  "tag": null
+  "tag": null,
+  "segmento": ""
  }
 ];

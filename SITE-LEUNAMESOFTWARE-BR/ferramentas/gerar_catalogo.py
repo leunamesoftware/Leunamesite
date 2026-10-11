@@ -20,6 +20,10 @@ CATEGORIA = {'gestacell': 'pdv', 'mercagestao': 'pdv', 'construgestao': 'pdv',
              'leuburger': 'delivery', 'pedee': 'delivery', 'pedee-entregador': 'delivery',
              'quantocobrar': 'receitas', 'radar': 'utilidades'}
 EM_BREVE = {'leuburger', 'pedee', 'pedee-entregador'}
+# Para que tipo de negócio é cada produto (aparece no cartão e vira filtro na categoria).
+SEGMENTO = {'gestacell': 'Loja de celular', 'mercagestao': 'Mercado e mercearia', 'construgestao': 'Material de construção',
+            'pdv-lanchonete': 'Lanchonete e pizzaria', 'leuburger': 'Lanchonete e restaurante', 'pedee': 'Quem pede comida',
+            'pedee-entregador': 'Entregador', 'quantocobrar': 'Confeitaria e salgados', 'radar': 'Qualquer empresa'}
 
 
 def valor(preco):
@@ -46,6 +50,7 @@ for a in apps:
         'photos': a.get('capturas', []),
         'installUrl': None if em_breve else ('/instalar/' + a['id'] if a.get('instalar') else a.get('url')),
         'emBreve': em_breve, 'tag': 'novedad' if a.get('novidades') and not em_breve else None,
+        'segmento': SEGMENTO.get(a['id'], ''),
     })
 
 # PDV de lanchonete e pizzaria: pronto no caixa, falta o nome novo da marca.
@@ -53,7 +58,8 @@ produtos.append({'id': 'pdv-lanchonete', 'kind': 'app', 'name': 'PDV Lanchonete 
                  'priceText': 'Em breve', 'trial': '', 'short': 'Caixa, pedidos, comandas e estoque para lanchonete, hamburgueria e pizzaria.',
                  'description': 'PDV completo para lanchonete, hamburgueria e pizzaria: caixa, pedidos, adicionais, comprovante, estoque e relatórios. Em breve.',
                  'features': ['Caixa e pedidos', 'Adicionais e opções', 'Comprovante', 'Estoque', 'Relatórios'], 'plans': [],
-                 'imageUrl': '/img/destaques/leuburger.webp', 'icon': '/img/leuburger-192.png', 'photos': [], 'installUrl': None, 'emBreve': True, 'tag': None})
+                 'imageUrl': '/img/destaques/leuburger.webp', 'icon': '/img/leuburger-192.png', 'photos': [], 'installUrl': None, 'emBreve': True, 'tag': None,
+                 'segmento': SEGMENTO['pdv-lanchonete']})
 
 zap = servicos.get('whatsapp', '5524998721557')
 for s in servicos.get('itens', []):
@@ -61,7 +67,7 @@ for s in servicos.get('itens', []):
                      'category': 'sites' if s['id'] == 'templates' else 'design', 'price': 0, 'priceText': 'Orçamento grátis', 'trial': '',
                      'short': s['resumo'], 'description': s['resumo'] + ' Criamos do zero, com a sua marca. Peça o orçamento pelo WhatsApp.',
                      'features': [], 'plans': [], 'imageUrl': s['imagens'][0], 'icon': None, 'photos': s['imagens'],
-                     'installUrl': None, 'emBreve': False, 'tag': None,
+                     'installUrl': None, 'emBreve': False, 'tag': None, 'segmento': 'Qualquer negócio',
                      'whatsapp': f"https://wa.me/{zap}?text=" + re.sub(' ', '%20', f"Olá, LeuName Softwares! Vim pelo site e quero um orçamento de {s['nome'].lower()}.")})
 
 for c in cursos:
@@ -71,7 +77,7 @@ for c in cursos:
                      'priceText': c.get('preco', 'Grátis'), 'trial': '', 'short': c.get('resumo', ''), 'description': c.get('resumo', ''),
                      'features': [f"{len(c.get('aulas', []))} {c.get('unidade', 'aulas')}"], 'plans': [],
                      'imageUrl': None, 'icon': c.get('icone'), 'photos': [], 'installUrl': '/apps#curso/' + c['id'],
-                     'emBreve': False, 'tag': None})
+                     'emBreve': False, 'tag': None, 'segmento': ''})
 
 saida = site / 'js' / 'catalogo.js'
 saida.write_text('/* Gerado por ferramentas/gerar_catalogo.py a partir da loja (apps.json, servicos.json, cursos.json). Não edite à mão. */\n'
