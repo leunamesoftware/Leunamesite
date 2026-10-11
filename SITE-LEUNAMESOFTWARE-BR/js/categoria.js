@@ -45,6 +45,8 @@
         alt: 'Banners que destacam. Artes profissionais para sites, lojas e redes sociais que atraem mais clientes.', pedido: 'um banner para o meu negócio', botao: true, cor: 'roxo' },
       sites: { pc: '/img/destaques/site-sob-medida.webp', pcTam: [1600, 576], cel: '/img/destaques/site-sob-medida-cel.webp', celTam: [720, 530],
         alt: 'Seu site sob medida, para qualquer tipo de negócio. Orçamento grátis.', pedido: 'um site para a minha empresa', botao: false },
+      utilidades: { pc: '/img/destaques/gestao-topo.webp', pcTam: [1920, 720], cel: '/img/destaques/gestao-topo-cel.webp', celTam: [1020, 765],
+        alt: 'Gestão e Utilidades: mais controle para o seu dia a dia. Ferramentas para organizar e facilitar a gestão do seu negócio.', link: '#catGridResults', botaoTexto: 'Ver os sistemas', botao: true, cor: 'verde' },
       cursos: { pc: '/img/destaques/cursos-gratis-topo.webp', pcTam: [1920, 720], cel: '/img/destaques/cursos-gratis-topo-cel.webp', celTam: [1020, 765],
         alt: 'Cursos grátis: aprenda hoje e evolua sempre. Conteúdo prático, aulas em vídeo, passo a passo detalhado.', link: '#catGridResults', botaoTexto: 'Ver os cursos grátis', botao: true }
     };

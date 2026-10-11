@@ -1166,3 +1166,4 @@ body > .site-footer{ flex-shrink:0; }
 html{ scroll-behavior:smooth; }
 #catGridResults{ scroll-margin-top:90px; }
 .cbt-cta.cbt-roxo{ background:linear-gradient(90deg,#2f6bff,#7c3aed); box-shadow:0 8px 22px rgba(124,58,237,.4); }
+.cbt-cta.cbt-verde{ background:#16a34a; box-shadow:0 8px 22px rgba(22,163,74,.4); }
