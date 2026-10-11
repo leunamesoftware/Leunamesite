@@ -92,19 +92,12 @@
       '<a class="btn btn-outline" href="https://wa.me/5524998721557?text=' + encodeURIComponent('Olá! Quero ser avisado quando lançar o ' + product.name + '.') + '" target="_blank" rel="noopener">Me avise no WhatsApp</a></div>';
     if (product.kind === 'servico') return '<div class="product-actions"><a class="btn btn-cart" href="' + product.whatsapp + '" target="_blank" rel="noopener">Pedir orçamento grátis</a></div>';
     if (product.kind === 'curso') return '<div class="product-actions"><a class="btn btn-primary" href="' + product.installUrl + '">Começar grátis</a></div>';
-    return '<div class="product-actions">' +
-        '<a class="btn btn-primary" href="' + product.installUrl + '">Baixar / Instalar</a>' +
-        (product.plans.length ? '<a class="btn btn-outline" href="#planos">Ver planos</a>' : '') +
-      '</div>' +
-      (product.trial ? '<p class="pd-nota">🎁 <b>' + product.trial + '</b>: baixe, entre com o seu e-mail e use sem pagar. Depois escolha um plano.</p>' : '');
+    var teste = product.trial || 'grátis';
+    return '<div class="product-actions pd-um-botao"><a class="btn btn-primary" href="' + product.installUrl + '">Baixar e testar ' + teste + '</a></div>' +
+      '<p class="pd-nota">Baixe no celular ou no computador e entre com o seu e-mail. Testou e gostou? Quando o teste acabar, o próprio app mostra os planos: <b>assinatura</b> ou <b>vitalício</b>, com pagamento pelo Mercado Pago.</p>';
   }
-  function planosHTML(product) {
-    if (!product.plans || !product.plans.length) return '';
-    return '<div class="product-block" id="planos"><h2>Planos</h2><div class="pd-planos">' + product.plans.map(function (pl) {
-      return '<div class="pd-plano"><b>' + pl.nome + '</b><span class="pd-plano-preco">' + pl.preco + '</span>' +
-        (pl.detalhe ? '<p>' + pl.detalhe + '</p>' : '') + '<a class="btn btn-primary" href="' + pl.url + '">Assinar</a></div>';
-    }).join('') + '</div><p class="pd-nota">Pagamento seguro pelo Mercado Pago, no Pix ou no cartão.</p></div>';
-  }
+
+
 
   document.addEventListener('DOMContentLoaded', function () {
     var Store = window.LeuStore;
@@ -146,7 +139,7 @@
         (product.emBreve ? '<span class="cat-tag" style="background:#fff4e5;color:#b45309;margin-left:8px;">Em breve</span>' : '') +
         '<h1>' + product.name + '</h1>' +
         '<p class="short-desc">' + product.short + '</p>' +
-        '<div class="price-row"><span class="price-big">' + Store.priceHTML(product) + '</span></div>' +
+        (product.kind === 'app' && !product.emBreve && product.plans.length ? '<p class="pd-depois">Depois do teste, ' + Store.priceHTML(product) + '</p>' : '<div class="price-row"><span class="price-big">' + Store.priceHTML(product) + '</span></div>') +
         acoesHTML(product) +
         '<div class="trust-row">' +
           '<div class="trust-item"><span class="trust-ic"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3 4.5 6v6c0 4.5 3.2 7.9 7.5 9 4.3-1.1 7.5-4.5 7.5-9V6L12 3Z"/></svg></span><div><h4>Compra segura</h4></div></div>' +
@@ -219,7 +212,6 @@
 
     tabsEl.innerHTML =
       '<div class="product-block"><h2>Descrição</h2><p style="color:var(--ink-600);line-height:1.7;">' + product.description + '</p></div>' +
-      planosHTML(product) +
       (featuresHTML ? '<div class="product-block"><h2>Recursos</h2><ul class="feature-list">' + featuresHTML + '</ul></div>' : '') +
       (faqHTML ? '<div class="product-block"><h2>Perguntas frequentes</h2>' + faqHTML + '</div>' : '');
 

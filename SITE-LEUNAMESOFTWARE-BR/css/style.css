@@ -972,3 +972,6 @@ h1,h2,h3,h4{ font-family:var(--font-head); margin:0; }
 .pd-plano .btn{ text-align:center; margin-top:6px; }
 
 @media (min-width:1024px){ .cat-grid{ grid-template-columns:repeat(7,1fr); } }
+.product-info .pd-um-botao{ grid-template-columns:1fr; }
+.product-info .pd-um-botao .btn{ padding:16px 20px; font-size:17px; }
+.pd-depois{ margin-top:10px; font-size:15px; color:var(--ink-600); }
