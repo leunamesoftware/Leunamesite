@@ -20,7 +20,7 @@
   // URL pública do Worker "leuname-loja" (Cloudflare). É preenchida quando
   // implantado (ver PROJETO/servidor-loja-cloudflare/). Deixar vazio desativa
   // a tentativa de rede e o site usa só os dados estáticos.
-  var BACKEND_URL = 'https://leuname-loja.emanuelantunes2024.workers.dev';
+  var BACKEND_URL = ''; // catálogo vem de js/catalogo.js (produtos reais da loja)
 
   // Textos (nome, descrição, o que inclui, características): o banco tem
   // colunas próprias em português (nombre_br, descripcion_br, etc.),

@@ -11,7 +11,7 @@
 (function (global) {
   'use strict';
 
-  var BACKEND_URL = 'https://leuname-loja.emanuelantunes2024.workers.dev';
+  var BACKEND_URL = ''; // logo, WhatsApp e banners ficam no próprio site
   var SITE = 'br';
 
   function escapeHTML(s) {
@@ -57,6 +57,7 @@
   }
 
   function carregar() {
+    if (!BACKEND_URL) return;
     fetch(BACKEND_URL + '/config?site=' + SITE)
       .then(function (res) { if (!res.ok) throw new Error('bad_status'); return res.json(); })
       .then(function (data) {

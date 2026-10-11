@@ -8,18 +8,6 @@
   // topo da página do produto. Ficam só aqui no site BR (as telas estão
   // em português) -- não são campo do catálogo compartilhado, pra não
   // vazar pro site em espanhol.
-  var PRODUCT_VIDEOS = {
-    'leuname-gestao': 'assets/img/demo/leuname-gestao-preview.mp4'
-  };
-  var PRODUCT_PHOTOS = {
-    'leuname-gestao': [
-      'assets/img/products/leuname-gestao-tela-1.jpg',
-      'assets/img/products/leuname-gestao-tela-2.jpg',
-      'assets/img/products/leuname-gestao-tela-3.jpg',
-      'assets/img/products/leuname-gestao-tela-4.jpg'
-    ]
-  };
-
   // Link da ficha na Google Play -- só preencher aqui quando o app for
   // publicado de verdade lá (o selo "Disponível na Play Store" só aparece
   // pros produtos com uma entrada nesta lista). Ex.:
@@ -89,24 +77,33 @@
   }
 
   function galleryHTML(product) {
-    // O vídeo/galeria enviados pelo painel admin (product.videoUrl /
-    // product.galeryPhotos, vindos do banco) têm prioridade; os mapas
-    // acima continuam servindo de respaldo pro LeuName Gestão até que
-    // alguém suba os arquivos de novo pelo painel.
-    var videoSrc = product.videoUrl || PRODUCT_VIDEOS[product.id];
-    var photos = (product.galeryPhotos && product.galeryPhotos.length) ? product.galeryPhotos : (PRODUCT_PHOTOS[product.id] || []);
-    if (!videoSrc) return window.LeuStore.productVisualHTML(product);
-
+    var photos = product.photos || [];
     var thumbsHTML = photos.map(function (src, i) {
       return '<button type="button" class="prod-gallery-thumb" data-photo-index="' + i + '">' +
         '<img src="' + src + '" alt="Tela de ' + product.name + '" loading="lazy">' +
       '</button>';
     }).join('');
+    return window.LeuStore.productVisualHTML(product) + (thumbsHTML ? '<div class="prod-gallery-thumbs">' + thumbsHTML + '</div>' : '');
+  }
 
-    return '<div class="prod-visual prod-visual-video">' +
-        '<video src="' + videoSrc + '" autoplay muted loop playsinline></video>' +
+  // Botões do produto: app (Baixar / Instalar + planos no Mercado Pago), serviço (orçamento) e curso (Começar).
+  function acoesHTML(product) {
+    if (product.emBreve) return '<div class="product-actions"><button class="btn btn-primary" type="button" disabled>Em breve</button>' +
+      '<a class="btn btn-outline" href="https://wa.me/5524998721557?text=' + encodeURIComponent('Olá! Quero ser avisado quando lançar o ' + product.name + '.') + '" target="_blank" rel="noopener">Me avise no WhatsApp</a></div>';
+    if (product.kind === 'servico') return '<div class="product-actions"><a class="btn btn-cart" href="' + product.whatsapp + '" target="_blank" rel="noopener">Pedir orçamento grátis</a></div>';
+    if (product.kind === 'curso') return '<div class="product-actions"><a class="btn btn-primary" href="' + product.installUrl + '">Começar grátis</a></div>';
+    return '<div class="product-actions">' +
+        '<a class="btn btn-primary" href="' + product.installUrl + '">Baixar / Instalar</a>' +
+        (product.plans.length ? '<a class="btn btn-outline" href="#planos">Ver planos</a>' : '') +
       '</div>' +
-      (thumbsHTML ? '<div class="prod-gallery-thumbs">' + thumbsHTML + '</div>' : '');
+      (product.trial ? '<p class="pd-nota">🎁 <b>' + product.trial + '</b>: baixe, entre com o seu e-mail e use sem pagar. Depois escolha um plano.</p>' : '');
+  }
+  function planosHTML(product) {
+    if (!product.plans || !product.plans.length) return '';
+    return '<div class="product-block" id="planos"><h2>Planos</h2><div class="pd-planos">' + product.plans.map(function (pl) {
+      return '<div class="pd-plano"><b>' + pl.nome + '</b><span class="pd-plano-preco">' + pl.preco + '</span>' +
+        (pl.detalhe ? '<p>' + pl.detalhe + '</p>' : '') + '<a class="btn btn-primary" href="' + pl.url + '">Assinar</a></div>';
+    }).join('') + '</div><p class="pd-nota">Pagamento seguro pelo Mercado Pago, no Pix ou no cartão.</p></div>';
   }
 
   document.addEventListener('DOMContentLoaded', function () {
@@ -140,44 +137,20 @@
     if (breadcrumbCat && cat) { breadcrumbCat.textContent = cat.name; breadcrumbCat.href = 'categoria.html?slug=' + cat.slug; }
     if (breadcrumbName) breadcrumbName.textContent = product.name;
 
-    var productPhotos = (product.galeryPhotos && product.galeryPhotos.length) ? product.galeryPhotos : (PRODUCT_PHOTOS[product.id] || []);
+    var productPhotos = product.photos || [];
 
     detailEl.innerHTML =
       '<div class="product-gallery">' + galleryHTML(product) + '</div>' +
       '<div class="product-info">' +
         '<span class="cat-tag">' + (cat ? cat.name : '') + '</span>' +
-        (product.real ? '<span class="cat-tag" style="background:#e2f6ea;color:#1a9a55;margin-left:8px;">Produto real</span>' : '') +
-        (PRODUCT_PLAYSTORE[product.id] ? '<a class="cat-tag" href="' + PRODUCT_PLAYSTORE[product.id] + '" target="_blank" rel="noopener" style="background:#e8f0fe;color:#1a56db;margin-left:8px;">Disponível na Play Store</a>' : '') +
+        (product.emBreve ? '<span class="cat-tag" style="background:#fff4e5;color:#b45309;margin-left:8px;">Em breve</span>' : '') +
         '<h1>' + product.name + '</h1>' +
-        '<div class="product-card-rating">' +
-          '<span class="stars">' + Store.starsHTML(product.rating) + '</span>' +
-          '<span class="rating-num">' + product.rating.toFixed(1) + '</span>' +
-          '<span class="rating-count">(' + product.reviews + ' avaliações)</span>' +
-        '</div>' +
-        '<p class="short-desc">' + product.short +
-          (product.demoUrl ? ' Clique em «Ver demo» (o botão laranja) e veja uma prévia de como funciona.' : '') +
-        '</p>' +
-        '<!-- PREÇO DE EXEMPLO: substituir pelo preço real -->' +
-        '<div class="price-row"><span class="price-big">' + Store.priceHTML(product) + '</span>' +
-          (Store.discountPercent(product) ? '<span class="price-discount-pill">-' + Store.discountPercent(product) + '%</span>' : '') +
-          (product.real ? '' : '<span class="price-badge">Preço de exemplo</span>') + '</div>' +
-        '<div class="product-actions">' +
-          '<div class="product-actions-cart">' +
-            '<div class="qty-stepper">' +
-              '<button type="button" data-qty-step="qtyInput" data-dir="down" aria-label="Diminuir">−</button>' +
-              '<input id="qtyInput" type="number" min="1" value="1" aria-label="Quantidade">' +
-              '<button type="button" data-qty-step="qtyInput" data-dir="up" aria-label="Aumentar">+</button>' +
-            '</div>' +
-            '<button class="btn btn-cart" data-add-to-cart data-product-id="' + product.id + '" data-qty-target="qtyInput">Adicionar ao carrinho</button>' +
-          '</div>' +
-          '<div class="product-actions-buy">' +
-            '<button class="btn btn-primary" id="buyNowBtn">Comprar agora</button>' +
-            (product.demoUrl ? '<button type="button" class="btn btn-demo" id="verDemoBtn">Ver demo</button>' : '') +
-          '</div>' +
-        '</div>' +
+        '<p class="short-desc">' + product.short + '</p>' +
+        '<div class="price-row"><span class="price-big">' + Store.priceHTML(product) + '</span></div>' +
+        acoesHTML(product) +
         '<div class="trust-row">' +
           '<div class="trust-item"><span class="trust-ic"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3 4.5 6v6c0 4.5 3.2 7.9 7.5 9 4.3-1.1 7.5-4.5 7.5-9V6L12 3Z"/></svg></span><div><h4>Compra segura</h4></div></div>' +
-          '<div class="trust-item"><span class="trust-ic"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8Z"/></svg></span><div><h4>Entrega digital imediata</h4></div></div>' +
+          '<div class="trust-item"><span class="trust-ic"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2.5"/><path d="M10 18h4"/></svg></span><div><h4>Celular e computador</h4></div></div>' +
         '</div>' +
       '</div>';
 
@@ -186,16 +159,6 @@
         btn.addEventListener('click', function () {
           openLightbox(productPhotos, Number(btn.getAttribute('data-photo-index')));
         });
-      });
-    }
-
-    var buyNow = document.getElementById('buyNowBtn');
-    if (buyNow) {
-      buyNow.addEventListener('click', function () {
-        var qtyInput = document.getElementById('qtyInput');
-        var qty = qtyInput ? Math.max(1, parseInt(qtyInput.value, 10) || 1) : 1;
-        window.LeuCart.addItem(product.id, qty);
-        location.href = 'checkout.html';
       });
     }
 
@@ -243,9 +206,6 @@
       });
     }
 
-    var includesHTML = (product.includes || []).map(function (i) {
-      return '<li><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4"><path d="m5 13 4 4 10-10"/></svg>' + i + '</li>';
-    }).join('');
     var featuresHTML = (product.features || []).map(function (f) {
       return '<li><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4"><path d="m5 13 4 4 10-10"/></svg>' + f + '</li>';
     }).join('');
@@ -259,8 +219,8 @@
 
     tabsEl.innerHTML =
       '<div class="product-block"><h2>Descrição</h2><p style="color:var(--ink-600);line-height:1.7;">' + product.description + '</p></div>' +
-      '<div class="product-block"><h2>O que inclui</h2><ul class="check-list">' + includesHTML + '</ul></div>' +
-      '<div class="product-block"><h2>Características</h2><ul class="feature-list">' + featuresHTML + '</ul></div>' +
+      planosHTML(product) +
+      (featuresHTML ? '<div class="product-block"><h2>Recursos</h2><ul class="feature-list">' + featuresHTML + '</ul></div>' : '') +
       (faqHTML ? '<div class="product-block"><h2>Perguntas frequentes</h2>' + faqHTML + '</div>' : '');
 
     // Reativa o acordeão de FAQ recém-inserido (main.js já delega no DOMContentLoaded,
