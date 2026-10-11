@@ -1174,3 +1174,4 @@ html{ scroll-behavior:smooth; }
 .cbt-cta.cbt-so-cel{ display:none; }
 @media (max-width:700px){ .cbt-cta.cbt-so-cel{ display:block; } }
 .cbt-cta.cbt-site{ background:#1d4ed8; }
+.cbt-cta.cbt-pdv{ background:#0f766e; box-shadow:0 8px 22px rgba(15,118,110,.4); }
