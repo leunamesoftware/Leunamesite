@@ -60,8 +60,8 @@
       var destino = topo.link ? '<a href="' + topo.link + '" aria-label="' + topo.alt + '">'
         : '<a href="https://wa.me/5524998721557?text=' + encodeURIComponent('Olá, LeuName Softwares! Vim pelo site e quero um orçamento de ' + topo.pedido + '.') + '" target="_blank" rel="noopener" aria-label="' + topo.alt + ' Pedir orçamento grátis no WhatsApp">';
       wrap.innerHTML = destino +
-        '<picture><source media="(max-width:700px)" srcset="' + topo.cel + '" width="' + topo.celTam[0] + '" height="' + topo.celTam[1] + '">' +
-        '<img src="' + topo.pc + '" width="' + topo.pcTam[0] + '" height="' + topo.pcTam[1] + '" alt="' + topo.alt + '"></picture>' +
+        // Celular mostra o banner inteiro, deitado, igual ao computador (pedido do dono).
+        '<img src="' + topo.pc + '" width="' + topo.pcTam[0] + '" height="' + topo.pcTam[1] + '" alt="' + topo.alt + '">' +
         (topo.botao ? '<span class="cbt-cta' + (topo.link ? ' cbt-azul' : '') + (topo.cor ? ' cbt-' + topo.cor : '') + '">' + (topo.botaoTexto || 'Pedir orçamento grátis') + '</span>' : '') + '</a>';
       hero.parentNode.insertBefore(wrap, hero);
       hero.classList.add('page-hero-titulo');
