@@ -71,7 +71,8 @@
     var segmento = '';
     var segs = [];
     (slug ? Store.getProductsByCategory(slug) : []).forEach(function (p) { if (p.segmento && segs.indexOf(p.segmento) < 0) segs.push(p.segmento); });
-    if (segs.length > 1) {
+    // Sites prontos, Banners e Logomarcas mostram os botões por tipo de negócio já com um modelo.
+    if (segs.length > 1 || (segs.length === 1 && segs[0] !== 'Qualquer negócio' && ['sites', 'banners', 'logomarcas'].indexOf(cat && cat.slug) >= 0)) {
       var barra = document.createElement('div');
       barra.className = 'seg-chips';
       barra.setAttribute('role', 'group');
