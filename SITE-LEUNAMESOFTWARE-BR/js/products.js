@@ -106,13 +106,14 @@
     // Nada escrito em cima da imagem (pedido do dono): o "Orçamento grátis" fica embaixo, no preço.
     var selo = product.emBreve ? '<span class="product-tag pc-embreve">Em breve</span>' : '';
     return (
-      '<a class="product-card' + (product.emBreve ? ' is-embreve' : '') + '" href="' + (product.kind === 'curso' ? product.installUrl : 'producto.html?id=' + product.id) + '">' +
+      '<a class="product-card' + (product.emBreve ? ' is-embreve' : '') + (product.kind === 'servico' ? ' pc-servico' : '') + '" href="' + (product.kind === 'curso' ? product.installUrl : 'producto.html?id=' + product.id) + '">' +
         '<div class="product-card-media">' + productVisualHTML(product) + selo + '</div>' +
         '<div class="product-card-body">' +
-          '<span class="product-card-name">' + product.name + '</span>' +
+          // Serviço com modelo: título curto ("Banner sob encomenda"); o "Para pizzaria" vem logo abaixo, em azul.
+          '<span class="product-card-name">' + (product.kind === 'servico' && product.segmento && !/^qualquer/i.test(product.segmento) ? product.name.replace(/ para .*$/, '') : product.name) + '</span>' +
           (product.segmento ? '<span class="pc-seg">Para ' + product.segmento.charAt(0).toLowerCase() + product.segmento.slice(1) + '</span>' : '') +
           '<span class="pc-resumo">' + product.short + '</span>' +
-          (product.kind === 'curso' ? '' : '<p class="product-card-price">' + priceHTML(product) + '</p>') +
+          (product.kind === 'curso' || product.kind === 'servico' ? '' : '<p class="product-card-price">' + priceHTML(product) + '</p>') +
           '<span class="pc-acao">' + acaoDoCard(product) + '</span>' +
         '</div>' +
       '</a>'
