@@ -70,9 +70,20 @@ produtos.append({'id': 'delivery-restaurante', 'kind': 'app', 'name': 'Delivery 
                  'imageUrl': None, 'icon': None, 'photos': [], 'installUrl': None, 'emBreve': True, 'tag': None,
                  'segmento': 'Pizzaria, lanchonete e hamburgueria'})
 
+# Templates de site prontos (ZIP no e-mail depois do pagamento): templates/catalogo.json do repositório dos apps.
+tpl_cat = base.parent.parent / 'templates' / 'catalogo.json'
+for t in (json.loads(tpl_cat.read_text()) if tpl_cat.exists() else []):
+    preco = f"R$ {t['preco']:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.')
+    produtos.append({'id': 'site-' + t['id'], 'kind': 'template', 'name': t['nome'], 'category': 'sites', 'price': t['preco'],
+                     'priceText': preco, 'trial': '', 'short': t['resumo'], 'description': t['descricao'], 'features': t['recursos'], 'plans': [],
+                     'imageUrl': f"/img/modelos/{t['id']}-banner.webp", 'icon': f"/img/modelos/{t['id']}-192.png",
+                     'photos': [f"/img/modelos/{t['id']}-tela-{i}.webp" for i in range(1, 6)],
+                     'installUrl': f"/modelos/{t['id']}/", 'buyUrl': f"/loja/comprar?app={t['plano']}&plano=unico",
+                     'parcelas': t['parcelas'], 'emBreve': False, 'tag': 'novedad', 'segmento': t['segmento']})
+
 zap = servicos.get('whatsapp', '5524998721557')
 for s in servicos.get('itens', []):
-    produtos.append({'id': 'servico-' + s['id'], 'kind': 'servico', 'name': s['nome'] + ' sob encomenda',
+    produtos.append({'id': 'servico-' + s['id'], 'kind': 'servico', 'name': ('Site' if s['id'] == 'templates' else s['nome']) + ' sob encomenda',
                      'category': 'sites' if s['id'] == 'templates' else 'design', 'price': 0, 'priceText': 'Orçamento grátis', 'trial': '',
                      'short': s['resumo'], 'description': s['resumo'] + ' Criamos do zero, com a sua marca. Peça o orçamento pelo WhatsApp.',
                      'features': [], 'plans': [], 'imageUrl': s['imagens'][0], 'icon': None, 'photos': s['imagens'],

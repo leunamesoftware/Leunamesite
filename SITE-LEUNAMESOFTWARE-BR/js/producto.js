@@ -83,7 +83,7 @@
         '<img src="' + src + '" alt="Tela de ' + product.name + '" loading="lazy">' +
       '</button>';
     }).join('');
-    var titulo = product.kind === 'app' ? 'Veja as telas do app' : 'Veja os exemplos';
+    var titulo = product.kind === 'app' ? 'Veja as telas do app' : product.kind === 'template' ? 'Veja as telas do site' : 'Veja os exemplos';
     return window.LeuStore.productVisualHTML(product) + (thumbsHTML ? '<p class="pd-telas-tit">' + titulo + ' (' + photos.length + ') <span>· toque para ampliar</span></p><div class="prod-gallery-thumbs">' + thumbsHTML + '</div>' : '');
   }
 
@@ -92,6 +92,9 @@
     if (product.emBreve) return '<div class="product-actions"><button class="btn btn-primary" type="button" disabled>Em breve</button>' +
       '<a class="btn btn-outline" href="https://wa.me/5524998721557?text=' + encodeURIComponent('Olá! Quero ser avisado quando lançar o ' + product.name + '.') + '" target="_blank" rel="noopener">Me avise no WhatsApp</a></div>';
     if (product.kind === 'servico') return '<div class="product-actions"><a class="btn btn-cart" href="' + product.whatsapp + '" target="_blank" rel="noopener">Pedir orçamento grátis</a></div>';
+    if (product.kind === 'template') return '<div class="product-actions pd-tpl"><a class="btn btn-primary" href="' + product.buyUrl + '">Comprar por ' + product.priceText + '</a>' +
+      '<a class="btn btn-outline" href="' + product.installUrl + '" target="_blank" rel="noopener">👁️ Ver demonstração ao vivo</a></div>' +
+      '<p class="pd-nota">Pix ou até ' + (product.parcelas || 1) + 'x no cartão pelo Mercado Pago. Assim que o pagamento é aprovado, a <b>pasta completa do site (ZIP)</b> chega no seu e-mail, com o manual passo a passo. Licença para 1 empresa e 1 domínio.</p>';
     if (product.kind === 'curso') return '<div class="product-actions"><a class="btn btn-primary" href="' + product.installUrl + '">Começar grátis</a></div>';
     var teste = product.trial || 'grátis';
     return '<div class="product-actions pd-um-botao"><a class="btn btn-primary" href="' + product.installUrl + '">Baixar e testar ' + teste + '</a></div>' +

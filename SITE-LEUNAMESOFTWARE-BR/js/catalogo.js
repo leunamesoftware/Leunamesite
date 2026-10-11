@@ -306,6 +306,41 @@ window.LEU_CATALOGO = [
   "segmento": "Pizzaria, lanchonete e hamburgueria"
  },
  {
+  "id": "site-agencia-de-viagens",
+  "kind": "template",
+  "name": "Site pronto: Agência de Viagens",
+  "category": "sites",
+  "price": 280,
+  "priceText": "R$ 280,00",
+  "trial": "",
+  "short": "Site completo para agência de viagens: destinos, pacotes, busca e pedidos direto no WhatsApp.",
+  "description": "Site profissional e pronto para a sua agência de viagens. Destinos em destaque, pacotes com parcelamento, busca de viagem, depoimentos, perguntas frequentes e formulário: tudo manda o pedido pronto para o seu WhatsApp. Você troca nome, cores, fotos, destinos e preços em um arquivo só, sem programar, e publica na sua hospedagem ou grátis. Recebe a pasta completa (ZIP) no e-mail logo depois do pagamento.",
+  "features": [
+   "Funciona no celular, tablet e computador",
+   "Pedidos e orçamentos direto no WhatsApp",
+   "Destinos e pacotes com parcelamento",
+   "Edite tudo em um arquivo só, sem programar",
+   "Manual passo a passo para publicar",
+   "Licença para 1 empresa e 1 domínio"
+  ],
+  "plans": [],
+  "imageUrl": "/img/modelos/agencia-de-viagens-banner.webp",
+  "icon": "/img/modelos/agencia-de-viagens-192.png",
+  "photos": [
+   "/img/modelos/agencia-de-viagens-tela-1.webp",
+   "/img/modelos/agencia-de-viagens-tela-2.webp",
+   "/img/modelos/agencia-de-viagens-tela-3.webp",
+   "/img/modelos/agencia-de-viagens-tela-4.webp",
+   "/img/modelos/agencia-de-viagens-tela-5.webp"
+  ],
+  "installUrl": "/modelos/agencia-de-viagens/",
+  "buyUrl": "/loja/comprar?app=tpl_agencia&plano=unico",
+  "parcelas": 10,
+  "emBreve": false,
+  "tag": "novedad",
+  "segmento": "Agência de viagens e turismo"
+ },
+ {
   "id": "servico-logomarcas",
   "kind": "servico",
   "name": "Logomarcas sob encomenda",
@@ -333,7 +368,7 @@ window.LEU_CATALOGO = [
  {
   "id": "servico-templates",
   "kind": "servico",
-  "name": "Templates de site sob encomenda",
+  "name": "Site sob encomenda",
   "category": "sites",
   "price": 0,
   "priceText": "Orçamento grátis",

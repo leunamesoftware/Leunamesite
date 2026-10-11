@@ -41,7 +41,9 @@
     pdv: FAQ_APP, delivery: FAQ_APP, receitas: FAQ_APP, utilidades: FAQ_APP,
     sites: [
       { q: 'Como funciona o site sob encomenda?', a: 'Você conta como quer o site pelo WhatsApp, nós mandamos o orçamento e criamos com a sua marca.' },
-      { q: 'Vai ter site pronto para comprar e baixar?', a: 'Sim, em breve: modelos prontos para comprar, pagar e baixar a pasta completa.' }
+      { q: 'Como funciona o site pronto?', a: 'Veja a demonstração ao vivo, compre pelo Mercado Pago (Pix ou cartão parcelado) e receba no e-mail a pasta completa do site (ZIP) com o manual. Você troca nome, WhatsApp, cores, fotos e preços em um arquivo só e publica na sua hospedagem ou grátis.' },
+      { q: 'Posso usar em mais de uma empresa?', a: 'Cada compra é a licença de 1 empresa e 1 domínio. Para outra empresa, é só comprar outra licença.' },
+      { q: 'Preciso saber programar?', a: 'Não. O manual mostra passo a passo como editar e publicar. Se preferir, fazemos tudo para você: peça um orçamento pelo WhatsApp.' }
     ],
     design: [
       { q: 'Como peço a minha logo ou banner?', a: 'Toque em Pedir orçamento e fale com a gente no WhatsApp. O orçamento é grátis.' },
@@ -81,7 +83,8 @@
 
   function productCardHTML(product) {
     var selo = product.emBreve ? '<span class="product-tag pc-embreve">Em breve</span>'
-      : product.kind === 'servico' ? '<span class="product-real-badge">Orçamento grátis</span>' : '';
+      : product.kind === 'servico' ? '<span class="product-real-badge">Orçamento grátis</span>'
+      : product.kind === 'template' ? '<span class="product-real-badge">Site pronto</span>' : '';
     return (
       '<a class="product-card' + (product.emBreve ? ' is-embreve' : '') + '" href="' + (product.kind === 'curso' ? product.installUrl : 'producto.html?id=' + product.id) + '">' +
         '<div class="product-card-media">' + productVisualHTML(product) + selo + '</div>' +
