@@ -90,7 +90,7 @@
       '</button>';
     }).join('');
     var titulo = product.kind === 'app' ? 'Veja as telas do app' : product.kind === 'template' ? 'Veja as telas do site' : 'Veja os exemplos';
-    return window.LeuStore.productVisualHTML(product) + (thumbsHTML ? '<p class="pd-telas-tit">' + titulo + ' (' + photos.length + ') <span>· toque para ampliar</span></p><div class="prod-gallery-thumbs' + ((product.kind === 'template' && photos === product.photos) || product.kind === 'servico' ? ' deitadas' : '') + '">' + thumbsHTML + '</div>' : '');
+    return window.LeuStore.productVisualHTML(product) + (thumbsHTML ? '<p class="pd-telas-tit">' + titulo + ' (' + photos.length + ') <span>· toque para ampliar</span></p><div class="prod-gallery-thumbs' + ((product.kind === 'template' && photos === product.photos) ? ' deitadas' : product.kind === 'servico' ? ' deitadas inteiras' : '') + '">' + thumbsHTML + '</div>' : '');
   }
 
   // Botões do produto: app (Baixar / Instalar + planos no Mercado Pago), serviço (orçamento) e curso (Começar).

@@ -1169,3 +1169,5 @@ html{ scroll-behavior:smooth; }
 .cbt-cta.cbt-verde{ background:#16a34a; box-shadow:0 8px 22px rgba(22,163,74,.4); }
 .cbt-cta.cbt-laranja{ background:#f97316; box-shadow:0 8px 22px rgba(249,115,22,.45); }
 .mobile-cat-scroll{ justify-content:space-around; }
+.prod-gallery-thumbs.inteiras .prod-gallery-thumb{ background:#0f172a; }
+.prod-gallery-thumbs.inteiras .prod-gallery-thumb img{ object-fit:contain; }
