@@ -72,23 +72,23 @@ window.LEU_CATALOGO = [
   ],
   "plans": [
    {
-    "nome": "Mensal",
+    "nome": "👑 Mensal",
     "preco": "R$ 19,90/mês",
-    "detalhe": "Cobrado todo mês no cartão, cancele quando quiser · vendas, OS, estoque, clientes e financeiro",
+    "detalhe": "Cobrado todo mês no cartão, cancele quando quiser",
     "url": "/loja/comprar?app=gestacell&plano=mensal",
     "tipo": "assinatura"
    },
    {
-    "nome": "Anual",
-    "preco": "R$ 39,90/ano",
-    "detalhe": "Paga uma vez, vale 1 ano · vendas, OS, estoque, clientes e financeiro · Pix ou cartão em até 3x",
+    "nome": "👑 Anual",
+    "preco": "R$ 199,00/ano",
+    "detalhe": "Paga uma vez, vale 1 ano · Pix ou cartão em até 6x",
     "url": "/loja/comprar?app=gestacell&plano=anual",
     "tipo": "unico"
    },
    {
-    "nome": "Para sempre",
-    "preco": "R$ 49,90",
-    "detalhe": "Paga uma vez, é seu para sempre · vendas, OS, estoque, clientes e financeiro · Pix ou cartão em até 3x",
+    "nome": "👑 Vitalício",
+    "preco": "R$ 290,00",
+    "detalhe": "Paga uma vez, é seu para sempre · Pix ou cartão em até 6x",
     "url": "/loja/comprar?app=gestacell&plano=unico",
     "tipo": "unico"
    }

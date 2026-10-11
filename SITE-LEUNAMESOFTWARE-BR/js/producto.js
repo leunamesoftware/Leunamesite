@@ -83,7 +83,8 @@
         '<img src="' + src + '" alt="Tela de ' + product.name + '" loading="lazy">' +
       '</button>';
     }).join('');
-    return window.LeuStore.productVisualHTML(product) + (thumbsHTML ? '<div class="prod-gallery-thumbs">' + thumbsHTML + '</div>' : '');
+    var titulo = product.kind === 'app' ? 'Veja as telas do app' : 'Veja os exemplos';
+    return window.LeuStore.productVisualHTML(product) + (thumbsHTML ? '<p class="pd-telas-tit">' + titulo + ' (' + photos.length + ') <span>· toque para ampliar</span></p><div class="prod-gallery-thumbs">' + thumbsHTML + '</div>' : '');
   }
 
   // Botões do produto: app (Baixar / Instalar + planos no Mercado Pago), serviço (orçamento) e curso (Começar).
@@ -94,8 +95,17 @@
     if (product.kind === 'curso') return '<div class="product-actions"><a class="btn btn-primary" href="' + product.installUrl + '">Começar grátis</a></div>';
     var teste = product.trial || 'grátis';
     return '<div class="product-actions pd-um-botao"><a class="btn btn-primary" href="' + product.installUrl + '">Baixar e testar ' + teste + '</a></div>' +
-      '<p class="pd-nota">Baixe no celular ou no computador e entre com o seu e-mail. Testou e gostou? Quando o teste acabar, o próprio app mostra os planos: <b>assinatura</b> ou <b>vitalício</b>, com pagamento pelo Mercado Pago.</p>' +
+      planosHTML(product) +
+      '<p class="pd-nota">Baixe no celular ou no computador e entre com o seu e-mail. Testou e gostou? Quando o teste acabar, o próprio app mostra os planos acima, com pagamento pelo Mercado Pago (Pix ou cartão).</p>' +
       (MS_STORE[product.id] ? '<div class="pd-ms"><span>No computador com Windows, baixe também pela loja oficial:</span><a href="https://apps.microsoft.com/detail/' + MS_STORE[product.id] + '?referrer=appbadge&amp;mode=direct" target="_blank" rel="noopener" class="ms-badge"><img src="https://get.microsoft.com/images/pt-br%20dark.svg" width="180" height="65" alt="Baixe na Microsoft Store"></a></div>' : '');
+  }
+  // Planos (só para mostrar; a compra é feita dentro do app, depois do teste).
+  function planosHTML(product) {
+    if (!product.plans || !product.plans.length) return '';
+    return '<div class="pd-planos">' + product.plans.map(function (p) {
+      var nome = p.nome.indexOf('👑') < 0 ? '👑 ' + p.nome : p.nome;
+      return '<div class="pd-plano"><b>' + nome + '</b><span class="pd-plano-preco">' + p.preco + '</span><small>' + (p.detalhe || '') + '</small></div>';
+    }).join('') + '</div>';
   }
   // Apps publicados na Microsoft Store (id da loja). App novo aprovado: acrescente aqui.
   var MS_STORE = { gestacell: '9NQ9BWWVLGHM' };
