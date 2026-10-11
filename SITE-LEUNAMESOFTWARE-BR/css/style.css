@@ -143,7 +143,7 @@ h1,h2,h3,h4{ font-family:var(--font-head); margin:0; }
   font-size:9.5px; font-weight:800; line-height:16px; text-align:center;
 }
 
-.searchbar-mobile{ display:flex; margin-top:12px; height:46px; }
+.searchbar-mobile{ display:flex; margin:12px var(--container-pad) 0; height:46px; }
 
 @media (min-width:640px){
   .searchbar{ display:flex; margin-inline:10px; }
@@ -980,3 +980,11 @@ h1,h2,h3,h4{ font-family:var(--font-head); margin:0; }
 .seg-chips button{ flex:none; padding:8px 14px; border-radius:var(--radius-pill); border:1.5px solid var(--gray-200); background:var(--white); font-size:13.5px; font-weight:600; color:var(--ink-600); cursor:pointer; }
 .seg-chips button.is-active{ background:var(--blue-500); border-color:var(--blue-500); color:var(--white); }
 @media (min-width:1024px){ .cat-grid{ grid-template-columns:repeat(7,1fr); } }
+
+/* Responsivo: grade da categoria, barra de categorias e fotos do app */
+@media (min-width:640px){ .product-grid{ grid-template-columns:repeat(auto-fill,minmax(220px,1fr)) !important; } }
+.cat-links{ overflow-x:auto; scrollbar-width:none; }
+.cat-links::-webkit-scrollbar{ display:none; }
+.prod-gallery-thumbs{ display:flex; gap:10px; overflow-x:auto; scrollbar-width:none; }
+.prod-gallery-thumbs::-webkit-scrollbar{ display:none; }
+.prod-gallery-thumb{ flex:0 0 auto; width:min(28%,130px); aspect-ratio:9/16; }

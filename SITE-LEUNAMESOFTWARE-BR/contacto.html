@@ -118,11 +118,11 @@
   <div class="contact-info-card">
     <div class="trust-item">
       <span class="trust-ic"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m4 7 8 6 8-6"/></svg></span>
-      <div><h4>Contato geral</h4><p><a href="mailto:contato@leunamesoftware.com.br">contato@leunamesoftware.com.br</a></p></div>
+      <div><h4>WhatsApp</h4><p><a href="https://wa.me/5524998721557" target="_blank" rel="noopener" style="white-space:nowrap">(24)&nbsp;99872&#8209;1557</a></p></div>
     </div>
     <div class="trust-item">
       <span class="trust-ic"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 13a8 8 0 0 1 16 0"/><rect x="3" y="13" width="4" height="6" rx="1.5"/><rect x="17" y="13" width="4" height="6" rx="1.5"/></svg></span>
-      <div><h4>Suporte técnico</h4><p><a href="mailto:suporte@leunamesoftware.com.br">suporte@leunamesoftware.com.br</a></p></div>
+      <div><h4>Canal no WhatsApp</h4><p><a href="https://whatsapp.com/channel/0029Vb8MlEi2phHVVGNFfB1Y" target="_blank" rel="noopener">Novidades e receitas</a></p></div>
     </div>
     <div class="trust-item">
       <span class="trust-ic"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></span>
@@ -131,18 +131,16 @@
   </div>
 
   <div class="contact-form-card">
-    <!-- Formulário 100% do lado do cliente: ainda não há nenhum serviço de envio de e-mail real conectado. -->
-    <form id="contactForm">
-      <div class="form-grid form-grid-2">
-        <div class="field"><label for="cName">Nome</label><input id="cName" type="text" required></div>
-        <div class="field"><label for="cEmail">E-mail</label><input id="cEmail" type="email" required></div>
-      </div>
+    <!-- A mensagem vai pelo WhatsApp da empresa (abre a conversa já escrita). -->
+    <form id="contatoZap">
+      <div class="field"><label for="cName">Nome</label><input id="cName" type="text" required autocomplete="name"></div>
       <div class="field" style="margin-top:16px;">
         <label for="cSubject">Assunto</label>
         <select id="cSubject">
           <option>Dúvida geral</option>
           <option>Suporte técnico</option>
-          <option>Vendas</option>
+          <option>Comprar um app</option>
+          <option>Site, logo ou banner sob encomenda</option>
           <option>Outro</option>
         </select>
       </div>
@@ -150,13 +148,15 @@
         <label for="cMessage">Mensagem</label>
         <textarea id="cMessage" required></textarea>
       </div>
-      <button type="submit" class="btn btn-primary" style="margin-top:18px;">Enviar mensagem</button>
+      <button type="submit" class="btn btn-primary" style="margin-top:18px;">Enviar pelo WhatsApp</button>
     </form>
-    <div class="contact-success" id="contactMsg" hidden>
-      <svg viewBox="0 0 24 24" width="46" height="46" fill="none" stroke="currentColor" stroke-width="2"><path d="m5 13 4 4 10-10"/></svg>
-      <h3>Obrigado, vamos te responder em breve</h3>
-      <p style="color:var(--ink-600);margin-top:8px;">Este formulário ainda não envia e-mails reais: é uma demonstração do fluxo.</p>
-    </div>
+    <script>
+      document.getElementById('contatoZap').addEventListener('submit', function (e) {
+        e.preventDefault();
+        var t = 'Olá, LeuName Softwares! Sou ' + document.getElementById('cName').value.trim() + '.\nAssunto: ' + document.getElementById('cSubject').value + '\n\n' + document.getElementById('cMessage').value.trim();
+        window.open('https://wa.me/5524998721557?text=' + encodeURIComponent(t), '_blank', 'noopener');
+      });
+    </script>
   </div>
 </div>
 
