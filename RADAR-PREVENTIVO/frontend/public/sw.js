@@ -5,7 +5,7 @@
 // A troca de versão é feita pelo app (estado/AtualizacaoAutomatica.tsx), que apaga a
 // cópia da página e recarrega quando sai versão nova.
 
-const CACHE = 'radar-app-v1';
+const CACHE = 'radar-app-v2';
 const PAGINA = '/index.html';
 
 self.addEventListener('install', () => self.skipWaiting());
