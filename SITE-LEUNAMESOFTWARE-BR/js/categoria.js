@@ -44,7 +44,7 @@
       banners: { pc: '/img/destaques/banners-topo.webp', pcTam: [1920, 720], cel: '/img/destaques/banners-topo-cel.webp', celTam: [1020, 765],
         alt: 'Banners que destacam. Artes profissionais para sites, lojas e redes sociais que atraem mais clientes.', pedido: 'um banner para o meu negócio', botao: true, cor: 'roxo' },
       sites: { pc: '/img/destaques/site-sob-medida.webp', pcTam: [1600, 576], cel: '/img/destaques/site-sob-medida-cel.webp', celTam: [720, 530],
-        alt: 'Seu site sob medida, para qualquer tipo de negócio. Orçamento grátis.', pedido: 'um site para a minha empresa', botao: false },
+        alt: 'Seu site sob medida, para qualquer tipo de negócio. Orçamento grátis.', pedido: 'um site para a minha empresa', botao: false, cor: 'site' },
       receitas: { pc: '/img/destaques/receitas-topo.webp', pcTam: [1920, 720], cel: '/img/destaques/receitas-topo-cel.webp', celTam: [1020, 765],
         alt: 'Receitas e Calculadoras: receitas que vendem, com preço certo. Calcule custos, defina o preço de venda e aumente o seu lucro.', link: '#catGridResults', botaoTexto: 'Ver as receitas', botao: true, cor: 'laranja' },
       utilidades: { pc: '/img/destaques/gestao-topo.webp', pcTam: [1920, 720], cel: '/img/destaques/gestao-topo-cel.webp', celTam: [1020, 765],
@@ -62,7 +62,7 @@
       wrap.innerHTML = destino +
         // Celular mostra o banner inteiro, deitado, igual ao computador (pedido do dono).
         '<img src="' + topo.pc + '" width="' + topo.pcTam[0] + '" height="' + topo.pcTam[1] + '" alt="' + topo.alt + '">' +
-        (topo.botao ? '<span class="cbt-cta' + (topo.link ? ' cbt-azul' : '') + (topo.cor ? ' cbt-' + topo.cor : '') + '">' + (topo.botaoTexto || 'Pedir orçamento grátis') + '</span>' : '') + '</a>';
+        '<span class="cbt-cta' + (topo.link ? ' cbt-azul' : '') + (topo.cor ? ' cbt-' + topo.cor : '') + (topo.botao ? '' : ' cbt-so-cel') + '">' + (topo.botaoTexto || 'Pedir orçamento grátis') + '</span>' + '</a>';
       hero.parentNode.insertBefore(wrap, hero);
       hero.classList.add('page-hero-titulo');
     }
