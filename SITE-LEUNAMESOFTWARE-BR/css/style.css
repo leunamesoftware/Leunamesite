@@ -1145,7 +1145,7 @@ body > .site-footer{ flex-shrink:0; }
 .cat-banner-topo a{ position:relative; display:block; border-radius:22px; overflow:hidden; line-height:0; background:#111;
   box-shadow:0 18px 40px rgba(10,38,71,.22), 0 2px 6px rgba(0,0,0,.08); transition:transform .25s ease, box-shadow .25s ease; }
 .cat-banner-topo a:hover{ transform:translateY(-2px); box-shadow:0 24px 48px rgba(10,38,71,.28), 0 2px 6px rgba(0,0,0,.1); }
-.cat-banner-topo img{ width:100%; height:auto; display:block; aspect-ratio:8/3; object-fit:cover; object-position:left center; }
+.cat-banner-topo img{ width:100%; height:auto; display:block; aspect-ratio:1920/728; object-fit:cover; object-position:left center; }
 .cbt-cta{ position:absolute; right:3%; bottom:7%; line-height:1; background:#f97316; color:#fff; font-weight:700; font-size:15px;
   padding:13px 22px; border-radius:999px; box-shadow:0 8px 22px rgba(249,115,22,.45); font-family:var(--font-head); }
 .cbt-cta::after{ content:' →'; }
