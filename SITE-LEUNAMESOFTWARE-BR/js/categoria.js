@@ -34,6 +34,25 @@
     var applyBtn = document.getElementById('filterApply');
     var resultCount = document.getElementById('catResultCount');
 
+    // Sites: banner de site sob medida (orçamento no WhatsApp) acima dos templates prontos.
+    if (slug === 'sites' && !query) {
+      var msg = encodeURIComponent('Olá, LeuName Softwares! Vim pelo site e quero um orçamento de site para a minha empresa.');
+      var ban = document.createElement('a');
+      ban.className = 'sob-medida';
+      ban.href = 'https://wa.me/5524998721557?text=' + msg;
+      ban.target = '_blank'; ban.rel = 'noopener';
+      ban.innerHTML = '<div class="sm-texto"><span class="sm-pill">Site sob medida</span>' +
+        '<h2>Quer um site só seu, do seu jeito?</h2>' +
+        '<p>Criamos o site da sua empresa do zero, com a sua marca, pronto para vender no celular e no computador.</p>' +
+        '<span class="sm-btn">💬 Pedir orçamento grátis no WhatsApp</span></div>' +
+        '<div class="sm-arte" aria-hidden="true"><span class="sm-tela"><i></i><i></i><i></i><b></b><b></b><b></b></span><span class="sm-cel"><i></i><b></b><b></b></span></div>';
+      var alvo = document.querySelector('.cat-toolbar');
+      alvo.parentNode.insertBefore(ban, alvo);
+      var tit = document.createElement('h2');
+      tit.className = 'sm-titulo'; tit.textContent = 'Sites prontos: compre e receba no e-mail';
+      alvo.parentNode.insertBefore(tit, alvo);
+    }
+
     // Filtro por tipo de negócio (Loja de celular, Mercado...), quando a categoria tem mais de um.
     var segmento = '';
     var segs = [];

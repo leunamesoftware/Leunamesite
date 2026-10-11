@@ -23,7 +23,7 @@
     { slug: 'delivery', name: 'Delivery', curto: 'Delivery', color: 'pink', icon: ICONS.delivery },
     { slug: 'receitas', name: 'Receitas e Calculadoras', curto: 'Receitas', color: 'amber', icon: ICONS.receitas },
     { slug: 'utilidades', name: 'Gestão e Utilidades', curto: 'Gestão', color: 'green', icon: ICONS.utilidades },
-    { slug: 'sites', name: 'Sites e Templates', curto: 'Sites', color: 'green', icon: ICONS.sites },
+    { slug: 'sites', name: 'Sites prontos', curto: 'Sites prontos', color: 'green', icon: ICONS.sites },
     { slug: 'design', name: 'Logos e Design', curto: 'Design', color: 'purple', icon: ICONS.design },
     { slug: 'cursos', name: 'Cursos grátis', curto: 'Cursos grátis', color: 'gray', icon: ICONS.cursos }
   ];

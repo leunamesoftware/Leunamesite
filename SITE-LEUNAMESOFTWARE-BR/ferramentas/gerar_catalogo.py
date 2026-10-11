@@ -83,6 +83,8 @@ for t in (json.loads(tpl_cat.read_text()) if tpl_cat.exists() else []):
 
 zap = servicos.get('whatsapp', '5524998721557')
 for s in servicos.get('itens', []):
+    if s['id'] == 'templates':  # site sob medida: vira o banner de orçamento da categoria Sites (categoria.js), não produto
+        continue
     produtos.append({'id': 'servico-' + s['id'], 'kind': 'servico', 'name': ('Site' if s['id'] == 'templates' else s['nome']) + ' sob encomenda',
                      'category': 'sites' if s['id'] == 'templates' else 'design', 'price': 0, 'priceText': 'Orçamento grátis', 'trial': '',
                      'short': s['resumo'], 'description': s['resumo'] + ' Criamos do zero, com a sua marca. Peça o orçamento pelo WhatsApp.',

@@ -366,30 +366,6 @@ window.LEU_CATALOGO = [
   "whatsapp": "https://wa.me/5524998721557?text=Olá,%20LeuName%20Softwares!%20Vim%20pelo%20site%20e%20quero%20um%20orçamento%20de%20logomarcas."
  },
  {
-  "id": "servico-templates",
-  "kind": "servico",
-  "name": "Site sob encomenda",
-  "category": "sites",
-  "price": 0,
-  "priceText": "Orçamento grátis",
-  "trial": "",
-  "short": "Modelo de site profissional para a sua loja ou empresa, com a sua cara.",
-  "description": "Modelo de site profissional para a sua loja ou empresa, com a sua cara. Criamos do zero, com a sua marca. Peça o orçamento pelo WhatsApp.",
-  "features": [],
-  "plans": [],
-  "imageUrl": "/img/servicos/template1.jpg",
-  "icon": null,
-  "photos": [
-   "/img/servicos/template1.jpg",
-   "/img/servicos/template2.jpg"
-  ],
-  "installUrl": null,
-  "emBreve": false,
-  "tag": null,
-  "segmento": "Qualquer negócio",
-  "whatsapp": "https://wa.me/5524998721557?text=Olá,%20LeuName%20Softwares!%20Vim%20pelo%20site%20e%20quero%20um%20orçamento%20de%20templates%20de%20site."
- },
- {
   "id": "servico-banners",
   "kind": "servico",
   "name": "Banners e imagens sob encomenda",
