@@ -421,6 +421,31 @@ window.LEU_CATALOGO = [
   "whatsapp": "https://wa.me/5524998721557?text=Olá,%20LeuName%20Softwares!%20Vim%20pelo%20site%20e%20quero%20um%20orçamento%20de%20banner%20sob%20encomenda%20para%20padaria."
  },
  {
+  "id": "servico-banners-hamburgueria",
+  "kind": "servico",
+  "name": "Banner sob encomenda para hamburgueria",
+  "category": "banners",
+  "price": 0,
+  "priceText": "Orçamento grátis",
+  "trial": "",
+  "short": "Banner para hamburgueria: hambúrguer em destaque, batata, bebida e botão para pedir no WhatsApp.",
+  "description": "Banner para hamburgueria: hambúrguer em destaque, batata, bebida e botão para pedir no WhatsApp. Este é um modelo de amostra: fazemos o seu com a sua marca, seus produtos e seus preços. Peça o orçamento pelo WhatsApp.",
+  "features": [],
+  "plans": [],
+  "imageUrl": "/img/servicos/banner-hamburgueria.webp",
+  "icon": null,
+  "photos": [
+   "/img/servicos/banner-hamburgueria.webp",
+   "/img/servicos/banner-hamburgueria-2.webp",
+   "/img/servicos/banner-hamburgueria-3.webp"
+  ],
+  "installUrl": null,
+  "emBreve": false,
+  "tag": null,
+  "segmento": "Hamburgueria",
+  "whatsapp": "https://wa.me/5524998721557?text=Olá,%20LeuName%20Softwares!%20Vim%20pelo%20site%20e%20quero%20um%20orçamento%20de%20banner%20sob%20encomenda%20para%20hamburgueria."
+ },
+ {
   "id": "servico-logomarcas",
   "kind": "servico",
   "name": "Logomarcas sob encomenda",
