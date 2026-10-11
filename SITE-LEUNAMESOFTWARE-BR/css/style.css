@@ -1209,3 +1209,8 @@ html{ scroll-behavior:smooth; }
 @media (max-width:639px){ .cc-card{ width:156px; height:196px; padding:16px 14px; } .cc-nome{ font-size:16px; } .cc-selo{ width:44px; height:44px; } }
 #catGridResults:empty{ min-height:70vh; }
 .cat-layout{ min-height:60vh; }
+
+/* Botão do banner do topo: sempre numa faixa EMBAIXO da imagem, nunca por cima (pedido do dono). */
+.cbt-cta, .cbt-cta.cbt-so-cel{ position:static; display:block; text-align:center; border-radius:0; box-shadow:none; transform:none;
+  font-size:15px; padding:12px 16px; line-height:1.2; }
+@media (max-width:700px){ .cbt-cta, .cbt-cta.cbt-so-cel{ font-size:14px; padding:10px 14px; } }
