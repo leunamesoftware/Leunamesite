@@ -1055,3 +1055,5 @@ body > .site-footer{ flex-shrink:0; }
 .cs-app{width:100%;display:flex;align-items:center;gap:12px;padding:14px;border-radius:var(--radius-l);background:var(--white);border:1px solid var(--gray-200);text-align:left;color:var(--ink-900);text-decoration:none}
 .cs-app img{width:52px;height:52px;border-radius:12px}.cs-app span:nth-child(2){flex:1;min-width:0;display:grid}.cs-app small{color:var(--ink-600)}
 @media (max-width:820px){.cs-topo{grid-template-columns:1fr}.cs-lista{grid-template-columns:1fr}.cs-aula{padding:20px}.cs-fatos{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.ms-badge{display:inline-block;line-height:0}.ms-badge img{width:180px;height:auto;display:block}
+.pd-ms{display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px;margin-top:14px;font-size:14px;color:var(--ink-600)}

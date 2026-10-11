@@ -34,7 +34,7 @@
     { q: 'Como funciona o teste grátis?', a: 'Toque em Baixar / Instalar, abra o app e entre com o seu e-mail. Você usa grátis durante o teste, sem cartão. Depois, para continuar, escolha um plano.' },
     { q: 'Funciona no celular e no computador?', a: 'Sim. O app abre no celular (Android ou iPhone) e no computador, direto pelo nosso site, sem Play Store.' },
     { q: 'Como eu pago?', a: 'Pelo Mercado Pago, no Pix ou no cartão. O plano é liberado na hora na sua conta.' },
-    { q: 'Posso baixar pela Microsoft Store?', a: 'Em breve também na Microsoft Store, para computador com Windows. Por enquanto, baixe direto aqui pelo nosso site: funciona no celular e no computador.' },
+    { q: 'Posso baixar pela Microsoft Store?', a: 'O Gestacell já está na Microsoft Store, para computador com Windows. Os outros apps chegam em breve. Você também pode baixar qualquer um direto aqui pelo nosso site: funciona no celular e no computador.' },
     { q: 'E se eu tiver dúvida ou problema?', a: 'Fale com a gente no <a href="https://wa.me/5524998721557" target="_blank" rel="noopener" style="white-space:nowrap;font-weight:600;color:var(--blue-600)">WhatsApp (24)&nbsp;99872&#8209;1557</a>. O suporte é feito por quem criou o sistema.' }
   ];
   var FAQS_BY_CATEGORY = {

@@ -94,8 +94,11 @@
     if (product.kind === 'curso') return '<div class="product-actions"><a class="btn btn-primary" href="' + product.installUrl + '">Começar grátis</a></div>';
     var teste = product.trial || 'grátis';
     return '<div class="product-actions pd-um-botao"><a class="btn btn-primary" href="' + product.installUrl + '">Baixar e testar ' + teste + '</a></div>' +
-      '<p class="pd-nota">Baixe no celular ou no computador e entre com o seu e-mail. Testou e gostou? Quando o teste acabar, o próprio app mostra os planos: <b>assinatura</b> ou <b>vitalício</b>, com pagamento pelo Mercado Pago.</p>';
+      '<p class="pd-nota">Baixe no celular ou no computador e entre com o seu e-mail. Testou e gostou? Quando o teste acabar, o próprio app mostra os planos: <b>assinatura</b> ou <b>vitalício</b>, com pagamento pelo Mercado Pago.</p>' +
+      (MS_STORE[product.id] ? '<div class="pd-ms"><span>No computador com Windows, baixe também pela loja oficial:</span><a href="https://apps.microsoft.com/detail/' + MS_STORE[product.id] + '?referrer=appbadge&amp;mode=direct" target="_blank" rel="noopener" class="ms-badge"><img src="https://get.microsoft.com/images/pt-br%20dark.svg" width="180" height="65" alt="Baixe na Microsoft Store"></a></div>' : '');
   }
+  // Apps publicados na Microsoft Store (id da loja). App novo aprovado: acrescente aqui.
+  var MS_STORE = { gestacell: '9NQ9BWWVLGHM' };
 
 
 
