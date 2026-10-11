@@ -43,17 +43,21 @@
       logomarcas: Object.assign({ pedido: 'uma logomarca para o meu negócio' }, DESIGN),
       banners: Object.assign({ pedido: 'um banner para o meu negócio' }, DESIGN),
       sites: { pc: '/img/destaques/site-sob-medida.webp', pcTam: [1600, 576], cel: '/img/destaques/site-sob-medida-cel.webp', celTam: [720, 530],
-        alt: 'Seu site sob medida, para qualquer tipo de negócio. Orçamento grátis.', pedido: 'um site para a minha empresa', botao: false }
+        alt: 'Seu site sob medida, para qualquer tipo de negócio. Orçamento grátis.', pedido: 'um site para a minha empresa', botao: false },
+      cursos: { pc: '/img/destaques/cursos-gratis-topo.webp', pcTam: [1920, 720], cel: '/img/destaques/cursos-gratis-topo-cel.webp', celTam: [1020, 765],
+        alt: 'Cursos grátis: aprenda hoje e evolua sempre. Conteúdo prático, aulas em vídeo, passo a passo detalhado.', link: '#catGridResults', botaoTexto: 'Ver os cursos grátis', botao: true }
     };
     var topo = cat && !query && BANNER_TOPO[cat.slug];
     if (topo) {
       var hero = document.querySelector('.page-hero');
       var wrap = document.createElement('div');
       wrap.className = 'cat-banner-topo container';
-      wrap.innerHTML = '<a href="https://wa.me/5524998721557?text=' + encodeURIComponent('Olá, LeuName Softwares! Vim pelo site e quero um orçamento de ' + topo.pedido + '.') + '" target="_blank" rel="noopener" aria-label="' + topo.alt + ' Pedir orçamento grátis no WhatsApp">' +
+      var destino = topo.link ? '<a href="' + topo.link + '" aria-label="' + topo.alt + '">'
+        : '<a href="https://wa.me/5524998721557?text=' + encodeURIComponent('Olá, LeuName Softwares! Vim pelo site e quero um orçamento de ' + topo.pedido + '.') + '" target="_blank" rel="noopener" aria-label="' + topo.alt + ' Pedir orçamento grátis no WhatsApp">';
+      wrap.innerHTML = destino +
         '<picture><source media="(max-width:700px)" srcset="' + topo.cel + '" width="' + topo.celTam[0] + '" height="' + topo.celTam[1] + '">' +
         '<img src="' + topo.pc + '" width="' + topo.pcTam[0] + '" height="' + topo.pcTam[1] + '" alt="' + topo.alt + '"></picture>' +
-        (topo.botao ? '<span class="cbt-cta">Pedir orçamento grátis</span>' : '') + '</a>';
+        (topo.botao ? '<span class="cbt-cta' + (topo.link ? ' cbt-azul' : '') + '">' + (topo.botaoTexto || 'Pedir orçamento grátis') + '</span>' : '') + '</a>';
       hero.parentNode.insertBefore(wrap, hero);
       hero.classList.add('page-hero-titulo');
     }

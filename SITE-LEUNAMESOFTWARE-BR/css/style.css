@@ -1156,7 +1156,12 @@ body > .site-footer{ flex-shrink:0; }
 @media (max-width:700px){
   .cat-banner-topo{ margin-top:12px; }
   .cat-banner-topo a{ border-radius:16px; }
-  .cat-banner-topo img{ aspect-ratio:4/3; }
+  .cat-banner-topo img{ aspect-ratio:4/3; object-position:center; }
   .cbt-cta{ position:static; display:block; text-align:center; border-radius:0; box-shadow:none; font-size:15px; padding:14px 16px; }
   .page-hero.page-hero-titulo{ padding-block:14px 0; }
 }
+
+.cbt-cta.cbt-azul{ background:#1d6bff; box-shadow:0 8px 22px rgba(29,107,255,.45); }
+.cbt-cta.cbt-azul::after{ content:' ↓'; }
+html{ scroll-behavior:smooth; }
+#catGridResults{ scroll-margin-top:90px; }
