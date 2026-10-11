@@ -25,7 +25,7 @@
     { slug: 'utilidades', name: 'Gestão e Utilidades', curto: 'Gestão', color: 'green', icon: ICONS.utilidades },
     { slug: 'sites', name: 'Sites e Templates', curto: 'Sites', color: 'green', icon: ICONS.sites },
     { slug: 'design', name: 'Logos e Design', curto: 'Design', color: 'purple', icon: ICONS.design },
-    { slug: 'cursos', name: 'Cursos e Livros', curto: 'Cursos', color: 'gray', icon: ICONS.cursos }
+    { slug: 'cursos', name: 'Cursos grátis', curto: 'Cursos grátis', color: 'gray', icon: ICONS.cursos }
   ];
 
   var PRODUCTS = (global.LEU_CATALOGO || []).slice();
@@ -60,8 +60,9 @@
     for (var i = 0; i < PRODUCTS.length; i++) if (PRODUCTS[i].id === id) return PRODUCTS[i];
     return null;
   }
+  // "Todos os produtos" é a loja: os cursos grátis ficam só na categoria deles, sem misturar.
   function getProductsByCategory(slug) {
-    if (!slug || slug === 'todos') return PRODUCTS.slice();
+    if (!slug || slug === 'todos') return PRODUCTS.filter(function (p) { return p.kind !== 'curso'; });
     return PRODUCTS.filter(function (p) { return p.category === slug; });
   }
   function formatPrice(value) {

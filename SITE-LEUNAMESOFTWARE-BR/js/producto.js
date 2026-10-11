@@ -229,7 +229,7 @@
 
     function renderRelated() {
       var related = Store.getProductsByCategory(product.category).filter(function (p) { return p.id !== product.id; }).slice(0, 6);
-      if (!related.length) related = Store.PRODUCTS.filter(function (p) { return p.id !== product.id; }).slice(0, 6);
+      if (!related.length) related = Store.getProductsByCategory('todos').filter(function (p) { return p.id !== product.id; }).slice(0, 6);
       Store.mountProductGrid('relatedGrid', related);
     }
     // Re-renderiza quando o catálogo real chega do servidor (a primeira

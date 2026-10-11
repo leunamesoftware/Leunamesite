@@ -56,7 +56,7 @@
     }
 
     function baseList() {
-      var list = slug ? Store.getProductsByCategory(slug) : Store.PRODUCTS.slice();
+      var list = Store.getProductsByCategory(slug);
       if (segmento) list = list.filter(function (p) { return p.segmento === segmento; });
       if (query) {
         list = list.filter(function (p) { return p.name.toLowerCase().indexOf(query) !== -1 || p.short.toLowerCase().indexOf(query) !== -1 || (p.segmento || '').toLowerCase().indexOf(query) !== -1; });
