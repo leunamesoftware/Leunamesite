@@ -979,3 +979,4 @@ h1,h2,h3,h4{ font-family:var(--font-head); margin:0; }
 .seg-chips::-webkit-scrollbar{ display:none; }
 .seg-chips button{ flex:none; padding:8px 14px; border-radius:var(--radius-pill); border:1.5px solid var(--gray-200); background:var(--white); font-size:13.5px; font-weight:600; color:var(--ink-600); cursor:pointer; }
 .seg-chips button.is-active{ background:var(--blue-500); border-color:var(--blue-500); color:var(--white); }
+@media (min-width:1024px){ .cat-grid{ grid-template-columns:repeat(7,1fr); } }

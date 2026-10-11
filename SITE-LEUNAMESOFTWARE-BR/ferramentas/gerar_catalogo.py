@@ -61,6 +61,14 @@ produtos.append({'id': 'pdv-lanchonete', 'kind': 'app', 'name': 'PDV Lanchonete 
                  'imageUrl': '/img/destaques/leuburger.webp', 'icon': '/img/leuburger-192.png', 'photos': [], 'installUrl': None, 'emBreve': True, 'tag': None,
                  'segmento': SEGMENTO['pdv-lanchonete']})
 
+# Delivery próprio para pizzaria, lanchonete e hamburgueria: em breve.
+produtos.append({'id': 'delivery-restaurante', 'kind': 'app', 'name': 'Delivery para Pizzaria, Lanchonete e Hamburgueria', 'category': 'delivery', 'price': 0,
+                 'priceText': 'Em breve', 'trial': '', 'short': 'Cardápio online, pedidos e entregas da sua loja, sem comissão por pedido.',
+                 'description': 'Delivery próprio para pizzaria, lanchonete e hamburgueria: cardápio online com fotos, pedidos direto para a sua loja, acompanhamento da entrega e sem comissão por pedido. Em breve.',
+                 'features': ['Cardápio online', 'Pedidos direto na loja', 'Acompanhar a entrega', 'Sem comissão por pedido'], 'plans': [],
+                 'imageUrl': '/img/destaques/leuburger.webp', 'icon': '/img/leuburger-192.png', 'photos': [], 'installUrl': None, 'emBreve': True, 'tag': None,
+                 'segmento': 'Pizzaria, lanchonete e hamburgueria'})
+
 zap = servicos.get('whatsapp', '5524998721557')
 for s in servicos.get('itens', []):
     produtos.append({'id': 'servico-' + s['id'], 'kind': 'servico', 'name': s['nome'] + ' sob encomenda',
