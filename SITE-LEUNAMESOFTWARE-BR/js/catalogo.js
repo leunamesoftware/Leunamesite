@@ -346,6 +346,31 @@ window.LEU_CATALOGO = [
   "segmento": "Agência de viagens e turismo"
  },
  {
+  "id": "servico-banners-pizzaria",
+  "kind": "servico",
+  "name": "Banner sob encomenda para pizzaria",
+  "category": "banners",
+  "price": 0,
+  "priceText": "Orçamento grátis",
+  "trial": "",
+  "short": "Banner para pizzaria: marca, pizza em destaque e botão para pedir no WhatsApp.",
+  "description": "Banner para pizzaria: marca, pizza em destaque e botão para pedir no WhatsApp. Este é um modelo de amostra: fazemos o seu com a sua marca, seus produtos e seus preços. Peça o orçamento pelo WhatsApp.",
+  "features": [],
+  "plans": [],
+  "imageUrl": "/img/servicos/banner-pizzaria.webp",
+  "icon": null,
+  "photos": [
+   "/img/servicos/banner-pizzaria.webp",
+   "/img/servicos/banner-pizzaria-2.webp",
+   "/img/servicos/banner-pizzaria-3.webp"
+  ],
+  "installUrl": null,
+  "emBreve": false,
+  "tag": null,
+  "segmento": "Pizzaria",
+  "whatsapp": "https://wa.me/5524998721557?text=Olá,%20LeuName%20Softwares!%20Vim%20pelo%20site%20e%20quero%20um%20orçamento%20de%20banner%20sob%20encomenda%20para%20pizzaria."
+ },
+ {
   "id": "servico-logomarcas",
   "kind": "servico",
   "name": "Logomarcas sob encomenda",
@@ -369,31 +394,6 @@ window.LEU_CATALOGO = [
   "tag": null,
   "segmento": "Qualquer negócio",
   "whatsapp": "https://wa.me/5524998721557?text=Olá,%20LeuName%20Softwares!%20Vim%20pelo%20site%20e%20quero%20um%20orçamento%20de%20logomarcas."
- },
- {
-  "id": "servico-banners",
-  "kind": "servico",
-  "name": "Banners e imagens sob encomenda",
-  "category": "banners",
-  "price": 0,
-  "priceText": "Orçamento grátis",
-  "trial": "",
-  "short": "Banners para loja, promoções, Instagram e WhatsApp que chamam o cliente.",
-  "description": "Banners para loja, promoções, Instagram e WhatsApp que chamam o cliente. Criamos do zero, com a sua marca. Peça o orçamento pelo WhatsApp.",
-  "features": [],
-  "plans": [],
-  "imageUrl": "/img/servicos/banner-pizzaria.webp",
-  "icon": null,
-  "photos": [
-   "/img/servicos/banner-pizzaria.webp",
-   "/img/servicos/banner-pizzaria-2.webp",
-   "/img/servicos/banner-pizzaria-3.webp"
-  ],
-  "installUrl": null,
-  "emBreve": false,
-  "tag": null,
-  "segmento": "Qualquer negócio",
-  "whatsapp": "https://wa.me/5524998721557?text=Olá,%20LeuName%20Softwares!%20Vim%20pelo%20site%20e%20quero%20um%20orçamento%20de%20banners%20e%20imagens."
  },
  {
   "id": "curso-preco-certo",

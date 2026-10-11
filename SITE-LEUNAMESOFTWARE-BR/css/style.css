@@ -1139,3 +1139,23 @@ body > .site-footer{ flex-shrink:0; }
   .sec-categorias .cat-card-link{ display:none; }
   .sec-categorias .cat-ic{ margin:0 auto; }
 }
+
+/* Banner no topo da categoria (Logomarcas, Banners) no lugar da faixa azul */
+.cat-banner-topo{ margin-top:20px; }
+.cat-banner-topo a{ position:relative; display:block; border-radius:22px; overflow:hidden; line-height:0; background:#111;
+  box-shadow:0 18px 40px rgba(10,38,71,.22), 0 2px 6px rgba(0,0,0,.08); transition:transform .25s ease, box-shadow .25s ease; }
+.cat-banner-topo a:hover{ transform:translateY(-2px); box-shadow:0 24px 48px rgba(10,38,71,.28), 0 2px 6px rgba(0,0,0,.1); }
+.cat-banner-topo img{ width:100%; height:auto; display:block; }
+.cbt-cta{ position:absolute; right:3%; bottom:7%; line-height:1; background:#f97316; color:#fff; font-weight:700; font-size:15px;
+  padding:13px 22px; border-radius:999px; box-shadow:0 8px 22px rgba(249,115,22,.45); font-family:var(--font-head); }
+.cbt-cta::after{ content:' →'; }
+.page-hero.page-hero-titulo{ background:none; color:var(--ink-900); padding-block:22px 0; }
+.page-hero.page-hero-titulo h1{ color:var(--ink-900); }
+.page-hero.page-hero-titulo .breadcrumb, .page-hero.page-hero-titulo .breadcrumb a{ color:var(--ink-500, #64748b); }
+.page-hero.page-hero-titulo #catDesc{ display:none; }
+@media (max-width:700px){
+  .cat-banner-topo{ margin-top:12px; }
+  .cat-banner-topo a{ border-radius:16px; }
+  .cbt-cta{ position:static; display:block; text-align:center; border-radius:0; box-shadow:none; font-size:15px; padding:14px 16px; }
+  .page-hero.page-hero-titulo{ padding-block:14px 0; }
+}

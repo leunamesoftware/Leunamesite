@@ -69,6 +69,8 @@
   }
   function getProduct(id) {
     for (var i = 0; i < PRODUCTS.length; i++) if (PRODUCTS[i].id === id) return PRODUCTS[i];
+    // Link antigo de serviço (ex.: servico-banners) abre o primeiro modelo dele.
+    for (var j = 0; j < PRODUCTS.length; j++) if (id && PRODUCTS[j].id.indexOf(id + '-') === 0) return PRODUCTS[j];
     return null;
   }
   // "Todos os produtos" é a loja: os cursos grátis ficam só na categoria deles, sem misturar.

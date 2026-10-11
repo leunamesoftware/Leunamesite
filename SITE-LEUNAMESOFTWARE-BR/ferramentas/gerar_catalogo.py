@@ -83,8 +83,23 @@ for t in (json.loads(tpl_cat.read_text()) if tpl_cat.exists() else []):
                      'parcelas': t['parcelas'], 'emBreve': False, 'tag': 'novedad', 'segmento': t['segmento']})
 
 zap = servicos.get('whatsapp', '5524998721557')
+# Serviço com modelos de amostra (ex.: banners → pizzaria, lanchonete…): um cartão por modelo,
+# "Banner sob encomenda para pizzaria", com o pedido de orçamento já dizendo o modelo.
+NOME_MODELO = {'banners': 'Banner', 'logomarcas': 'Logomarca'}
+for s in servicos.get('itens', []):
+    for m in s.get('modelos', []):
+        nome = f"{NOME_MODELO.get(s['id'], s['nome'])} sob encomenda para {m['segmento'].lower()}"
+        produtos.append({'id': f"servico-{s['id']}-{m['id']}", 'kind': 'servico', 'name': nome,
+                         'category': {'logomarcas': 'logomarcas', 'banners': 'banners'}.get(s['id'], 'logomarcas'),
+                         'price': 0, 'priceText': 'Orçamento grátis', 'trial': '', 'short': m['resumo'],
+                         'description': m['resumo'] + ' Este é um modelo de amostra: fazemos o seu com a sua marca, seus produtos e seus preços. Peça o orçamento pelo WhatsApp.',
+                         'features': [], 'plans': [], 'imageUrl': m['imagens'][0], 'icon': None, 'photos': m['imagens'],
+                         'installUrl': None, 'emBreve': False, 'tag': None, 'segmento': m['segmento'],
+                         'whatsapp': f"https://wa.me/{zap}?text=" + re.sub(' ', '%20', f"Olá, LeuName Softwares! Vim pelo site e quero um orçamento de {nome.lower()}.")})
 for s in servicos.get('itens', []):
     if s['id'] == 'templates':  # site sob medida: vira o banner de orçamento da categoria Sites (categoria.js), não produto
+        continue
+    if s.get('modelos'):  # já entrou como um cartão por modelo
         continue
     produtos.append({'id': 'servico-' + s['id'], 'kind': 'servico', 'name': ('Site' if s['id'] == 'templates' else s['nome']) + ' sob encomenda',
                      'category': {'logomarcas': 'logomarcas', 'banners': 'banners'}.get(s['id'], 'logomarcas'), 'price': 0, 'priceText': 'Orçamento grátis', 'trial': '',
