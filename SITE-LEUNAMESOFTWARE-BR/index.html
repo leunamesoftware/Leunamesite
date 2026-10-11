@@ -140,8 +140,9 @@
   <div class="container">
     <div class="section-head">
       <h2 class="section-title">Explore por categoria</h2>
+      <p class="section-sub cc-sub">Escolha a categoria ou o tipo do seu negócio</p>
     </div>
-    <div class="cat-grid" id="catGrid"></div>
+    <div class="cat-carrossel" id="catCarrossel"></div>
   </div>
 </section>
 
@@ -337,7 +338,7 @@
   document.addEventListener('DOMContentLoaded', function () {
     if (!window.LeuStore) return;
     var all = LeuStore.PRODUCTS;
-    LeuStore.mountCategoryGrid('catGrid');
+    LeuStore.mountCategoryCarousel('catCarrossel');
     LeuStore.mountProductGrid('sitesGrid', all.filter(function (p) { return p.kind === 'template'; }));
     LeuStore.mountProductGrid('featuredGrid', all.filter(function (p) { return p.kind === 'app' && !p.emBreve; }));
     LeuStore.mountProductGrid('newArrivalsGrid', all.filter(function (p) { return p.tag === 'novedad'; }).concat(all.filter(function (p) { return p.emBreve; })));

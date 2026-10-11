@@ -130,6 +130,82 @@
     );
   }
 
+
+  /* ---------- Tipos de negócio (carrossel "Explore por categoria" da página inicial) ----------
+     Cada negócio junta os produtos cujo "segmento" tem uma das palavras-chave, mais os produtos
+     para "qualquer negócio" (logomarca, Radar). Só aparece no carrossel quem já tem produto. */
+  var SVG = function (d) { return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">' + d + '</svg>'; };
+  var NEGOCIOS = [
+    { slug: 'pizzaria', nome: 'Pizzaria', chaves: ['pizzaria'], cores: ['#b91c1c', '#ef4444'], icon: SVG('<path d="M12 3 3 19.5c5.7 2 12.3 2 18 0L12 3Z"/><circle cx="11" cy="12" r="1.2"/><circle cx="14" cy="16" r="1.2"/><circle cx="9" cy="16.5" r="1.2"/>') },
+    { slug: 'lanchonete', nome: 'Lanchonete e hamburgueria', curto: 'Lanchonete', chaves: ['lanchonete', 'hamburgueria'], cores: ['#c2410c', '#f59e0b'], icon: SVG('<path d="M4 11a8 6 0 0 1 16 0H4Z"/><path d="M3.5 14h17"/><path d="M5 17h14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2Z"/>') },
+    { slug: 'mercado', nome: 'Mercado e mercearia', curto: 'Mercado', chaves: ['mercado'], cores: ['#1d4ed8', '#f97316'], icon: SVG('<circle cx="9" cy="20" r="1.4"/><circle cx="17" cy="20" r="1.4"/><path d="M3 4h2l2.4 11h11l2-8H6.2"/>') },
+    { slug: 'loja-de-celular', nome: 'Loja de celular', chaves: ['celular'], ids: ['curso-gestao-loja-celular'], cores: ['#0e7490', '#22d3ee'], icon: SVG('<rect x="7" y="2.5" width="10" height="19" rx="2.5"/><path d="M11 18.5h2"/>') },
+    { slug: 'material-de-construcao', nome: 'Material de construção', curto: 'Construção', chaves: ['construção'], ids: ['curso-loja-construcao'], cores: ['#9a3412', '#fb923c'], icon: SVG('<path d="M3 21h18"/><path d="M5 21V10l7-5 7 5v11"/><path d="M9 21v-6h6v6"/>') },
+    { slug: 'confeitaria', nome: 'Confeitaria e salgados', curto: 'Confeitaria', chaves: ['confeitaria'], ids: ['curso-preco-certo'], cores: ['#be185d', '#f472b6'], icon: SVG('<path d="M4 20h16v-6H4v6Z"/><path d="M4 14c2 1.5 4 1.5 6 0s4-1.5 6 0 3 1.5 4 0"/><path d="M12 10V7"/><path d="M12 4.5c.8.8.8 1.7 0 2.5-.8-.8-.8-1.7 0-2.5Z"/>') },
+    { slug: 'agencia-de-viagens', nome: 'Agência de viagens', curto: 'Viagens', chaves: ['viagens'], cores: ['#0369a1', '#38bdf8'], icon: SVG('<path d="M2.5 13.5 21 6l-3.5 13-6-4.5-4 3v-5l10-7.5-12 6-3-1.5Z"/>') }
+  ];
+  function getNegocio(slug) {
+    for (var i = 0; i < NEGOCIOS.length; i++) if (NEGOCIOS[i].slug === slug) return NEGOCIOS[i];
+    return null;
+  }
+  function getProductsByNegocio(slug) {
+    var n = getNegocio(slug); if (!n) return [];
+    var seg = function (p) { return (p.segmento || '').toLowerCase(); };
+    var proprios = PRODUCTS.filter(function (p) {
+      return (n.ids || []).indexOf(p.id) >= 0 || n.chaves.some(function (k) { return seg(p).indexOf(k) >= 0; });
+    });
+    var gerais = PRODUCTS.filter(function (p) { return /^qualquer/.test(seg(p)) && proprios.indexOf(p) < 0; });
+    return proprios.concat(gerais);
+  }
+  function temProprio(n) { return getProductsByNegocio(n.slug).some(function (p) { return !/^qualquer/.test((p.segmento || '').toLowerCase()); }); }
+
+  // Categorias que não estão na barra de cima entram primeiro no carrossel.
+  var CAT_CORES = { delivery: ['#be123c', '#fb7185'], receitas: ['#c2410c', '#fbbf24'], utilidades: ['#15803d', '#4ade80'], cursos: ['#1e40af', '#60a5fa'] };
+  function itensDoCarrossel() {
+    var itens = CATEGORIES.filter(function (c) { return NO_TOPO.indexOf(c.slug) < 0; }).map(function (c) {
+      var n = getProductsByCategory(c.slug).filter(function (p) { return !p.emBreve; }).length;
+      return { href: 'categoria.html?slug=' + c.slug, nome: c.name, tipo: 'Categoria', icon: c.icon, cores: CAT_CORES[c.slug] || ['#0a2647', '#2f7dff'],
+               info: n ? n + (n === 1 ? ' produto' : ' produtos') : 'Em breve' };
+    });
+    NEGOCIOS.filter(temProprio).forEach(function (n) {
+      var q = getProductsByNegocio(n.slug).length;
+      itens.push({ href: 'categoria.html?negocio=' + n.slug, nome: n.nome, tipo: 'Para o seu negócio', icon: n.icon, cores: n.cores, info: q + (q === 1 ? ' produto' : ' produtos') });
+    });
+    return itens;
+  }
+  function mountCategoryCarousel(elId) {
+    var el = document.getElementById(elId);
+    if (!el) return;
+    el.innerHTML =
+      '<button type="button" class="cc-seta cc-ant" aria-label="Anterior">&#8249;</button>' +
+      '<div class="cc-trilho" tabindex="0" aria-label="Categorias e tipos de negócio">' + itensDoCarrossel().map(function (it) {
+        return '<a class="cc-card" href="' + it.href + '" style="--c1:' + it.cores[0] + ';--c2:' + it.cores[1] + '">' +
+          '<span class="cc-fundo" aria-hidden="true">' + it.icon + '</span>' +
+          '<span class="cc-selo">' + it.icon + '</span>' +
+          '<span class="cc-tipo">' + it.tipo + '</span>' +
+          '<span class="cc-nome">' + it.nome + '</span>' +
+          '<span class="cc-info">' + it.info + ' <b>→</b></span>' +
+        '</a>';
+      }).join('') + '</div>' +
+      '<button type="button" class="cc-seta cc-prox" aria-label="Próximo">&#8250;</button>';
+    var trilho = el.querySelector('.cc-trilho');
+    var passo = function () { var c = trilho.querySelector('.cc-card'); return c ? c.getBoundingClientRect().width + 14 : 200; };
+    var andar = function (dir) {
+      var fim = trilho.scrollWidth - trilho.clientWidth - 4;
+      if (dir > 0 && trilho.scrollLeft >= fim) trilho.scrollTo({ left: 0, behavior: 'smooth' });
+      else if (dir < 0 && trilho.scrollLeft <= 4) trilho.scrollTo({ left: fim, behavior: 'smooth' });
+      else trilho.scrollBy({ left: dir * passo(), behavior: 'smooth' });
+    };
+    el.querySelector('.cc-ant').addEventListener('click', function () { andar(-1); pausa(); });
+    el.querySelector('.cc-prox').addEventListener('click', function () { andar(1); pausa(); });
+    // Passa sozinho a cada 3 s; para enquanto a pessoa mexe e volta depois de 6 s.
+    var parado = false, volta = null;
+    function pausa() { parado = true; clearTimeout(volta); volta = setTimeout(function () { parado = false; }, 6000); }
+    ['pointerdown', 'touchstart', 'wheel', 'mouseenter', 'focusin'].forEach(function (ev) { trilho.addEventListener(ev, pausa, { passive: true }); });
+    var reduzir = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (!reduzir) setInterval(function () { if (!parado && !document.hidden) andar(1); }, 3000);
+  }
+
   function mountCategoryGrid(elId) {
     var el = document.getElementById(elId);
     if (el) el.innerHTML = CATEGORIES.map(categoryCardHTML).join('');
@@ -179,6 +255,10 @@
     productCardHTML: productCardHTML,
     categoryCardHTML: categoryCardHTML,
     mountCategoryGrid: mountCategoryGrid,
+    mountCategoryCarousel: mountCategoryCarousel,
+    NEGOCIOS: NEGOCIOS,
+    getNegocio: getNegocio,
+    getProductsByNegocio: getProductsByNegocio,
     mountProductGrid: mountProductGrid
   };
 })(window);

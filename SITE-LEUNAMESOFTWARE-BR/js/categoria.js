@@ -13,12 +13,15 @@
     var slug = params.get('slug') || '';
     var query = (params.get('q') || '').trim().toLowerCase();
     var cat = slug ? Store.getCategory(slug) : null;
+    // Página de um tipo de negócio (vem do carrossel da página inicial): tudo o que temos para ele.
+    var negocio = !slug && params.get('negocio') ? Store.getNegocio(params.get('negocio')) : null;
+    if (negocio) cat = { slug: '', name: 'Para ' + negocio.nome.charAt(0).toLowerCase() + negocio.nome.slice(1), negocio: negocio.slug };
 
     document.getElementById('catTitle').textContent = cat ? cat.name : 'Todos os produtos';
     document.getElementById('catBreadName').textContent = cat ? cat.name : 'Todos os produtos';
     document.getElementById('catDesc').textContent = query
       ? 'Resultados da busca por "' + query + '".'
-      : (cat ? 'Explore todos os nossos produtos de ' + cat.name + '.' : 'Explore nosso catálogo completo de produtos digitais.');
+      : (negocio ? 'Sistemas, sites, banners e logomarcas para ' + negocio.nome.toLowerCase() + '.' : cat ? 'Explore todos os nossos produtos de ' + cat.name + '.' : 'Explore nosso catálogo completo de produtos digitais.');
     document.title = (cat ? cat.name : 'Todos os produtos') + ' — LeuName Softwares';
 
     var filtersCats = document.getElementById('filtersCats');
@@ -92,7 +95,7 @@
     }
 
     function baseList() {
-      var list = Store.getProductsByCategory(slug);
+      var list = negocio ? Store.getProductsByNegocio(negocio.slug) : Store.getProductsByCategory(slug);
       if (segmento) list = list.filter(function (p) { return p.segmento === segmento; });
       if (query) {
         list = list.filter(function (p) { return p.name.toLowerCase().indexOf(query) !== -1 || p.short.toLowerCase().indexOf(query) !== -1 || (p.segmento || '').toLowerCase().indexOf(query) !== -1; });
