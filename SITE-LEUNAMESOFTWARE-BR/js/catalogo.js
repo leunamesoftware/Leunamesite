@@ -392,7 +392,7 @@ window.LEU_CATALOGO = [
    "20 módulos"
   ],
   "plans": [],
-  "imageUrl": null,
+  "imageUrl": "/img/cursos/preco-certo-capa-v4.webp",
   "icon": "/img/cursos/preco-certo-v2.webp",
   "photos": [],
   "installUrl": "curso.html?id=preco-certo",
@@ -414,7 +414,7 @@ window.LEU_CATALOGO = [
    "20 módulos"
   ],
   "plans": [],
-  "imageUrl": null,
+  "imageUrl": "/img/cursos/whatsapp-vendas-capa-v4.webp",
   "icon": "/img/cursos/whatsapp-vendas-v2.webp",
   "photos": [],
   "installUrl": "curso.html?id=whatsapp-vendas",
@@ -436,7 +436,7 @@ window.LEU_CATALOGO = [
    "50 módulos"
   ],
   "plans": [],
-  "imageUrl": null,
+  "imageUrl": "/img/cursos/gestao-loja-celular-capa.webp",
   "icon": "/img/cursos/gestao-loja-celular.webp",
   "photos": [],
   "installUrl": "curso.html?id=gestao-loja-celular",
@@ -458,7 +458,7 @@ window.LEU_CATALOGO = [
    "20 módulos"
   ],
   "plans": [],
-  "imageUrl": null,
+  "imageUrl": "/img/cursos/construcao-capa-v2.webp",
   "icon": "/img/cursos/construcao.webp",
   "photos": [],
   "installUrl": "curso.html?id=loja-construcao",
