@@ -10,13 +10,6 @@ compatibility_date = "2026-09-19"
 [assets]
 directory = "./"
 
-# Dominio customizado: leunamesoftware.com.br (nameservers trocados pra
-# Cloudflare em 20/09/2026, aguardando propagar -- o "wrangler deploy" liga
-# isto automaticamente assim que a zona estiver ativa na conta).
-[[routes]]
-pattern = "leunamesoftware.com.br"
-custom_domain = true
-
-[[routes]]
-pattern = "www.leunamesoftware.com.br"
-custom_domain = true
+# SEM domínio próprio: www.leunamesoftware.com.br e leunamesoftware.com.br são do worker "leuapps", que mostra
+# este site na página inicial pela ligação interna SITE_ANTIGO (e serve /img, /apps, /instalar, /loja...).
+# Se estas rotas voltarem aqui, cada publicação do site toma o domínio e quebra imagens, instalar e pagamento.
