@@ -585,6 +585,7 @@ h1,h2,h3,h4{ font-family:var(--font-head); margin:0; }
 }
 .pay-badge-playstore{ background:rgba(255,255,255,.12); }
 .footer-playstore-img{ height:38px; width:auto; display:block; }
+.footer-ms-text{ font-family:var(--font-head); font-weight:700; font-size:16px; color:var(--white); letter-spacing:.2px; }
 .footer-ssl-seal{ order:-1; }
 @media (min-width:760px){ .footer-ssl-seal{ order:0; } }
 .pay-badge-ssl{ color:#fff; background:#1a9a55; font-size:12.5px; padding:7px 12px; }
