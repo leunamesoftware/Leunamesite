@@ -1060,7 +1060,7 @@ body > .site-footer{ flex-shrink:0; }
 
 /* ===== Celular no estilo das grandes lojas: produtos logo de cara, 2 por linha ===== */
 @media (max-width:639px){
-  .sec-categorias{ display:none; }            /* as categorias já ficam na barra de ícones do topo */
+
   .page-hero{ padding-block:14px 16px; }
   .page-hero h1{ font-size:22px; margin:2px 0 0; }
   .page-hero #catDesc{ display:none; }
@@ -1130,3 +1130,12 @@ body > .site-footer{ flex-shrink:0; }
 .product-card-body .product-card-price{ margin-bottom:10px; }
 .sites-banner{ display:block; margin:0 0 22px; border-radius:var(--radius-l); overflow:hidden; box-shadow:var(--shadow-pop); line-height:0; }
 .sites-banner img{ width:100%; height:auto; display:block; }
+/* Categorias no celular: grade compacta de 3 por linha */
+@media (max-width:639px){
+  .sec-categorias{ padding-block:18px 8px; }
+  .sec-categorias .cat-grid{ display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px; }
+  .sec-categorias .cat-card{ padding:12px 6px; min-height:0; text-align:center; align-items:center; gap:6px; }
+  .sec-categorias .cat-card-name{ font-size:12.5px; line-height:1.25; }
+  .sec-categorias .cat-card-link{ display:none; }
+  .sec-categorias .cat-ic{ margin:0 auto; }
+}
