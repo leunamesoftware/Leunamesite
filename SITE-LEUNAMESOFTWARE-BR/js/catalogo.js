@@ -382,11 +382,12 @@ window.LEU_CATALOGO = [
   "description": "Banners para loja, promoções, Instagram e WhatsApp que chamam o cliente. Criamos do zero, com a sua marca. Peça o orçamento pelo WhatsApp.",
   "features": [],
   "plans": [],
-  "imageUrl": "/img/servicos/banner1.jpg",
+  "imageUrl": "/img/servicos/banner-pizzaria.webp",
   "icon": null,
   "photos": [
-   "/img/servicos/banner1.jpg",
-   "/img/servicos/banner2.jpg"
+   "/img/servicos/banner-pizzaria.webp",
+   "/img/servicos/banner-pizzaria-2.webp",
+   "/img/servicos/banner-pizzaria-3.webp"
   ],
   "installUrl": null,
   "emBreve": false,
