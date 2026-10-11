@@ -41,7 +41,8 @@
       alt: 'Sua marca com um novo visual. Logotipos, banners e artes profissionais para o seu negócio.', botao: true };
     var BANNER_TOPO = {
       logomarcas: Object.assign({ pedido: 'uma logomarca para o meu negócio' }, DESIGN),
-      banners: Object.assign({ pedido: 'um banner para o meu negócio' }, DESIGN),
+      banners: { pc: '/img/destaques/banners-topo.webp', pcTam: [1920, 720], cel: '/img/destaques/banners-topo-cel.webp', celTam: [1020, 765],
+        alt: 'Banners que destacam. Artes profissionais para sites, lojas e redes sociais que atraem mais clientes.', pedido: 'um banner para o meu negócio', botao: true, cor: 'roxo' },
       sites: { pc: '/img/destaques/site-sob-medida.webp', pcTam: [1600, 576], cel: '/img/destaques/site-sob-medida-cel.webp', celTam: [720, 530],
         alt: 'Seu site sob medida, para qualquer tipo de negócio. Orçamento grátis.', pedido: 'um site para a minha empresa', botao: false },
       cursos: { pc: '/img/destaques/cursos-gratis-topo.webp', pcTam: [1920, 720], cel: '/img/destaques/cursos-gratis-topo-cel.webp', celTam: [1020, 765],
@@ -57,7 +58,7 @@
       wrap.innerHTML = destino +
         '<picture><source media="(max-width:700px)" srcset="' + topo.cel + '" width="' + topo.celTam[0] + '" height="' + topo.celTam[1] + '">' +
         '<img src="' + topo.pc + '" width="' + topo.pcTam[0] + '" height="' + topo.pcTam[1] + '" alt="' + topo.alt + '"></picture>' +
-        (topo.botao ? '<span class="cbt-cta' + (topo.link ? ' cbt-azul' : '') + '">' + (topo.botaoTexto || 'Pedir orçamento grátis') + '</span>' : '') + '</a>';
+        (topo.botao ? '<span class="cbt-cta' + (topo.link ? ' cbt-azul' : '') + (topo.cor ? ' cbt-' + topo.cor : '') + '">' + (topo.botaoTexto || 'Pedir orçamento grátis') + '</span>' : '') + '</a>';
       hero.parentNode.insertBefore(wrap, hero);
       hero.classList.add('page-hero-titulo');
     }
