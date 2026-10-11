@@ -81,7 +81,6 @@
 
   function productCardHTML(product) {
     var selo = product.emBreve ? '<span class="product-tag pc-embreve">Em breve</span>'
-      : product.trial ? '<span class="product-real-badge">' + product.trial + '</span>'
       : product.kind === 'servico' ? '<span class="product-real-badge">Orçamento grátis</span>' : '';
     return (
       '<a class="product-card' + (product.emBreve ? ' is-embreve' : '') + '" href="producto.html?id=' + product.id + '">' +

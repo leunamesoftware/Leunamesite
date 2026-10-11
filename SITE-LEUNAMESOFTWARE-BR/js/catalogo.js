@@ -42,7 +42,7 @@ window.LEU_CATALOGO = [
   "imageUrl": "/img/destaques/quantocobrar-v4.webp",
   "icon": "/img/quantocobrar-192.webp",
   "photos": [
-   "/img/telas/quantocobrar-play-1.webp",
+   "/img/telas/quantocobrar-play-1c.webp",
    "/img/telas/quantocobrar-play-2.webp",
    "/img/telas/quantocobrar-play-3.webp",
    "/img/telas/quantocobrar-play-4.webp",
@@ -96,7 +96,7 @@ window.LEU_CATALOGO = [
   "imageUrl": "/img/destaques/gestacell-v5.webp",
   "icon": "/img/gestacell-192.webp",
   "photos": [
-   "/img/telas/gestacell-play-1.webp",
+   "/img/telas/gestacell-play-1c.webp",
    "/img/telas/gestacell-play-2.webp",
    "/img/telas/gestacell-play-3.webp",
    "/img/telas/gestacell-play-4.webp",
@@ -149,7 +149,7 @@ window.LEU_CATALOGO = [
   "imageUrl": "/img/destaques/radar-v2.webp",
   "icon": "/img/radar-192.webp",
   "photos": [
-   "/img/telas/radar-play-1.webp",
+   "/img/telas/radar-play-1c.webp",
    "/img/telas/radar-play-2.webp",
    "/img/telas/radar-play-3.webp",
    "/img/telas/radar-play-4.webp",
@@ -193,10 +193,10 @@ window.LEU_CATALOGO = [
     "tipo": "unico"
    }
   ],
-  "imageUrl": "/img/destaques/construgestao-v2.webp",
+  "imageUrl": "/img/destaques/construgestao-v3.webp",
   "icon": "/img/construgestao-192.webp",
   "photos": [
-   "/img/telas/construgestao-play-1b.webp",
+   "/img/telas/construgestao-play-1c.webp",
    "/img/telas/construgestao-play-2.webp",
    "/img/telas/construgestao-play-3.webp",
    "/img/telas/construgestao-play-4.webp",
@@ -240,10 +240,10 @@ window.LEU_CATALOGO = [
     "tipo": "unico"
    }
   ],
-  "imageUrl": "/img/destaques/mercagestao.webp",
+  "imageUrl": "/img/destaques/mercagestao-v2.webp",
   "icon": "/img/mercagestao-192.webp",
   "photos": [
-   "/img/telas/mercagestao-1.webp",
+   "/img/telas/mercagestao-1c.webp",
    "/img/telas/mercagestao-2.webp",
    "/img/telas/mercagestao-3.webp",
    "/img/telas/mercagestao-4.webp",
