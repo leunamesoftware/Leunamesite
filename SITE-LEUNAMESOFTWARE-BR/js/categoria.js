@@ -78,6 +78,17 @@
 
       resultCount.textContent = list.length + (list.length === 1 ? ' produto encontrado' : ' produtos encontrados');
       Store.mountProductGrid('catGridResults', list);
+      // Poucos produtos na categoria: mostra outros embaixo (sem espaço vazio na tela).
+      var veja = document.getElementById('vejaTambem');
+      if (!veja) {
+        veja = document.createElement('div'); veja.id = 'vejaTambem';
+        document.getElementById('catGridResults').insertAdjacentElement('afterend', veja);
+      }
+      var outros = Store.getProductsByCategory('todos').filter(function (p) { return list.indexOf(p) < 0; }).slice(0, 6);
+      if (slug && list.length < 4 && outros.length) {
+        veja.innerHTML = '<h2 class="section-title" style="font-size:20px;margin:36px 0 16px">Veja também</h2><div class="product-grid" id="vejaGrid"></div>';
+        Store.mountProductGrid('vejaGrid', outros);
+      } else veja.innerHTML = '';
     }
 
     applyBtn.addEventListener('click', render);
