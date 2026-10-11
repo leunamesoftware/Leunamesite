@@ -10,7 +10,6 @@
 
   var ICONS = {
     pdv: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="12" rx="1.5"/><path d="M2 20h20"/></svg>',
-    delivery: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="6" cy="17" r="3"/><circle cx="18" cy="17" r="3"/><path d="M9 17h6l-2-7h-3M13 10h4l2 4"/></svg>',
     receitas: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 10c0-3 2.5-6 6-6s6 3 6 6"/><path d="M4 10h16l-1.2 9a2 2 0 0 1-2 1.8H7.2a2 2 0 0 1-2-1.8L4 10Z"/></svg>',
     utilidades: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="5" width="16" height="16" rx="2"/><path d="M16 3v4M8 3v4M4 11h16"/></svg>',
     sites: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.2"/><rect x="14" y="3" width="7" height="7" rx="1.2"/><rect x="3" y="14" width="7" height="7" rx="1.2"/><rect x="14" y="14" width="7" height="7" rx="1.2"/></svg>',
@@ -20,7 +19,6 @@
 
   var CATEGORIES = [
     { slug: 'pdv', name: 'PDV e Sistemas', curto: 'PDV', color: 'blue', icon: ICONS.pdv },
-    { slug: 'delivery', name: 'Delivery', curto: 'Delivery', color: 'pink', icon: ICONS.delivery },
     { slug: 'receitas', name: 'Receitas e Calculadoras', curto: 'Receitas', color: 'amber', icon: ICONS.receitas },
     { slug: 'utilidades', name: 'Gestão e Utilidades', curto: 'Gestão', color: 'green', icon: ICONS.utilidades },
     { slug: 'sites', name: 'Sites e Templates', curto: 'Sites', color: 'green', icon: ICONS.sites },
@@ -38,7 +36,7 @@
     { q: 'E se eu tiver dúvida ou problema?', a: 'Fale com a gente no <a href="https://wa.me/5524998721557" target="_blank" rel="noopener" style="white-space:nowrap;font-weight:600;color:var(--blue-600)">WhatsApp (24)&nbsp;99872&#8209;1557</a>. O suporte é feito por quem criou o sistema.' }
   ];
   var FAQS_BY_CATEGORY = {
-    pdv: FAQ_APP, delivery: FAQ_APP, receitas: FAQ_APP, utilidades: FAQ_APP,
+    pdv: FAQ_APP, receitas: FAQ_APP, utilidades: FAQ_APP,
     sites: [
       { q: 'Como funciona o site sob encomenda?', a: 'Você conta como quer o site pelo WhatsApp, nós mandamos o orçamento e criamos com a sua marca.' },
       { q: 'Vai ter site pronto para comprar e baixar?', a: 'Sim, em breve: modelos prontos para comprar, pagar e baixar a pasta completa.' }

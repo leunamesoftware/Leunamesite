@@ -16,8 +16,8 @@ servicos = json.loads((base / 'servicos.json').read_text())
 cursos = json.loads((base / 'cursos.json').read_text())
 
 # Categoria de cada app no site. Delivery Pedêê fica "Em breve" até o dono liberar.
+# O Pedêê (delivery) fica fora do site por enquanto (decisão do dono).
 CATEGORIA = {'gestacell': 'pdv', 'mercagestao': 'pdv', 'construgestao': 'pdv',
-             'leuburger': 'delivery', 'pedee': 'delivery', 'pedee-entregador': 'delivery',
              'quantocobrar': 'receitas', 'radar': 'utilidades'}
 EM_BREVE = {'leuburger', 'pedee', 'pedee-entregador'}
 # Para que tipo de negócio é cada produto (aparece no cartão e vira filtro na categoria).
