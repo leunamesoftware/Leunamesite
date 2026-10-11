@@ -100,5 +100,5 @@ urls = ['', 'categoria.html'] + [f'categoria.html?slug={c}' for c in CATS]
 urls += [(f"curso.html?id={p['id'][6:]}" if p['kind'] == 'curso' else f"producto.html?id={p['id']}") for p in produtos]
 urls += ['sobre-nosotros.html', 'contacto.html', 'preguntas-frecuentes.html', 'terminos-de-uso.html', 'politica-de-privacidad.html', 'politica-de-reembolso.html']
 (site / 'sitemap.xml').write_text('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
-    + ''.join(f'  <url><loc>{BASE}{u.replace("&", "&amp;")}</loc></url>\n' for u in urls) + '</urlset>\n')
+    + ''.join(f'  <url><loc>{BASE}{u.replace(".html", "").replace("&", "&amp;")}</loc></url>\n' for u in urls) + '</urlset>\n')
 print(f'{len(urls)} páginas no sitemap.xml')
