@@ -13,3 +13,6 @@ jobs:
             R=$(curl -sS -o /tmp/r -w "%{http_code} %{content_type} %{size_download}" "$B$p")
             echo "::warning title=$p::$R | $(head -c 90 /tmp/r | tr '\n\r' '  ' | tr -cd '[:print:] ')"
           done
+          # Compra do site pronto abre o pagamento? (cria só um pedido "aguardando", sem cobrar nada)
+          R=$(curl -sS -o /tmp/c -w "%{http_code}" -X POST "$B/loja-api/comprar" -H "Content-Type: application/json" -H "Origin: $B" -H "Referer: $B/loja/comprar" --data '{"nome":"Teste Diagnostico","email":"leunamesoftware@gmail.com","plano":"tpl_agencia"}')
+          echo "::warning title=compra-template::$R | $(head -c 160 /tmp/c | tr -cd '[:print:] ')"
