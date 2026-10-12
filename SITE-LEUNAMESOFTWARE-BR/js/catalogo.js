@@ -346,6 +346,46 @@ window.LEU_CATALOGO = [
   "segmento": "Agência de viagens e turismo"
  },
  {
+  "id": "site-burger-e-pizza",
+  "kind": "template",
+  "name": "Site pronto: Hamburgueria e Pizzaria",
+  "category": "sites",
+  "price": 280,
+  "priceText": "R$ 280,00",
+  "trial": "",
+  "short": "Site completo para hamburgueria e pizzaria: cardápio com carrinho e pedido pronto no WhatsApp.",
+  "description": "Site profissional e pronto para a sua hamburgueria ou pizzaria. Cardápio por categorias com fotos e preços, carrinho de compras, combos em promoção, entrega ou retirada, forma de pagamento e troco: o pedido chega pronto e somado no seu WhatsApp. Ainda tem 'Aberto agora' pelo seu horário, galeria, depoimentos e mapa. Você troca nome, logo, cores, produtos, fotos e preços em um arquivo só, sem programar, e publica na sua hospedagem ou grátis. Recebe a pasta completa (ZIP) no e-mail logo depois do pagamento.",
+  "features": [
+   "Cardápio com carrinho e pedido pronto no WhatsApp",
+   "Entrega ou retirada, taxa, pedido mínimo e troco",
+   "Mostra 'Aberto agora' pelo seu horário",
+   "Funciona no celular, tablet e computador",
+   "Edite tudo em um arquivo só, sem programar",
+   "Licença para 1 empresa e 1 domínio"
+  ],
+  "plans": [],
+  "imageUrl": "/img/modelos/burger-e-pizza-banner.webp",
+  "icon": "/img/modelos/burger-e-pizza-192.png",
+  "photos": [
+   "/img/modelos/burger-e-pizza-tela-1.webp",
+   "/img/modelos/burger-e-pizza-tela-2.webp",
+   "/img/modelos/burger-e-pizza-tela-3.webp",
+   "/img/modelos/burger-e-pizza-tela-4.webp"
+  ],
+  "photosCel": [
+   "/img/modelos/burger-e-pizza-cel-1.webp",
+   "/img/modelos/burger-e-pizza-cel-2.webp",
+   "/img/modelos/burger-e-pizza-cel-3.webp",
+   "/img/modelos/burger-e-pizza-cel-4.webp"
+  ],
+  "installUrl": "/modelos/burger-e-pizza/",
+  "buyUrl": "/loja/comprar?app=tpl_burger&plano=unico",
+  "parcelas": 10,
+  "emBreve": false,
+  "tag": "novedad",
+  "segmento": "Hamburgueria e pizzaria"
+ },
+ {
   "id": "servico-logomarcas-loja-de-celular",
   "kind": "servico",
   "name": "Logomarca sob encomenda para loja de celular",
