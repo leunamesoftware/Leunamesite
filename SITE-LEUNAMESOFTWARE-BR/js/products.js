@@ -44,6 +44,7 @@
     sites: [
       { q: 'Como funciona o site sob encomenda?', a: 'Você conta como quer o site pelo WhatsApp, nós mandamos o orçamento e criamos com a sua marca.' },
       { q: 'Como funciona o site pronto?', a: 'Veja a demonstração ao vivo, compre pelo Mercado Pago (Pix ou cartão parcelado) e receba no e-mail a pasta completa do site (ZIP) com o manual. Você troca nome, WhatsApp, cores, fotos e preços em um arquivo só e publica na sua hospedagem ou grátis.' },
+      { q: 'O site vem com a marca de vocês?', a: 'Vem com o nome, o logo e as cores da sua empresa: você troca tudo. No rodapé fica só uma linha pequena: “Desenvolvido por LeuName Softwares”, que faz parte da licença.' },
       { q: 'Posso usar em mais de uma empresa?', a: 'Cada compra é a licença de 1 empresa e 1 domínio. Para outra empresa, é só comprar outra licença.' },
       { q: 'Preciso saber programar?', a: 'Não. O manual mostra passo a passo como editar e publicar. Se preferir, fazemos tudo para você: peça um orçamento pelo WhatsApp.' }
     ],
