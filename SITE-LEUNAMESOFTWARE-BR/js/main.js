@@ -308,3 +308,21 @@
     document.body.appendChild(link);
   });
 })();
+
+/* Celular com "Site para computador" ligado no Chrome: a página encolhe e fica miúda.
+   Mostra um aviso grande ensinando a desligar (some ao fechar e não volta nesse aparelho). */
+(function () {
+  try {
+    var celular = window.matchMedia && matchMedia('(pointer:coarse)').matches && Math.min(screen.width, screen.height) < 600;
+    if (!celular || window.innerWidth <= Math.max(screen.width, screen.height) + 20) return;
+    if (localStorage.getItem('aviso-modo-pc') === 'fechado') return;
+  } catch (e) { return; }
+  var a = document.createElement('div');
+  a.setAttribute('role', 'alert');
+  a.style.cssText = 'position:fixed;left:0;right:0;bottom:0;z-index:9999;background:#0a2647;color:#fff;font:600 34px/1.35 Inter,system-ui,sans-serif;padding:34px 40px 40px;box-shadow:0 -10px 40px rgba(0,0,0,.35)';
+  a.innerHTML = '<div style="font-size:44px;font-weight:800;margin-bottom:10px">O site está pequeno?</div>' +
+    'Seu Chrome está no modo <b>“Site para computador”</b>. Toque nos <b>três pontinhos ⋮</b> e desmarque <b>“Site para computador”</b> para ver tudo grande.' +
+    '<button type="button" style="display:block;margin-top:24px;font:800 34px Inter,system-ui,sans-serif;background:#2f7dff;color:#fff;border:0;border-radius:999px;padding:20px 44px">Entendi</button>';
+  a.querySelector('button').addEventListener('click', function () { a.remove(); try { localStorage.setItem('aviso-modo-pc', 'fechado'); } catch (e) {} });
+  (document.body ? Promise.resolve() : new Promise(function (r) { document.addEventListener('DOMContentLoaded', r); })).then(function () { document.body.appendChild(a); });
+})();
