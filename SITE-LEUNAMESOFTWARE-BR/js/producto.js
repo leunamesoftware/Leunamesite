@@ -163,7 +163,7 @@
         '<h1>' + product.name + '</h1>' +
         '<p class="short-desc">' + product.short + '</p>' +
         (product.kind === 'app' && !product.emBreve && product.plans.length ? '<p class="pd-depois">Depois do teste, ' + (product.priceText || Store.priceHTML(product)) + '</p>' : '<div class="price-row"><span class="price-big">' + Store.priceHTML(product) + '</span>' +
-          (product.kind === 'template' && product.parcelas > 1 ? '<span class="pd-parc">ou ' + product.parcelas + 'x de R$ ' + (product.price / product.parcelas).toFixed(2).replace('.', ',') + ' no cartão · Pix</span>' : '') + '</div>') +
+          (product.kind === 'template' && product.parcelas > 1 ? '<span class="pd-parc">em até ' + product.parcelas + 'x no cartão · Pix</span>' : '') + '</div>') +
         acoesHTML(product) +
         '<div class="trust-row">' +
           '<div class="trust-item"><span class="trust-ic"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3 4.5 6v6c0 4.5 3.2 7.9 7.5 9 4.3-1.1 7.5-4.5 7.5-9V6L12 3Z"/></svg></span><div><h4>Compra segura</h4></div></div>' +
