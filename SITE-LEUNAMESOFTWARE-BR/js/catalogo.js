@@ -388,6 +388,126 @@ window.LEU_CATALOGO = [
   "segmento": "Hamburgueria"
  },
  {
+  "id": "site-pizzaria",
+  "kind": "template",
+  "name": "Site pronto: Pizzaria",
+  "category": "sites",
+  "price": 250,
+  "priceText": "R$ 250,00",
+  "trial": "",
+  "short": "Site completo para pizzaria: cardápio, carrinho e pedido pronto no WhatsApp, com entrega ou retirada.",
+  "description": "Site profissional e pronto para a sua pizzaria, com cara de pizzaria italiana. Cardápio com as pizzas mais pedidas, combo família, carrinho de compras, entrega ou retirada com taxa e pedido mínimo, dia e hora do pedido: tudo chega pronto e somado no seu WhatsApp. Você troca nome, WhatsApp e contatos em um arquivo só, e os textos, pizzas e preços direto no site. Recebe a pasta completa (ZIP) no e-mail logo depois do pagamento.",
+  "features": [
+   "Carrinho com pedido pronto no WhatsApp",
+   "Entrega ou retirada, taxa e pedido mínimo",
+   "Cliente escolhe dia e hora do pedido",
+   "Funciona no celular, tablet e computador",
+   "Contatos em um arquivo só",
+   "Licença para 1 empresa e 1 domínio"
+  ],
+  "plans": [],
+  "imageUrl": "/img/modelos/pizzaria-banner.webp",
+  "icon": "/img/modelos/pizzaria-192.png",
+  "photos": [
+   "/img/modelos/pizzaria-tela-1.webp",
+   "/img/modelos/pizzaria-tela-2.webp",
+   "/img/modelos/pizzaria-tela-3.webp",
+   "/img/modelos/pizzaria-tela-4.webp"
+  ],
+  "photosCel": [
+   "/img/modelos/pizzaria-cel-1.webp",
+   "/img/modelos/pizzaria-cel-2.webp",
+   "/img/modelos/pizzaria-cel-3.webp",
+   "/img/modelos/pizzaria-cel-4.webp"
+  ],
+  "installUrl": "/modelos/pizzaria/",
+  "buyUrl": "/loja/comprar?app=tpl_pizzaria&plano=unico",
+  "parcelas": 10,
+  "emBreve": false,
+  "tag": "novedad",
+  "segmento": "Pizzaria"
+ },
+ {
+  "id": "site-padaria",
+  "kind": "template",
+  "name": "Site pronto: Padaria",
+  "category": "sites",
+  "price": 250,
+  "priceText": "R$ 250,00",
+  "trial": "",
+  "short": "Site completo para padaria e confeitaria: 16 produtos, carrinho e encomendas pelo WhatsApp.",
+  "description": "Site profissional e pronto para a sua padaria. Categorias (pães, doces, bolos, salgados e bebidas), 16 produtos com foto, preço e unidade, carrinho de compras, encomendas especiais, entrega ou retirada, horário da loja e história da padaria: o pedido chega pronto e somado no seu WhatsApp. Você troca nome, WhatsApp e contatos em um arquivo só, e os textos, produtos e preços direto no site. Recebe a pasta completa (ZIP) no e-mail logo depois do pagamento.",
+  "features": [
+   "16 produtos com filtro por categoria",
+   "Carrinho com pedido pronto no WhatsApp",
+   "Encomendas, entrega ou retirada",
+   "Funciona no celular, tablet e computador",
+   "Contatos em um arquivo só",
+   "Licença para 1 empresa e 1 domínio"
+  ],
+  "plans": [],
+  "imageUrl": "/img/modelos/padaria-banner.webp",
+  "icon": "/img/modelos/padaria-192.png",
+  "photos": [
+   "/img/modelos/padaria-tela-1.webp",
+   "/img/modelos/padaria-tela-2.webp",
+   "/img/modelos/padaria-tela-3.webp",
+   "/img/modelos/padaria-tela-4.webp"
+  ],
+  "photosCel": [
+   "/img/modelos/padaria-cel-1.webp",
+   "/img/modelos/padaria-cel-2.webp",
+   "/img/modelos/padaria-cel-3.webp",
+   "/img/modelos/padaria-cel-4.webp"
+  ],
+  "installUrl": "/modelos/padaria/",
+  "buyUrl": "/loja/comprar?app=tpl_padaria&plano=unico",
+  "parcelas": 10,
+  "emBreve": false,
+  "tag": "novedad",
+  "segmento": "Padaria"
+ },
+ {
+  "id": "site-restaurante",
+  "kind": "template",
+  "name": "Site pronto: Restaurante",
+  "category": "sites",
+  "price": 280,
+  "priceText": "R$ 280,00",
+  "trial": "",
+  "short": "Site elegante para restaurante: cardápio, galeria, blog e reserva de mesa pelo WhatsApp.",
+  "description": "Site profissional e elegante para o seu restaurante. Banner com fotos que passam sozinhas, cardápio com entradas, pratos e sobremesas, menu degustação, galeria, depoimentos, blog e reserva de mesa: o pedido de reserva (nome, dia, hora e número de pessoas) chega pronto no seu WhatsApp. Você troca nome, WhatsApp e contatos em um arquivo só, e os textos, pratos e preços direto no site. Recebe a pasta completa (ZIP) no e-mail logo depois do pagamento.",
+  "features": [
+   "Reserva de mesa pelo WhatsApp",
+   "Cardápio com entradas, pratos e sobremesas",
+   "Galeria, depoimentos e blog",
+   "Funciona no celular, tablet e computador",
+   "Contatos em um arquivo só",
+   "Licença para 1 empresa e 1 domínio"
+  ],
+  "plans": [],
+  "imageUrl": "/img/modelos/restaurante-banner.webp",
+  "icon": "/img/modelos/restaurante-192.png",
+  "photos": [
+   "/img/modelos/restaurante-tela-1.webp",
+   "/img/modelos/restaurante-tela-2.webp",
+   "/img/modelos/restaurante-tela-3.webp",
+   "/img/modelos/restaurante-tela-4.webp"
+  ],
+  "photosCel": [
+   "/img/modelos/restaurante-cel-1.webp",
+   "/img/modelos/restaurante-cel-2.webp",
+   "/img/modelos/restaurante-cel-3.webp",
+   "/img/modelos/restaurante-cel-4.webp"
+  ],
+  "installUrl": "/modelos/restaurante/",
+  "buyUrl": "/loja/comprar?app=tpl_restaurante&plano=unico",
+  "parcelas": 10,
+  "emBreve": false,
+  "tag": "novedad",
+  "segmento": "Restaurante"
+ },
+ {
   "id": "servico-logomarcas-loja-de-celular",
   "kind": "servico",
   "name": "Logomarca sob encomenda para loja de celular",
