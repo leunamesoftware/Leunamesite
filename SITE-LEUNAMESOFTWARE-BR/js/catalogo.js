@@ -508,6 +508,408 @@ window.LEU_CATALOGO = [
   "segmento": "Restaurante"
  },
  {
+  "id": "site-hortifruti",
+  "kind": "template",
+  "name": "Site pronto: Hortifrúti",
+  "category": "sites",
+  "price": 250,
+  "priceText": "R$ 250,00",
+  "trial": "",
+  "short": "Site completo para hortifrúti e quitanda: produtos com carrinho, data de entrega e pedido pronto no WhatsApp.",
+  "description": "Site profissional e pronto para o seu hortifrúti, sacolão ou quitanda. Categorias (frutas, verduras, castanhas, saladas, sucos e orgânicos), produtos em destaque com preço e oferta, carrinho de compras, escolha da data de entrega e lista das suas lojas: o pedido chega pronto e somado no seu WhatsApp. Você troca nome, WhatsApp e contatos em um arquivo só, e os textos, produtos e preços direto no site. Recebe a pasta completa (ZIP) no e-mail logo depois do pagamento.",
+  "features": [
+   "Carrinho com pedido pronto no WhatsApp",
+   "Categorias, ofertas e produtos em destaque",
+   "Escolha da data de entrega",
+   "Lista das suas lojas com endereço e horário",
+   "Funciona no celular, tablet e computador",
+   "Contatos em um arquivo só",
+   "Licença para 1 empresa e 1 domínio"
+  ],
+  "plans": [],
+  "imageUrl": "/img/modelos/hortifruti-banner.webp",
+  "icon": "/img/modelos/hortifruti-192.png",
+  "photos": [
+   "/img/modelos/hortifruti-tela-1.webp",
+   "/img/modelos/hortifruti-tela-2.webp",
+   "/img/modelos/hortifruti-tela-3.webp",
+   "/img/modelos/hortifruti-tela-4.webp"
+  ],
+  "photosCel": [
+   "/img/modelos/hortifruti-cel-1.webp",
+   "/img/modelos/hortifruti-cel-2.webp",
+   "/img/modelos/hortifruti-cel-3.webp",
+   "/img/modelos/hortifruti-cel-4.webp"
+  ],
+  "installUrl": "/modelos/hortifruti/",
+  "buyUrl": "/loja/comprar?app=tpl_hortifruti&plano=unico",
+  "parcelas": 10,
+  "emBreve": false,
+  "tag": "novedad",
+  "segmento": "Hortifrúti e quitanda"
+ },
+ {
+  "id": "site-clinica-odontologica",
+  "kind": "template",
+  "name": "Site pronto: Clínica Odontológica",
+  "category": "sites",
+  "price": 250,
+  "priceText": "R$ 250,00",
+  "trial": "",
+  "short": "Site completo para dentista: tratamentos, equipe, perguntas frequentes e agendamento pelo WhatsApp.",
+  "description": "Site profissional e pronto para o seu consultório ou clínica odontológica. Tratamentos (implantes, ortodontia, clareamento, canal, odontopediatria e urgência), equipe, depoimentos, perguntas frequentes e formulário de agendamento: o pedido de consulta chega pronto no seu WhatsApp, com nome, telefone, tratamento e data preferida. Você troca nome, WhatsApp, endereço e horário em um arquivo só, e os textos direto no site. Recebe a pasta completa (ZIP) no e-mail logo depois do pagamento.",
+  "features": [
+   "Agendamento de consulta pelo WhatsApp",
+   "Tratamentos, equipe e depoimentos",
+   "Perguntas frequentes",
+   "Funciona no celular, tablet e computador",
+   "Contatos em um arquivo só",
+   "Licença para 1 empresa e 1 domínio"
+  ],
+  "plans": [],
+  "imageUrl": "/img/modelos/clinica-odontologica-banner.webp",
+  "icon": "/img/modelos/clinica-odontologica-192.png",
+  "photos": [
+   "/img/modelos/clinica-odontologica-tela-1.webp",
+   "/img/modelos/clinica-odontologica-tela-2.webp",
+   "/img/modelos/clinica-odontologica-tela-3.webp",
+   "/img/modelos/clinica-odontologica-tela-4.webp"
+  ],
+  "photosCel": [
+   "/img/modelos/clinica-odontologica-cel-1.webp",
+   "/img/modelos/clinica-odontologica-cel-2.webp",
+   "/img/modelos/clinica-odontologica-cel-3.webp",
+   "/img/modelos/clinica-odontologica-cel-4.webp"
+  ],
+  "installUrl": "/modelos/clinica-odontologica/",
+  "buyUrl": "/loja/comprar?app=tpl_dentista&plano=unico",
+  "parcelas": 10,
+  "emBreve": false,
+  "tag": "novedad",
+  "segmento": "Dentista e clínica odontológica"
+ },
+ {
+  "id": "site-veterinaria",
+  "kind": "template",
+  "name": "Site pronto: Clínica Veterinária",
+  "category": "sites",
+  "price": 250,
+  "priceText": "R$ 250,00",
+  "trial": "",
+  "short": "Site completo para clínica veterinária: serviços, planos de saúde pet, equipe e agendamento pelo WhatsApp.",
+  "description": "Site profissional e pronto para a sua clínica veterinária. Serviços (clínica geral, vacinas, cirurgia, exames, banho e tosa), destaque do pronto atendimento 24h, planos de saúde mensais, equipe, depoimentos, perguntas frequentes e horário: o pedido de consulta (animal, nome do pet, motivo, dia e período) chega pronto no seu WhatsApp. Você troca nome, WhatsApp, endereço e contatos em um arquivo só, e os textos e preços direto no site. Recebe a pasta completa (ZIP) no e-mail logo depois do pagamento.",
+  "features": [
+   "Agendamento de consulta pelo WhatsApp",
+   "Planos de saúde pet com preços",
+   "Serviços, equipe e pronto atendimento 24h",
+   "Funciona no celular, tablet e computador",
+   "Contatos em um arquivo só",
+   "Licença para 1 empresa e 1 domínio"
+  ],
+  "plans": [],
+  "imageUrl": "/img/modelos/veterinaria-banner.webp",
+  "icon": "/img/modelos/veterinaria-192.png",
+  "photos": [
+   "/img/modelos/veterinaria-tela-1.webp",
+   "/img/modelos/veterinaria-tela-2.webp",
+   "/img/modelos/veterinaria-tela-3.webp",
+   "/img/modelos/veterinaria-tela-4.webp"
+  ],
+  "photosCel": [
+   "/img/modelos/veterinaria-cel-1.webp",
+   "/img/modelos/veterinaria-cel-2.webp",
+   "/img/modelos/veterinaria-cel-3.webp",
+   "/img/modelos/veterinaria-cel-4.webp"
+  ],
+  "installUrl": "/modelos/veterinaria/",
+  "buyUrl": "/loja/comprar?app=tpl_veterinaria&plano=unico",
+  "parcelas": 10,
+  "emBreve": false,
+  "tag": "novedad",
+  "segmento": "Clínica veterinária"
+ },
+ {
+  "id": "site-pet-shop",
+  "kind": "template",
+  "name": "Site pronto: Pet Shop",
+  "category": "sites",
+  "price": 250,
+  "priceText": "R$ 250,00",
+  "trial": "",
+  "short": "Site completo para pet shop: categorias, produtos com carrinho, banho e tosa e pedido pronto no WhatsApp.",
+  "description": "Site profissional e pronto para o seu pet shop. Banner com fotos, categorias (rações, higiene, brinquedos, acessórios, saúde e transporte), produtos em destaque com preço e oferta, carrinho de compras e chamadas para banho e tosa: o pedido chega pronto e somado no seu WhatsApp. Você troca nome, WhatsApp e contatos em um arquivo só, e os textos, produtos e preços direto no site. Recebe a pasta completa (ZIP) no e-mail logo depois do pagamento.",
+  "features": [
+   "Carrinho com pedido pronto no WhatsApp",
+   "Categorias e produtos em destaque",
+   "Chamada para banho e tosa",
+   "Funciona no celular, tablet e computador",
+   "Contatos em um arquivo só",
+   "Licença para 1 empresa e 1 domínio"
+  ],
+  "plans": [],
+  "imageUrl": "/img/modelos/pet-shop-banner.webp",
+  "icon": "/img/modelos/pet-shop-192.png",
+  "photos": [
+   "/img/modelos/pet-shop-tela-1.webp",
+   "/img/modelos/pet-shop-tela-2.webp",
+   "/img/modelos/pet-shop-tela-3.webp",
+   "/img/modelos/pet-shop-tela-4.webp"
+  ],
+  "photosCel": [
+   "/img/modelos/pet-shop-cel-1.webp",
+   "/img/modelos/pet-shop-cel-2.webp",
+   "/img/modelos/pet-shop-cel-3.webp",
+   "/img/modelos/pet-shop-cel-4.webp"
+  ],
+  "installUrl": "/modelos/pet-shop/",
+  "buyUrl": "/loja/comprar?app=tpl_petshop&plano=unico",
+  "parcelas": 10,
+  "emBreve": false,
+  "tag": "novedad",
+  "segmento": "Pet shop"
+ },
+ {
+  "id": "site-hotel",
+  "kind": "template",
+  "name": "Site pronto: Hotel e Pousada",
+  "category": "sites",
+  "price": 280,
+  "priceText": "R$ 280,00",
+  "trial": "",
+  "short": "Site elegante para hotel ou pousada: quartos, pacotes e consulta de disponibilidade pelo WhatsApp.",
+  "description": "Site profissional e elegante para o seu hotel, resort ou pousada. Quartos com fotos e preço por noite, pacotes em destaque, serviços, avaliação de hóspedes e busca de disponibilidade: a consulta (quarto, entrada, saída, quartos, adultos e crianças) chega pronta no seu WhatsApp. Você troca nome, WhatsApp e contatos em um arquivo só, e os textos, quartos e preços direto no site. Recebe a pasta completa (ZIP) no e-mail logo depois do pagamento.",
+  "features": [
+   "Consulta de disponibilidade pelo WhatsApp",
+   "Quartos e pacotes com preço",
+   "Serviços e avaliação dos hóspedes",
+   "Funciona no celular, tablet e computador",
+   "Contatos em um arquivo só",
+   "Licença para 1 empresa e 1 domínio"
+  ],
+  "plans": [],
+  "imageUrl": "/img/modelos/hotel-banner.webp",
+  "icon": "/img/modelos/hotel-192.png",
+  "photos": [
+   "/img/modelos/hotel-tela-1.webp",
+   "/img/modelos/hotel-tela-2.webp",
+   "/img/modelos/hotel-tela-3.webp",
+   "/img/modelos/hotel-tela-4.webp"
+  ],
+  "photosCel": [
+   "/img/modelos/hotel-cel-1.webp",
+   "/img/modelos/hotel-cel-2.webp",
+   "/img/modelos/hotel-cel-3.webp",
+   "/img/modelos/hotel-cel-4.webp"
+  ],
+  "installUrl": "/modelos/hotel/",
+  "buyUrl": "/loja/comprar?app=tpl_hotel&plano=unico",
+  "parcelas": 10,
+  "emBreve": false,
+  "tag": "novedad",
+  "segmento": "Hotel e pousada"
+ },
+ {
+  "id": "site-moveis-decoracao",
+  "kind": "template",
+  "name": "Site pronto: Móveis e Decoração",
+  "category": "sites",
+  "price": 250,
+  "priceText": "R$ 250,00",
+  "trial": "",
+  "short": "Site completo para loja de móveis e decoração: ambientes, produtos com carrinho e pedido no WhatsApp.",
+  "description": "Site profissional e pronto para a sua loja de móveis e decoração. Banner com fotos, ambientes (sala, quarto, sala de jantar, escritório e área externa), produtos em destaque com preço e oferta, favoritos, carrinho de compras e newsletter: o pedido chega pronto e somado no seu WhatsApp. Você troca nome, WhatsApp e contatos em um arquivo só, e os textos, produtos e preços direto no site. Recebe a pasta completa (ZIP) no e-mail logo depois do pagamento.",
+  "features": [
+   "Carrinho com pedido pronto no WhatsApp",
+   "Ambientes, ofertas e produtos em destaque",
+   "Favoritos e newsletter",
+   "Funciona no celular, tablet e computador",
+   "Contatos em um arquivo só",
+   "Licença para 1 empresa e 1 domínio"
+  ],
+  "plans": [],
+  "imageUrl": "/img/modelos/moveis-decoracao-banner.webp",
+  "icon": "/img/modelos/moveis-decoracao-192.png",
+  "photos": [
+   "/img/modelos/moveis-decoracao-tela-1.webp",
+   "/img/modelos/moveis-decoracao-tela-2.webp",
+   "/img/modelos/moveis-decoracao-tela-3.webp",
+   "/img/modelos/moveis-decoracao-tela-4.webp"
+  ],
+  "photosCel": [
+   "/img/modelos/moveis-decoracao-cel-1.webp",
+   "/img/modelos/moveis-decoracao-cel-2.webp",
+   "/img/modelos/moveis-decoracao-cel-3.webp",
+   "/img/modelos/moveis-decoracao-cel-4.webp"
+  ],
+  "installUrl": "/modelos/moveis-decoracao/",
+  "buyUrl": "/loja/comprar?app=tpl_moveis&plano=unico",
+  "parcelas": 10,
+  "emBreve": false,
+  "tag": "novedad",
+  "segmento": "Loja de móveis e decoração"
+ },
+ {
+  "id": "site-eletronicos",
+  "kind": "template",
+  "name": "Site pronto: Loja de Eletrônicos",
+  "category": "sites",
+  "price": 250,
+  "priceText": "R$ 250,00",
+  "trial": "",
+  "short": "Site completo para loja de eletrônicos: categorias, produtos com carrinho e pedido pronto no WhatsApp.",
+  "description": "Site profissional e pronto para a sua loja de eletrônicos, celulares ou informática. Busca com categorias, menu completo, produtos em destaque com preço e oferta, banners de promoção, marcas e carrinho de compras: o pedido chega pronto e somado no seu WhatsApp. Você troca nome, WhatsApp e contatos em um arquivo só, e os textos, produtos e preços direto no site. Recebe a pasta completa (ZIP) no e-mail logo depois do pagamento.",
+  "features": [
+   "Carrinho com pedido pronto no WhatsApp",
+   "Categorias, ofertas e marcas",
+   "Visual de grande loja online",
+   "Funciona no celular, tablet e computador",
+   "Contatos em um arquivo só",
+   "Licença para 1 empresa e 1 domínio"
+  ],
+  "plans": [],
+  "imageUrl": "/img/modelos/eletronicos-banner.webp",
+  "icon": "/img/modelos/eletronicos-192.png",
+  "photos": [
+   "/img/modelos/eletronicos-tela-1.webp",
+   "/img/modelos/eletronicos-tela-2.webp",
+   "/img/modelos/eletronicos-tela-3.webp",
+   "/img/modelos/eletronicos-tela-4.webp"
+  ],
+  "photosCel": [
+   "/img/modelos/eletronicos-cel-1.webp",
+   "/img/modelos/eletronicos-cel-2.webp",
+   "/img/modelos/eletronicos-cel-3.webp",
+   "/img/modelos/eletronicos-cel-4.webp"
+  ],
+  "installUrl": "/modelos/eletronicos/",
+  "buyUrl": "/loja/comprar?app=tpl_eletronicos&plano=unico",
+  "parcelas": 10,
+  "emBreve": false,
+  "tag": "novedad",
+  "segmento": "Loja de eletrônicos"
+ },
+ {
+  "id": "site-energia-solar",
+  "kind": "template",
+  "name": "Site pronto: Energia Solar",
+  "category": "sites",
+  "price": 250,
+  "priceText": "R$ 250,00",
+  "trial": "",
+  "short": "Site completo para empresa de energia solar: produtos com carrinho, serviços e orçamento pelo WhatsApp.",
+  "description": "Site profissional e pronto para a sua empresa de energia solar. Banner, categorias (painéis, inversores, baterias, estruturas e kits), produtos em destaque com preço, carrinho de compras, serviços (estudo grátis, instalação, garantia e financiamento) e botão de orçamento: tudo chega pronto no seu WhatsApp. Você troca nome, WhatsApp e contatos em um arquivo só, e os textos, produtos e preços direto no site. Recebe a pasta completa (ZIP) no e-mail logo depois do pagamento.",
+  "features": [
+   "Carrinho e orçamento pelo WhatsApp",
+   "Categorias e produtos com preço",
+   "Serviços: estudo, instalação e financiamento",
+   "Funciona no celular, tablet e computador",
+   "Contatos em um arquivo só",
+   "Licença para 1 empresa e 1 domínio"
+  ],
+  "plans": [],
+  "imageUrl": "/img/modelos/energia-solar-banner.webp",
+  "icon": "/img/modelos/energia-solar-192.png",
+  "photos": [
+   "/img/modelos/energia-solar-tela-1.webp",
+   "/img/modelos/energia-solar-tela-2.webp",
+   "/img/modelos/energia-solar-tela-3.webp",
+   "/img/modelos/energia-solar-tela-4.webp"
+  ],
+  "photosCel": [
+   "/img/modelos/energia-solar-cel-1.webp",
+   "/img/modelos/energia-solar-cel-2.webp",
+   "/img/modelos/energia-solar-cel-3.webp",
+   "/img/modelos/energia-solar-cel-4.webp"
+  ],
+  "installUrl": "/modelos/energia-solar/",
+  "buyUrl": "/loja/comprar?app=tpl_solar&plano=unico",
+  "parcelas": 10,
+  "emBreve": false,
+  "tag": "novedad",
+  "segmento": "Energia solar"
+ },
+ {
+  "id": "site-mudancas",
+  "kind": "template",
+  "name": "Site pronto: Mudanças e Fretes",
+  "category": "sites",
+  "price": 250,
+  "priceText": "R$ 250,00",
+  "trial": "",
+  "short": "Site completo para empresa de mudanças e fretes: serviços, como funciona e orçamento pelo WhatsApp.",
+  "description": "Site profissional e pronto para a sua empresa de mudanças, fretes e transportes. Os 10 serviços (residencial, escritório, internacional, frete de móveis, guarda-móveis, embalagem, montagem e mais), como funciona, números, depoimentos, artigos, perguntas frequentes e formulário de orçamento: o pedido (nome, telefone, serviço e detalhes) chega pronto no seu WhatsApp. Você troca nome, WhatsApp, endereço e contatos em um arquivo só, e os textos direto no site. Recebe a pasta completa (ZIP) no e-mail logo depois do pagamento.",
+  "features": [
+   "Pedido de orçamento pelo WhatsApp",
+   "10 serviços, como funciona e depoimentos",
+   "Perguntas frequentes e artigos",
+   "Funciona no celular, tablet e computador",
+   "Contatos em um arquivo só",
+   "Licença para 1 empresa e 1 domínio"
+  ],
+  "plans": [],
+  "imageUrl": "/img/modelos/mudancas-banner.webp",
+  "icon": "/img/modelos/mudancas-192.png",
+  "photos": [
+   "/img/modelos/mudancas-tela-1.webp",
+   "/img/modelos/mudancas-tela-2.webp",
+   "/img/modelos/mudancas-tela-3.webp",
+   "/img/modelos/mudancas-tela-4.webp"
+  ],
+  "photosCel": [
+   "/img/modelos/mudancas-cel-1.webp",
+   "/img/modelos/mudancas-cel-2.webp",
+   "/img/modelos/mudancas-cel-3.webp",
+   "/img/modelos/mudancas-cel-4.webp"
+  ],
+  "installUrl": "/modelos/mudancas/",
+  "buyUrl": "/loja/comprar?app=tpl_mudancas&plano=unico",
+  "parcelas": 10,
+  "emBreve": false,
+  "tag": "novedad",
+  "segmento": "Mudanças e fretes"
+ },
+ {
+  "id": "site-concessionaria",
+  "kind": "template",
+  "name": "Site pronto: Loja de Veículos",
+  "category": "sites",
+  "price": 280,
+  "priceText": "R$ 280,00",
+  "trial": "",
+  "short": "Site completo para loja de carros: estoque com filtros, financiamento, avaliação do usado e contato pelo WhatsApp.",
+  "description": "Site profissional e pronto para a sua loja de veículos, revenda ou concessionária. Busca por categoria, marca, ano e preço, estoque em destaque com filtros (SUV, sedã, hatch), selos de oferta e 0 km, chamadas para financiamento, avaliação do usado e seguro, marcas e motivos para comprar: o cliente fala com você direto no WhatsApp. Você troca nome, WhatsApp e contatos em um arquivo só, e os veículos e preços direto no site. Recebe a pasta completa (ZIP) no e-mail logo depois do pagamento.",
+  "features": [
+   "Busca por categoria, marca, ano e preço",
+   "Estoque com filtros e selos de oferta",
+   "Financiamento, avaliação do usado e seguro",
+   "Contato direto no WhatsApp",
+   "Funciona no celular, tablet e computador",
+   "Contatos em um arquivo só",
+   "Licença para 1 empresa e 1 domínio"
+  ],
+  "plans": [],
+  "imageUrl": "/img/modelos/concessionaria-banner.webp",
+  "icon": "/img/modelos/concessionaria-192.png",
+  "photos": [
+   "/img/modelos/concessionaria-tela-1.webp",
+   "/img/modelos/concessionaria-tela-2.webp",
+   "/img/modelos/concessionaria-tela-3.webp",
+   "/img/modelos/concessionaria-tela-4.webp"
+  ],
+  "photosCel": [
+   "/img/modelos/concessionaria-cel-1.webp",
+   "/img/modelos/concessionaria-cel-2.webp",
+   "/img/modelos/concessionaria-cel-3.webp",
+   "/img/modelos/concessionaria-cel-4.webp"
+  ],
+  "installUrl": "/modelos/concessionaria/",
+  "buyUrl": "/loja/comprar?app=tpl_concessionaria&plano=unico",
+  "parcelas": 10,
+  "emBreve": false,
+  "tag": "novedad",
+  "segmento": "Loja de veículos e concessionária"
+ },
+ {
   "id": "servico-logomarcas-loja-de-celular",
   "kind": "servico",
   "name": "Logomarca sob encomenda para loja de celular",
