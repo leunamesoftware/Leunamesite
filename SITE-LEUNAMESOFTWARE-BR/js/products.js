@@ -164,17 +164,16 @@
 
   // Categorias que não estão na barra de cima entram primeiro no carrossel.
   var CAT_CORES = { delivery: ['#be123c', '#fb7185'], receitas: ['#c2410c', '#fbbf24'], utilidades: ['#15803d', '#4ade80'], cursos: ['#1e40af', '#60a5fa'] };
+  // Carrossel = só categorias de verdade, cada uma com os produtos dela (sem misturar). Cursos fica só no botão de cima.
+  var FORA_DAS_CATEGORIAS = ['cursos'];
+  var CAT_CORES = { pdv: ['#0f766e', '#2dd4bf'], delivery: ['#be123c', '#fb7185'], receitas: ['#c2410c', '#fbbf24'], utilidades: ['#15803d', '#4ade80'],
+    sites: ['#1d4ed8', '#60a5fa'], logomarcas: ['#6d28d9', '#a78bfa'], banners: ['#be185d', '#f472b6'] };
   function itensDoCarrossel() {
-    var itens = CATEGORIES.filter(function (c) { return NO_TOPO.indexOf(c.slug) < 0; }).map(function (c) {
+    return CATEGORIES.filter(function (c) { return FORA_DAS_CATEGORIAS.indexOf(c.slug) < 0; }).map(function (c) {
       var n = getProductsByCategory(c.slug).filter(function (p) { return !p.emBreve; }).length;
       return { href: 'categoria.html?slug=' + c.slug, nome: c.name, tipo: 'Categoria', icon: c.icon, cores: CAT_CORES[c.slug] || ['#0a2647', '#2f7dff'],
                info: n ? n + (n === 1 ? ' produto' : ' produtos') : 'Em breve' };
     });
-    NEGOCIOS.filter(temProprio).forEach(function (n) {
-      var q = getProductsByNegocio(n.slug).length;
-      itens.push({ href: 'categoria.html?negocio=' + n.slug, nome: n.nome, tipo: 'Para o seu negócio', icon: n.icon, cores: n.cores, info: q + (q === 1 ? ' produto' : ' produtos') });
-    });
-    return itens;
   }
   function mountCategoryCarousel(elId) {
     var el = document.getElementById(elId);
@@ -238,7 +237,7 @@
       }).join('');
     }
     document.querySelectorAll('[data-rodape-categorias]').forEach(function (ul) {
-      ul.innerHTML = CATEGORIES.map(function (c) { return '<li><a href="categoria.html?slug=' + c.slug + '">' + c.name + '</a></li>'; }).join('');
+      ul.innerHTML = CATEGORIES.filter(function (c) { return FORA_DAS_CATEGORIAS.indexOf(c.slug) < 0; }).map(function (c) { return '<li><a href="categoria.html?slug=' + c.slug + '">' + c.name + '</a></li>'; }).join('');
     });
   }
   document.addEventListener('DOMContentLoaded', montarCategorias);
@@ -259,6 +258,7 @@
     categoryCardHTML: categoryCardHTML,
     mountCategoryGrid: mountCategoryGrid,
     mountCategoryCarousel: mountCategoryCarousel,
+    FORA_DAS_CATEGORIAS: FORA_DAS_CATEGORIAS,
     NEGOCIOS: NEGOCIOS,
     getNegocio: getNegocio,
     getProductsByNegocio: getProductsByNegocio,

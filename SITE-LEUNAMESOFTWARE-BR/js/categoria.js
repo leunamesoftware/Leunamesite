@@ -27,6 +27,7 @@
     var filtersCats = document.getElementById('filtersCats');
     var links = ['<a href="categoria.html" class="' + (!slug ? 'is-active' : '') + '">Todos os produtos</a>'];
     Store.CATEGORIES.forEach(function (c) {
+      if ((Store.FORA_DAS_CATEGORIAS || []).indexOf(c.slug) >= 0) return;
       links.push('<a href="categoria.html?slug=' + c.slug + '" class="' + (slug === c.slug ? 'is-active' : '') + '">' + c.name + '</a>');
     });
     filtersCats.innerHTML = links.join('');
