@@ -1216,3 +1216,34 @@ html{ scroll-behavior:smooth; }
 @media (max-width:700px){ .cbt-cta, .cbt-cta.cbt-so-cel{ font-size:14px; padding:10px 14px; } }
 .product-card.pc-servico .product-card-name{ min-height:0; }
 .product-card.pc-servico .pc-seg{ margin-bottom:6px; }
+
+/* ===== Revisão de telas (11/10/2026): leitura confortável e toque fácil ===== */
+.topbar-msg > span{ min-width:0; overflow:hidden; text-overflow:ellipsis; }
+.mobile-cat-scroll a, .mobile-cat-scroll a span{ font-size:12.5px; }
+.product-card .pc-seg{ font-size:13px; }
+.product-tag, .product-real-badge{ font-size:11.5px; padding:5px 10px; }
+.cc-tipo{ font-size:11.5px; }
+.footer-badges-label{ font-size:12px; }
+.action-text small{ font-size:11.5px; }
+/* Ícones do topo no celular: área de toque de 44px sem mudar o desenho. */
+@media (max-width:1023px){ .action-link{ min-width:44px; min-height:44px; justify-content:center; } }
+/* Bolinhas do carrossel: área de toque maior, bolinha do mesmo tamanho. */
+.promo-dot{ position:relative; }
+.promo-dot::after{ content:''; position:absolute; inset:-12px -6px; }
+/* Computador: banner da página inicial com a mesma largura do resto da página. */
+@media (min-width:1024px){ .banner-wrap{ max-width:var(--container-max); } }
+/* Telas grandes: letras um pouco maiores, tudo mais perto e nítido. */
+@media (min-width:1280px){
+  body{ font-size:16px; }
+  .product-card-name{ font-size:16px; }
+  .product-card .pc-seg{ font-size:14px; }
+  .pc-resumo{ font-size:14px; }
+  .product-card .product-card-price{ font-size:18px; }
+  .pc-acao{ font-size:15px; }
+  .section-title{ font-size:30px; }
+  .cat-links a{ font-size:15px; }
+}
+/* Barra do celular: os 5 itens cabem na tela, sem cortar o último. */
+.mobile-cat-scroll a{ width:auto; flex:1 1 0; min-width:54px; }
+@media (max-width:380px){ .mobile-cat-scroll{ gap:2px; padding-inline:6px; } }
+.footer-bottom p{ font-size:12.5px; }
