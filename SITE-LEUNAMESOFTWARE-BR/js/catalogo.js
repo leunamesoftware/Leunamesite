@@ -348,15 +348,17 @@ window.LEU_CATALOGO = [
  {
   "id": "site-burger-e-pizza",
   "kind": "template",
-  "name": "Site pronto: Hamburgueria e Pizzaria",
+  "name": "Site pronto: Hamburgueria",
   "category": "sites",
-  "price": 280,
-  "priceText": "R$ 280,00",
+  "price": 250,
+  "priceText": "R$ 250,00",
   "trial": "",
-  "short": "Site completo para hamburgueria e pizzaria: cardápio com carrinho e pedido pronto no WhatsApp.",
-  "description": "Site profissional e pronto para a sua hamburgueria ou pizzaria. Cardápio por categorias com fotos e preços, carrinho de compras, combos em promoção, entrega ou retirada, forma de pagamento e troco: o pedido chega pronto e somado no seu WhatsApp. Ainda tem 'Aberto agora' pelo seu horário, galeria, depoimentos e mapa. Você troca nome, logo, cores, produtos, fotos e preços em um arquivo só, sem programar, e publica na sua hospedagem ou grátis. Recebe a pasta completa (ZIP) no e-mail logo depois do pagamento.",
+  "short": "Site completo para hamburgueria: cardápio com carrinho, lanche do jeito do cliente e pedido pronto no WhatsApp.",
+  "description": "Site profissional e pronto para a sua hamburgueria. Cardápio por categorias com fotos e preços, e o cliente monta o lanche do jeito dele: tira cebola ou tomate, coloca bacon, cheddar ou maionese extra (soma no preço) e escreve observações. Ainda tem combos em promoção, entrega ou retirada, guardanapos e sachês, forma de pagamento e troco: o pedido chega pronto e somado no seu WhatsApp. Mostra 'Aberto agora' pelo seu horário, galeria, depoimentos e mapa. Você troca nome, logo, cores, produtos, adicionais, fotos e preços em um arquivo só, sem programar. Recebe a pasta completa (ZIP) no e-mail logo depois do pagamento.",
   "features": [
    "Cardápio com carrinho e pedido pronto no WhatsApp",
+   "Cliente tira ingredientes e escolhe adicionais pagos",
+   "Observação por lanche, guardanapos e sachês",
    "Entrega ou retirada, taxa, pedido mínimo e troco",
    "Mostra 'Aberto agora' pelo seu horário",
    "Funciona no celular, tablet e computador",
@@ -383,7 +385,7 @@ window.LEU_CATALOGO = [
   "parcelas": 10,
   "emBreve": false,
   "tag": "novedad",
-  "segmento": "Hamburgueria e pizzaria"
+  "segmento": "Hamburgueria"
  },
  {
   "id": "servico-logomarcas-loja-de-celular",
