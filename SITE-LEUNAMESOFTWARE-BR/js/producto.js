@@ -162,7 +162,7 @@
         (product.emBreve ? '<span class="cat-tag" style="background:#fff4e5;color:#b45309;margin-left:8px;">Em breve</span>' : '') +
         '<h1>' + product.name + '</h1>' +
         '<p class="short-desc">' + product.short + '</p>' +
-        (product.kind === 'app' && !product.emBreve && product.plans.length ? '<p class="pd-depois">Depois do teste, ' + Store.priceHTML(product) + '</p>' : '<div class="price-row"><span class="price-big">' + Store.priceHTML(product) + '</span>' +
+        (product.kind === 'app' && !product.emBreve && product.plans.length ? '<p class="pd-depois">Depois do teste, ' + (product.priceText || Store.priceHTML(product)) + '</p>' : '<div class="price-row"><span class="price-big">' + Store.priceHTML(product) + '</span>' +
           (product.kind === 'template' && product.parcelas > 1 ? '<span class="pd-parc">ou ' + product.parcelas + 'x de R$ ' + (product.price / product.parcelas).toFixed(2).replace('.', ',') + ' no cartão · Pix</span>' : '') + '</div>') +
         acoesHTML(product) +
         '<div class="trust-row">' +

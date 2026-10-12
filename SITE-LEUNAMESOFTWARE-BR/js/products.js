@@ -83,7 +83,11 @@
   function formatPrice(value) {
     return 'R$ ' + value.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   }
-  function priceHTML(product) { return product.priceText || (product.price ? formatPrice(product.price) : 'Grátis'); }
+  function priceHTML(product) {
+    var t = product.priceText || (product.price ? formatPrice(product.price) : 'Grátis');
+    // "a partir de" numa linha pequena em cima: o preço não quebra no meio no celular.
+    return /^a partir de /i.test(t) ? '<small class="pc-apartir">a partir de</small><span class="pc-valor">' + t.replace(/^a partir de /i, '') + '</span>' : t;
+  }
   function discountPercent() { return null; }
   function starsHTML() { return ''; }
 

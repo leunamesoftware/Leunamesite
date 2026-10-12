@@ -1254,3 +1254,20 @@ html{ scroll-behavior:smooth; }
 .cc-ant{ left:-6px; } .cc-prox{ right:-6px; }
 @media (max-width:639px){ .cc-seta{ width:42px; height:42px; font-size:28px; top:62px; } .cc-ant{ left:-4px; } .cc-prox{ right:-4px; } }
 @media (min-width:640px){ .cc-seta{ top:74px; } }
+
+/* Preço: "a partir de" pequeno em cima, valor inteiro embaixo */
+.pc-apartir{ display:block; font-size:.62em; font-weight:600; color:var(--ink-600); letter-spacing:0; line-height:1.2; }
+.pc-valor{ white-space:nowrap; }
+/* Celular: produtos da página inicial em grade de 2 por linha (igual às categorias), sem carrossel espremido */
+@media (max-width:639px){
+  .product-carousel{ display:grid !important; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; overflow:visible !important; scroll-snap-type:none; padding:0 !important; margin:0 !important; }
+  .product-carousel .product-card{ width:auto !important; max-width:none !important; }
+  .carousel-wrap .carousel-arrow{ display:none !important; }
+  .product-card .product-card-price{ font-size:16px; }
+}
+@media (max-width:639px){
+  .carousel-wrap{ margin-inline:0 !important; padding-inline:0 !important; }
+  .product-carousel .product-card-name{ min-height:0; }
+  .product-carousel .product-card-body{ display:flex; flex-direction:column; height:100%; }
+  .product-carousel .pc-acao{ margin-top:auto; }
+}
