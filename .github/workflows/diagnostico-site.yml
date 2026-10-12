@@ -10,7 +10,7 @@ jobs:
           H=$(curl -sS "$B/")
           echo "::warning title=pagina::$(echo "$H" | grep -o '<title>[^<]*' | head -1) | css=$(echo "$H" | grep -o 'href="[^"]*css[^"]*"' | head -3 | tr '\n' ' ') | bytes=$(echo -n "$H" | wc -c)"
           # Compra do site pronto abre o pagamento? (cria só um pedido "aguardando", sem cobrar nada)
-          R=$(curl -sS -o /tmp/c -w "%{http_code}" -X POST "$B/loja-api/comprar" -H "Content-Type: application/json" -H "Origin: $B" -H "Referer: $B/loja/comprar" --data '{"nome":"Teste Diagnostico","email":"leunamesoftware@gmail.com","plano":"tpl_burger"}')
+          R=$(curl -sS -o /tmp/c -w "%{http_code}" -X POST "$B/loja-api/comprar" -H "Content-Type: application/json" -H "Origin: $B" -H "Referer: $B/loja/comprar" --data '{"nome":"Teste Diagnostico","email":"leunamesoftware@gmail.com","plano":"tpl_burger_semcredito"}')
           echo "::warning title=compra-template::$R | $(head -c 160 /tmp/c | tr -cd '[:print:] ')"
           for p in /modelos/burger-e-pizza/ /modelos/burger-e-pizza/imagens/banner.jpg /img/modelos/burger-e-pizza-banner.webp '/loja/comprar?app=tpl_burger&plano=unico' '/loja-api/template/licenca?chave=LEU-X&dominio=teste.com.br' '/loja-api/template/baixar?p=0' '/loja/comprar?app=tpl_agencia&plano=unico' /img/modelos/agencia-de-viagens-banner.webp /modelos/agencia-de-viagens/ /robots.txt /sitemap.xml /curso.html /cursos.json /img/destaques/gestacell-v5.webp /apps /instalar/gestacell /js/catalogo.js '/loja/comprar?app=gestacell&plano=mensal' /quantocobrar; do
             R=$(curl -sS -o /tmp/r -w "%{http_code} %{content_type} %{size_download}" "$B$p")
