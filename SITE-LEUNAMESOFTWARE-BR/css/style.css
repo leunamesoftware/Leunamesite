@@ -1247,3 +1247,10 @@ html{ scroll-behavior:smooth; }
 .mobile-cat-scroll a{ width:auto; flex:1 1 0; min-width:54px; }
 @media (max-width:380px){ .mobile-cat-scroll{ gap:2px; padding-inline:6px; } }
 .footer-bottom p{ font-size:12.5px; }
+/* Setas do carrossel de categorias: maiores e visíveis também no celular. */
+.cc-seta{ display:grid; place-items:center; width:46px; height:46px; font-size:30px; background:#fff; border:1px solid #e3e8f0;
+  box-shadow:0 8px 20px rgba(15,30,51,.18); color:var(--navy-900); }
+.cc-seta:active{ transform:scale(.94); }
+.cc-ant{ left:-6px; } .cc-prox{ right:-6px; }
+@media (max-width:639px){ .cc-seta{ width:42px; height:42px; font-size:28px; top:62px; } .cc-ant{ left:-4px; } .cc-prox{ right:-4px; } }
+@media (min-width:640px){ .cc-seta{ top:74px; } }

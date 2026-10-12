@@ -200,12 +200,8 @@
     };
     el.querySelector('.cc-ant').addEventListener('click', function () { andar(-1); pausa(); });
     el.querySelector('.cc-prox').addEventListener('click', function () { andar(1); pausa(); });
-    // Passa sozinho a cada 3 s; para enquanto a pessoa mexe e volta depois de 6 s.
-    var parado = false, volta = null;
-    function pausa() { parado = true; clearTimeout(volta); volta = setTimeout(function () { parado = false; }, 6000); }
-    ['pointerdown', 'touchstart', 'wheel', 'mouseenter', 'focusin'].forEach(function (ev) { trilho.addEventListener(ev, pausa, { passive: true }); });
-    var reduzir = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (!reduzir) setInterval(function () { if (!parado && !document.hidden) andar(1); }, 3000);
+    // Não passa sozinho (pedido do dono): o cliente arrasta com o dedo ou toca nas setas.
+    function pausa() {}
   }
 
   function mountCategoryGrid(elId) {
