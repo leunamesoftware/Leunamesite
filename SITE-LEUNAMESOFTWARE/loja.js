@@ -2,7 +2,7 @@
   "use strict";
   var C = window.CONFIG || {};
   var html = document.documentElement;
-  var lang = function () { return html.lang === "pt" || html.lang === "es" ? html.lang : "en"; };
+  var lang = function () { return html.lang === "en" ? "en" : "es"; };
   var PAISES = ["DE", "FR", "ES", "IT", "NL", "BE", "AT", "PT", "IE"];
   var $ = function (s, r) { return (r || document).querySelector(s); };
   var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };

@@ -58,8 +58,8 @@ ICONE = ("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 
          "<rect width='48' height='48' rx='12' fill='%23FAF7F1'/><path d='M24 42C11 38 6 27 9 11c11 2 18 9 15 31z' fill='%233E8E4F'/>"
          "<path d='M24 42c13-4 18-15 15-31-11 2-18 9-15 31z' fill='%231F5A33'/></svg>")
 
-IDIOMA_JS = ('try{var q=location.search.match(/[?&]lang=(es|pt|en)/),n=(navigator.language||"").toLowerCase().slice(0,2),'
-             'l=(q&&q[1])||localStorage.getItem("lang")||(n==="pt"||n==="en"?n:"es");document.documentElement.lang=l}'
+IDIOMA_JS = ('try{var q=location.search.match(/[?&]lang=(es|en)/),g=localStorage.getItem("lang"),'
+             'l=(q&&q[1])||(g==="en"?"en":"es");document.documentElement.lang=l}'
              'catch(e){document.documentElement.lang="es"}')
 
 
@@ -71,7 +71,7 @@ def cabeca(titulo, desc, caminho, indexar=True):
     robots = '' if indexar else '<meta name="robots" content="noindex">\n'
     nav = ''.join(f'<a href="./#{c}">{ico(i)}{t(es, pt, en)}</a>' for c, i, es, pt, en in CATS)
     return f'''<!doctype html>
-<html lang="en">
+<html lang="es">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -92,7 +92,7 @@ def cabeca(titulo, desc, caminho, indexar=True):
     <span>{ico('camiao')}{t('Envío gratis a 9 países de Europa', 'Envio grátis para 9 países da Europa', 'Free shipping to 9 EU countries')}</span>
     <span class="b2">{ico('escudo')}{t('Compra segura', 'Compra segura', 'Secure checkout')}</span>
     <span class="b3">{ico('volta')}{t('Devolución en 14 días', 'Devolução em 14 dias', '14-day returns')}</span>
-    <select class="idioma" data-idioma aria-label="Idioma / Language"><option value="es">🇪🇸 ES</option><option value="pt">🇵🇹 PT</option><option value="en">🇪🇺 EN</option></select>
+    <select class="idioma" data-idioma aria-label="Idioma / Language"><option value="es">🇪🇸 ES</option><option value="en">🇬🇧 EN</option></select>
   </div>
 </div>
 <header class="top">
