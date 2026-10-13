@@ -20,14 +20,25 @@ AQUI = os.path.dirname(os.path.abspath(__file__))
 SITE = os.path.join(AQUI, '..', 'SITE-LEUNAMESOFTWARE')
 API = 'https://developers.cjdropshipping.com/api2.0/v1'
 
-ARMAZENS = ['ES', 'DE', 'FR', 'IT', 'PL', 'CZ']          # estoque na Europa = chega rápido
 DESTINOS = ['DE', 'FR', 'ES', 'IT', 'NL', 'BE', 'AT', 'PT', 'IE']   # maiores mercados da UE
-BUSCAS = ['pet hair remover', 'cat water fountain', 'pet feeder', 'dog bed', 'cat bed', 'cat scratcher',
-          'interactive cat toy', 'dog toy', 'dog leash', 'dog harness', 'pet grooming', 'pet bowl',
-          'cat litter', 'pet blanket']
+# categorias de pet da CJ (3º nível) -> categoria da loja
+CATEGORIAS_CJ = {
+    '2410110358051626100': 'camas', '2410110357511615700': 'camas', '2410110357391611900': 'camas', '2410110358191601900': 'camas',
+    '2410110341061612000': 'comer', '2410110341331606800': 'comer', '2410110341451628800': 'comer',
+    '2410110339311602900': 'juguetes', '2410110339451623300': 'juguetes', '2410110340031614900': 'juguetes',
+    '2410110340531618900': 'juguetes', '2410110340411608400': 'juguetes', '2410110340291603400': 'juguetes',
+    '2410110352331629800': 'paseo', '2410110352471611400': 'paseo', '2410110352591600400': 'paseo',
+    '2410110353301600600': 'paseo', '2410110342571606700': 'paseo', '2410110348401611500': 'paseo', '2410110349061619800': 'paseo',
+    '2410110354491625800': 'higiene', '2410110355021623200': 'higiene', '2410110355151622300': 'higiene', '2410110355321622400': 'higiene',
+    '2410110355491614000': 'rascadores', '2410110356161627200': 'rascadores', '2410110356441603600': 'rascadores',
+    '2410110357091627600': 'rascadores', '2410110357221629500': 'rascadores',
+}
+POR_CATEGORIA = 4          # quantos mais populares detalhar por categoria da CJ
+FRETE_TESTE = ['DE', 'FR', 'ES', 'IT', 'NL']   # o frete para a UE é parecido; testa 5 e usa o mais caro
+ORIGEM = 'CN'
+PRAZO_MAX = 18             # dias
 CUSTO_MAX_USD = 15        # produto barato
 USD_EUR = 0.93
-MAX_DETALHES = 40         # quantos candidatos detalhar (1 chamada/s na CJ)
 
 
 class CJ:
@@ -104,7 +115,7 @@ def imagens_de(d):
     return out[:8]
 
 
-def detalhar(cj, pid, armazem):
+def detalhar(cj, pid, armazem=ORIGEM, categoria=''):
     r = cj.req('GET', '/product/query', params={'pid': pid, 'features': 'enable_video'})
     d = r.get('data') or {}
     if not d:
@@ -117,14 +128,18 @@ def detalhar(cj, pid, armazem):
     if not custo:
         return None
     fretes = {}
-    for destino in DESTINOS:
+    for destino in FRETE_TESTE:
         f = cj.req('POST', '/logistic/freightCalculate', {
             'startCountryCode': armazem, 'endCountryCode': destino,
             'products': [{'quantity': 1, 'vid': vid}]})
         ops = [o for o in (f.get('data') or []) if num(o.get('logisticPrice')) is not None]
         if not ops:
             return None                                  # não entrega nesse país
-        o = min(ops, key=lambda o: num(o['logisticPrice']))
+        def dias(o):
+            n = [int(x) for x in __import__('re').findall(r'\d+', str(o.get('logisticAging') or ''))]
+            return max(n) if n else 99
+        boas = [o for o in ops if dias(o) <= PRAZO_MAX] or ops
+        o = min(boas, key=lambda o: num(o['logisticPrice']))
         fretes[destino] = {'usd': num(o['logisticPrice']), 'prazo': o.get('logisticAging') or '',
                            'transportadora': o.get('logisticName') or ''}
     frete = max(v['usd'] for v in fretes.values())
@@ -135,6 +150,8 @@ def detalhar(cj, pid, armazem):
         'vid': vid,
         'nomeEn': d.get('productNameEn') or '',
         'categoria': d.get('categoryName') or '',
+        'categoriaLoja': categoria,
+        'popularidade': d.get('listedNum') or 0,
         'armazem': armazem,
         'custoProdutoUsd': custo,
         'fretes': fretes,
@@ -197,6 +214,12 @@ def montar_loja(aprovados, por_id):
 def main():
     chave = os.environ.get('CJ_API_KEY', '').strip()
     aprovados = ler(os.path.join(AQUI, 'aprovados.json'), {})
+    if os.environ.get('SO_MONTAR') == '1':
+        cat = ler(os.path.join(SITE, 'catalogo-cj.json'), {'itens': []})
+        por_id = {c['id']: c for c in cat.get('itens', [])}
+        gravar('produtos.json', montar_loja(aprovados, por_id))
+        print('só montar:', len(por_id), 'no catálogo')
+        return
     if not chave:
         print('Sem CJ_API_KEY: robô da CJ não rodou.')
         for nome in ('catalogo-cj.json', 'produtos.json'):
@@ -205,29 +228,27 @@ def main():
         return
     cj = CJ(chave)
     candidatos = {}
-    for armazem in ARMAZENS:
-        for busca in BUSCAS:
-            r = cj.req('GET', '/product/listV2', params={
-                'keyWord': busca, 'countryCode': armazem, 'page': 1, 'size': 20,
-                'features': 'enable_video'})
-            blocos = ((r.get('data') or {}).get('content') or [])
-            for b in blocos:
-                for p in b.get('productList') or []:
-                    preco = num(p.get('sellPrice'))
-                    if not p.get('id') or preco is None or preco > CUSTO_MAX_USD:
-                        continue
-                    nota = (2 if str(p.get('isVideo')) == '1' else 0) + (1 if preco <= 8 else 0)
-                    candidatos.setdefault(p['id'], (nota, armazem))
-        print('armazém', armazem, '→', len(candidatos), 'candidatos')
+    for cat_id, cat_loja in CATEGORIAS_CJ.items():
+        r = cj.req('GET', '/product/listV2', params={
+            'categoryId': cat_id, 'page': 1, 'size': 30, 'features': 'enable_video'})
+        achados = []
+        for b in ((r.get('data') or {}).get('content') or []):
+            for p in b.get('productList') or []:
+                preco = num(p.get('sellPrice'))
+                if not p.get('id') or preco is None or preco > CUSTO_MAX_USD:
+                    continue
+                pop = int(p.get('listedNum') or 0)
+                achados.append((pop + (300 if p.get('videoList') else 0), p['id']))
+        for nota, pid in sorted(achados, reverse=True)[:POR_CATEGORIA]:
+            candidatos.setdefault(pid, (nota, cat_loja))
+    print('candidatos:', len(candidatos))
     # aprovados sempre são atualizados, mesmo que não apareçam na busca de hoje
     antigos = {c['id']: c for c in ler(os.path.join(SITE, 'catalogo-cj.json'), {}).get('itens', [])}
-    fila = [(9, pid, (antigos.get(pid) or {}).get('armazem') or a.get('armazem') or 'DE')
-            for pid, a in aprovados.items()]
-    fila += sorted(((n, pid, arm) for pid, (n, arm) in candidatos.items() if pid not in aprovados),
-                   reverse=True)[:MAX_DETALHES]
+    fila = [(10**9, pid, a.get('categoria', '')) for pid, a in aprovados.items()]
+    fila += [(n, pid, cat) for pid, (n, cat) in candidatos.items() if pid not in aprovados]
     itens = []
-    for _, pid, armazem in fila:
-        d = detalhar(cj, pid, armazem)
+    for _, pid, cat in fila:
+        d = detalhar(cj, pid, ORIGEM, cat)
         if d:
             d['aprovado'] = pid in aprovados
             itens.append(d)

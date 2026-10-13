@@ -35,11 +35,18 @@ jobs:
       - name: Robô da CJ (produtos da loja Europa)
         env:
           CJ_API_KEY: ${{ secrets.CJ_API_KEY }}
-        run: python3 ferramentas-loja/cj_sync.py
+        run: |
+          # push = só republica (usa o catálogo salvo, não gasta a CJ); agenda/manual = busca tudo na CJ
+          if [ "${{ github.event_name }}" = "push" ] && git fetch -q origin dados-cj 2>/dev/null; then
+            git show FETCH_HEAD:catalogo-cj.json > SITE-LEUNAMESOFTWARE/catalogo-cj.json
+            SO_MONTAR=1 python3 ferramentas-loja/cj_sync.py
+          else
+            python3 ferramentas-loja/cj_sync.py
+          fi
 
       - name: Salvar catálogo da CJ no branch dados-cj (para o Claude ler)
         run: |
-          if [ -s SITE-LEUNAMESOFTWARE/catalogo-cj.json ]; then
+          if [ "${{ github.event_name }}" != "push" ] && [ -s SITE-LEUNAMESOFTWARE/catalogo-cj.json ]; then
             mkdir -p /tmp/dados && cp SITE-LEUNAMESOFTWARE/catalogo-cj.json /tmp/dados/
             cd /tmp/dados && git init -q && git checkout -q -b dados-cj
             git config user.name "robo-cj" && git config user.email "robo-cj@users.noreply.github.com"
