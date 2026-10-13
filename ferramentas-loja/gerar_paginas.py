@@ -6,7 +6,7 @@ import os
 AQUI = os.path.dirname(os.path.abspath(__file__))
 SITE = os.path.join(AQUI, '..', 'SITE-LEUNAMESOFTWARE')
 DATA = ('13 de octubre de 2026', '13 de outubro de 2026', '13 October 2026')
-MARCA = 'LeunaPet'
+MARCA = 'LeunaPets'
 
 
 def t(es, pt, en):
@@ -87,10 +87,11 @@ def cabeca(titulo, desc, caminho, indexar=True):
 <title>{titulo}</title>
 <meta name="description" content="{desc}">
 {robots}<link rel="canonical" href="https://leunamesoftware.com/{caminho}">
-<meta name="theme-color" content="#1D2B4F">
+<meta name="theme-color" content="#0F1E44">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="icon" href="{ICONE}">
+<link rel="icon" type="image/png" href="img/favicon.png">
+<link rel="apple-touch-icon" href="img/emblema-192.png">
 <link rel="stylesheet" href="loja.css">
 <script>{IDIOMA_JS}</script>
 <script src="config.js"></script>
@@ -106,7 +107,7 @@ def cabeca(titulo, desc, caminho, indexar=True):
 </div>
 <header class="top">
   <div class="wrap top-in">
-    <a class="logo" href="./">{LOGO}<span class="logo-t">Leuna<b>Pet</b><i>{t('Perros y gatos', 'Cães e gatos', 'Dogs & cats')}</i></span></a>
+    <a class="logo" href="./" aria-label="LeunaPets"><img class="logo-img" src="img/logo.webp" alt="LeunaPets" width="460" height="120"></a>
     <form class="busca" role="search" action="./" data-busca>
       <input type="search" name="q" autocomplete="off" aria-label="Buscar" data-ph-es="¿Qué buscas para tu perro o tu gato?" data-ph-pt="O que procura para o seu cão ou gato?" data-ph-en="What are you looking for?">
       <button type="submit" aria-label="Buscar">{ico('lupa')}</button>
@@ -129,7 +130,7 @@ RODAPE = f'''
 </section>
 <footer class="pie">
   <div class="wrap pie-in">
-    <div><a class="logo" href="./">{LOGO}<span class="logo-t">Leuna<b>Pet</b><i>{t('Perros y gatos', 'Cães e gatos', 'Dogs & cats')}</i></span></a>
+    <div><a class="logo" href="./" aria-label="LeunaPets"><img class="logo-img" src="img/logo.webp" alt="LeunaPets" width="460" height="120"></a>
       <p>{t('Tienda especializada en perros y gatos. Productos bonitos y prácticos, enviados a toda Europa.', 'Loja especializada em cães e gatos. Produtos bonitos e práticos, enviados para toda a Europa.', 'A shop for dogs and cats only. Practical, beautiful products shipped across Europe.')}</p></div>
     <div><h4>{t('Tienda', 'Loja', 'Shop')}</h4>{links_cats()}</div>
     <div><h4>{t('Ayuda', 'Ajuda', 'Help')}</h4><a href="envios.html">{t('Envíos y devoluciones', 'Envios e devoluções', 'Shipping & returns')}</a><a href="#" data-mail>{t('Contacto', 'Contacto', 'Contact')}</a><a href="carrito.html">{t('Mi carrito', 'O meu carrinho', 'My cart')}</a></div>
@@ -198,7 +199,7 @@ index = f'''<main>
 <section class="wrap porque">
   <img src="img/cat-mascotas.webp" alt="" loading="lazy">
   <div class="porque-tx">
-    <h2>{t('¿Por qué LeunaPet?', 'Porquê a LeunaPet?', 'Why LeunaPet?')}</h2>
+    <h2>{t('¿Por qué LeunaPets?', 'Porquê a LeunaPets?', 'Why LeunaPets?')}</h2>
     <p>{t('Somos una tienda especializada solo en perros y gatos. Probamos y elegimos cada producto pensando en su bienestar y en tu casa.', 'Somos uma loja especializada só em cães e gatos. Escolhemos cada produto a pensar no bem-estar deles e na sua casa.', 'We are a shop specialised only in dogs and cats. Every product is chosen with their wellbeing and your home in mind.')}</p>
     <ul><li>{ico('camiao')}{t('Envío gratis desde almacenes en Europa', 'Envio grátis a partir de armazéns na Europa', 'Free shipping from European warehouses')}</li>
     <li>{ico('volta')}{t('14 días para devolver', '14 dias para devolver', '14-day returns')}</li>
@@ -207,7 +208,7 @@ index = f'''<main>
 </section>
 {secoes}</main>
 '''
-pagina('index.html', 'LeunaPet — Todo para tu perro y tu gato · Envío gratis en Europa',
+pagina('index.html', 'LeunaPets — Todo para tu perro y tu gato · Envío gratis en Europa',
        'Camas, fuentes, juguetes y accesorios para perros y gatos con envío gratis a España, Portugal, Francia, Alemania, Italia, Países Bajos, Bélgica, Austria e Irlanda. 14 días para devolver.',
        index)
 
@@ -237,7 +238,7 @@ produto = f'''<main class="wrap prod" id="prod">
   <div class="vazio-in" id="pNada" hidden><h2>{t('Producto no encontrado', 'Produto não encontrado', 'Product not found')}</h2><a class="bt" href="./">{t('Ver la tienda', 'Ver a loja', 'Go to shop')}</a></div>
 </main>
 '''
-pagina('producto.html', 'Product — LeunaPet', 'Product details, free shipping across Europe.', produto)
+pagina('producto.html', 'Producto — LeunaPets', 'Product details, free shipping across Europe.', produto)
 
 # ---------------- CARRINHO ----------------
 carrito = f'''<main class="wrap carr">
@@ -260,7 +261,7 @@ carrito = f'''<main class="wrap carr">
   </div>
 </main>
 '''
-pagina('carrito.html', 'Cart — LeunaPet', 'Your cart.', carrito, indexar=False)
+pagina('carrito.html', 'Carrito — LeunaPets', 'Your cart.', carrito, indexar=False)
 
 gracias = f'''<main class="wrap ok">
   <div class="vazio-in">
@@ -271,7 +272,7 @@ gracias = f'''<main class="wrap ok">
   </div>
 </main>
 '''
-pagina('gracias.html', 'Thank you — LeunaPet', 'Order received.', gracias, indexar=False)
+pagina('gracias.html', 'Gracias — LeunaPets', 'Order received.', gracias, indexar=False)
 
 
 # ---------------- LEGAIS ----------------
@@ -279,7 +280,7 @@ def legal(nome, titulos, textos, desc):
     corpo = (f'<main class="wrap legal"><h1>{t(*titulos)}</h1>'
              f'<div class="es">{textos[0]}</div><div class="pt">{textos[1]}</div><div class="en">{textos[2]}</div>'
              f'<p class="act">{t("Última actualización: " + DATA[0], "Última atualização: " + DATA[1], "Last updated: " + DATA[2])}.</p></main>')
-    pagina(nome, f'{titulos[2]} — LeunaPet', desc, corpo)
+    pagina(nome, f'{titulos[0]} — LeunaPets', desc, corpo)
 
 
 legal('envios.html', ('Envíos y devoluciones', 'Envios e devoluções', 'Shipping & returns'), (f'''
@@ -309,19 +310,19 @@ legal('envios.html', ('Envíos y devoluciones', 'Envios e devoluções', 'Shippi
       'Free shipping to 9 EU countries, delivery times and 14-day right of withdrawal.')
 
 legal('aviso-legal.html', ('Aviso legal', 'Aviso legal', 'Legal notice'), ('''
-<h2>Titular de la tienda</h2><p data-titular>Titular: LeuName Softwares (marca LeunaPet) · Correo: <a href="#" data-mail>contacto por email</a> · Web: leunamesoftware.com</p>
+<h2>Titular de la tienda</h2><p data-titular>Titular: LeuName Softwares (marca LeunaPets) · Correo: <a href="#" data-mail>contacto por email</a> · Web: leunamesoftware.com</p>
 <h2>Objeto</h2><p>Venta a distancia de productos para perros y gatos a consumidores de la Unión Europea. Los pedidos se envían desde almacenes de nuestros socios logísticos en la UE.</p>
 <h2>Precios y pago</h2><p>Precios en euros con IVA incluido. Pago con tarjeta, Apple Pay o Google Pay (procesado por Stripe) o con PayPal. El contrato se perfecciona al recibir la confirmación del pago.</p>
 <h2>Resolución de litigios</h2><p>Si tienes cualquier problema, escríbenos primero: lo solucionamos. También puedes acudir a los organismos de consumo de tu país.</p>''', '''
-<h2>Titular da loja</h2><p data-titular>Titular: LeuName Softwares (marca LeunaPet) · Email: <a href="#" data-mail>contacto por email</a> · Site: leunamesoftware.com</p>
+<h2>Titular da loja</h2><p data-titular>Titular: LeuName Softwares (marca LeunaPets) · Email: <a href="#" data-mail>contacto por email</a> · Site: leunamesoftware.com</p>
 <h2>Objeto</h2><p>Venda à distância de produtos para cães e gatos a consumidores da União Europeia. As encomendas são enviadas a partir de armazéns dos nossos parceiros logísticos na UE.</p>
 <h2>Preços e pagamento</h2><p>Preços em euros com IVA incluído. Pagamento com cartão, Apple Pay ou Google Pay (processado pela Stripe) ou com PayPal. O contrato fica concluído com a confirmação do pagamento.</p>
 <h2>Resolução de litígios</h2><p>Se tiver algum problema, escreva-nos primeiro: resolvemos. Em Portugal pode também usar o Livro de Reclamações Eletrónico (livroreclamacoes.pt) e as entidades de resolução alternativa de litígios de consumo.</p>''', '''
-<h2>Shop owner</h2><p data-titular>Owner: LeuName Softwares (LeunaPet brand) · Email: <a href="#" data-mail>contact by email</a> · Website: leunamesoftware.com</p>
+<h2>Shop owner</h2><p data-titular>Owner: LeuName Softwares (LeunaPets brand) · Email: <a href="#" data-mail>contact by email</a> · Website: leunamesoftware.com</p>
 <h2>Purpose</h2><p>Distance selling of products for dogs and cats to consumers in the European Union. Orders ship from our logistics partners' warehouses inside the EU.</p>
 <h2>Prices and payment</h2><p>Prices in euros including VAT. Payment by card, Apple Pay or Google Pay (processed by Stripe) or by PayPal. The contract is concluded when you receive payment confirmation.</p>
 <h2>Disputes</h2><p>If you have any problem, please contact us first and we will sort it out. You can also contact the consumer authorities in your country.</p>'''),
-      'Shop owner details and terms of LeunaPet.')
+      'Shop owner details and terms of LeunaPets.')
 
 legal('privacidad.html', ('Política de privacidad', 'Política de privacidade', 'Privacy policy'), ('''
 <h2>Responsable</h2><p>LeuName Softwares (<a href="#" data-mail>email</a>).</p>

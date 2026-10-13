@@ -133,7 +133,7 @@
     $(".prod-in").hidden = !p; $("#pNada").hidden = !!p;
     if (!p) return;
     var i = info(p);
-    document.title = nome(p) + " — LeunaPet";
+    document.title = nome(p) + " — LeunaPets";
     $("#pNome").textContent = nome(p);
     $("#pPreco").textContent = euro(p.precio);
     $("#pDesc").textContent = i.descripcion || "";
@@ -236,13 +236,13 @@
           var tot = total().toFixed(2);
           return actions.order.create({
             purchase_units: [{
-              description: "LeunaPet",
+              description: "LeunaPets",
               amount: { currency_code: "EUR", value: tot, breakdown: { item_total: { currency_code: "EUR", value: tot } } },
               items: itens.map(function (it) {
                 return { name: nome(it.p).slice(0, 120), sku: it.p.id.slice(0, 120), quantity: String(it.q), unit_amount: { currency_code: "EUR", value: it.p.precio.toFixed(2) }, category: "PHYSICAL_GOODS" };
               })
             }],
-            application_context: { shipping_preference: "GET_FROM_FILE", brand_name: "LeunaPet" }
+            application_context: { shipping_preference: "GET_FROM_FILE", brand_name: "LeunaPets" }
           });
         },
         onShippingAddressChange: function (d, actions) {
