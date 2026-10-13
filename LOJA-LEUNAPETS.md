@@ -23,6 +23,15 @@ O dono fala português do Brasil, quer respostas curtas e diretas. Ele está sem
 | `.github/workflows/deploy-site-cloudflare.yml` | Publica o site. **push** = só remonta `produtos.json` com o catálogo salvo no branch `dados-cj` (não gasta a CJ). **agenda diária / manual** = roda o robô inteiro (~15 min) e salva o catálogo no branch `dados-cj`. |
 | `.github/workflows/cj-debug.yml` + `ferramentas-loja/cj_debug.py` | Diagnóstico da API da CJ; grava `debug.json` no branch `dados-cj-debug`. |
 
+## Várias lojas (desde 13/10/2026)
+- Cadastro em `ferramentas-loja/lojas.py` (cores, categorias, textos, topo). `python3 ferramentas-loja/gerar_paginas.py` gera todas
+  (pets → raiz do site; outras → `SITE-LEUNAMESOFTWARE/_lojas/<id>/`) e grava `lojas.json` (lido pelo Worker e pelo painel).
+- Worker: o host escolhe a loja; arquivo que não existe na pasta da loja vem da raiz (loja.js, loja.css são comuns a todas).
+- Loja 2: **casa.leuname.com** (casa e jardim, nome provisório **LeunaCasa**, tema em `_lojas/casa/tema.css`, logo em texto até o dono mandar o logo).
+- D1: tabela `produtos_v2` (chave loja+id). Painel: botões de loja no topo; tudo que faz vale só para a loja escolhida. `?loja=<id>` na API.
+- Loja nova: bloco novo em lojas.py + `[[routes]]` no wrangler.toml + `LOJAS_CFG` no painel/index.html + `DESC_LOJA` no painel-api.js + config.js da pasta.
+- PayPal Client ID: pôr em `config.js` da raiz E de cada `_lojas/<id>/config.js`.
+
 ## Painel do dono — https://pets.leuname.com/painel/ (instalável)
 - Login com `LOJA_ADMIN_SENHA` (6 erros = 15 min bloqueado; sessão 60 dias). Busca ao vivo na CJ, mostra custo, frete+IVA (DE/FR/ES/IT), preço sugerido e lucro.
 - "Publicar" grava o produto no D1 **leunapets** (binding `DB`, id ad40b547-8532-4316-aafe-45280db14070) com texto es/en escrito pelo Workers AI (`AI`, llama-3.3-70b).
