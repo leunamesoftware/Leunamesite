@@ -18,7 +18,20 @@ jobs:
           home=$(curl -s -o /dev/null -w '%{http_code}' https://pets.leuname.com/ || echo erro)
           prod=$(curl -s https://pets.leuname.com/produtos.json | head -c 200 | tr -d '\n' || echo erro)
           pagar=$(curl -s -X POST https://pets.leuname.com/api/pagar -H 'Content-Type: application/json' -d '{"lang":"es","itens":[{"id":"1642036884023021568","q":1}]}' | sed 's#cs_live_[A-Za-z0-9_]*#cs_live_OK#g' | head -c 400)
-          mkdir -p /tmp/e && cd /tmp/e
+          mkdir -p /tmp/e
+          # painel: login com a senha (não aparece), busca e detalhe na CJ
+          tk=$(jq -nc --arg s "$S3" '{senha:$s}' | curl -s -X POST https://pets.leuname.com/api/painel/login -H 'Content-Type: application/json' -d @- | jq -r '.token // empty')
+          if [ -n "$tk" ]; then
+            echo "login ok" > /tmp/e/painel.txt
+            curl -s https://pets.leuname.com/api/painel/estado -H "Authorization: Bearer $tk" >> /tmp/e/painel.txt; echo >> /tmp/e/painel.txt
+            curl -s "https://pets.leuname.com/api/painel/buscar?q=cat%20scratcher" -H "Authorization: Bearer $tk" | jq -c '{n:(.itens|length),erro,detalhe,primeiros:[.itens[:3][]|{pid,nome,custoUsd,popularidade}]}' >> /tmp/e/painel.txt
+            pid=$(curl -s "https://pets.leuname.com/api/painel/buscar?q=dog%20leash" -H "Authorization: Bearer $tk" | jq -r '.itens[0].pid // empty')
+            curl -s "https://pets.leuname.com/api/painel/detalhe?pid=$pid" -H "Authorization: Bearer $tk" | jq -c 'del(.descricaoEn,.imagens)' >> /tmp/e/painel.txt
+            curl -s -X POST https://pets.leuname.com/api/painel/sair -H "Authorization: Bearer $tk" > /dev/null
+          else
+            jq -nc --arg s "$S3" '{senha:$s}' | curl -s -X POST https://pets.leuname.com/api/painel/login -H 'Content-Type: application/json' -d @- > /tmp/e/painel.txt
+          fi
+          cd /tmp/e
           echo "$pagar" > pagar.txt
           printf '{"stripe":%s,"stripe_tipo":"%s","cj":%s,"admin_senha":%s,"api_config":%s,"home_http":"%s","produtos_inicio":%s}\n' \
             "$(tem "$S1")" "$tipo" "$(tem "$S2")" "$(tem "$S3")" "$(echo "$cfg" | grep -q stripe && echo "$cfg" || echo '"erro"')" "$home" "$(python3 -c 'import json,sys;print(json.dumps(sys.argv[1]))' "$prod")" > estado.json

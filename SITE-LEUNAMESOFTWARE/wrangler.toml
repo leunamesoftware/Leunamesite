@@ -39,3 +39,13 @@ custom_domain = true
 [[routes]]
 pattern = "www.leuname.com"
 custom_domain = true
+
+# Banco do painel do dono (produtos publicados pelo painel, sessões). Criado em 13/10/2026 (Europa).
+[[d1_databases]]
+binding = "DB"
+database_name = "leunapets"
+database_id = "ad40b547-8532-4316-aafe-45280db14070"
+
+# Tradução automática dos produtos (Workers AI)
+[ai]
+binding = "AI"

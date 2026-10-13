@@ -1,6 +1,8 @@
 // Loja Europa LeunaPets (pets.leuname.com): serve o site estático e o pagamento por cartão (Stripe Checkout).
 // A chave fica no segredo STRIPE_SECRET_KEY do Worker (vem do segredo do GitHub, nunca do código).
 // O preço é SEMPRE o de produtos.json (o navegador só manda id e quantidade).
+import { painel, catalogo } from "./painel-api.js";
+
 const PAISES = ["DE", "FR", "ES", "IT", "NL", "BE", "AT", "PT", "IE"];
 const SITE = "https://pets.leuname.com";
 const HOST_LOJA = "pets.leuname.com";
@@ -9,11 +11,8 @@ const json = (dados, status = 200) =>
   new Response(JSON.stringify(dados), { status, headers: { "Content-Type": "application/json", "Cache-Control": "no-store" } });
 
 async function produtos(env, req) {
-  const r = await env.ASSETS.fetch(new Request(new URL("/produtos.json", req.url)));
-  if (!r.ok) return {};
-  const lista = await r.json().catch(() => []);
   const mapa = {};
-  for (const p of Array.isArray(lista) ? lista : []) if (p && p.id && p.precio > 0) mapa[p.id] = p;
+  for (const p of await catalogo(env, req)) if (p && p.id && p.precio > 0) mapa[p.id] = p;
   return mapa;
 }
 
@@ -71,6 +70,10 @@ export default {
     if (/^(www\.)?leuname\.com$/.test(url.hostname)) {
       return Response.redirect("https://" + HOST_LOJA + url.pathname + url.search, 301);
     }
+    if (url.pathname === "/produtos.json") {
+      return new Response(JSON.stringify(await catalogo(env, req)), { headers: { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-cache" } });
+    }
+    if (url.pathname.startsWith("/api/painel/")) return painel(req, env, url);
     if (url.pathname === "/api/config") return json({ stripe: !!env.STRIPE_SECRET_KEY });
     if (url.pathname === "/api/pagar" && req.method === "POST") return pagar(req, env);
     if (url.pathname.startsWith("/api/")) return json({ erro: "404" }, 404);

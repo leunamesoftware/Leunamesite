@@ -67,17 +67,22 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
         run: npx wrangler@latest deploy
 
-      - name: Chave da Stripe no Worker (se existir no GitHub)
+      - name: Segredos no Worker (Stripe, CJ e senha do painel; só os que existem no GitHub)
         working-directory: SITE-LEUNAMESOFTWARE
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
           STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
+          CJ_API_KEY: ${{ secrets.CJ_API_KEY }}
+          LOJA_ADMIN_SENHA: ${{ secrets.LOJA_ADMIN_SENHA }}
         run: |
-          if [ -n "$STRIPE_SECRET_KEY" ]; then
-            printf '%s' "$STRIPE_SECRET_KEY" | npx wrangler@latest secret put STRIPE_SECRET_KEY
-          else
-            echo "Sem STRIPE_SECRET_KEY: pagamento por cartão fica desligado (PayPal continua)."
-          fi
+          for nome in STRIPE_SECRET_KEY CJ_API_KEY LOJA_ADMIN_SENHA; do
+            valor="${!nome}"
+            if [ -n "$valor" ]; then
+              printf '%s' "$valor" | npx wrangler@latest secret put "$nome"
+            else
+              echo "Sem $nome no GitHub."
+            fi
+          done
 
       - name: Esperar o Worker propagar
         run: sleep 15

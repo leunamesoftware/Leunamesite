@@ -2,3 +2,4 @@ wrangler.toml
 .gitignore
 .assetsignore
 worker.js
+painel-api.js

@@ -1,0 +1,324 @@
+// Painel do dono da LeunaPets (pets.leuname.com/painel/): login, busca na CJ ao vivo e "Publicar" com 1 clique.
+// Segredos do Worker (vêm dos segredos do GitHub pelo workflow): LOJA_ADMIN_SENHA, CJ_API_KEY. Nunca no código.
+// Banco D1 "leunapets" (binding DB): produtos publicados pelo painel, sessões, token da CJ.
+const CJ = "https://developers.cjdropshipping.com/api2.0/v1";
+const USD_EUR = 0.93;
+const FRETE_TESTE = ["DE", "FR", "ES", "IT"];
+const PRAZO_MAX = 18;
+const CATS = ["camas", "comer", "juguetes", "paseo", "higiene", "rascadores"];
+const ANIMAIS = ["perro", "gato", "ambos"];
+const MODELO = "@cf/meta/llama-3.3-70b-instruct-fp8-fast";
+
+const json = (dados, status = 200) =>
+  new Response(JSON.stringify(dados), { status, headers: { "Content-Type": "application/json", "Cache-Control": "no-store" } });
+const dormir = (ms) => new Promise((r) => setTimeout(r, ms));
+const num = (v) => {
+  if (typeof v === "string" && v.includes("--")) v = v.split("--").pop();
+  const n = parseFloat(v);
+  return Number.isFinite(n) ? n : null;
+};
+export const precoVenda = (custoEur) => Math.ceil(Math.max(custoEur * 2, custoEur + 8)) - 0.01;
+export const lucro = (preco, custoEur) => Math.round((preco - custoEur - (preco * 0.07 + 0.35)) * 100) / 100;
+
+async function sha(txt) {
+  const h = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(txt));
+  return [...new Uint8Array(h)].map((b) => b.toString(16).padStart(2, "0")).join("");
+}
+
+let tabelasOk = false;
+async function tabelas(env) {
+  if (tabelasOk) return;
+  await env.DB.batch([
+    env.DB.prepare("CREATE TABLE IF NOT EXISTS produtos (id TEXT PRIMARY KEY, dados TEXT NOT NULL, ativo INTEGER NOT NULL DEFAULT 1, criado TEXT NOT NULL DEFAULT (datetime('now')), atualizado TEXT NOT NULL DEFAULT (datetime('now')))"),
+    env.DB.prepare("CREATE TABLE IF NOT EXISTS sessoes (token TEXT PRIMARY KEY, expira INTEGER NOT NULL)"),
+    env.DB.prepare("CREATE TABLE IF NOT EXISTS tentativas (ip TEXT PRIMARY KEY, n INTEGER NOT NULL, desde INTEGER NOT NULL)"),
+    env.DB.prepare("CREATE TABLE IF NOT EXISTS config (chave TEXT PRIMARY KEY, valor TEXT NOT NULL)"),
+  ]);
+  tabelasOk = true;
+}
+
+// ---------- login ----------
+async function login(req, env) {
+  if (!env.LOJA_ADMIN_SENHA) return json({ erro: "senha-nao-configurada" }, 503);
+  const ip = req.headers.get("CF-Connecting-IP") || "?";
+  const agora = Date.now();
+  const t = await env.DB.prepare("SELECT n, desde FROM tentativas WHERE ip=?").bind(ip).first();
+  if (t && t.n >= 6 && agora - t.desde < 15 * 60e3) return json({ erro: "muitas-tentativas" }, 429);
+  const corpo = await req.json().catch(() => ({}));
+  const ok = (await sha(String(corpo.senha || ""))) === (await sha(env.LOJA_ADMIN_SENHA));
+  if (!ok) {
+    if (!t || agora - t.desde >= 15 * 60e3) await env.DB.prepare("INSERT OR REPLACE INTO tentativas (ip,n,desde) VALUES (?,1,?)").bind(ip, agora).run();
+    else await env.DB.prepare("UPDATE tentativas SET n=n+1 WHERE ip=?").bind(ip).run();
+    await dormir(800);
+    return json({ erro: "senha" }, 401);
+  }
+  await env.DB.prepare("DELETE FROM tentativas WHERE ip=?").bind(ip).run();
+  const bytes = crypto.getRandomValues(new Uint8Array(32));
+  const token = [...bytes].map((b) => b.toString(16).padStart(2, "0")).join("");
+  await env.DB.prepare("DELETE FROM sessoes WHERE expira<?").bind(agora).run();
+  await env.DB.prepare("INSERT INTO sessoes (token, expira) VALUES (?,?)").bind(await sha(token), agora + 60 * 864e5).run();
+  return json({ token });
+}
+
+async function logado(req, env) {
+  const m = /^Bearer ([a-f0-9]{64})$/.exec(req.headers.get("Authorization") || "");
+  if (!m) return false;
+  const s = await env.DB.prepare("SELECT expira FROM sessoes WHERE token=?").bind(await sha(m[1])).first();
+  return !!(s && s.expira > Date.now());
+}
+
+// ---------- CJ ----------
+async function tokenCJ(env, novo = false) {
+  if (!novo) {
+    const c = await env.DB.prepare("SELECT valor FROM config WHERE chave='cj_token'").first();
+    if (c) {
+      const v = JSON.parse(c.valor);
+      if (v.expira > Date.now() + 864e5) return v.token;
+    }
+  }
+  if (!env.CJ_API_KEY) throw new Error("sem-chave-cj");
+  const r = await fetch(CJ + "/authentication/getAccessToken", {
+    method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ apiKey: env.CJ_API_KEY }),
+  });
+  const d = await r.json().catch(() => ({}));
+  const tk = d.data && d.data.accessToken;
+  if (!tk) throw new Error("cj-token: " + (d.message || r.status));
+  const expira = Date.parse(d.data.accessTokenExpiryDate || "") || Date.now() + 14 * 864e5;
+  await env.DB.prepare("INSERT OR REPLACE INTO config (chave, valor) VALUES ('cj_token', ?)").bind(JSON.stringify({ token: tk, expira })).run();
+  return tk;
+}
+
+async function cj(env, metodo, caminho, { params, corpo } = {}) {
+  const url = CJ + caminho + (params ? "?" + new URLSearchParams(params) : "");
+  for (let tentativa = 0; tentativa < 3; tentativa++) {
+    const tk = await tokenCJ(env, tentativa === 1);
+    const r = await fetch(url, {
+      method: metodo,
+      headers: { "Content-Type": "application/json", "CJ-Access-Token": tk },
+      body: corpo ? JSON.stringify(corpo) : undefined,
+    });
+    const d = await r.json().catch(() => ({}));
+    if (r.status === 429 || d.code === 1600200) { await dormir(1200); continue; }          // limite 1/s
+    if (r.status === 401 || /token/i.test(d.message || "") && !d.result) continue;          // token vencido: pega outro
+    return d;
+  }
+  return {};
+}
+
+async function buscar(env, url) {
+  const q = (url.searchParams.get("q") || "").trim().slice(0, 80);
+  const pagina = Math.max(1, Math.min(50, parseInt(url.searchParams.get("pagina"), 10) || 1));
+  const params = { page: pagina, size: 30 };
+  if (q) params.keyWord = q;
+  const cat = url.searchParams.get("cat");
+  if (cat && /^\d{10,25}$/.test(cat)) params.categoryId = cat;
+  if (!q && !params.categoryId) params.keyWord = "pet";
+  const d = await cj(env, "GET", "/product/listV2", { params });
+  if (!d.result && d.code !== 200) return json({ erro: "cj", detalhe: d.message || "sem resposta" }, 502);
+  const publicados = new Set((await env.DB.prepare("SELECT id FROM produtos WHERE ativo=1").all()).results.map((r) => r.id));
+  const itens = [];
+  for (const b of (d.data && d.data.content) || []) {
+    for (const p of b.productList || []) {
+      const custo = num(p.sellPrice);
+      if (!p.id || custo == null) continue;
+      itens.push({
+        pid: p.id, nome: p.nameEn || p.productNameEn || "", img: p.bigImage || "", custoUsd: custo,
+        popularidade: parseInt(p.listedNum, 10) || 0, video: !!(p.videoList && p.videoList.length),
+        categoria: p.threeCategoryName || p.categoryName || "", publicado: publicados.has(p.id),
+      });
+    }
+  }
+  return json({ itens, pagina, total: (d.data && d.data.totalRecords) || itens.length });
+}
+
+function lista(v) {
+  if (typeof v === "string") { try { v = JSON.parse(v); } catch { v = [v]; } }
+  return Array.isArray(v) ? v : [];
+}
+
+async function detalhe(env, pid) {
+  const d = (await cj(env, "GET", "/product/query", { params: { pid, features: "enable_video" } })).data;
+  if (!d) return null;
+  const variantes = d.variants || [];
+  if (!variantes.length) return null;
+  const vid = variantes[0].vid;
+  const custo = num(variantes[0].variantSellPrice) ?? num(d.sellPrice);
+  if (!custo) return null;
+  const fretes = {};
+  for (const destino of FRETE_TESTE) {
+    await dormir(1100);
+    const f = await cj(env, "POST", "/logistic/freightCalculate", {
+      corpo: { startCountryCode: "CN", endCountryCode: destino, products: [{ quantity: 1, vid }] },
+    });
+    const ops = (f.data || []).filter((o) => num(o.logisticPrice) != null).map((o) => {
+      const tot = num(o.totalPostageFee);
+      const usd = tot || num(o.logisticPrice) + (num(o.taxesFee) || 0) + (num(o.clearanceOperationFee) || 0);
+      const dias = Math.max(0, ...(String(o.logisticAging || "").match(/\d+/g) || [99]).map(Number));
+      return { usd, dias, prazo: o.logisticAging || "", nome: o.logisticName || "" };
+    });
+    if (!ops.length) { fretes[destino] = null; continue; }
+    const boas = ops.filter((o) => o.dias <= PRAZO_MAX);
+    fretes[destino] = (boas.length ? boas : ops).sort((a, b) => a.usd - b.usd)[0];
+  }
+  const validos = Object.values(fretes).filter(Boolean);
+  const freteUsd = validos.length ? Math.max(...validos.map((f) => f.usd)) : null;
+  const custoEur = freteUsd == null ? null : Math.round((custo + freteUsd) * USD_EUR * 100) / 100;
+  const sugerido = custoEur == null ? null : precoVenda(custoEur);
+  const nums = validos.flatMap((f) => (f.prazo.match(/\d+/g) || []).map(Number));
+  const imagens = [...new Set([d.bigImage, ...lista(d.productImageSet)].filter(Boolean))].slice(0, 8);
+  const videos = lista(d.productVideo || d.videoList).map((x) => (typeof x === "object" ? x.videoUrl || x.url : x)).filter((x) => /^https?:/.test(x || ""));
+  return {
+    pid: d.pid || pid, sku: d.productSku || "", vid, nomeEn: d.productNameEn || "",
+    descricaoEn: String(d.description || "").replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim().slice(0, 2500),
+    categoriaCJ: d.categoryName || "", popularidade: d.listedNum || 0,
+    custoProdutoUsd: custo, freteUsd, fretes, entregaTodos: validos.length === FRETE_TESTE.length,
+    custoEur, sugerido, lucro: sugerido == null ? null : lucro(sugerido, custoEur),
+    plazo: nums.length ? `${Math.min(...nums)}-${Math.max(...nums)}` : "",
+    imagens, video: videos[0] || "",
+    variantes: variantes.slice(0, 12).map((v) => ({ vid: v.vid, nome: v.variantNameEn || v.variantKey || "", custoUsd: num(v.variantSellPrice) })),
+    linkCJ: `https://cjdropshipping.com/product/-p-${d.pid || pid}.html`,
+  };
+}
+
+// ---------- tradução automática (Workers AI) ----------
+function textoBase(nome) {
+  return { nombre: nome.slice(0, 80), gancho: "", descripcion: nome, puntos: [] };
+}
+async function traduzir(env, nomeEn, descricaoEn, animal) {
+  if (!env.AI) return { es: textoBase(nomeEn), en: textoBase(nomeEn), ia: false };
+  const pedido = `Product from a supplier (English, may be messy):
+NAME: ${nomeEn}
+DESCRIPTION: ${descricaoEn.slice(0, 1800)}
+Animal: ${animal === "perro" ? "dog" : animal === "gato" ? "cat" : "dogs and cats"}
+
+Write store copy for "LeunaPets", a pet shop in Spain. Return ONLY valid JSON, no markdown:
+{"es":{"nombre":"...","gancho":"...","descripcion":"...","puntos":["...","...","..."]},"en":{"nombre":"...","gancho":"...","descripcion":"...","puntos":["...","...","..."]}}
+Rules: "es" in natural Spanish from Spain, "en" in English. nombre: short product name, max 6 words, no brand, no supplier codes.
+gancho: one warm short sentence (max 12 words). descripcion: 2 sentences, honest, no medical claims, no "best seller", no invented numbers.
+puntos: 3 or 4 short factual benefits based only on the description (size/material only if given).`;
+  try {
+    const r = await env.AI.run(MODELO, { messages: [{ role: "user", content: pedido }], max_tokens: 900, temperature: 0.3 });
+    let txt = typeof r.response === "string" ? r.response : JSON.stringify(r.response || "");
+    txt = txt.slice(txt.indexOf("{"), txt.lastIndexOf("}") + 1);
+    const o = JSON.parse(txt);
+    const limpa = (x) => ({
+      nombre: String(x.nombre || nomeEn).slice(0, 80), gancho: String(x.gancho || "").slice(0, 140),
+      descripcion: String(x.descripcion || "").slice(0, 600), puntos: lista(x.puntos).map(String).slice(0, 5),
+    });
+    if (!o.es || !o.es.nombre) throw new Error("sem es");
+    return { es: limpa(o.es), en: limpa(o.en || o.es), ia: true };
+  } catch (e) {
+    return { es: textoBase(nomeEn), en: textoBase(nomeEn), ia: false, erro: String(e).slice(0, 200) };
+  }
+}
+
+// ---------- catálogo da loja = produtos.json (robô) + D1 (painel; o D1 manda) ----------
+export async function catalogo(env, req) {
+  const r = await env.ASSETS.fetch(new Request(new URL("/produtos.json", req.url)));
+  const base = r.ok ? await r.json().catch(() => []) : [];
+  const mapa = new Map();
+  for (const p of Array.isArray(base) ? base : []) if (p && p.id) mapa.set(p.id, p);
+  if (env.DB) {
+    try {
+      await tabelas(env);
+      const { results } = await env.DB.prepare("SELECT id, dados, ativo FROM produtos ORDER BY criado DESC").all();
+      const novos = [];
+      for (const row of results) {
+        if (!row.ativo) { mapa.delete(row.id); continue; }
+        const p = JSON.parse(row.dados);
+        if (mapa.has(row.id)) mapa.set(row.id, p); else { novos.push(p); }
+      }
+      return [...novos, ...mapa.values()];
+    } catch { /* sem banco: só o produtos.json */ }
+  }
+  return [...mapa.values()];
+}
+
+function montar(pid, d, campos, textos) {
+  const preco = Math.round((num(campos.precio) || d.sugerido) * 100) / 100;
+  return {
+    id: pid, es: textos.es, pt: textos.es, en: textos.en,
+    categoria: CATS.includes(campos.categoria) ? campos.categoria : "juguetes",
+    animal: ANIMAIS.includes(campos.animal) ? campos.animal : "ambos",
+    nuevo: campos.nuevo !== false, destaque: !!campos.destaque,
+    precio: preco, imagenes: d.imagenes.slice(0, 6), video: d.video, plazo: d.plazo,
+    cj: { vid: d.vid, sku: d.sku, custoEur: d.custoEur, painel: true },
+  };
+}
+
+async function publicar(req, env) {
+  const c = await req.json().catch(() => ({}));
+  const pid = String(c.pid || "").slice(0, 64);
+  if (!pid) return json({ erro: "pid" }, 400);
+  const d = await detalhe(env, pid);
+  if (!d) return json({ erro: "produto-nao-encontrado" }, 404);
+  if (!d.entregaTodos) return json({ erro: "nao-entrega", detalhe: "A CJ não entrega em todos os países testados." }, 400);
+  if (!d.imagens.length) return json({ erro: "sem-fotos" }, 400);
+  const textos = c.es && c.es.nombre ? { es: c.es, en: c.en || c.es, ia: false } : await traduzir(env, d.nomeEn, d.descricaoEn, c.animal);
+  const p = montar(pid, d, c, textos);
+  await env.DB.prepare("INSERT OR REPLACE INTO produtos (id, dados, ativo, atualizado) VALUES (?,?,1,datetime('now'))").bind(pid, JSON.stringify(p)).run();
+  return json({ ok: true, produto: p, ia: textos.ia, lucro: lucro(p.precio, d.custoEur) });
+}
+
+async function editar(req, env) {
+  const c = await req.json().catch(() => ({}));
+  const id = String(c.id || "");
+  const todos = await catalogo(env, req);
+  let p = todos.find((x) => x.id === id);
+  if (!p) {
+    const row = await env.DB.prepare("SELECT dados FROM produtos WHERE id=?").bind(id).first();
+    if (!row) return json({ erro: "id" }, 404);
+    p = JSON.parse(row.dados);
+  }
+  if (c.precio != null) { const v = num(c.precio); if (v > 0 && v < 1000) p.precio = Math.round(v * 100) / 100; }
+  if (CATS.includes(c.categoria)) p.categoria = c.categoria;
+  if (ANIMAIS.includes(c.animal)) p.animal = c.animal;
+  if (typeof c.destaque === "boolean") p.destaque = c.destaque;
+  if (typeof c.nuevo === "boolean") p.nuevo = c.nuevo;
+  if (c.es && c.es.nombre) {
+    p.es = { nombre: String(c.es.nombre).slice(0, 80), gancho: String(c.es.gancho || "").slice(0, 140), descripcion: String(c.es.descripcion || "").slice(0, 600), puntos: lista(c.es.puntos).map(String).slice(0, 5) };
+    p.pt = p.es;
+  }
+  const ativo = c.ativo === false ? 0 : 1;
+  await env.DB.prepare("INSERT OR REPLACE INTO produtos (id, dados, ativo, criado, atualizado) VALUES (?,?,?,COALESCE((SELECT criado FROM produtos WHERE id=?),datetime('now')),datetime('now'))")
+    .bind(id, JSON.stringify(p), ativo, id).run();
+  return json({ ok: true, produto: p, ativo: !!ativo });
+}
+
+async function publicados(req, env) {
+  const loja = await catalogo(env, req);
+  const { results } = await env.DB.prepare("SELECT id, dados FROM produtos WHERE ativo=0").all();
+  const fora = results.map((r) => ({ ...JSON.parse(r.dados), _fora: true }));
+  return json({ itens: [...loja, ...fora].map((p) => ({
+    id: p.id, nome: (p.es && p.es.nombre) || p.id, img: (p.imagenes || [])[0] || "", precio: p.precio,
+    categoria: p.categoria, animal: p.animal, destaque: !!p.destaque, nuevo: !!p.nuevo, es: p.es,
+    custoEur: p.cj && p.cj.custoEur, ativo: !p._fora, painel: !!(p.cj && p.cj.painel),
+  })) });
+}
+
+export async function painel(req, env, url) {
+  if (!env.DB) return json({ erro: "sem-banco" }, 503);
+  await tabelas(env);
+  const rota = url.pathname.replace("/api/painel/", "");
+  if (rota === "login" && req.method === "POST") return login(req, env);
+  if (!(await logado(req, env))) return json({ erro: "login" }, 401);
+  try {
+    if (rota === "estado") return json({ ok: true, cj: !!env.CJ_API_KEY, ia: !!env.AI, stripe: !!env.STRIPE_SECRET_KEY });
+    if (rota === "buscar") return await buscar(env, url);
+    if (rota === "detalhe") {
+      const d = await detalhe(env, String(url.searchParams.get("pid") || "").slice(0, 64));
+      return d ? json(d) : json({ erro: "produto-nao-encontrado" }, 404);
+    }
+    if (rota === "publicar" && req.method === "POST") return await publicar(req, env);
+    if (rota === "editar" && req.method === "POST") return await editar(req, env);
+    if (rota === "publicados") return await publicados(req, env);
+    if (rota === "sair" && req.method === "POST") {
+      const m = /^Bearer (\w+)$/.exec(req.headers.get("Authorization") || "");
+      if (m) await env.DB.prepare("DELETE FROM sessoes WHERE token=?").bind(await sha(m[1])).run();
+      return json({ ok: true });
+    }
+  } catch (e) {
+    return json({ erro: "falha", detalhe: String(e.message || e).slice(0, 300) }, 500);
+  }
+  return json({ erro: "404" }, 404);
+}

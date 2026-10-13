@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Painel LeunaPets</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0F1E44">
+<link rel="icon" href="../img/favicon.png">
+<link rel="apple-touch-icon" href="../img/emblema-192.png">
+<style>
+:root{--azul:#0F1E44;--rosa:#E62E73;--fundo:#F4F5FA;--card:#fff;--tx:#1d2340;--suave:#6b7190;--verde:#14915a;--borda:#e3e5ef}
+*{box-sizing:border-box}body{margin:0;font:15px/1.4 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--fundo);color:var(--tx)}
+button,input,select,textarea{font:inherit}
+.topo{background:var(--azul);color:#fff;padding:12px 16px;display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:5}
+.topo b{flex:1;font-size:17px}.topo a,.topo button{color:#fff;background:none;border:1px solid #ffffff55;border-radius:8px;padding:6px 10px;text-decoration:none;cursor:pointer;font-size:13px}
+.abas{display:flex;gap:6px;padding:10px 16px 0;max-width:1100px;margin:auto}
+.aba{flex:1;padding:10px;border:0;border-radius:10px 10px 0 0;background:#dfe2ee;cursor:pointer;font-weight:600;color:var(--suave)}
+.aba.on{background:var(--card);color:var(--azul)}
+main{max-width:1100px;margin:auto;padding:0 16px 40px}
+.caixa{background:var(--card);border-radius:0 0 14px 14px;padding:14px}
+.busca{display:flex;gap:8px}.busca input{flex:1;padding:11px 12px;border:1px solid var(--borda);border-radius:10px;min-width:0}
+.bt{background:var(--rosa);color:#fff;border:0;border-radius:10px;padding:10px 16px;font-weight:700;cursor:pointer}
+.bt.cinza{background:#e8eaf3;color:var(--azul)}.bt.verde{background:var(--verde)}.bt:disabled{opacity:.5}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0}.chip{border:1px solid var(--borda);background:#fff;border-radius:99px;padding:6px 11px;cursor:pointer;font-size:13px}
+.grade{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;margin-top:10px}
+.item{background:#fff;border:1px solid var(--borda);border-radius:12px;overflow:hidden;display:flex;flex-direction:column}
+.item img{width:100%;aspect-ratio:1;object-fit:cover;background:#eee}
+.item .tx{padding:8px;display:flex;flex-direction:column;gap:4px;flex:1}
+.item .nm{font-size:13px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.tags{display:flex;gap:4px;flex-wrap:wrap}.tag{font-size:11px;padding:2px 6px;border-radius:6px;background:#eef0f7;color:var(--suave)}
+.tag.pop{background:#fff1e0;color:#b25b00}.tag.ok{background:#e3f6ec;color:var(--verde)}.tag.vid{background:#fde6ef;color:var(--rosa)}
+.item .bt{margin-top:auto;padding:8px;font-size:13px}
+.msg{padding:14px;text-align:center;color:var(--suave)}
+.mais{display:block;margin:14px auto 0}
+/* janela de detalhe */
+.fundo{position:fixed;inset:0;background:#0009;display:none;align-items:flex-end;justify-content:center;z-index:10}
+.fundo.on{display:flex}
+.janela{background:#fff;width:100%;max-width:640px;max-height:94vh;overflow:auto;border-radius:16px 16px 0 0;padding:16px}
+@media(min-width:700px){.fundo{align-items:center}.janela{border-radius:16px}}
+.fotos{display:flex;gap:6px;overflow-x:auto}.fotos img{width:110px;height:110px;object-fit:cover;border-radius:10px;flex:none}
+.contas{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0}
+.conta{background:var(--fundo);border-radius:10px;padding:8px 10px}.conta small{display:block;color:var(--suave);font-size:12px}.conta b{font-size:17px}
+.conta.lucro b{color:var(--verde)}.conta.ruim b{color:#c0392b}
+label{display:block;font-size:13px;color:var(--suave);margin-top:8px}
+.campo{width:100%;padding:9px 10px;border:1px solid var(--borda);border-radius:9px;margin-top:3px}
+.linha{display:flex;gap:8px}.linha>*{flex:1}
+.acoes{display:flex;gap:8px;margin-top:14px;position:sticky;bottom:-16px;background:#fff;padding:10px 0}
+.acoes .bt{flex:1}
+.aviso{background:#fff7e6;border:1px solid #ffd591;color:#8a5a00;border-radius:10px;padding:8px 10px;font-size:13px;margin-top:8px}
+/* lista da loja */
+.prod{display:flex;gap:10px;align-items:center;background:#fff;border:1px solid var(--borda);border-radius:12px;padding:8px;margin-top:8px}
+.prod img{width:62px;height:62px;border-radius:9px;object-fit:cover;flex:none}
+.prod .tx{flex:1;min-width:0}.prod .nm{font-weight:600;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.prod.fora{opacity:.55}
+#login{max-width:360px;margin:60px auto;background:#fff;border-radius:16px;padding:22px;text-align:center}
+#login img{width:190px}
+.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--azul);color:#fff;padding:10px 16px;border-radius:10px;display:none;z-index:20;max-width:90%}
+</style>
+</head>
+<body>
+<div id="login">
+  <img src="../img/logo.webp" alt="LeunaPets">
+  <p>Painel do dono</p>
+  <form id="fLogin"><input class="campo" type="password" id="senha" placeholder="Senha" autocomplete="current-password" required>
+  <button class="bt" style="width:100%;margin-top:10px">Entrar</button></form>
+  <p id="erroLogin" style="color:#c0392b"></p>
+</div>
+
+<div id="app" hidden>
+  <div class="topo"><b>Painel LeunaPets</b><a href="/" target="_blank">Ver loja</a><button id="sair">Sair</button></div>
+  <div class="abas"><button class="aba on" data-aba="buscar">Buscar na CJ</button><button class="aba" data-aba="loja">Na loja</button></div>
+  <main>
+    <section class="caixa" id="buscar">
+      <form class="busca" id="fBusca"><input id="q" placeholder="Ex.: cat toy, dog bed, leash…" enterkeyhint="search"><button class="bt">Buscar</button></form>
+      <div class="chips" id="atalhos"></div>
+      <div id="resultado" class="grade"></div>
+      <p class="msg" id="msgBusca">Busque em inglês (a CJ é em inglês). Toque em <b>Ver preço</b> para ver frete, preço sugerido e lucro.</p>
+      <button class="bt cinza mais" id="mais" hidden>Carregar mais</button>
+    </section>
+    <section class="caixa" id="loja" hidden>
+      <div class="busca"><input id="filtro" placeholder="Filtrar produtos da loja"></div>
+      <div id="lista"></div>
+    </section>
+  </main>
+</div>
+
+<div class="fundo" id="fundo"><div class="janela" id="janela"></div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+"use strict";
+var CATS={camas:"Camas",comer:"Comer y beber",juguetes:"Juguetes",paseo:"Paseo",higiene:"Higiene",rascadores:"Rascadores"};
+var ANIMAIS={ambos:"Cães e gatos",perro:"Cão",gato:"Gato"};
+var ATALHOS=[["dog leash","paseo"],["dog harness","paseo"],["cat scratcher","rascadores"],["cat tree","rascadores"],["cat toy","juguetes"],["dog toy","juguetes"],["pet bed","camas"],["pet water fountain","comer"],["slow feeder","comer"],["pet grooming","higiene"],["lint roller pet hair","higiene"],["pet backpack carrier","paseo"]];
+var $=function(s){return document.querySelector(s)};
+var token="";try{token=localStorage.getItem("lp_painel")||""}catch(e){}
+var estado={q:"",pagina:1,cat:"juguetes"};
+var esc=function(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})};
+var eur=function(v){return v==null?"—":v.toFixed(2).replace(".",",")+" €"};
+var lucro=function(p,c){return Math.round((p-c-(p*0.07+0.35))*100)/100};
+function toast(t){var e=$("#toast");e.textContent=t;e.style.display="block";clearTimeout(toast.t);toast.t=setTimeout(function(){e.style.display="none"},3500)}
+function api(rota,corpo){
+  return fetch("/api/painel/"+rota,{method:corpo?"POST":"GET",headers:{"Content-Type":"application/json","Authorization":"Bearer "+token},body:corpo?JSON.stringify(corpo):undefined})
+  .then(function(r){return r.json().catch(function(){return{}}).then(function(d){if(r.status===401&&rota!=="login"){sair();throw new Error("Entre de novo")}if(!r.ok)throw new Error(d.detalhe||d.erro||("erro "+r.status));return d})});
+}
+function entrar(){$("#login").hidden=true;$("#app").hidden=false;api("estado").then(function(e){if(!e.cj)toast("Atenção: chave da CJ não chegou no servidor")}).catch(function(){})}
+function sair(){if(token)fetch("/api/painel/sair",{method:"POST",headers:{Authorization:"Bearer "+token}}).catch(function(){});token="";try{localStorage.removeItem("lp_painel")}catch(e){}$("#app").hidden=true;$("#login").hidden=false}
+$("#fLogin").onsubmit=function(ev){ev.preventDefault();$("#erroLogin").textContent="";
+  api("login",{senha:$("#senha").value}).then(function(d){token=d.token;try{localStorage.setItem("lp_painel",token)}catch(e){}$("#senha").value="";entrar()})
+  .catch(function(e){$("#erroLogin").textContent=e.message==="senha"?"Senha errada":e.message==="muitas-tentativas"?"Muitas tentativas. Espere 15 minutos.":e.message})};
+$("#sair").onclick=sair;
+document.querySelectorAll(".aba").forEach(function(b){b.onclick=function(){
+  document.querySelectorAll(".aba").forEach(function(x){x.classList.toggle("on",x===b)});
+  $("#buscar").hidden=b.dataset.aba!=="buscar";$("#loja").hidden=b.dataset.aba!=="loja";if(b.dataset.aba==="loja")carregarLoja()}});
+
+// ---- busca ----
+$("#atalhos").innerHTML=ATALHOS.map(function(a,i){return '<button class="chip" data-i="'+i+'">'+esc(a[0])+'</button>'}).join("");
+$("#atalhos").onclick=function(ev){var b=ev.target.closest(".chip");if(!b)return;var a=ATALHOS[b.dataset.i];$("#q").value=a[0];estado.cat=a[1];buscar(true)};
+$("#fBusca").onsubmit=function(ev){ev.preventDefault();estado.cat=adivinhaCat($("#q").value);buscar(true)};
+$("#mais").onclick=function(){estado.pagina++;buscar(false)};
+function adivinhaCat(q){q=q.toLowerCase();if(/bed|mat|cushion|house|nest/.test(q))return"camas";if(/bowl|feed|fountain|water|food/.test(q))return"comer";if(/leash|harness|collar|carrier|backpack|car seat/.test(q))return"paseo";if(/groom|brush|comb|nail|hair|clean|litter/.test(q))return"higiene";if(/scratch|tree|tower/.test(q))return"rascadores";return"juguetes"}
+function buscar(novo){
+  if(novo){estado.q=$("#q").value.trim();estado.pagina=1;$("#resultado").innerHTML=""}
+  $("#msgBusca").textContent="Buscando na CJ…";$("#mais").hidden=true;
+  api("buscar?q="+encodeURIComponent(estado.q)+"&pagina="+estado.pagina).then(function(d){
+    if(!d.itens.length){$("#msgBusca").textContent=novo?"Nada encontrado. Tente outra palavra em inglês.":"Fim da lista.";return}
+    $("#msgBusca").textContent="";
+    d.itens.sort(function(a,b){return b.popularidade-a.popularidade});
+    $("#resultado").insertAdjacentHTML("beforeend",d.itens.map(function(p){
+      return '<div class="item"><img loading="lazy" src="'+esc(p.img)+'" alt=""><div class="tx"><div class="nm">'+esc(p.nome)+'</div>'+
+      '<div class="tags"><span class="tag">custo $'+p.custoUsd.toFixed(2)+'</span>'+(p.popularidade>=50?'<span class="tag pop">🔥 '+p.popularidade+' lojas</span>':'<span class="tag">'+p.popularidade+' lojas</span>')+
+      (p.video?'<span class="tag vid">vídeo</span>':'')+(p.publicado?'<span class="tag ok">na loja</span>':'')+'</div>'+
+      '<button class="bt" data-pid="'+esc(p.pid)+'">Ver preço</button></div></div>'}).join(""));
+    $("#mais").hidden=d.itens.length<20;
+  }).catch(function(e){$("#msgBusca").textContent="Erro: "+e.message});
+}
+$("#resultado").onclick=function(ev){var b=ev.target.closest("[data-pid]");if(b)abrir(b.dataset.pid)};
+
+// ---- detalhe e publicar ----
+function fechar(){$("#fundo").classList.remove("on")}
+$("#fundo").onclick=function(ev){if(ev.target===this)fechar()};
+function opcoes(obj,sel){return Object.keys(obj).map(function(k){return '<option value="'+k+'"'+(k===sel?" selected":"")+'>'+obj[k]+'</option>'}).join("")}
+function abrir(pid){
+  $("#janela").innerHTML='<p class="msg">Calculando frete para Alemanha, França, Espanha e Itália… (uns 6 segundos)</p>';$("#fundo").classList.add("on");
+  api("detalhe?pid="+encodeURIComponent(pid)).then(function(d){
+    var animal=/cat|kitten|kitty/i.test(d.nomeEn)&&!/dog|puppy/i.test(d.nomeEn)?"gato":/dog|puppy/i.test(d.nomeEn)&&!/cat/i.test(d.nomeEn)?"perro":"ambos";
+    var preco=d.sugerido;
+    $("#janela").innerHTML='<div class="fotos">'+d.imagens.map(function(s){return '<img src="'+esc(s)+'" alt="">'}).join("")+'</div>'+
+      '<h3 style="margin:10px 0 2px">'+esc(d.nomeEn)+'</h3><small style="color:#6b7190">'+esc(d.categoriaCJ)+' · '+d.popularidade+' lojas vendem · prazo '+esc(d.plazo||"?")+' dias · <a href="'+esc(d.linkCJ)+'" target="_blank">ver na CJ</a></small>'+
+      (d.entregaTodos?'':'<div class="aviso">A CJ não entrega em todos os países testados. Melhor escolher outro.</div>')+
+      '<div class="contas"><div class="conta"><small>Produto (CJ)</small><b>$'+d.custoProdutoUsd.toFixed(2)+'</b></div><div class="conta"><small>Frete + IVA (pior país)</small><b>$'+(d.freteUsd==null?"—":d.freteUsd.toFixed(2))+'</b></div>'+
+      '<div class="conta"><small>Custo total</small><b>'+eur(d.custoEur)+'</b></div><div class="conta lucro" id="cLucro"><small>Seu lucro por venda</small><b>—</b></div></div>'+
+      '<div class="linha"><div><label>Preço na loja (€)</label><input class="campo" id="dPreco" type="number" step="0.01" min="1" value="'+(preco||"")+'"></div>'+
+      '<div><label>Categoria</label><select class="campo" id="dCat">'+opcoes(CATS,estado.cat)+'</select></div></div>'+
+      '<div class="linha"><div><label>Animal</label><select class="campo" id="dAnimal">'+opcoes(ANIMAIS,animal)+'</select></div>'+
+      '<div><label>&nbsp;</label><label style="margin:0;color:#1d2340"><input type="checkbox" id="dDest"> Destaque na página inicial</label></div></div>'+
+      (d.variantes.length>1?'<div class="aviso">Tem '+d.variantes.length+' variações (cor/tamanho). A loja vende a 1ª: '+esc(d.variantes[0].nome)+'</div>':'')+
+      '<p style="font-size:12px;color:#6b7190">Sugerido: '+eur(d.sugerido)+' (2× o custo, mínimo +8 €). Ao publicar, o texto em espanhol é escrito sozinho. Dá para mudar depois em "Na loja".</p>'+
+      '<div class="acoes"><button class="bt cinza" id="dFechar">Fechar</button><button class="bt verde" id="dPub"'+(d.entregaTodos?"":" disabled")+'>Publicar na loja</button></div>';
+    function conta(){var p=parseFloat($("#dPreco").value)||0;var l=lucro(p,d.custoEur||0);var c=$("#cLucro");c.querySelector("b").textContent=eur(l);c.className="conta "+(l>=5?"lucro":"ruim")}
+    $("#dPreco").oninput=conta;conta();$("#dFechar").onclick=fechar;
+    $("#dPub").onclick=function(){var b=this;b.disabled=true;b.textContent="Publicando e traduzindo…";
+      api("publicar",{pid:d.pid,precio:parseFloat($("#dPreco").value),categoria:$("#dCat").value,animal:$("#dAnimal").value,destaque:$("#dDest").checked,nuevo:true})
+      .then(function(r){fechar();toast("Publicado: "+r.produto.es.nombre+(r.ia?"":" (tradução falhou: edite o nome em Na loja)"));
+        var bt=document.querySelector('[data-pid="'+CSS.escape(d.pid)+'"]');if(bt)bt.parentNode.querySelector(".tags").insertAdjacentHTML("beforeend",'<span class="tag ok">na loja</span>')})
+      .catch(function(e){b.disabled=false;b.textContent="Publicar na loja";toast("Erro: "+e.message)})};
+  }).catch(function(e){$("#janela").innerHTML='<p class="msg">Erro: '+esc(e.message)+'</p><button class="bt cinza" onclick="document.getElementById(\'fundo\').classList.remove(\'on\')">Fechar</button>'});
+}
+
+// ---- produtos da loja ----
+var LOJA=[];
+function carregarLoja(){$("#lista").innerHTML='<p class="msg">Carregando…</p>';
+  api("publicados").then(function(d){LOJA=d.itens;desenhar()}).catch(function(e){$("#lista").innerHTML='<p class="msg">Erro: '+esc(e.message)+'</p>'})}
+$("#filtro").oninput=desenhar;
+function desenhar(){var f=$("#filtro").value.toLowerCase();
+  var l=LOJA.filter(function(p){return !f||p.nome.toLowerCase().indexOf(f)>=0});
+  $("#lista").innerHTML='<p style="font-size:13px;color:#6b7190">'+LOJA.filter(function(p){return p.ativo}).length+' produtos à venda</p>'+l.map(function(p,i){
+    return '<div class="prod'+(p.ativo?"":" fora")+'"><img src="'+esc(p.img)+'" alt=""><div class="tx"><div class="nm">'+esc(p.nome)+'</div>'+
+    '<div class="tags"><span class="tag">'+eur(p.precio)+'</span><span class="tag">'+(CATS[p.categoria]||p.categoria)+'</span>'+(p.destaque?'<span class="tag pop">destaque</span>':'')+(p.ativo?'':'<span class="tag">fora da loja</span>')+
+    (p.custoEur?'<span class="tag ok">lucro '+eur(lucro(p.precio,p.custoEur))+'</span>':'')+'</div></div><button class="bt cinza" data-id="'+esc(p.id)+'">Editar</button></div>'}).join("")}
+$("#lista").onclick=function(ev){var b=ev.target.closest("[data-id]");if(!b)return;var p=LOJA.find(function(x){return x.id===b.dataset.id});if(p)editar(p)};
+function editar(p){var es=p.es||{};
+  $("#janela").innerHTML='<h3 style="margin:0 0 6px">Editar produto</h3>'+
+    '<label>Nome (espanhol)</label><input class="campo" id="eNome" value="'+esc(es.nombre)+'">'+
+    '<label>Frase curta</label><input class="campo" id="eGancho" value="'+esc(es.gancho)+'">'+
+    '<label>Descrição</label><textarea class="campo" id="eDesc" rows="3">'+esc(es.descripcion)+'</textarea>'+
+    '<label>Pontos (um por linha)</label><textarea class="campo" id="ePontos" rows="4">'+esc((es.puntos||[]).join("\n"))+'</textarea>'+
+    '<div class="linha"><div><label>Preço (€)</label><input class="campo" id="ePreco" type="number" step="0.01" value="'+p.precio+'"></div><div><label>Categoria</label><select class="campo" id="eCat">'+opcoes(CATS,p.categoria)+'</select></div></div>'+
+    '<div class="linha"><div><label>Animal</label><select class="campo" id="eAnimal">'+opcoes(ANIMAIS,p.animal)+'</select></div><div><label>&nbsp;</label><label style="margin:0;color:#1d2340"><input type="checkbox" id="eDest"'+(p.destaque?" checked":"")+'> Destaque</label><label style="margin:4px 0 0;color:#1d2340"><input type="checkbox" id="eNovo"'+(p.nuevo?" checked":"")+'> Novidade</label></div></div>'+
+    (p.custoEur?'<p style="font-size:13px">Custo '+eur(p.custoEur)+' · lucro <b id="eLucro"></b></p>':'')+
+    '<div class="acoes"><button class="bt cinza" id="eTirar">'+(p.ativo?"Tirar da loja":"Voltar para a loja")+'</button><button class="bt verde" id="eSalvar">Salvar</button></div>';
+  function conta(){if(p.custoEur)$("#eLucro").textContent=eur(lucro(parseFloat($("#ePreco").value)||0,p.custoEur))}
+  $("#ePreco").oninput=conta;conta();$("#fundo").classList.add("on");
+  function salvar(ativo){
+    api("editar",{id:p.id,ativo:ativo,precio:parseFloat($("#ePreco").value),categoria:$("#eCat").value,animal:$("#eAnimal").value,destaque:$("#eDest").checked,nuevo:$("#eNovo").checked,
+      es:{nombre:$("#eNome").value.trim(),gancho:$("#eGancho").value.trim(),descripcion:$("#eDesc").value.trim(),puntos:$("#ePontos").value.split("\n").map(function(s){return s.trim()}).filter(Boolean)}})
+    .then(function(){fechar();toast(ativo?"Salvo":"Tirado da loja");carregarLoja()}).catch(function(e){toast("Erro: "+e.message)})}
+  $("#eSalvar").onclick=function(){salvar(p.ativo)};$("#eTirar").onclick=function(){salvar(!p.ativo)};
+}
+if(token)entrar();
+})();
+</script>
+</body>
+</html>
