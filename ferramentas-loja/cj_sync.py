@@ -7,7 +7,7 @@ Nunca coloque a chave aqui no código.
 
 Gera dentro de SITE-LEUNAMESOFTWARE/:
   catalogo-cj.json  → novidades achadas (armazém na Europa, baratas, com custo,
-                       frete para Espanha/Portugal e preço sugerido). Aparece em
+                       frete para 9 países da UE e preço sugerido). Aparece em
                        /novidades.html (página só do dono).
   produtos.json     → só os produtos APROVADOS (ferramentas-loja/aprovados.json),
                        com nome/descrição em espanhol e português. É o que a loja vende.
@@ -21,12 +21,12 @@ SITE = os.path.join(AQUI, '..', 'SITE-LEUNAMESOFTWARE')
 API = 'https://developers.cjdropshipping.com/api2.0/v1'
 
 ARMAZENS = ['ES', 'DE', 'FR', 'IT', 'PL', 'CZ']          # estoque na Europa = chega rápido
-DESTINOS = ['ES', 'PT']
+DESTINOS = ['DE', 'FR', 'ES', 'IT', 'NL', 'BE', 'AT', 'PT', 'IE']   # maiores mercados da UE
 BUSCAS = ['pet', 'dog', 'cat', 'kitchen gadget', 'home organizer', 'cleaning',
           'phone holder', 'led light', 'car accessories', 'beauty tool', 'fitness', 'baby']
 CUSTO_MAX_USD = 15        # produto barato
 USD_EUR = 0.93
-MAX_DETALHES = 60         # quantos candidatos detalhar (1 chamada/s na CJ)
+MAX_DETALHES = 40         # quantos candidatos detalhar (1 chamada/s na CJ)
 
 
 class CJ:
@@ -161,16 +161,26 @@ def gravar(nome, dados):
         json.dump(dados, f, ensure_ascii=False, separators=(',', ':'))
 
 
+def pior_prazo(fretes):
+    fim = 0
+    ini = 99
+    for v in fretes.values():
+        nums = [int(x) for x in __import__('re').findall(r'\d+', str(v.get('prazo') or ''))]
+        if nums:
+            ini = min(ini, nums[0]); fim = max(fim, nums[-1])
+    return '%d-%d' % (ini, fim) if fim else ''
+
+
 def montar_loja(aprovados, por_id):
     loja = []
     for pid, a in aprovados.items():
         c = por_id.get(pid)
         if not c or a.get('pausado'):
             continue
-        prazo = max((v['prazo'] for v in c['fretes'].values()), key=len, default='')
+        prazo = pior_prazo(c['fretes'])
         loja.append({
             'id': pid,
-            'es': a['es'], 'pt': a['pt'],
+            'es': a['es'], 'pt': a['pt'], 'en': a.get('en') or a['es'],
             'categoria': a.get('categoria', 'casa'),
             'precio': a.get('precio') or c['precoSugerido'],
             'imagenes': a.get('imagenes') or c['imagens'],

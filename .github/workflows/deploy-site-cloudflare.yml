@@ -48,6 +48,18 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
         run: npx wrangler@latest deploy
 
+      - name: Chave da Stripe no Worker (se existir no GitHub)
+        working-directory: SITE-LEUNAMESOFTWARE
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+          STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
+        run: |
+          if [ -n "$STRIPE_SECRET_KEY" ]; then
+            printf '%s' "$STRIPE_SECRET_KEY" | npx wrangler@latest secret put STRIPE_SECRET_KEY
+          else
+            echo "Sem STRIPE_SECRET_KEY: pagamento por cartão fica desligado (PayPal continua)."
+          fi
+
       - name: Esperar o Worker propagar
         run: sleep 15
 

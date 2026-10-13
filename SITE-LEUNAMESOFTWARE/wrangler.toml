@@ -7,8 +7,13 @@ compatibility_date = "2026-09-19"
 # "Workers Scripts Edit" ja concedida para os outros dois Workers
 # deste projeto). Cada arquivo .html e servido no caminho exato do
 # link (ex: /checkout.html), sem reescrita de URL.
+# worker.js atende só /api/* (pagamento Stripe); o resto é o site estático.
+main = "worker.js"
+
 [assets]
 directory = "./"
+binding = "ASSETS"
+run_worker_first = ["/api/*"]
 
 # Dominio customizado: leunamesoftware.com (a zona ja esta ativa na conta
 # Cloudflare -- confirmado porque api.leunamesoftware.com ja funciona no

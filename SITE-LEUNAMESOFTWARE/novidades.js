@@ -22,8 +22,8 @@
         '<div class="nov-tx"><h3>' + esc(c.nomeEn) + '</h3>' +
         '<p class="nov-tags">' + (c.aprovado ? '<span class="t-ok">À venda</span>' : "") + (c.videos && c.videos.length ? '<span>🎬 vídeo</span>' : "") + '<span>📦 armazém ' + esc(c.armazem) + '</span></p>' +
         '<table><tr><td>Custo produto</td><td>$ ' + esc(c.custoProdutoUsd) + '</td></tr>' +
-        '<tr><td>Frete ES / PT</td><td>$ ' + esc(fr.ES && fr.ES.usd) + ' / $ ' + esc(fr.PT && fr.PT.usd) + '</td></tr>' +
-        '<tr><td>Prazo</td><td>' + esc((fr.ES && fr.ES.prazo) || "?") + ' dias</td></tr>' +
+        '<tr><td>Frete (mais caro dos 9 países)</td><td>$ ' + esc(Math.max.apply(null, Object.keys(fr).map(function (k) { return fr[k].usd || 0; }).concat([0]))) + '</td></tr>' +
+        '<tr><td>Prazo</td><td>' + esc(Object.keys(fr).map(function (k) { return k + " " + (fr[k].prazo || "?"); }).join(" · ")) + ' dias</td></tr>' +
         '<tr><td>Custo total</td><td>' + eur(c.custoTotalEur) + '</td></tr>' +
         '<tr><td><b>Preço sugerido</b></td><td><b>' + eur(c.precoSugerido) + '</b></td></tr>' +
         '<tr><td>Lucro aprox.</td><td class="t-lucro">' + eur(lucro(c)) + '</td></tr></table>' +

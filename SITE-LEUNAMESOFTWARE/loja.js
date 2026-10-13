@@ -2,20 +2,22 @@
   "use strict";
   var C = window.CONFIG || {};
   var html = document.documentElement;
-  var lang = function () { return html.lang === "pt" ? "pt" : "es"; };
+  var lang = function () { return html.lang === "pt" || html.lang === "es" ? html.lang : "en"; };
+  var PAISES = ["DE", "FR", "ES", "IT", "NL", "BE", "AT", "PT", "IE"];
   var $ = function (s, r) { return (r || document).querySelector(s); };
   var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
   var guardar = function (k, v) { try { localStorage.setItem(k, v); } catch (e) {} };
   var ler = function (k) { try { return localStorage.getItem(k); } catch (e) { return null; } };
   var esc = function (s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); };
-  var euro = function (n) { return new Intl.NumberFormat(lang() === "pt" ? "pt-PT" : "es-ES", { style: "currency", currency: "EUR" }).format(n); };
-  var T = function (es, pt) { return lang() === "pt" ? pt : es; };
+  var euro = function (n) { return new Intl.NumberFormat({ pt: "pt-PT", es: "es-ES", en: "en-IE" }[lang()], { style: "currency", currency: "EUR" }).format(n); };
+  var T = function (es, pt, en) { var l = lang(); return l === "pt" ? pt : l === "es" ? es : (en || es); };
 
   /* ---------- idioma ---------- */
-  $$("[data-idioma]").forEach(function (b) {
-    b.addEventListener("click", function () {
-      html.lang = lang() === "pt" ? "es" : "pt";
-      guardar("lang", html.lang);
+  $$("[data-idioma]").forEach(function (s) {
+    s.value = lang();
+    s.addEventListener("change", function () {
+      html.lang = s.value; guardar("lang", s.value);
+      $$("[data-idioma]").forEach(function (o) { o.value = s.value; });
       redesenhar();
     });
   });
@@ -24,7 +26,7 @@
   $$("[data-mail]").forEach(function (a) { a.href = "mailto:" + (C.email || ""); });
   $$("[data-ano]").forEach(function (s) { s.textContent = new Date().getFullYear(); });
   if (C.titular) $$("[data-titular]").forEach(function (p) {
-    p.textContent = (lang() === "pt" ? "Titular: " : "Titular: ") + C.titular + " · " + (C.email || "");
+    p.textContent = T("Titular: ", "Titular: ", "Owner: ") + C.titular + " · " + (C.email || "");
   });
   var ck = $("#cookies");
   if (ck && ler("ck") !== "1") ck.hidden = false;
@@ -47,7 +49,7 @@
   }
   function adicionar(id, q) {
     carrinho[id] = Math.min(9, (carrinho[id] || 0) + (q || 1)); salvar();
-    aviso(T("Añadido al carrito ✓", "Adicionado ao carrinho ✓"));
+    aviso(T("Añadido al carrito ✓", "Adicionado ao carrinho ✓", "Added to cart ✓"));
   }
   contador();
 
@@ -61,7 +63,7 @@
       '<a class="card-img" href="producto.html?id=' + encodeURIComponent(p.id) + '"><img loading="lazy" src="' + esc(p.imagenes[0]) + '" alt="' + esc(nome(p)) + '"></a>' +
       '<div class="card-tx"><a href="producto.html?id=' + encodeURIComponent(p.id) + '"><h3>' + esc(nome(p)) + '</h3></a>' +
       '<p class="card-gancho">' + esc(info(p).gancho || "") + '</p>' +
-      '<div class="card-pe"><b>' + euro(p.precio) + '</b><button class="mais" type="button" data-add="' + esc(p.id) + '" aria-label="' + T("Añadir", "Adicionar") + '">+</button></div></div></article>';
+      '<div class="card-pe"><b>' + euro(p.precio) + '</b><button class="mais" type="button" data-add="' + esc(p.id) + '" >' + T("Añadir", "Adicionar", "Add to cart") + '</button></div></div></article>';
   }
 
   function desenharLoja() {
@@ -84,10 +86,10 @@
       var id = a.getAttribute("href").split("#")[1];
       a.hidden = temAlgum && !PRODUTOS.some(function (p) { return p.categoria === id; });
     });
-    var fotos = PRODUTOS.slice(0, 4);
-    if (fotos.length >= 4) $$("#mosaico > div").forEach(function (d, i) {
-      d.innerHTML = '<img src="' + esc(fotos[i].imagenes[0]) + '" alt="">'; d.classList.add("tem-foto");
-    });
+    var arco = $(".arco"), capa = dest[0] || PRODUTOS[0];
+    if (arco && capa && !arco.classList.contains("tem-foto")) {
+      arco.insertAdjacentHTML("afterbegin", '<img src="' + esc(capa.imagenes[0]) + '" alt="">'); arco.classList.add("tem-foto");
+    }
   }
   document.addEventListener("click", function (e) {
     var b = e.target.closest("[data-add]");
@@ -108,7 +110,7 @@
     $("#pPreco").textContent = euro(p.precio);
     $("#pDesc").textContent = i.descripcion || "";
     $("#pLista").innerHTML = (i.puntos || []).map(function (x) { return "<li>" + esc(x) + "</li>"; }).join("");
-    $("#pPrazo").textContent = (p.plazo ? p.plazo + " " + T("días laborables", "dias úteis") : T("3–10 días laborables", "3–10 dias úteis"));
+    $("#pPrazo").textContent = (p.plazo ? p.plazo + " " + T("días laborables", "dias úteis", "business days") : T("3–10 días laborables", "3–10 dias úteis", "3–10 business days"));
     var foto = $("#pFoto"); foto.src = p.imagenes[0]; foto.alt = nome(p);
     $("#pMinis").innerHTML = p.imagenes.map(function (src, k) {
       return '<button type="button" class="' + (k ? "" : "on") + '" data-src="' + esc(src) + '"><img src="' + esc(src) + '" alt=""></button>';
@@ -141,7 +143,7 @@
     var itens = itensCarrinho();
     $("#cResumo").hidden = !itens.length;
     if (!itens.length) {
-      box.innerHTML = '<div class="vazio-in"><b>🛍️</b><h2>' + T("Tu carrito está vacío", "O seu carrinho está vazio") + '</h2><a class="bt" href="./">' + T("Ver productos", "Ver produtos") + "</a></div>";
+      box.innerHTML = '<div class="vazio-in"><h2>' + T("Tu carrito está vacío", "O seu carrinho está vazio", "Your cart is empty") + '</h2><a class="bt" href="./">' + T("Ver productos", "Ver produtos", "Shop now") + "</a></div>";
       return;
     }
     box.innerHTML = itens.map(function (it) {
@@ -152,7 +154,7 @@
     $("#cSub").textContent = euro(total());
     $("#cTotal").textContent = euro(total());
     var pedido = $("[data-pedido]");
-    if (pedido) pedido.href = "mailto:" + (C.email || "") + "?subject=" + encodeURIComponent(T("Pedido", "Encomenda")) +
+    if (pedido) pedido.href = "mailto:" + (C.email || "") + "?subject=" + encodeURIComponent(T("Pedido", "Encomenda", "Order")) +
       "&body=" + encodeURIComponent(itens.map(function (it) { return it.q + " x " + nome(it.p) + " (" + it.p.id + ")"; }).join("\n") + "\nTotal: " + euro(total()));
   }
   if ($("#cItens")) {
@@ -165,19 +167,41 @@
       salvar(); desenharCarrinho();
     });
   }
-  var ppCarregado = false;
+  var ppCarregado = false, temStripe = false;
+  function aceitou() {
+    if ($("#cAceite").checked) return true;
+    aviso(T("Marca la casilla de condiciones para continuar", "Marque a caixa das condições para continuar", "Please tick the terms box to continue"));
+    return false;
+  }
+  if ($("#btStripe")) $("#btStripe").addEventListener("click", function () {
+    if (!aceitou()) return;
+    var b = this; b.disabled = true;
+    fetch("/api/pagar", { method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ lang: lang(), itens: itensCarrinho().map(function (it) { return { id: it.p.id, q: it.q }; }) }) })
+      .then(function (r) { return r.json(); })
+      .then(function (j) { if (j && j.url) location.href = j.url; else throw new Error(j && j.erro); })
+      .catch(function () { b.disabled = false; aviso(T("No se pudo abrir el pago. Inténtalo de nuevo.", "Não foi possível abrir o pagamento. Tente novamente.", "Could not open checkout. Please try again.")); });
+  });
+  function iniciarPagamento() {
+    if (!$("#paypal") || !itensCarrinho().length) return;
+    fetch("/api/config").then(function (r) { return r.ok ? r.json() : {}; }).catch(function () { return {}; }).then(function (cfg) {
+      temStripe = !!cfg.stripe;
+      $("#btStripe").hidden = !temStripe;
+      $("#ouPP").hidden = !(temStripe && C.paypalClientId);
+      $("#semPP").hidden = temStripe || !!C.paypalClientId;
+      iniciarPayPal();
+    });
+  }
   function iniciarPayPal() {
-    if (!$("#paypal") || ppCarregado || !itensCarrinho().length) return;
-    if (!C.paypalClientId) { $("#semPP").hidden = false; return; }
+    if (ppCarregado || !C.paypalClientId) return;
     ppCarregado = true;
     var s = document.createElement("script");
-    s.src = "https://www.paypal.com/sdk/js?client-id=" + encodeURIComponent(C.paypalClientId) + "&currency=EUR&intent=capture&locale=" + (lang() === "pt" ? "pt_PT" : "es_ES");
+    s.src = "https://www.paypal.com/sdk/js?client-id=" + encodeURIComponent(C.paypalClientId) + "&currency=EUR&intent=capture&locale=" + ({ pt: "pt_PT", es: "es_ES", en: "en_GB" }[lang()]);
     s.onload = function () {
       window.paypal.Buttons({
         style: { layout: "vertical", shape: "pill", label: "pay" },
         onClick: function (d, actions) {
-          if (!$("#cAceite").checked) { aviso(T("Marca la casilla de condiciones para continuar", "Marque a caixa das condições para continuar")); return actions.reject(); }
-          return actions.resolve();
+          return aceitou() ? actions.resolve() : actions.reject();
         },
         createOrder: function (d, actions) {
           var itens = itensCarrinho();
@@ -195,7 +219,7 @@
         },
         onShippingAddressChange: function (d, actions) {
           var pais = d && d.shippingAddress && d.shippingAddress.countryCode;
-          if (pais !== "ES" && pais !== "PT") return actions.reject(d.errors && d.errors.COUNTRY_ERROR);
+          if (PAISES.indexOf(pais) < 0) return actions.reject(d.errors && d.errors.COUNTRY_ERROR);
         },
         onApprove: function (d, actions) {
           return actions.order.capture().then(function (r) {
@@ -203,13 +227,13 @@
             location.href = "gracias.html?pedido=" + encodeURIComponent((r && r.id) || d.orderID || "");
           });
         },
-        onError: function () { aviso(T("No se pudo completar el pago. Inténtalo de nuevo.", "Não foi possível concluir o pagamento. Tente novamente.")); }
+        onError: function () { aviso(T("No se pudo completar el pago. Inténtalo de nuevo.", "Não foi possível concluir o pagamento. Tente novamente.", "Payment could not be completed. Please try again.")); }
       }).render("#paypal");
     };
     document.head.appendChild(s);
   }
   var nr = $("#nrPedido");
-  if (nr) { var n = new URLSearchParams(location.search).get("pedido"); if (n) nr.textContent = T("Pedido nº ", "Encomenda nº ") + n; }
+  if (nr) { if (/[?&]ok=1/.test(location.search)) { carrinho = {}; salvar(); } var n = new URLSearchParams(location.search).get("pedido"); if (n) nr.textContent = T("Pedido nº ", "Encomenda nº ", "Order no. ") + n; }
 
   function redesenhar() { desenharLoja(); desenharProduto(); desenharCarrinho(); }
 
@@ -218,6 +242,6 @@
       PRODUTOS = (Array.isArray(lista) ? lista : []).filter(function (p) { return p && p.id && p.imagenes && p.imagenes.length && p.precio > 0; });
       PRODUTOS.forEach(function (p) { porId[p.id] = p; });
       Object.keys(carrinho).forEach(function (id) { if (!porId[id]) delete carrinho[id]; });
-      contador(); redesenhar(); iniciarPayPal();
+      contador(); redesenhar(); iniciarPagamento();
     });
 })();
