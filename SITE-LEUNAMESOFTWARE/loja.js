@@ -79,7 +79,8 @@
       (p.destaque ? '<span class="tag">' + T("Destacado", "Destaque", "Featured") + '</span>' : (p.nuevo ? '<span class="tag tag-n">' + T("Novedad", "Novidade", "New") + '</span>' : '')) + '</a>' +
       '<div class="card-tx"><a href="' + link + '"><h3>' + esc(nome(p)) + '</h3></a>' +
       '<p class="card-gancho">' + esc(info(p).gancho || "") + '</p>' +
-      '<div class="card-pe"><b>' + euro(p.precio) + '</b><button class="mais" type="button" data-add="' + esc(p.id) + '" aria-label="' + T("Añadir al carrito", "Adicionar ao carrinho", "Add to cart") + '">' + CARRO + '</button></div></div></article>';
+      '<div class="card-pe"><b>' + euro(p.precio) + '</b><button class="mais" type="button" data-add="' + esc(p.id) + '" aria-label="' + T("Añadir al carrito", "Adicionar ao carrinho", "Add to cart") + '">' + CARRO + '</button></div>' +
+      '<button class="add-full" type="button" data-add="' + esc(p.id) + '">' + CARRO + T("Añadir al carrito", "Adicionar ao carrinho", "Add to cart") + '</button></div></article>';
   }
 
   var busca = (new URLSearchParams(location.search).get("q") || "").trim();

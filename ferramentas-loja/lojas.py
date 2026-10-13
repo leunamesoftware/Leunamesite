@@ -62,61 +62,68 @@ def lojas(t, ico):
 </section>''',
     }
 
-    # ---------------- Casa e jardim (nome provisório: LeunaCasa) ----------------
-    MC = 'LeunaCasa'
-    logo_casa = (f'<a class="logo logo-txt" href="./" aria-label="{MC}"><span class="lc-ic">{ico("casa")}</span>'
-                 f'<span class="lc-nome"><b>Leuna</b>Casa<i>{t("Hogar · Cocina · Jardín", "Casa · Cozinha · Jardim", "Home · Kitchen · Garden")}</i></span></a>')
+    # ---------------- Cachik: casa, jardim e decoração ----------------
+    MC = 'Cachik'
+    PC = os.path.join(SITE, '_lojas', 'casa')
+    tem = lambda n: os.path.exists(os.path.join(PC, 'img', n))     # foto enviada pelo dono? usa; senão, colagem de produtos
+    logo_casa = (f'<a class="logo" href="./" aria-label="{MC}"><img class="logo-img" src="img/logo.webp" alt="{MC}" width="460" height="120"></a>'
+                 if tem('logo.webp') else
+                 f'<a class="logo logo-txt" href="./" aria-label="{MC}"><span class="lc-ic">{ico("casa")}</span>'
+                 f'<span class="lc-nome">Cach<b>ik</b><i>{t("Hogar · Jardín · Decoración", "Casa · Jardim · Decoração", "Home · Garden · Décor")}</i></span></a>')
     cel = ''.join(f'<span class="cel cel{k}"><span class="cel-ic">{ico(i, "bi")}</span></span>'
-                  for k, i in enumerate(['vaso', 'cozinha', 'luz', 'folha']))
+                  for k, i in enumerate(['sofa', 'planta', 'abajur', 'jarra']))
+
+    def foto(nome, nome_m=None, cls=''):
+        if not tem(nome):
+            return ''
+        m = f'<source media="(max-width:720px)" srcset="img/{nome_m}">' if nome_m and tem(nome_m) else ''
+        return f'<picture class="{cls}">{m}<img src="img/{nome}" alt="" loading="lazy"></picture>'
+
+    tem_banner = tem('banner.webp')
+    hero_visual = foto('banner.webp', 'banner-m.webp', 'cb-foto') if tem_banner else f'<div class="colagem cb-colagem" data-colagem>{cel}</div>'
     casa = {
-        'id': 'casa', 'marca': MC, 'host': 'casa.leuname.com', 'dir': os.path.join(SITE, '_lojas', 'casa'),
-        'cor': '#1E3A2F', 'favicon': 'img/favicon.png', 'apple': 'img/emblema-192.png',
+        'id': 'casa', 'marca': MC, 'host': 'cachik.leuname.com', 'dir': PC,
+        'cor': '#16382A', 'favicon': 'img/favicon.png', 'apple': 'img/emblema-192.png',
         'css_extra': '\n<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700;9..144,800&display=swap" rel="stylesheet">\n<link rel="stylesheet" href="tema.css">', 'icone': 'casa',
         'cats': [
-            ('cocina', 'cozinha', 'Cocina', 'Cozinha', 'Kitchen'),
-            ('orden', 'caixa', 'Orden', 'Arrumação', 'Storage'),
-            ('bano', 'banho', 'Baño', 'Casa de banho', 'Bathroom'),
-            ('deco', 'vaso', 'Decoración', 'Decoração', 'Décor'),
-            ('luz', 'luz', 'Iluminación', 'Iluminação', 'Lighting'),
-            ('jardin', 'folha', 'Jardín y terraza', 'Jardim e terraço', 'Garden & patio'),
+            ('hogar', 'sofa', 'Hogar', 'Casa', 'Home'),
+            ('jardin', 'planta', 'Jardín', 'Jardim', 'Garden'),
+            ('deco', 'jarra', 'Decoración', 'Decoração', 'Décor'),
+            ('luz', 'abajur', 'Iluminación', 'Iluminação', 'Lighting'),
+            ('muebles', 'movel', 'Muebles', 'Móveis', 'Furniture'),
+            ('orden', 'caixa', 'Organización', 'Organização', 'Storage'),
+            ('textil', 'textil', 'Textil', 'Têxtil', 'Textiles'),
         ],
         'logo': logo_casa,
-        'busca': 'data-ph-es="¿Qué buscas para tu casa o tu jardín?" data-ph-pt="O que procura para a sua casa ou jardim?" data-ph-en="What are you looking for?"',
+        'busca': 'data-ph-es="Buscar productos…" data-ph-pt="Procurar produtos…" data-ph-en="Search products…"',
         'menu_extra': '',
-        'rodape_tx': ('Ideas prácticas y bonitas para cada rincón de tu casa y tu jardín, enviadas a toda Europa.',
-                      'Ideias práticas e bonitas para cada canto da sua casa e jardim, enviadas para toda a Europa.',
-                      'Practical, beautiful ideas for every corner of your home and garden, shipped across Europe.'),
-        'novedades_sub': ('Ideas prácticas y bonitas para cada rincón', 'Ideias práticas e bonitas para cada canto', 'Practical, beautiful ideas for every corner'),
-        'objeto': ('artículos de hogar, cocina, decoración y jardín', 'artigos de casa, cozinha, decoração e jardim', 'home, kitchen, décor and garden products'),
-        'titulo': f'{MC} — Hogar, cocina y jardín · Envío gratis en Europa',
-        'desc': 'Ideas para la cocina, el orden, el baño, la decoración, la iluminación y el jardín con envío gratis a España, Portugal, Francia, Alemania, Italia, Países Bajos, Bélgica, Austria e Irlanda. 14 días para devolver.',
-        'jsonld': jsonld(MC, 'casa.leuname.com', 'Tienda online de hogar, cocina, decoración y jardín, con envío gratis a 9 países de Europa.', 'img/emblema-192.png'),
-        'hero': f'''<section class="hero hero-casa" aria-label="Destacado">
-  <div class="wrap hc-in">
-    <div class="hc-tx">
-      <p class="selo">{t('Envío gratis a toda Europa', 'Envio grátis para toda a Europa', 'Free shipping across Europe')}</p>
-      <h1>{t('Tu casa, <em class="v">más bonita</em><br>y más práctica', 'A sua casa, <em class="v">mais bonita</em><br>e mais prática', 'Your home, <em class="v">lovelier</em><br>and easier')}</h1>
-      <p class="hero-p">{t('Ideas para la cocina, el orden, la luz y el jardín que hacen el día a día más fácil.', 'Ideias para a cozinha, a arrumação, a luz e o jardim que facilitam o dia a dia.', 'Ideas for the kitchen, storage, lighting and garden that make every day easier.')}</p>
-      <div class="hc-bts"><a class="bt bt-cor" href="#novedades">{t('Ver novedades', 'Ver novidades', 'Shop new in')} {ico('seta')}</a><a class="bt bt-l" href="./?cat=jardin">{t('Jardín y terraza', 'Jardim e terraço', 'Garden & patio')}</a></div>
-      <ul class="hc-li"><li>{ico('camiao')}{t('Envío gratis', 'Envio grátis', 'Free shipping')}</li><li>{ico('volta')}{t('14 días para devolver', '14 dias para devolver', '14-day returns')}</li><li>{ico('escudo')}{t('Pago seguro', 'Pagamento seguro', 'Secure checkout')}</li></ul>
-    </div>
-    <div class="colagem" data-colagem>{cel}</div>
+        'rodape_tx': ('Hogar, jardín y decoración: ideas bonitas y prácticas para cada rincón, enviadas a toda Europa.',
+                      'Casa, jardim e decoração: ideias bonitas e práticas para cada canto, enviadas para toda a Europa.',
+                      'Home, garden and décor: beautiful, practical ideas for every corner, shipped across Europe.'),
+        'novedades_sub': ('Elegidos para hacer tu casa más bonita', 'Escolhidos para deixar a sua casa mais bonita', 'Chosen to make your home lovelier'),
+        'objeto': ('artículos de hogar, jardín y decoración', 'artigos de casa, jardim e decoração', 'home, garden and décor products'),
+        'titulo': f'{MC} — Hogar, jardín y decoración · Envío gratis en Europa',
+        'desc': 'Decoración, iluminación, muebles, organización, textil y jardín con envío gratis a España, Portugal, Francia, Alemania, Italia, Países Bajos, Bélgica, Austria e Irlanda. 14 días para devolver.',
+        'jsonld': jsonld(MC, 'cachik.leuname.com', 'Tienda online de hogar, jardín y decoración, con envío gratis a 9 países de Europa.', 'img/emblema-192.png'),
+        'hero': f'''<section class="hero hero-cachik{' com-foto' if tem_banner else ''}" aria-label="Destacado">
+  {hero_visual}
+  <div class="wrap cb-tx">
+    <p class="cb-sobre">{t('Hogar · Jardín · Decoración', 'Casa · Jardim · Decoração', 'Home · Garden · Décor')}</p>
+    <h1>{t('Espacios<br>que inspiran', 'Espaços<br>que inspiram', 'Spaces<br>that inspire')}</h1>
+    <p class="hero-p">{t('Todo para hacer de tu hogar un lugar más cómodo, bonito y tuyo.', 'Tudo para fazer da sua casa um lugar mais confortável, bonito e seu.', 'Everything to make your home cosier, lovelier and truly yours.')}</p>
+    <a class="bt bt-oro" href="#novedades">{t('Descubrir ahora', 'Descobrir agora', 'Discover now')} {ico('seta')}</a>
   </div>
   <div class="preco-selo" id="desde" hidden><small>{t('Desde', 'Desde', 'From')}</small><b></b></div>
 </section>''',
-        'meio': f'''<section class="wrap animais ambientes">
-  <a class="animal am-in" href="./?cat=cocina"><div class="an-tx"><b>{t('Cocina', 'Cozinha', 'Kitchen')}</b><span>{t('Utensilios y trucos que ahorran tiempo cada día.', 'Utensílios e truques que poupam tempo todos os dias.', 'Tools and tricks that save time every day.')}</span><em class="an-bt">{t('Ver productos', 'Ver produtos', 'Shop now')} {ico('seta')}</em></div><span class="am-foto" data-colagem-cat="cocina">{ico('cozinha', 'bi')}</span></a>
-  <a class="animal am-ex" href="./?cat=jardin"><div class="an-tx"><b>{t('Jardín y terraza', 'Jardim e terraço', 'Garden & patio')}</b><span>{t('Luces solares, macetas y todo para disfrutar fuera.', 'Luzes solares, vasos e tudo para aproveitar lá fora.', 'Solar lights, planters and more to enjoy outdoors.')}</span><em class="an-bt">{t('Ver productos', 'Ver produtos', 'Shop now')} {ico('seta')}</em></div><span class="am-foto" data-colagem-cat="jardin">{ico('folha', 'bi')}</span></a>
+        'meio': f'''<section class="wrap colecoes">
+  <a class="col col-escura" href="./?cat=deco">{foto('colecao-hogar.webp', cls='col-foto') or f'<span class="col-foto col-vazia" data-colagem-cat="deco">{ico("abajur", "bi")}</span>'}
+    <div class="col-tx"><p class="cb-sobre">{t('Decoración para cada estilo', 'Decoração para cada estilo', 'Décor for every style')}</p><h2>{t('Hogar con<br>más vida', 'Casa com<br>mais vida', 'A home with<br>more life')}</h2><em class="bt bt-oro">{t('Ver colección', 'Ver coleção', 'See collection')} {ico('seta')}</em></div></a>
+  <a class="col col-clara" href="./?cat=jardin">{foto('colecao-jardin.webp', cls='col-foto') or f'<span class="col-foto col-vazia" data-colagem-cat="jardin">{ico("planta", "bi")}</span>'}
+    <div class="col-tx"><p class="cb-sobre">{t('Jardín y exterior', 'Jardim e exterior', 'Garden & outdoor')}</p><h2>{t('Disfruta<br>tu espacio', 'Aproveite<br>o seu espaço', 'Enjoy<br>your space')}</h2><em class="bt bt-oro">{t('Ver jardín', 'Ver jardim', 'See garden')} {ico('seta')}</em></div></a>
 </section>''',
-        'porque': f'''<section class="wrap porque porque-casa">
-  <div class="porque-foto colagem colagem-p" data-colagem>{cel}</div>
-  <div class="porque-tx">
-    <h2>{t('¿Por qué ' + MC + '?', 'Porquê a ' + MC + '?', 'Why ' + MC + '?')}</h2>
-    <p>{t('Elegimos cada producto pensando en tu día a día: que sea útil, bonito y que dure. Nada de relleno.', 'Escolhemos cada produto a pensar no seu dia a dia: útil, bonito e duradouro. Nada de enchimento.', 'Every product is chosen for everyday life: useful, good-looking and built to last. No filler.')}</p>
-    <ul><li>{ico('camiao')}{t('Envío gratis con seguimiento a toda Europa', 'Envio grátis com seguimento para toda a Europa', 'Free tracked shipping across Europe')}</li>
-    <li>{ico('volta')}{t('14 días para devolver', '14 dias para devolver', '14-day returns')}</li>
-    <li>{ico('escudo')}{t('Pago seguro con tarjeta o PayPal', 'Pagamento seguro com cartão ou PayPal', 'Secure payment by card or PayPal')}</li></ul>
-  </div>
+        'porque': f'''<section class="faixa-cachik{' com-foto' if tem('banner-baixo.webp') else ''}">
+  {foto('banner-baixo.webp', cls='fx-foto') or f'<div class="colagem fx-colagem" data-colagem>{cel}</div>'}
+  <div class="wrap fx-tx"><p class="cb-sobre">{t('Ideas para tu hogar', 'Ideias para a sua casa', 'Ideas for your home')}</p><h2>{t('Decoración<br>que transforma', 'Decoração<br>que transforma', 'Décor that<br>transforms')}</h2><a class="bt bt-oro" href="./?cat=deco">{t('Ver inspiración', 'Ver inspiração', 'Get inspired')} {ico('seta')}</a></div>
 </section>''',
     }
     return [pets, casa]

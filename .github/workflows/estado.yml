@@ -37,9 +37,9 @@ jobs:
             curl -s "https://pets.leuname.com/api/painel/buscar?q=kitchen%20gadgets&loja=casa" -H "Authorization: Bearer $tk" | jq -c '{n:(.itens|length),erro}' >> /tmp/e/painel.txt
             echo "casa:" >> /tmp/e/painel.txt
             for u in / /carrito.html /producto.html /tema.css /loja.js /produtos.json /robots.txt /img/favicon.png; do
-              curl -s -L -o /tmp/e/x -w "$u http=%{http_code} final=%{url_effective} bytes=%{size_download}\n" "https://casa.leuname.com$u" >> /tmp/e/painel.txt
+              curl -s -L -o /tmp/e/x -w "$u http=%{http_code} final=%{url_effective} bytes=%{size_download}\n" "https://cachik.leuname.com$u" >> /tmp/e/painel.txt
             done
-            curl -s https://casa.leuname.com/ | grep -o '<title>[^<]*' >> /tmp/e/painel.txt || true
+            curl -s https://cachik.leuname.com/ | grep -o '<title>[^<]*' >> /tmp/e/painel.txt || true
             curl -s https://pets.leuname.com/ | grep -o '<title>[^<]*' >> /tmp/e/painel.txt || true
             curl -s -I https://casa.leuname.com/ | grep -i 'content-security\|x-frame' >> /tmp/e/painel.txt || true
             curl -s -X POST https://pets.leuname.com/api/painel/sair -H "Authorization: Bearer $tk" > /dev/null

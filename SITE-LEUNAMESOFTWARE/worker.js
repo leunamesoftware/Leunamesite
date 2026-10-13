@@ -77,6 +77,8 @@ export default {
       const r = await env.ASSETS.fetch(new Request(new URL("/_software/", url), req));
       return new Response(r.body, { status: 200, headers: { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-cache" } });
     }
+    // casa.leuname.com foi o endereço provisório da Cachik
+    if (url.hostname === "casa.leuname.com") return Response.redirect("https://cachik.leuname.com" + url.pathname + url.search, 301);
     // leuname.com / www.leuname.com = domínio-mãe das lojas drop; com uma loja só, leva para a LeunaPets
     if (/^(www\.)?leuname\.com$/.test(url.hostname)) {
       return Response.redirect("https://" + HOST_LOJA + url.pathname + url.search, 301);

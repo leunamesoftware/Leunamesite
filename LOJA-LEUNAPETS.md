@@ -27,7 +27,7 @@ O dono fala português do Brasil, quer respostas curtas e diretas. Ele está sem
 - Cadastro em `ferramentas-loja/lojas.py` (cores, categorias, textos, topo). `python3 ferramentas-loja/gerar_paginas.py` gera todas
   (pets → raiz do site; outras → `SITE-LEUNAMESOFTWARE/_lojas/<id>/`) e grava `lojas.json` (lido pelo Worker e pelo painel).
 - Worker: o host escolhe a loja; arquivo que não existe na pasta da loja vem da raiz (loja.js, loja.css são comuns a todas).
-- Loja 2: **casa.leuname.com** (casa e jardim, nome provisório **LeunaCasa**, tema em `_lojas/casa/tema.css`, logo em texto até o dono mandar o logo).
+- Loja 2: **cachik.leuname.com** (casa e jardim, marca **Cachik**, tema em `_lojas/casa/tema.css`, logo em texto até o dono mandar o logo).
 - D1: tabela `produtos_v2` (chave loja+id). Painel: botões de loja no topo; tudo que faz vale só para a loja escolhida. `?loja=<id>` na API.
 - Loja nova: bloco novo em lojas.py + `[[routes]]` no wrangler.toml + `LOJAS_CFG` no painel/index.html + `DESC_LOJA` no painel-api.js + config.js da pasta.
 - PayPal Client ID: pôr em `config.js` da raiz E de cada `_lojas/<id>/config.js`.

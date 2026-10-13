@@ -1,69 +1,119 @@
-/* Tema da loja de casa e jardim (LeunaCasa): verde floresta + terracota sobre linho.
-   Carrega DEPOIS do loja.css (o mesmo de todas as lojas) e só troca cores e o topo. */
-:root{--fundo:#FAF6EF;--branco:#fff;--tinta:#1F2A24;--suave:#5F6B63;--linha:#E8DFD0;--verde:#1E3A2F;--verde-e:#132A21;--verde-m:#C8643B;--verde-c:#F1E7D8;--escuro:#1E3A2F;--areia:#F4ECDF;--laranja:#C8643B;--coral:#C8643B;--coral-e:#A54E2A;--menta:#E7EEE5;--tit:"Fraunces",Outfit,Georgia,serif}
+/* Tema Cachik (hogar · jardín · decoración): verde profundo + dourado sobre creme.
+   Carrega DEPOIS do loja.css (comum a todas as lojas) e só muda o visual desta loja. */
+:root{--fundo:#FBF6EC;--branco:#fff;--tinta:#1C2A22;--suave:#5E6A62;--linha:#ECE2CF;--verde:#16382A;--verde-e:#0E2A1F;--verde-m:#B98A4A;--verde-c:#F3E9D7;--escuro:#0E2A1F;--areia:#F3E9D7;--laranja:#B98A4A;--coral:#B98A4A;--coral-e:#9A7038;--menta:#F3E9D7;--oro:#C9A063;--oro-g:linear-gradient(180deg,#DDBB80 0,#C49656 100%);--tit:"Fraunces",Georgia,serif;--sombra:0 18px 40px -26px rgba(14,42,31,.55)}
 h1,h2,h3{letter-spacing:-.01em}
-.top{background:rgba(250,246,239,.96)}
-.barra{color:#E9F0E9}
+.card h3,.bolha,.menu a{font-family:Inter,system-ui,sans-serif}
 
-/* logo provisório em texto (troca quando o logo chegar) */
-.logo-txt{gap:10px}
-.lc-ic{width:46px;height:46px;border-radius:14px;background:var(--verde);display:grid;place-items:center;flex:none}
-.lc-ic svg{width:26px;height:26px;fill:none;stroke:#fff;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
-.lc-ic svg path:first-child{stroke:#E9A27F}
-.lc-nome{font:600 30px/1 var(--tit);color:var(--verde);letter-spacing:-.02em;display:flex;flex-direction:column}
-.lc-nome b{font-weight:800;color:var(--coral);display:inline}
-.lc-nome{display:block}
-.lc-nome i{display:block;font:600 10px/1.2 Inter,sans-serif;font-style:normal;color:var(--suave);letter-spacing:.24em;text-transform:uppercase;margin-top:5px}
-.pie .lc-nome{color:#fff}.pie .lc-nome i{color:#B9C8BE}.pie .lc-ic{background:var(--coral)}
-.pie .lc-ic svg path:first-child{stroke:#fff}
-@media (max-width:720px){.lc-ic{width:38px;height:38px;border-radius:11px}.lc-ic svg{width:22px;height:22px}.lc-nome{font-size:24px}.lc-nome i{font-size:8.5px;letter-spacing:.18em}}
+/* barra de cima e topo */
+.barra{background:var(--verde-e);color:#E8DFC9}
+.barra .ic{color:var(--oro)}
+.top{background:rgba(251,246,236,.97)}
+.top-in{height:92px}
+.logo-img{height:76px}
+.busca{border-color:#E4D7BE;max-width:640px}
+.busca button{background:var(--oro-g);color:var(--verde-e);border-radius:999px;margin:4px;width:48px}
+.busca button:hover{background:var(--oro)}
+.sacola{color:var(--verde)}.sacola b{background:var(--oro);color:var(--verde-e)}
+.menu{background:var(--verde);border-top:0}
+.menu a{color:#F3ECDD;font-weight:500}
+.menu a .ic{color:var(--oro)}
+.menu a:hover,.menu a.on{background:rgba(255,255,255,.1);color:#fff}
+@media (max-width:720px){.top-in{height:auto}.logo-img{height:54px}}
 
-/* topo da página: texto + colagem de fotos dos produtos */
-.hero-casa{height:auto;background:linear-gradient(135deg,#F4ECDF 0,#FAF6EF 55%,#E7EEE5 100%)}
-.hc-in{display:grid;grid-template-columns:1.05fr 1fr;gap:clamp(24px,4vw,64px);align-items:center;padding:clamp(34px,5vw,70px) 0}
-.hc-tx .selo{display:inline-block;background:var(--verde-c);color:var(--coral-e);font-size:12.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:7px 14px;border-radius:999px;margin-bottom:18px}
-.hc-tx h1{font-size:clamp(36px,5vw,66px);font-weight:700;line-height:1.04;color:var(--verde);margin-bottom:16px}
-.hc-tx h1 .v{color:var(--coral);font-style:italic}
-.hc-tx .hero-p{font-size:clamp(16px,1.5vw,19px);color:var(--suave);max-width:520px;margin-bottom:26px}
-.hc-bts{display:flex;gap:12px;flex-wrap:wrap}
-.hc-li{list-style:none;display:flex;flex-wrap:wrap;gap:10px 22px;margin-top:26px;font-size:14px;font-weight:600;color:var(--verde)}
-.hc-li li{display:flex;align-items:center;gap:8px}
-.hc-li .ic{color:var(--coral)}
-.colagem{display:grid;grid-template-columns:1.2fr 1fr;grid-template-rows:1fr 1fr;gap:14px;aspect-ratio:1.1/1}
-.colagem .cel{position:relative;border-radius:22px;overflow:hidden;display:grid;place-items:center;box-shadow:var(--sombra)}
-.colagem .cel0{grid-row:1/3;background:#E9DCC7}.colagem .cel1{background:#DCE6D9}.colagem .cel2{background:#F2D9C9}.colagem .cel3{background:#E5E0F0;display:none}
-.colagem .cel-ic .bi{width:56px;height:56px;color:var(--verde);opacity:.55;fill:none;stroke:currentColor;stroke-width:1.3}
+/* botão dourado */
+.bt-oro,.bt.bt-oro{background:var(--oro-g);color:var(--verde-e);font-weight:700;box-shadow:0 10px 24px -14px rgba(120,80,20,.6)}
+.bt-oro:hover,.bt.bt-oro:hover{background:var(--oro);color:var(--verde-e)}
+.cb-sobre{font:600 13px/1.2 Inter,sans-serif;letter-spacing:.2em;text-transform:uppercase;color:var(--oro);margin-bottom:14px}
+
+/* topo da página (banner) */
+.hero-cachik{position:relative;height:auto;min-height:clamp(380px,38vw,520px);background:linear-gradient(115deg,#0E2A1F 0,#16382A 55%,#24503B 100%);display:flex;align-items:center;overflow:hidden}
+.hero-cachik .cb-foto img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:right center}
+.hero-cachik.com-foto::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(14,42,31,.95) 0,rgba(14,42,31,.82) 32%,rgba(14,42,31,0) 62%);z-index:1}
+.cb-tx{position:relative;z-index:2;padding:clamp(36px,5vw,70px) 0;color:#fff}
+.cb-tx h1{font:700 clamp(40px,5.6vw,76px)/1.02 var(--tit);color:#FBF3E2;margin-bottom:16px}
+.cb-tx .hero-p{font-size:clamp(16px,1.5vw,20px);color:#E7E0CF;max-width:460px;margin-bottom:28px}
+.cb-colagem{position:absolute;right:max(16px,calc((100% - 1280px)/2));top:50%;transform:translateY(-50%);width:min(46%,560px);z-index:1}
+.colagem{display:grid;grid-template-columns:1.2fr 1fr;grid-template-rows:1fr 1fr;gap:14px;aspect-ratio:1.25/1}
+.colagem .cel{position:relative;border-radius:20px;overflow:hidden;display:grid;place-items:center;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12)}
+.colagem .cel0{grid-row:1/3}.colagem .cel3{display:none}
+.colagem .cel-ic .bi{width:58px;height:58px;color:var(--oro);opacity:.8;fill:none;stroke:currentColor;stroke-width:1.3}
 .colagem .cel img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#fff}
 .colagem .cel.tem-foto .cel-ic{display:none}
-.hero-casa .preco-selo{right:3%;top:auto;bottom:8%;background:var(--coral)}
+.hero-cachik .preco-selo{right:3%;top:auto;bottom:8%;background:var(--oro-g);color:var(--verde-e);z-index:3}
 @media (max-width:860px){
-  .hc-in{grid-template-columns:1fr;padding:26px 0 30px}
-  .colagem{aspect-ratio:1.5/1;order:-1}
-  .hc-tx .bt{flex:1}
-  .hero-casa .preco-selo{top:16px;bottom:auto;right:14px;width:90px;height:90px}
+  .hero-cachik{flex-direction:column;align-items:stretch}
+  .cb-colagem{position:relative;right:auto;top:auto;transform:none;width:auto;margin:20px 16px 0}
+  .hero-cachik.com-foto .cb-foto img{position:relative;height:260px}
+  .hero-cachik.com-foto::after{background:linear-gradient(0deg,rgba(14,42,31,1) 0,rgba(14,42,31,.9) 45%,rgba(14,42,31,0) 75%)}
+  .hero-cachik.com-foto .cb-tx{margin-top:-90px}
+  .cb-tx{padding:24px 0 34px}.cb-tx .bt{width:100%}
+  .hero-cachik .preco-selo{top:14px;bottom:auto;right:14px;width:86px;height:86px}
 }
 
-/* bolhas de categoria em tons naturais */
-.bolhas .bolha:nth-child(1) .bolha-c{background:#F1E2CF!important}.bolhas .bolha:nth-child(2) .bolha-c{background:#DDE7DA!important}.bolhas .bolha:nth-child(3) .bolha-c{background:#DCE8EC!important}.bolhas .bolha:nth-child(4) .bolha-c{background:#F3DCCF!important}.bolhas .bolha:nth-child(5) .bolha-c{background:#F6EBC9!important}.bolhas .bolha:nth-child(6) .bolha-c{background:#D7E6CF!important}
-.bi{color:var(--verde)}
+/* ícones de categoria */
+.bolhas{gap:0;padding:30px 0 16px;justify-content:space-between}
+.bolha{flex:1;min-width:96px;width:auto;font-size:14px;color:var(--tinta);border-left:1px solid var(--linha);padding:0 6px}
+.bolha:first-child{border-left:0}
+.bolhas .bolha .bolha-c{background:#F1E6D2!important;width:84px;height:84px}
+.bolha-c .bi{color:#9A7038;stroke-width:1.4}
+@media (max-width:720px){.bolhas{justify-content:flex-start}.bolha{flex:none;min-width:88px}.bolhas .bolha .bolha-c{width:68px;height:68px}}
 
-/* cartões Cocina / Jardín */
-.ambientes .am-in{background:linear-gradient(110deg,#A54E2A 0,#C8643B 50%,#DB8A5B 100%)}
-.ambientes .am-ex{background:linear-gradient(110deg,#132A21 0,#1E3A2F 50%,#3D6B50 100%)}
-.am-in .an-bt{color:var(--coral-e)}.am-ex .an-bt{color:var(--verde)}
-.am-foto{position:absolute;right:0;top:0;height:100%;width:52%;display:grid;place-items:center;-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 26%);mask-image:linear-gradient(90deg,transparent 0,#000 26%)}
-.am-foto .bi{width:110px;height:110px;color:#fff;opacity:.35;fill:none;stroke:currentColor;stroke-width:1.1}
-.am-foto img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-.am-foto.tem-foto .bi{display:none}
+/* duas coleções */
+.colecoes{display:grid;grid-template-columns:1.6fr 1fr;gap:18px;margin-top:14px}
+.col{position:relative;overflow:hidden;border-radius:18px;min-height:250px;display:flex;align-items:center;box-shadow:var(--sombra);transition:transform .25s}
+.col:hover{transform:translateY(-3px)}
+.col-escura{background:linear-gradient(110deg,#0E2A1F 0,#16382A 60%,#24503B 100%)}
+.col-clara{background:linear-gradient(110deg,#F6EEDF 0,#EFE3CC 100%)}
+.col-foto{position:absolute;right:0;top:0;width:58%;height:100%;display:grid;place-items:center}
+.col-foto img{width:100%;height:100%;object-fit:cover}
+.col-escura .col-foto{-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 30%);mask-image:linear-gradient(90deg,transparent 0,#000 30%)}
+.col-clara .col-foto{-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 40%);mask-image:linear-gradient(90deg,transparent 0,#000 40%)}
+.col-vazia .bi{width:110px;height:110px;fill:none;stroke:currentColor;stroke-width:1.1;opacity:.5}
+.col-escura .col-vazia .bi{color:var(--oro)}.col-clara .col-vazia .bi{color:var(--verde)}
+.col-vazia.tem-foto .bi{display:none}
+.col-vazia img{position:absolute;inset:0}
+.col-tx{position:relative;z-index:2;padding:30px 34px;max-width:60%}
+.col-tx h2{font:700 clamp(30px,3.2vw,44px)/1.04 var(--tit);margin-bottom:20px}
+.col-escura h2{color:#FBF3E2}.col-clara h2{color:var(--verde)}
+.col-clara .cb-sobre{color:#8C6A33}
+.col-tx .bt{font-style:normal;padding:11px 22px;font-size:15px}
+@media (max-width:860px){.colecoes{grid-template-columns:1fr}.col{min-height:200px}.col-tx{padding:22px;max-width:62%}}
 
-/* "Por qué": colagem em vez da foto fixa */
-.porque-casa .colagem-p{aspect-ratio:auto;min-height:340px;padding:14px;background:var(--areia);border-radius:0}
-.porque-casa .colagem-p .cel3{display:grid}
-.porque-casa .colagem-p{grid-template-columns:1fr 1fr}
-.porque-casa .colagem-p .cel0{grid-row:auto}
-@media (max-width:900px){.porque-casa .colagem-p{min-height:0;aspect-ratio:1.4/1}}
+/* cartões de produto: botão dourado "Añadir al carrito" */
+.card{border-radius:14px;border-color:#EFE6D4}
+.card .tag{background:var(--verde)}
+.card .add-full{display:flex}
+.card .mais{display:none}
+.add-full{align-items:center;justify-content:center;gap:8px;width:100%;margin-top:10px;border:0;border-radius:10px;padding:10px 8px;background:var(--oro-g);color:var(--verde-e);font-weight:700;font-size:14px;cursor:pointer}
+.add-full:hover{background:var(--oro)}
+.add-full svg{width:18px;height:18px}
+.sec-cab h2{font-family:Inter,system-ui,sans-serif;font-weight:700;font-size:clamp(22px,2.2vw,28px)}
+.sec-cab .ver{color:var(--verde);font-weight:600}
+
+/* faixa de confiança e banner de baixo */
+.garantias{background:var(--verde);margin-top:56px}
+.gar-in .gi{color:var(--oro)}
+.gar-in b{color:#fff}.gar-in span{color:#D9D2C1}
+.faixa-cachik{position:relative;overflow:hidden;margin-top:56px;min-height:300px;display:flex;align-items:center;background:linear-gradient(110deg,#0E2A1F 0,#16382A 60%,#24503B 100%)}
+.faixa-cachik .fx-foto img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.faixa-cachik.com-foto::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(14,42,31,.9) 0,rgba(14,42,31,.6) 35%,rgba(14,42,31,0) 65%);z-index:1}
+.fx-tx{position:relative;z-index:2;padding:44px 0}
+.fx-tx h2{font:700 clamp(32px,4vw,52px)/1.04 var(--tit);color:#FBF3E2;margin-bottom:22px}
+.fx-colagem{position:absolute;right:max(16px,calc((100% - 1280px)/2));top:50%;transform:translateY(-50%);width:min(40%,460px);aspect-ratio:2/1;grid-template-columns:1fr 1fr 1fr;grid-template-rows:1fr}
+.fx-colagem .cel0{grid-row:auto}.fx-colagem .cel3{display:none}
+@media (max-width:860px){.fx-colagem{position:relative;right:auto;top:auto;transform:none;width:auto;margin:0 16px 20px}.faixa-cachik{flex-direction:column-reverse;align-items:stretch}}
+
+/* rodapé */
+.pie{background:var(--verde-e)}
+.pie .logo-img{background:#FBF6EC;border-radius:12px;padding:6px 10px;height:58px}
+.lc-nome{font:700 30px/1 var(--tit);color:var(--verde);display:block}
+.lc-nome b{color:var(--oro);font-weight:700}
+.lc-nome i{display:block;font:600 10px/1.2 Inter,sans-serif;font-style:normal;color:var(--suave);letter-spacing:.22em;text-transform:uppercase;margin-top:5px}
+.lc-ic{width:46px;height:46px;border-radius:14px;background:var(--verde);display:grid;place-items:center}
+.lc-ic svg{width:26px;height:26px;fill:none;stroke:#fff;stroke-width:1.8}
 
 /* detalhes */
-.vars-l button{color:var(--tinta)}.vars-l button.on{border-color:var(--coral);background:#FBF1EA}
-.card .tag{background:var(--verde)}
-.mais{background:var(--coral)}
+.vars-l button{color:var(--tinta)}.vars-l button.on{border-color:var(--oro);background:#FBF3E4}
+.paginas b{background:var(--verde)}
+.topo-bt{background:var(--verde)}
+.trilho-pontos i.on{background:var(--oro)}

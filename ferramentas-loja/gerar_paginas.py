@@ -43,6 +43,12 @@ I = {
     'cao': '<path d="M5 9l-2-4 5 2h8l5-2-2 4"/><path d="M5 9c0 6 3 11 7 11s7-5 7-11"/><circle cx="9.5" cy="12" r=".8"/><circle cx="14.5" cy="12" r=".8"/><path d="M11 15.5h2l-1 1z"/>',
     'gato': '<path d="M5 4l3 5h8l3-5"/><path d="M5 4v8c0 5 3 8 7 8s7-3 7-8V4"/><circle cx="9.5" cy="12" r=".8"/><circle cx="14.5" cy="12" r=".8"/><path d="M11 15h2l-1 1z"/>',
     'seta': '<path d="M5 12h14M13 6l6 6-6 6"/>',
+    'sofa': '<path d="M5 11V8a3 3 0 0 1 3-3h8a3 3 0 0 1 3 3v3"/><path d="M3 13a2 2 0 0 1 4 0v2h10v-2a2 2 0 0 1 4 0v5H3z"/><path d="M5 18v2M19 18v2"/>',
+    'planta': '<path d="M7 14h10l-1.4 7H8.4z"/><path d="M12 14V9"/><path d="M12 10c-3 0-5-2-5-5 3 0 5 2 5 5zM12 9c0-3 2-5 5-5 0 3-2 5-5 5z"/>',
+    'jarra': '<path d="M10 3h4v3c0 1 3 2 3 7a5 5 0 0 1-10 0c0-5 3-6 3-7z"/><path d="M9 21h6"/>',
+    'abajur': '<path d="M8 3h8l3 8H5z"/><path d="M12 11v8"/><path d="M8 21h8"/>',
+    'movel': '<rect x="3" y="5" width="18" height="12" rx="1.5"/><path d="M12 5v12M3 11h18M8 8h1M15 8h1M5 17v2M19 17v2"/>',
+    'textil': '<rect x="4" y="5" width="16" height="4" rx="2"/><rect x="4" y="10" width="16" height="4" rx="2"/><rect x="4" y="15" width="16" height="4" rx="2"/>',
     'vaso': '<path d="M7 10h10l-1.5 10h-7z"/><path d="M12 10V6"/><path d="M12 7c-1-2-3-3-5-3 0 2 2 4 5 4M12 6c1-2 3-3 5-3 0 2-2 4-5 4"/>',
 }
 
@@ -178,7 +184,7 @@ def gerar(L):
         </div>
       </div>''' for i, (img, h, p) in enumerate(SLIDES))
     bolhas = ''.join(f'<a class="bolha" href="./#{c}" data-bolha="{c}"><span class="bolha-c" style="--c:{cor}">{ico(i, "bi")}</span>{t(es, pt, en)}</a>'
-                     for (c, i, es, pt, en), cor in zip(CATS, ['#FFE3D6', '#DFF3EA', '#FFF1C7', '#E3E8FF', '#FCE1EC', '#E2F2F8']))
+                     for (c, i, es, pt, en), cor in zip(CATS, ['#FFE3D6', '#DFF3EA', '#FFF1C7', '#E3E8FF', '#FCE1EC', '#E2F2F8'] * 3))
     secoes = ''.join(f'''<section class="wrap cat" id="{c}" hidden>
       <div class="sec-cab"><h2>{t(es, pt, en)}</h2><a href="./?cat={c}" class="ver">{t('Ver todo', 'Ver tudo', 'See all')} {ico('seta')}</a></div>
       <div class="grade" data-grade="{c}"></div>

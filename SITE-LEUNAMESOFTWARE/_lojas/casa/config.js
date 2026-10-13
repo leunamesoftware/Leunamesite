@@ -8,5 +8,5 @@ window.CONFIG = {
   paypalClientId: "",
   email: "leunamesoftware@gmail.com",
   titular: "",
-  marca: "LeunaCasa"
+  marca: "Cachik"
 };

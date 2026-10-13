@@ -55,7 +55,11 @@ binding = "AI"
 binding = "DOWNLOADS"
 bucket_name = "leuname-downloads"
 
-# Loja de casa e jardim (nome provisório LeunaCasa). Arquivos em _lojas/casa/.
+# Loja Cachik (casa, jardim e decoração). Arquivos em _lojas/casa/. casa.leuname.com redireciona para cachik.
 [[routes]]
 pattern = "casa.leuname.com"
+custom_domain = true
+
+[[routes]]
+pattern = "cachik.leuname.com"
 custom_domain = true

@@ -33,21 +33,17 @@
  },
  {
   "id": "casa",
-  "marca": "LeunaCasa",
-  "host": "casa.leuname.com",
+  "marca": "Cachik",
+  "host": "cachik.leuname.com",
   "pasta": "/_lojas/casa",
   "cats": [
    [
-    "cocina",
-    "Cocina"
+    "hogar",
+    "Hogar"
    ],
    [
-    "orden",
-    "Orden"
-   ],
-   [
-    "bano",
-    "Baño"
+    "jardin",
+    "Jardín"
    ],
    [
     "deco",
@@ -58,8 +54,16 @@
     "Iluminación"
    ],
    [
-    "jardin",
-    "Jardín y terraza"
+    "muebles",
+    "Muebles"
+   ],
+   [
+    "orden",
+    "Organización"
+   ],
+   [
+    "textil",
+    "Textil"
    ]
   ]
  }

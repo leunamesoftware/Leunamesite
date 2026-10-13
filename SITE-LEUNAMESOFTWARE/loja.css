@@ -449,3 +449,4 @@ body>*{flex-shrink:0}
 .miniaturas .mini-video{position:relative}
 .mini-video span{position:absolute;inset:0;display:grid;place-items:center;background:rgba(0,0,0,.35);color:#fff;font-size:22px}
 .galeria,.info{min-width:0}
+.add-full{display:none}

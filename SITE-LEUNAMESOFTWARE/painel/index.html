@@ -110,10 +110,10 @@ var LOJAS_CFG={
   cats:{camas:"Camas",comer:"Comer y beber",juguetes:"Juguetes",paseo:"Paseo",higiene:"Higiene",rascadores:"Rascadores"},
   atalhos:[["dog leash","paseo"],["dog harness","paseo"],["cat scratcher","rascadores"],["cat tree","rascadores"],["cat toy","juguetes"],["dog toy","juguetes"],["pet bed","camas"],["pet water fountain","comer"],["slow feeder","comer"],["pet grooming","higiene"],["lint roller pet hair","higiene"],["pet backpack carrier","paseo"]],
   regras:[[/bed|mat|cushion|house|nest/,"camas"],[/bowl|feed|fountain|water|food/,"comer"],[/leash|harness|collar|carrier|backpack|car seat/,"paseo"],[/groom|brush|comb|nail|hair|clean|litter/,"higiene"],[/scratch|tree|tower/,"rascadores"]],padrao:"juguetes"},
- casa:{nome:"LeunaCasa",emoji:"🏡",host:"casa.leuname.com",cor:"#1E3A2F",animal:false,
-  cats:{cocina:"Cocina",orden:"Orden",bano:"Baño",deco:"Decoración",luz:"Iluminación",jardin:"Jardín y terraza"},
-  atalhos:[["kitchen gadgets","cocina"],["kitchen organizer","cocina"],["storage box","orden"],["vacuum storage bag","orden"],["bathroom organizer","bano"],["shower head","bano"],["wall decor","deco"],["artificial plants","deco"],["led night light","luz"],["led strip light","luz"],["solar garden light","jardin"],["plant pot","jardin"]],
-  regras:[[/kitchen|cook|knife|cut|peel|spice|oil|pan|bowl|cup|bottle/,"cocina"],[/storage|organiz|box|hanger|rack|shelf|bag|drawer/,"orden"],[/bath|shower|toilet|towel|soap/,"bano"],[/light|lamp|led|bulb/,"luz"],[/garden|solar|plant|pot|outdoor|patio|lawn|watering/,"jardin"]],padrao:"deco"}
+ casa:{nome:"Cachik",emoji:"🏡",host:"cachik.leuname.com",cor:"#16382A",animal:false,
+  cats:{hogar:"Hogar",jardin:"Jardín",deco:"Decoración",luz:"Iluminación",muebles:"Muebles",orden:"Organización",textil:"Textil"},
+  atalhos:[["kitchen gadgets","hogar"],["storage box","orden"],["vacuum storage bag","orden"],["wall decor","deco"],["artificial plants","deco"],["vase","deco"],["led night light","luz"],["table lamp","luz"],["solar garden light","jardin"],["plant pot","jardin"],["side table","muebles"],["cushion cover","textil"]],
+  regras:[[/light|lamp|led|bulb|chandelier/,"luz"],[/garden|solar|plant|pot|outdoor|patio|lawn|watering/,"jardin"],[/table|chair|shelf|stool|cabinet|rack|sofa/,"muebles"],[/storage|organiz|box|hanger|drawer|bag/,"orden"],[/cushion|pillow|curtain|blanket|towel|rug|carpet|bedding/,"textil"],[/decor|vase|mirror|frame|art|candle|clock/,"deco"]],padrao:"hogar"}
 };
 var LOJA="pets";try{LOJA=localStorage.getItem("lp_loja")||"pets"}catch(e){}
 if(!LOJAS_CFG[LOJA])LOJA="pets";

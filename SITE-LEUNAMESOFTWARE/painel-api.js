@@ -12,7 +12,7 @@ export const lojaPorHost = (host) => LOJAS.find((l) => l.host === host) || LOJAS
 const catsDe = (L) => L.cats.map((c) => c[0]);
 const DESC_LOJA = {
   pets: "a pet shop for dogs and cats in Spain",
-  casa: "a home, kitchen, décor and garden shop in Spain",
+  casa: "Cachik, a home, garden, décor, lighting and furniture shop in Spain",
 };
 const ANIMAIS = ["perro", "gato", "ambos"];
 const MODELO = "@cf/meta/llama-3.3-70b-instruct-fp8-fast";
