@@ -308,32 +308,32 @@ def gerar(L):
           'Free shipping to 9 EU countries, delivery times and 14-day right of withdrawal.')
 
     legal('aviso-legal.html', ('Aviso legal', 'Aviso legal', 'Legal notice'), (f'''
-    <h2>Titular de la tienda</h2><p data-titular>Titular: LeuName Softwares (marca {MARCA}) · Correo: <a href="#" data-mail>contacto por email</a> · Web: {HOST}</p>
+    <h2>Titular de la tienda</h2><p data-titular>Titular: Emanuel da Silva Antunes Coletto (marca {MARCA}) · Correo: <a href="#" data-mail>contacto por email</a> · Web: {HOST}</p>
     <h2>Objeto</h2><p>Venta a distancia de {L["objeto"][0]} a consumidores de la Unión Europea. Los pedidos se envían a través de nuestro socio logístico internacional, con seguimiento.</p>
     <h2>Precios y pago</h2><p>Precios en euros con IVA incluido. Pago con tarjeta, Apple Pay o Google Pay (procesado por Stripe) o con PayPal. El contrato se perfecciona al recibir la confirmación del pago.</p>
     <h2>Resolución de litigios</h2><p>Si tienes cualquier problema, escríbenos primero: lo solucionamos. También puedes acudir a los organismos de consumo de tu país.</p>''', f'''
-    <h2>Titular da loja</h2><p data-titular>Titular: LeuName Softwares (marca {MARCA}) · Email: <a href="#" data-mail>contacto por email</a> · Site: {HOST}</p>
+    <h2>Titular da loja</h2><p data-titular>Titular: Emanuel da Silva Antunes Coletto (marca {MARCA}) · Email: <a href="#" data-mail>contacto por email</a> · Site: {HOST}</p>
     <h2>Objeto</h2><p>Venda à distância de {L["objeto"][1]} a consumidores da União Europeia. As encomendas são enviadas através do nosso parceiro logístico internacional, com seguimento.</p>
     <h2>Preços e pagamento</h2><p>Preços em euros com IVA incluído. Pagamento com cartão, Apple Pay ou Google Pay (processado pela Stripe) ou com PayPal. O contrato fica concluído com a confirmação do pagamento.</p>
     <h2>Resolução de litígios</h2><p>Se tiver algum problema, escreva-nos primeiro: resolvemos. Em Portugal pode também usar o Livro de Reclamações Eletrónico (livroreclamacoes.pt) e as entidades de resolução alternativa de litígios de consumo.</p>''', f'''
-    <h2>Shop owner</h2><p data-titular>Owner: LeuName Softwares ({MARCA} brand) · Email: <a href="#" data-mail>contact by email</a> · Website: {HOST}</p>
+    <h2>Shop owner</h2><p data-titular>Owner: Emanuel da Silva Antunes Coletto ({MARCA} brand) · Email: <a href="#" data-mail>contact by email</a> · Website: {HOST}</p>
     <h2>Purpose</h2><p>Distance selling of {L["objeto"][2]} to consumers in the European Union. Orders ship through our international logistics partner, with tracking.</p>
     <h2>Prices and payment</h2><p>Prices in euros including VAT. Payment by card, Apple Pay or Google Pay (processed by Stripe) or by PayPal. The contract is concluded when you receive payment confirmation.</p>
     <h2>Disputes</h2><p>If you have any problem, please contact us first and we will sort it out. You can also contact the consumer authorities in your country.</p>'''),
           f'Shop owner details and terms of {MARCA}.')
 
     legal('privacidad.html', ('Política de privacidad', 'Política de privacidade', 'Privacy policy'), ('''
-    <h2>Responsable</h2><p>LeuName Softwares (<a href="#" data-mail>email</a>).</p>
+    <h2>Responsable</h2><p>Emanuel da Silva Antunes Coletto (<a href="#" data-mail>email</a>).</p>
     <h2>Qué datos usamos</h2><p>Solo los necesarios para entregarte el pedido: nombre, dirección de envío, email y teléfono si lo das, que nos facilita Stripe o PayPal al pagar. No guardamos datos de tarjetas.</p>
     <h2>Para qué</h2><p>Para preparar y enviar el pedido (los datos se comunican al almacén y a la empresa de transporte) y para atenderte. Base legal: ejecución del contrato. Los conservamos el tiempo exigido por la ley fiscal.</p>
     <h2>Tus derechos</h2><p>Puedes pedir acceso, rectificación, supresión, oposición, limitación y portabilidad escribiéndonos por email, y reclamar ante la autoridad de protección de datos de tu país.</p>
     <h2>Sin publicidad</h2><p>No vendemos tus datos ni te enviamos publicidad sin tu permiso.</p>''', '''
-    <h2>Responsável</h2><p>LeuName Softwares (<a href="#" data-mail>email</a>).</p>
+    <h2>Responsável</h2><p>Emanuel da Silva Antunes Coletto (<a href="#" data-mail>email</a>).</p>
     <h2>Que dados usamos</h2><p>Só os necessários para entregar a encomenda: nome, morada, email e telefone se o indicar, fornecidos pela Stripe ou pelo PayPal no pagamento. Não guardamos dados de cartões.</p>
     <h2>Para quê</h2><p>Para preparar e enviar a encomenda (os dados são comunicados ao armazém e à transportadora) e para lhe dar apoio. Base legal: execução do contrato. Conservamos os dados pelo tempo exigido pela lei fiscal.</p>
     <h2>Os seus direitos</h2><p>Pode pedir acesso, retificação, apagamento, oposição, limitação e portabilidade por email, e apresentar queixa à autoridade de proteção de dados do seu país.</p>
     <h2>Sem publicidade</h2><p>Não vendemos os seus dados nem enviamos publicidade sem autorização.</p>''', '''
-    <h2>Controller</h2><p>LeuName Softwares (<a href="#" data-mail>email</a>).</p>
+    <h2>Controller</h2><p>Emanuel da Silva Antunes Coletto (<a href="#" data-mail>email</a>).</p>
     <h2>What data we use</h2><p>Only what we need to deliver your order: name, shipping address, email and phone if provided, passed to us by Stripe or PayPal at checkout. We never store card details.</p>
     <h2>Why</h2><p>To prepare and ship your order (data is shared with the warehouse and the carrier) and to support you. Legal basis: performance of the contract. We keep it for the period required by tax law.</p>
     <h2>Your rights</h2><p>You can request access, rectification, erasure, objection, restriction and portability by email, and complain to your country's data protection authority.</p>
