@@ -73,6 +73,11 @@ export default {
     if (url.pathname === "/produtos.json") {
       return new Response(JSON.stringify(await catalogo(env, req)), { headers: { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-cache" } });
     }
+    if (url.pathname === "/painel/app.apk" && env.DOWNLOADS) {
+      const o = await env.DOWNLOADS.get("leunapets-painel.apk");
+      if (!o) return new Response("O app ainda está sendo gerado. Tente em alguns minutos.", { status: 404, headers: { "Content-Type": "text/plain; charset=utf-8" } });
+      return new Response(o.body, { headers: { "Content-Type": "application/vnd.android.package-archive", "Content-Disposition": 'attachment; filename="PainelLeunaPets.apk"', "Cache-Control": "no-cache" } });
+    }
     if (url.pathname.startsWith("/api/painel/")) return painel(req, env, url);
     if (url.pathname === "/api/config") return json({ stripe: !!env.STRIPE_SECRET_KEY });
     if (url.pathname === "/api/pagar" && req.method === "POST") return pagar(req, env);

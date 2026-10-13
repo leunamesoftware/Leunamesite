@@ -1,0 +1,83 @@
+name: Painel LeunaPets — app Android (APK)
+
+# Gera o app Android do painel do dono (abre https://pets.leuname.com/painel/).
+# Download: https://pets.leuname.com/painel/app.apk (arquivo no R2 leuname-downloads/leunapets-painel.apk).
+# Chave: criada na 1ª vez e guardada no cofre privado leuname-chaves-privadas/leunapets-painel (para atualizar por cima).
+on:
+  workflow_dispatch:
+  push:
+    branches: [claude/leuname-github-setup-qwkedw]
+    paths:
+      - 'ANDROID/painel-leunapets/**'
+      - '.github/workflows/painel-leunapets-android.yml'
+
+concurrency: painel-leunapets-android
+
+env:
+  CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+  COFRE: leuname-chaves-privadas/leunapets-painel
+
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: ANDROID/painel-leunapets
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: '17' }
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - uses: gradle/actions/setup-gradle@v4
+        with: { gradle-version: '8.7' }
+
+      - name: Android SDK
+        run: |
+          SDK="${ANDROID_HOME:-/usr/local/lib/android/sdk}"
+          echo "ANDROID_HOME=$SDK" >> "$GITHUB_ENV"
+          SDKMANAGER="$(find "$SDK" -maxdepth 4 -type f -name sdkmanager | sort -V | tail -n1)"
+          yes | "$SDKMANAGER" --licenses > /dev/null || true
+          "$SDKMANAGER" --install "platforms;android-34" "build-tools;34.0.0" > /dev/null
+
+      - name: Chave de assinatura (cofre privado)
+        run: |
+          set +e
+          SAIDA=$(npx --yes wrangler@4 r2 object get "$COFRE/upload.keystore" --file app/release.keystore --remote 2>&1)
+          OK=$?
+          set -e
+          if [ $OK -eq 0 ] && [ -s app/release.keystore ]; then
+            npx --yes wrangler@4 r2 object get "$COFRE/senha.txt" --file senha.txt --remote
+            SENHA=$(cat senha.txt); rm senha.txt
+          elif echo "$SAIDA" | grep -qiE "does not exist|not found|NoSuchKey"; then
+            rm -f app/release.keystore
+            SENHA="$(openssl rand -base64 24 | tr -dc 'A-Za-z0-9' | cut -c1-24)"
+            keytool -genkeypair -keystore app/release.keystore -alias painel \
+              -keyalg RSA -keysize 2048 -validity 10000 -storepass "$SENHA" -keypass "$SENHA" \
+              -dname "CN=LeunaPets Painel, O=LeuName Softwares, C=BR"
+            printf '%s' "$SENHA" > senha.txt
+            npx --yes wrangler@4 r2 object put "$COFRE/upload.keystore" --file app/release.keystore --remote
+            npx --yes wrangler@4 r2 object put "$COFRE/senha.txt" --file senha.txt --remote
+            rm senha.txt
+            echo "::notice::Chave nova do Painel LeunaPets criada e guardada no cofre privado."
+          else
+            echo "$SAIDA"; echo "::error::Não consegui ler o cofre da chave."; exit 1
+          fi
+          echo "::add-mask::$SENHA"
+          echo "KEYSTORE_PASSWORD=$SENHA" >> "$GITHUB_ENV"
+
+      - name: Gerar o APK assinado
+        run: |
+          export VERSAO_CODIGO=$((GITHUB_RUN_NUMBER + 1)) VERSAO_NOME="1.0.${GITHUB_RUN_NUMBER}"
+          gradle assembleRelease --no-daemon
+          rm -f app/release.keystore
+          APK=app/build/outputs/apk/release/app-release.apk
+          "$ANDROID_HOME/build-tools/34.0.0/apksigner" verify "$APK"
+          cp "$APK" ../PainelLeunaPets.apk
+
+      - name: Publicar o download
+        run: |
+          npx --yes wrangler@4 r2 object put leuname-downloads/leunapets-painel.apk --file ../PainelLeunaPets.apk \
+            --content-type application/vnd.android.package-archive --remote
+          echo "APK: https://pets.leuname.com/painel/app.apk" >> "$GITHUB_STEP_SUMMARY"

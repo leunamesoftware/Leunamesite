@@ -49,3 +49,8 @@ database_id = "ad40b547-8532-4316-aafe-45280db14070"
 # Tradução automática dos produtos (Workers AI)
 [ai]
 binding = "AI"
+
+# Downloads (APK do painel do dono: /painel/app.apk)
+[[r2_buckets]]
+binding = "DOWNLOADS"
+bucket_name = "leuname-downloads"

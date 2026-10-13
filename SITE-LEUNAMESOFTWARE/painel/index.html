@@ -66,10 +66,11 @@ label{display:block;font-size:13px;color:var(--suave);margin-top:8px}
   <form id="fLogin"><input class="campo" type="password" id="senha" placeholder="Senha" autocomplete="current-password" required>
   <button class="bt" style="width:100%;margin-top:10px">Entrar</button></form>
   <p id="erroLogin" style="color:#c0392b"></p>
+  <a class="bt cinza baixar" href="app.apk" style="display:block;text-decoration:none;margin-top:6px">📲 Baixar o app para Android</a>
 </div>
 
 <div id="app" hidden>
-  <div class="topo"><b>Painel LeunaPets</b><a href="/" target="_blank">Ver loja</a><button id="sair">Sair</button></div>
+  <div class="topo"><b>Painel LeunaPets</b><a class="baixar" href="app.apk">📲 App</a><a href="/" target="_blank">Ver loja</a><button id="sair">Sair</button></div>
   <div class="abas"><button class="aba on" data-aba="buscar">Buscar na CJ</button><button class="aba" data-aba="loja">Na loja</button></div>
   <main>
     <section class="caixa" id="buscar">
@@ -200,6 +201,7 @@ function editar(p){var es=p.es||{};
     .then(function(){fechar();toast(ativo?"Salvo":"Tirado da loja");carregarLoja()}).catch(function(e){toast("Erro: "+e.message)})}
   $("#eSalvar").onclick=function(){salvar(p.ativo)};$("#eTirar").onclick=function(){salvar(!p.ativo)};
 }
+if(/; wv\)/.test(navigator.userAgent))document.querySelectorAll(".baixar").forEach(function(a){a.style.display="none"});
 if(token)entrar();
 })();
 </script>
