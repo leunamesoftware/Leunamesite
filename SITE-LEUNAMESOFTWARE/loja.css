@@ -379,3 +379,24 @@ h1,h2,h3{font-family:var(--tit);letter-spacing:-.02em;line-height:1.1}
 @media (max-width:720px){.porque{border-radius:20px}.porque-foto img{aspect-ratio:4/5}.porque-tx li{font-size:13px}}
 @media (max-width:900px){.porque{background:var(--tinta)}.porque-tx{position:static;background:var(--tinta)}.porque-foto img{aspect-ratio:4/3}}
 @media (max-width:720px){.porque-foto img{aspect-ratio:4/3}}
+/* "Por qué": foto à esquerda, texto à direita, selos embaixo do texto (fora da foto) */
+.porque{display:grid;grid-template-columns:1.25fr 1fr;background:var(--branco);border:1px solid var(--linha);box-shadow:var(--sombra)}
+.porque-foto img{aspect-ratio:auto;height:100%;min-height:340px;object-fit:cover;object-position:45% center}
+.porque-tx{position:static;background:none;color:var(--tinta);display:flex;flex-direction:column;justify-content:center;gap:14px;padding:clamp(24px,3.4vw,48px)}
+.porque-tx h2{color:var(--tinta)}
+.porque-tx p{color:var(--suave)}
+.porque-tx ul{display:grid;gap:10px;justify-content:stretch;margin-top:6px}
+.porque-tx li{background:var(--fundo);border:1px solid var(--linha);border-radius:14px;padding:10px 14px;color:var(--tinta);font-weight:500;font-size:14.5px}
+.porque-tx li .ic{width:34px;height:34px;padding:8px;background:var(--verde-c);color:var(--coral-e)}
+@media (max-width:900px){
+  .porque{grid-template-columns:1fr;background:var(--branco)}
+  .porque-foto img{aspect-ratio:4/3;min-height:0;height:auto}
+  .porque-tx{background:none}
+}
+.porque-tx{align-items:stretch;text-align:left}.porque-tx h2,.porque-tx p{align-self:flex-start}
+.porque-tx ul{display:flex;flex-direction:column;align-items:stretch;justify-content:flex-start}
+.porque-tx li{justify-content:flex-start}
+.ssl{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);color:#fff;font-size:13px;font-weight:600;padding:6px 12px;border-radius:999px}
+.ssl svg{color:#4ADE80}
+.pie-bajo{align-items:center}
+.seguro{display:flex;align-items:flex-start;gap:6px}.seguro svg{flex:none;color:#16A34A;margin-top:1px}
