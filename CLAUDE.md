@@ -1,5 +1,8 @@
 # Padrões LeuName Softwares
 
+## Loja Europa LeunaPets (leunamesoftware.com)
+Loja de dropshipping de cães e gatos (CJ, Stripe, PayPal, robô diário). **Antes de mexer leia `LOJA-LEUNAPETS.md`** (arquivos, segredos, como ler o catálogo da CJ, regras e pendências).
+
 > **A conta da Play Store foi banida (2026).** A venda agora é pela loja própria LeuApps. **Leia primeiro `PROXIMO-CLAUDE.md` no repositório `leunamesoftware/leuname-softwarea-apps` (branch `ccr-f58cd13b-ml0bzs`).** As regras de Play abaixo ficam só como histórico.
 
 - Conta Play Console: organização (SUPER MISTO TEMPEROS LTDA, D-U-N-S 939102424).
