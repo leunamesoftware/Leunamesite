@@ -123,20 +123,81 @@
       $("#novedades h2").textContent = titulo;
       $("#novedades .sec-sub").textContent = achados.length + " " + T("productos", "produtos", "products");
       setTimeout(function () { $("#novedades").scrollIntoView(); }, 50);
-      grade.innerHTML = achados.map(cartao).join("");
+      var POR = 20, pags = Math.max(1, Math.ceil(achados.length / POR));
+      var pag = Math.min(pags, Math.max(1, parseInt(pr.get("p"), 10) || 1));
+      grade.innerHTML = achados.slice((pag - 1) * POR, pag * POR).map(cartao).join("");
+      paginacao(pag, pags);
       $("#semBusca").hidden = !temAlgum || achados.length > 0;
       $$(".cat").forEach(function (s) { s.hidden = true; });
       return;
     }
     var dest = PRODUTOS.filter(function (p) { return p.destaque; });
     if (!dest.length) dest = PRODUTOS.slice(0, 10);
-    grade.innerHTML = dest.map(cartao).join("");
+    grade.innerHTML = dest.slice(0, 10).map(cartao).join("");
+    paginacao(1, 1);
     $$(".cat").forEach(function (s) {
       var lista = PRODUTOS.filter(function (p) { return p.categoria === s.id; });
       s.hidden = !lista.length;
-      $("[data-grade]", s).innerHTML = lista.map(cartao).join("");
+      $("[data-grade]", s).innerHTML = lista.slice(0, 10).map(cartao).join("");
+      var n = $(".sec-n", s);
+      if (!n) { n = document.createElement("span"); n.className = "sec-n"; $(".sec-cab h2", s).appendChild(n); }
+      n.textContent = lista.length > 10 ? "(" + lista.length + ")" : "";
+    });
+    trilhos();
+  }
+  /* paginação: ‹ Anterior · 1 2 3 · Siguiente › */
+  function paginacao(pag, pags) {
+    var nav = $("#paginas");
+    if (!nav) { nav = document.createElement("nav"); nav.id = "paginas"; nav.className = "paginas"; nav.setAttribute("aria-label", "Páginas"); $('[data-grade="destaque"]').insertAdjacentElement("afterend", nav); }
+    nav.hidden = pags < 2;
+    if (pags < 2) { nav.innerHTML = ""; return; }
+    var link = function (n) { var u = new URLSearchParams(location.search); if (n > 1) u.set("p", n); else u.delete("p"); return "?" + u.toString(); };
+    var nums = [];
+    for (var k = 1; k <= pags; k++) {
+      if (k === 1 || k === pags || Math.abs(k - pag) <= 1) nums.push(k);
+      else if (nums[nums.length - 1] !== "…") nums.push("…");
+    }
+    nav.innerHTML = (pag > 1 ? '<a class="pg-seta" href="' + link(pag - 1) + '">‹ ' + T("Anterior", "Anterior", "Previous") + "</a>" : "") +
+      nums.map(function (k) { return k === "…" ? "<span>…</span>" : k === pag ? '<b aria-current="page">' + k + "</b>" : '<a href="' + link(k) + '">' + k + "</a>"; }).join("") +
+      (pag < pags ? '<a class="pg-seta" href="' + link(pag + 1) + '">' + T("Siguiente", "Seguinte", "Next") + " ›</a>" : "");
+  }
+  /* fileiras com setas (sem buracos quando há poucos produtos) */
+  function trilhos() {
+    $$(".grade").forEach(function (g) {
+      var filtro = ["sugeridos", "rel"].indexOf(g.getAttribute("data-grade")) < 0;
+      if (filtro) return;
+      g.classList.add("trilho");
+      if (filtro || g.parentNode.classList.contains("trilho-box")) { atualizarSetas(g); return; }
+      var box = document.createElement("div"); box.className = "trilho-box";
+      g.parentNode.insertBefore(box, g); box.appendChild(g);
+      box.insertAdjacentHTML("beforeend", '<button type="button" class="seta-t ant" aria-label="‹">‹</button><button type="button" class="seta-t prox" aria-label="›">›</button><div class="trilho-pontos"></div>');
+      $(".ant", box).addEventListener("click", function () { g.scrollBy({ left: -g.clientWidth * 0.9 }); });
+      $(".prox", box).addEventListener("click", function () { g.scrollBy({ left: g.clientWidth * 0.9 }); });
+      g.addEventListener("scroll", function () { atualizarSetas(g); }, { passive: true });
+      atualizarSetas(g);
     });
   }
+  function atualizarSetas(g) {
+    var box = g.parentNode; if (!box.classList.contains("trilho-box")) return;
+    var trilho = g.classList.contains("trilho"), max = g.scrollWidth - g.clientWidth;
+    $(".ant", box).hidden = !trilho || g.scrollLeft < 8;
+    $(".prox", box).hidden = !trilho || g.scrollLeft > max - 8;
+    var pts = $(".trilho-pontos", box), paginas = trilho && max > 8 ? Math.ceil(g.scrollWidth / g.clientWidth - 0.05) : 0;
+    pts.hidden = paginas < 2;
+    if (paginas >= 2) {
+      var atual = Math.round(g.scrollLeft / Math.max(1, max) * (paginas - 1));
+      pts.innerHTML = new Array(paginas + 1).join("<i></i>");
+      $$("i", pts).forEach(function (i, k) { i.classList.toggle("on", k === atual); });
+    }
+  }
+  window.addEventListener("resize", function () { $$(".grade").forEach(atualizarSetas); });
+  /* voltar ao topo */
+  (function () {
+    var b = document.createElement("button"); b.type = "button"; b.className = "topo-bt"; b.setAttribute("aria-label", "↑"); b.textContent = "↑";
+    document.body.appendChild(b);
+    b.addEventListener("click", function () { window.scrollTo({ top: 0, behavior: "smooth" }); });
+    window.addEventListener("scroll", function () { b.classList.toggle("on", window.scrollY > 600); }, { passive: true });
+  })();
   document.addEventListener("click", function (e) {
     var b = e.target.closest("[data-add]");
     if (b) { adicionar(b.getAttribute("data-add"), 1); }
@@ -163,6 +224,13 @@
     }).join("");
     var v = $("#pVideo");
     if (p.video) { v.src = p.video; v.hidden = false; }
+    var rel = $("#pRel");
+    if (!rel) { rel = document.createElement("section"); rel.id = "pRel"; rel.className = "sugeridos"; box.appendChild(rel); }
+    var outros = PRODUTOS.filter(function (x) { return x.id !== p.id && x.categoria === p.categoria; })
+      .concat(PRODUTOS.filter(function (x) { return x.id !== p.id && x.categoria !== p.categoria; })).slice(0, 12);
+    rel.hidden = !outros.length;
+    rel.innerHTML = outros.length ? '<h2>' + T("También te puede gustar", "Também pode gostar", "You may also like") + '</h2><div class="grade" data-grade="rel">' + outros.map(cartao).join("") + "</div>" : "";
+    trilhos();
     var box2 = $("#pVars");
     if (!box2) { box2 = document.createElement("div"); box2.id = "pVars"; box2.className = "vars"; $("#pPreco").insertAdjacentElement("afterend", box2); }
     varSel = null;
@@ -210,8 +278,12 @@
     var box = $("#cItens"); if (!box) return;
     var itens = itensCarrinho();
     $("#cResumo").hidden = !itens.length;
+    if ($(".carr-in")) $(".carr-in").classList.toggle("so", !itens.length);
     if (!itens.length) {
-      box.innerHTML = '<div class="vazio-in"><h2>' + T("Tu carrito está vacío", "O seu carrinho está vazio", "Your cart is empty") + '</h2><a class="bt" href="./">' + T("Ver productos", "Ver produtos", "Shop now") + "</a></div>";
+      var sug = PRODUTOS.slice().sort(function (a, b) { return (b.destaque ? 1 : 0) - (a.destaque ? 1 : 0); }).slice(0, 12);
+      box.innerHTML = '<div class="vazio-in"><h2>' + T("Tu carrito está vacío", "O seu carrinho está vazio", "Your cart is empty") + '</h2><a class="bt" href="./">' + T("Ver productos", "Ver produtos", "Shop now") + "</a></div>" +
+        (sug.length ? '<div class="sugeridos"><h2>' + T("Te puede gustar", "Também pode gostar", "You may also like") + '</h2><div class="grade" data-grade="sugeridos">' + sug.map(cartao).join("") + "</div></div>" : "");
+      trilhos();
       return;
     }
     box.innerHTML = itens.map(function (it) {
