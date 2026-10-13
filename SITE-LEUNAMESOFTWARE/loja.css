@@ -442,3 +442,10 @@ body>*{flex-shrink:0}
 .paginas .pg-seta{padding:0 16px}
 .sec-n{font-size:.55em;color:var(--suave);font-weight:500}
 .cookies:not([hidden])~.topo-bt{display:none}
+/* vídeo do produto dentro da galeria (não estica a página no celular) */
+.foto{position:relative}
+.foto #pVideo{position:absolute;inset:0;width:100%;height:100%;max-height:none;margin:0;border-radius:0;object-fit:contain;background:#000}
+.foto.com-video img{visibility:hidden}
+.miniaturas .mini-video{position:relative}
+.mini-video span{position:absolute;inset:0;display:grid;place-items:center;background:rgba(0,0,0,.35);color:#fff;font-size:22px}
+.galeria,.info{min-width:0}

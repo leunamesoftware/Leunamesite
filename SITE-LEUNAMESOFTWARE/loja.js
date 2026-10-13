@@ -222,8 +222,14 @@
     $("#pMinis").innerHTML = p.imagenes.map(function (src, k) {
       return '<button type="button" class="' + (k ? "" : "on") + '" data-src="' + esc(src) + '"><img src="' + esc(src) + '" alt=""></button>';
     }).join("");
-    var v = $("#pVideo");
-    if (p.video) { v.src = p.video; v.hidden = false; }
+    // vídeo dentro da galeria (quadrado, sem esticar a página): miniatura ▶ ao lado das fotos
+    var v = $("#pVideo"); v.hidden = true; v.removeAttribute("src");
+    var fbox = $("#pFoto").parentNode; fbox.classList.remove("com-video");
+    if (p.video) {
+      if (v.parentNode !== fbox) fbox.appendChild(v);
+      v.src = p.video;
+      $("#pMinis").insertAdjacentHTML("afterbegin", '<button type="button" class="mini-video" data-video aria-label="Vídeo"><img src="' + esc(p.imagenes[0]) + '" alt=""><span>▶</span></button>');
+    }
     var rel = $("#pRel");
     if (!rel) { rel = document.createElement("section"); rel.id = "pRel"; rel.className = "sugeridos"; box.appendChild(rel); }
     var outros = PRODUTOS.filter(function (x) { return x.id !== p.id && x.categoria === p.categoria; })
@@ -253,6 +259,13 @@
   if ($("#prod")) {
     $("#pMinis").addEventListener("click", function (e) {
       var b = e.target.closest("button"); if (!b) return;
+      var v = $("#pVideo"), fbox = $("#pFoto").parentNode;
+      if (b.hasAttribute("data-video")) {
+        fbox.classList.add("com-video"); v.hidden = false; v.play().catch(function () {});
+        $$("#pMinis button").forEach(function (x) { x.classList.toggle("on", x === b); });
+        return;
+      }
+      fbox.classList.remove("com-video"); v.pause(); v.hidden = true;
       $("#pFoto").src = b.getAttribute("data-src");
       $$("#pMinis button").forEach(function (x) { x.classList.toggle("on", x === b); });
     });
