@@ -27,6 +27,11 @@ jobs:
             curl -s "https://pets.leuname.com/api/painel/buscar?q=cat%20scratcher" -H "Authorization: Bearer $tk" | jq -c '{n:(.itens|length),erro,detalhe,primeiros:[.itens[:3][]|{pid,nome,custoUsd,popularidade}]}' >> /tmp/e/painel.txt
             pid=$(curl -s "https://pets.leuname.com/api/painel/buscar?q=dog%20leash" -H "Authorization: Bearer $tk" | jq -r '.itens[0].pid // empty')
             curl -s "https://pets.leuname.com/api/painel/detalhe?pid=$pid" -H "Authorization: Bearer $tk" | jq -c 'del(.descricaoEn,.imagens)' >> /tmp/e/painel.txt
+            echo "video:" >> /tmp/e/painel.txt
+            curl -s -X POST https://pets.leuname.com/api/painel/video -H "Authorization: Bearer $tk" -H 'Content-Type: application/json' -d '{"id":"2090701323421270017"}' >> /tmp/e/painel.txt; echo >> /tmp/e/painel.txt
+            curl -s -o /dev/null -w 'mp4 http=%{http_code} bytes=%{size_download} tipo=%{content_type}\n' https://pets.leuname.com/v/2090701323421270017.mp4 >> /tmp/e/painel.txt
+            curl -s -o /dev/null -w 'range http=%{http_code}\n' -H 'Range: bytes=0-999' https://pets.leuname.com/v/2090701323421270017.mp4 >> /tmp/e/painel.txt
+            curl -s -o /dev/null -w 'apk http=%{http_code} bytes=%{size_download}\n' https://pets.leuname.com/painel/app.apk >> /tmp/e/painel.txt
             curl -s -X POST https://pets.leuname.com/api/painel/sair -H "Authorization: Bearer $tk" > /dev/null
           else
             jq -nc --arg s "$S3" '{senha:$s}' | curl -s -X POST https://pets.leuname.com/api/painel/login -H 'Content-Type: application/json' -d @- > /tmp/e/painel.txt
