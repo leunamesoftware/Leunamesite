@@ -13,7 +13,7 @@ main = "worker.js"
 [assets]
 directory = "./"
 binding = "ASSETS"
-run_worker_first = ["/api/*"]
+run_worker_first = true
 
 # Dominio customizado: leunamesoftware.com (a zona ja esta ativa na conta
 # Cloudflare -- confirmado porque api.leunamesoftware.com ja funciona no
@@ -24,4 +24,18 @@ custom_domain = true
 
 [[routes]]
 pattern = "www.leunamesoftware.com"
+custom_domain = true
+
+# Domínio próprio da loja (comprado na Cloudflare em 13/10/2026). leuname.com é o domínio-mãe:
+# cada nicho vira um subdomínio (pets., casa., ...). O worker.js redireciona os outros endereços para pets.
+[[routes]]
+pattern = "pets.leuname.com"
+custom_domain = true
+
+[[routes]]
+pattern = "leuname.com"
+custom_domain = true
+
+[[routes]]
+pattern = "www.leuname.com"
 custom_domain = true

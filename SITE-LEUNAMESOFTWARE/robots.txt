@@ -1,6 +1,6 @@
 User-agent: *
 Disallow: /admin
 Disallow: /admin-licencas
-Sitemap: https://leunamesoftware.com/sitemap.xml
+Sitemap: https://pets.leuname.com/sitemap.xml
 Disallow: /novidades.html
 Disallow: /carrito.html

@@ -86,7 +86,7 @@ def cabeca(titulo, desc, caminho, indexar=True):
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{titulo}</title>
 <meta name="description" content="{desc}">
-{robots}<link rel="canonical" href="https://leunamesoftware.com/{caminho}">
+{robots}<link rel="canonical" href="https://pets.leuname.com/{caminho}">
 <meta name="theme-color" content="#0F1E44">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -95,7 +95,7 @@ def cabeca(titulo, desc, caminho, indexar=True):
 <link rel="stylesheet" href="loja.css">
 <script>{IDIOMA_JS}</script>
 <script src="config.js"></script>
-<script type="application/ld+json">{{"@context":"https://schema.org","@type":"OnlineStore","name":"LeunaPets","url":"https://leunamesoftware.com/","logo":"https://leunamesoftware.com/img/emblema-192.png","description":"Tienda online especializada en productos para perros y gatos, con envío gratis a 9 países de Europa.","areaServed":["DE","FR","ES","IT","NL","BE","AT","PT","IE"],"currenciesAccepted":"EUR","paymentAccepted":"Tarjeta, PayPal, Apple Pay, Google Pay"}}</script>
+<script type="application/ld+json">{{"@context":"https://schema.org","@type":"OnlineStore","name":"LeunaPets","url":"https://pets.leuname.com/","logo":"https://pets.leuname.com/img/emblema-192.png","description":"Tienda online especializada en productos para perros y gatos, con envío gratis a 9 países de Europa.","areaServed":["DE","FR","ES","IT","NL","BE","AT","PT","IE"],"currenciesAccepted":"EUR","paymentAccepted":"Tarjeta, PayPal, Apple Pay, Google Pay"}}</script>
 </head>
 <body>
 <div class="barra">
@@ -137,7 +137,7 @@ RODAPE = f'''
     <div><h4>{t('Ayuda', 'Ajuda', 'Help')}</h4><a href="envios.html">{t('Envíos y devoluciones', 'Envios e devoluções', 'Shipping & returns')}</a><a href="#" data-mail>{t('Contacto', 'Contacto', 'Contact')}</a><a href="carrito.html">{t('Mi carrito', 'O meu carrinho', 'My cart')}</a></div>
     <div><h4>Legal</h4><a href="aviso-legal.html">{t('Aviso legal', 'Aviso legal', 'Legal notice')}</a><a href="envios.html#desistimiento">{t('Derecho de desistimiento', 'Direito de livre resolução', 'Right of withdrawal')}</a><a href="privacidad.html">{t('Privacidad', 'Privacidade', 'Privacy')}</a><a href="cookies.html">Cookies</a></div>
   </div>
-  <div class="wrap pie-bajo"><span>© <span data-ano>2026</span> {MARCA} · leunamesoftware.com</span><span class="ssl"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="10" width="14" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>{t('Sitio seguro · Conexión cifrada SSL', 'Site seguro · Ligação cifrada SSL', 'Secure site · SSL encrypted')}</span><span class="pagos" aria-label="Formas de pago"><i class="pg pg-paypal"><b>Pay</b>Pal</i><i class="pg pg-stripe">stripe</i><i class="pg pg-visa">VISA</i><i class="pg pg-mc"><span></span><span></span></i><i class="pg pg-apple"><svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path fill="currentColor" d="M16.4 12.6c0-2.4 2-3.5 2.1-3.6-1.1-1.7-2.9-1.9-3.5-1.9-1.5-.2-2.9.9-3.7.9s-1.9-.9-3.2-.8c-1.6 0-3.1 1-4 2.4-1.7 3-.4 7.3 1.2 9.7.8 1.2 1.8 2.5 3 2.4 1.2 0 1.7-.8 3.1-.8s1.9.8 3.2.8c1.3 0 2.1-1.2 2.9-2.4.9-1.4 1.3-2.7 1.3-2.8 0 0-2.4-1-2.4-3.9zM14 5.5c.7-.8 1.1-1.9 1-3-1 0-2.1.7-2.8 1.5-.6.7-1.2 1.8-1 2.9 1.1.1 2.1-.6 2.8-1.4z"/></svg>Pay</i><i class="pg pg-gpay"><b>G</b> Pay</i></span></div>
+  <div class="wrap pie-bajo"><span>© <span data-ano>2026</span> {MARCA} · pets.leuname.com</span><span class="ssl"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="10" width="14" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>{t('Sitio seguro · Conexión cifrada SSL', 'Site seguro · Ligação cifrada SSL', 'Secure site · SSL encrypted')}</span><span class="pagos" aria-label="Formas de pago"><i class="pg pg-paypal"><b>Pay</b>Pal</i><i class="pg pg-stripe">stripe</i><i class="pg pg-visa">VISA</i><i class="pg pg-mc"><span></span><span></span></i><i class="pg pg-apple"><svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path fill="currentColor" d="M16.4 12.6c0-2.4 2-3.5 2.1-3.6-1.1-1.7-2.9-1.9-3.5-1.9-1.5-.2-2.9.9-3.7.9s-1.9-.9-3.2-.8c-1.6 0-3.1 1-4 2.4-1.7 3-.4 7.3 1.2 9.7.8 1.2 1.8 2.5 3 2.4 1.2 0 1.7-.8 3.1-.8s1.9.8 3.2.8c1.3 0 2.1-1.2 2.9-2.4.9-1.4 1.3-2.7 1.3-2.8 0 0-2.4-1-2.4-3.9zM14 5.5c.7-.8 1.1-1.9 1-3-1 0-2.1.7-2.8 1.5-.6.7-1.2 1.8-1 2.9 1.1.1 2.1-.6 2.8-1.4z"/></svg>Pay</i><i class="pg pg-gpay"><b>G</b> Pay</i></span></div>
 </footer>
 <div class="cookies" id="cookies" hidden>
   <p>{t('Solo usamos lo necesario para que la tienda funcione (carrito e idioma). Al pagar, Stripe o PayPal usan sus propias cookies.', 'Só usamos o necessário para a loja funcionar (carrinho e idioma). No pagamento, a Stripe ou o PayPal usam os seus próprios cookies.', 'We only store what the shop needs to work (cart and language). At checkout, Stripe or PayPal use their own cookies.')} <a href="cookies.html">{t('Más información', 'Saber mais', 'Learn more')}</a></p>
@@ -310,15 +310,15 @@ legal('envios.html', ('Envíos y devoluciones', 'Envios e devoluções', 'Shippi
       'Free shipping to 9 EU countries, delivery times and 14-day right of withdrawal.')
 
 legal('aviso-legal.html', ('Aviso legal', 'Aviso legal', 'Legal notice'), ('''
-<h2>Titular de la tienda</h2><p data-titular>Titular: LeuName Softwares (marca LeunaPets) · Correo: <a href="#" data-mail>contacto por email</a> · Web: leunamesoftware.com</p>
+<h2>Titular de la tienda</h2><p data-titular>Titular: LeuName Softwares (marca LeunaPets) · Correo: <a href="#" data-mail>contacto por email</a> · Web: pets.leuname.com</p>
 <h2>Objeto</h2><p>Venta a distancia de productos para perros y gatos a consumidores de la Unión Europea. Los pedidos se envían a través de nuestro socio logístico internacional, con seguimiento.</p>
 <h2>Precios y pago</h2><p>Precios en euros con IVA incluido. Pago con tarjeta, Apple Pay o Google Pay (procesado por Stripe) o con PayPal. El contrato se perfecciona al recibir la confirmación del pago.</p>
 <h2>Resolución de litigios</h2><p>Si tienes cualquier problema, escríbenos primero: lo solucionamos. También puedes acudir a los organismos de consumo de tu país.</p>''', '''
-<h2>Titular da loja</h2><p data-titular>Titular: LeuName Softwares (marca LeunaPets) · Email: <a href="#" data-mail>contacto por email</a> · Site: leunamesoftware.com</p>
+<h2>Titular da loja</h2><p data-titular>Titular: LeuName Softwares (marca LeunaPets) · Email: <a href="#" data-mail>contacto por email</a> · Site: pets.leuname.com</p>
 <h2>Objeto</h2><p>Venda à distância de produtos para cães e gatos a consumidores da União Europeia. As encomendas são enviadas através do nosso parceiro logístico internacional, com seguimento.</p>
 <h2>Preços e pagamento</h2><p>Preços em euros com IVA incluído. Pagamento com cartão, Apple Pay ou Google Pay (processado pela Stripe) ou com PayPal. O contrato fica concluído com a confirmação do pagamento.</p>
 <h2>Resolução de litígios</h2><p>Se tiver algum problema, escreva-nos primeiro: resolvemos. Em Portugal pode também usar o Livro de Reclamações Eletrónico (livroreclamacoes.pt) e as entidades de resolução alternativa de litígios de consumo.</p>''', '''
-<h2>Shop owner</h2><p data-titular>Owner: LeuName Softwares (LeunaPets brand) · Email: <a href="#" data-mail>contact by email</a> · Website: leunamesoftware.com</p>
+<h2>Shop owner</h2><p data-titular>Owner: LeuName Softwares (LeunaPets brand) · Email: <a href="#" data-mail>contact by email</a> · Website: pets.leuname.com</p>
 <h2>Purpose</h2><p>Distance selling of products for dogs and cats to consumers in the European Union. Orders ship through our international logistics partner, with tracking.</p>
 <h2>Prices and payment</h2><p>Prices in euros including VAT. Payment by card, Apple Pay or Google Pay (processed by Stripe) or by PayPal. The contract is concluded when you receive payment confirmation.</p>
 <h2>Disputes</h2><p>If you have any problem, please contact us first and we will sort it out. You can also contact the consumer authorities in your country.</p>'''),

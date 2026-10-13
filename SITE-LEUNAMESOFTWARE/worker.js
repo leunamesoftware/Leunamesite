@@ -1,8 +1,9 @@
-// Loja Europa (leunamesoftware.com): serve o site estático e o pagamento por cartão (Stripe Checkout).
+// Loja Europa LeunaPets (pets.leuname.com): serve o site estático e o pagamento por cartão (Stripe Checkout).
 // A chave fica no segredo STRIPE_SECRET_KEY do Worker (vem do segredo do GitHub, nunca do código).
 // O preço é SEMPRE o de produtos.json (o navegador só manda id e quantidade).
 const PAISES = ["DE", "FR", "ES", "IT", "NL", "BE", "AT", "PT", "IE"];
-const SITE = "https://leunamesoftware.com";
+const SITE = "https://pets.leuname.com";
+const HOST_LOJA = "pets.leuname.com";
 
 const json = (dados, status = 200) =>
   new Response(JSON.stringify(dados), { status, headers: { "Content-Type": "application/json", "Cache-Control": "no-store" } });
@@ -60,6 +61,11 @@ async function pagar(req, env) {
 export default {
   async fetch(req, env) {
     const url = new URL(req.url);
+    // Endereços antigos/secundários vão para a loja (menos as páginas internas /admin)
+    if (url.hostname !== HOST_LOJA && !url.hostname.endsWith(".workers.dev") && url.hostname !== "localhost"
+        && !url.pathname.startsWith("/admin") && !url.pathname.startsWith("/api/")) {
+      return Response.redirect("https://" + HOST_LOJA + url.pathname + url.search, 301);
+    }
     if (url.pathname === "/api/config") return json({ stripe: !!env.STRIPE_SECRET_KEY });
     if (url.pathname === "/api/pagar" && req.method === "POST") return pagar(req, env);
     if (url.pathname.startsWith("/api/")) return json({ erro: "404" }, 404);
