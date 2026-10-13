@@ -95,6 +95,7 @@ def cabeca(titulo, desc, caminho, indexar=True):
 <link rel="stylesheet" href="loja.css">
 <script>{IDIOMA_JS}</script>
 <script src="config.js"></script>
+<script type="application/ld+json">{{"@context":"https://schema.org","@type":"OnlineStore","name":"LeunaPets","url":"https://leunamesoftware.com/","logo":"https://leunamesoftware.com/img/emblema-192.png","description":"Tienda online especializada en productos para perros y gatos, con envío gratis a 9 países de Europa.","areaServed":["DE","FR","ES","IT","NL","BE","AT","PT","IE"],"currenciesAccepted":"EUR","paymentAccepted":"Tarjeta, PayPal, Apple Pay, Google Pay"}}</script>
 </head>
 <body>
 <div class="barra">
