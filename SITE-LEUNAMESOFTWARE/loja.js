@@ -48,6 +48,8 @@
     $$("[data-qtd]").forEach(function (b) { b.textContent = n; b.hidden = !n; });
   }
   function adicionar(id, q) {
+    var p0 = porId[id.split("|")[0]];
+    if (p0 && id.indexOf("|") < 0 && p0.variantes && p0.variantes.length > 1) { location.href = "producto.html?id=" + encodeURIComponent(id); return; }
     carrinho[id] = Math.min(9, (carrinho[id] || 0) + (q || 1)); salvar();
     aviso(T("Añadido al carrito ✓", "Adicionado ao carrinho ✓", "Added to cart ✓"));
   }
@@ -57,6 +59,17 @@
   var PRODUTOS = [], porId = {};
   var nome = function (p) { return (p[lang()] || p.es || {}).nombre || ""; };
   var info = function (p) { return p[lang()] || p.es || {}; };
+  // item do carrinho: "id" ou "id|vid" (variação: cor/tamanho)
+  function resolver(chave) {
+    var partes = chave.split("|"), p = porId[partes[0]];
+    if (!p) return null;
+    var v = null;
+    if (p.variantes && p.variantes.length > 1) {
+      v = p.variantes.filter(function (x) { return x.vid === partes[1]; })[0];
+      if (!v) return null;
+    }
+    return { p: p, v: v, preco: v ? v.precio : p.precio, img: (v && v.img) || p.imagenes[0], nome: nome(p) + (v ? " — " + v.nombre : "") };
+  }
 
   var CARRO = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h2l2.4 11.2a1 1 0 0 0 1 .8h8.9a1 1 0 0 0 1-.8L20 8H6"/><circle cx="9" cy="20" r="1.4"/><circle cx="17" cy="20" r="1.4"/></svg>';
   function cartao(p) {
@@ -150,6 +163,24 @@
     }).join("");
     var v = $("#pVideo");
     if (p.video) { v.src = p.video; v.hidden = false; }
+    var box2 = $("#pVars");
+    if (!box2) { box2 = document.createElement("div"); box2.id = "pVars"; box2.className = "vars"; $("#pPreco").insertAdjacentElement("afterend", box2); }
+    varSel = null;
+    if (p.variantes && p.variantes.length > 1) {
+      box2.hidden = false;
+      box2.innerHTML = '<p class="vars-t">' + T("Elige una opción", "Escolha uma opção", "Choose an option") + ':</p><div class="vars-l">' +
+        p.variantes.map(function (x, k) {
+          return '<button type="button" data-var="' + k + '">' + (x.img ? '<img src="' + esc(x.img) + '" alt="">' : "") + '<span>' + esc(x.nombre) + "</span></button>";
+        }).join("") + "</div>";
+      escolher(p, 0);
+    } else { box2.hidden = true; box2.innerHTML = ""; }
+  }
+  var varSel = null;
+  function escolher(p, k) {
+    var x = p.variantes[k]; varSel = x;
+    $$("#pVars [data-var]").forEach(function (b) { b.classList.toggle("on", Number(b.getAttribute("data-var")) === k); });
+    $("#pPreco").textContent = euro(x.precio);
+    if (x.img) $("#pFoto").src = x.img;
   }
   if ($("#prod")) {
     $("#pMinis").addEventListener("click", function (e) {
@@ -159,18 +190,22 @@
     });
     $("[data-menos]").addEventListener("click", function () { qtdProd = Math.max(1, qtdProd - 1); $("#pQtd").textContent = qtdProd; });
     $("[data-mais]").addEventListener("click", function () { qtdProd = Math.min(9, qtdProd + 1); $("#pQtd").textContent = qtdProd; });
+    $("#prod").addEventListener("click", function (e) {
+      var b = e.target.closest("[data-var]"); if (!b) return;
+      escolher(porId[new URLSearchParams(location.search).get("id")], Number(b.getAttribute("data-var")));
+    });
     $("#pAdd").addEventListener("click", function () {
       var id = new URLSearchParams(location.search).get("id");
-      adicionar(id, qtdProd); $("#pIr").hidden = false;
+      adicionar(varSel ? id + "|" + varSel.vid : id, qtdProd); $("#pIr").hidden = false;
     });
   }
 
   /* ---------- carrinho / pagamento ---------- */
   function itensCarrinho() {
-    return Object.keys(carrinho).filter(function (id) { return porId[id] && carrinho[id] > 0; })
-      .map(function (id) { return { p: porId[id], q: carrinho[id] }; });
+    return Object.keys(carrinho).filter(function (k) { return carrinho[k] > 0 && resolver(k); })
+      .map(function (k) { var r = resolver(k); r.k = k; r.q = carrinho[k]; return r; });
   }
-  function total() { return itensCarrinho().reduce(function (s, it) { return s + it.p.precio * it.q; }, 0); }
+  function total() { return itensCarrinho().reduce(function (s, it) { return s + it.preco * it.q; }, 0); }
   function desenharCarrinho() {
     var box = $("#cItens"); if (!box) return;
     var itens = itensCarrinho();
@@ -180,15 +215,15 @@
       return;
     }
     box.innerHTML = itens.map(function (it) {
-      return '<div class="item"><img src="' + esc(it.p.imagenes[0]) + '" alt=""><div class="item-tx"><a href="producto.html?id=' + encodeURIComponent(it.p.id) + '">' + esc(nome(it.p)) + "</a><span>" + euro(it.p.precio) + '</span></div>' +
-        '<div class="qtd"><button type="button" data-q="-1" data-id="' + esc(it.p.id) + '">−</button><span>' + it.q + '</span><button type="button" data-q="1" data-id="' + esc(it.p.id) + '">+</button></div>' +
-        '<b class="item-total">' + euro(it.p.precio * it.q) + "</b></div>";
+      return '<div class="item"><img src="' + esc(it.img) + '" alt=""><div class="item-tx"><a href="producto.html?id=' + encodeURIComponent(it.p.id) + '">' + esc(it.nome) + "</a><span>" + euro(it.preco) + '</span></div>' +
+        '<div class="qtd"><button type="button" data-q="-1" data-id="' + esc(it.k) + '">−</button><span>' + it.q + '</span><button type="button" data-q="1" data-id="' + esc(it.k) + '">+</button></div>' +
+        '<b class="item-total">' + euro(it.preco * it.q) + "</b></div>";
     }).join("");
     $("#cSub").textContent = euro(total());
     $("#cTotal").textContent = euro(total());
     var pedido = $("[data-pedido]");
     if (pedido) pedido.href = "mailto:" + (C.email || "") + "?subject=" + encodeURIComponent(T("Pedido", "Encomenda", "Order")) +
-      "&body=" + encodeURIComponent(itens.map(function (it) { return it.q + " x " + nome(it.p) + " (" + it.p.id + ")"; }).join("\n") + "\nTotal: " + euro(total()));
+      "&body=" + encodeURIComponent(itens.map(function (it) { return it.q + " x " + it.nome + " (" + it.k + ")"; }).join("\n") + "\nTotal: " + euro(total()));
   }
   if ($("#cItens")) {
     $("#cItens").addEventListener("click", function (e) {
@@ -210,7 +245,7 @@
     if (!aceitou()) return;
     var b = this; b.disabled = true;
     fetch("/api/pagar", { method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ lang: lang(), itens: itensCarrinho().map(function (it) { return { id: it.p.id, q: it.q }; }) }) })
+      body: JSON.stringify({ lang: lang(), itens: itensCarrinho().map(function (it) { return { id: it.p.id, v: it.v ? it.v.vid : undefined, q: it.q }; }) }) })
       .then(function (r) { return r.json(); })
       .then(function (j) { if (j && j.url) location.href = j.url; else throw new Error(j && j.erro); })
       .catch(function () { b.disabled = false; aviso(T("No se pudo abrir el pago. Inténtalo de nuevo.", "Não foi possível abrir o pagamento. Tente novamente.", "Could not open checkout. Please try again.")); });
@@ -244,7 +279,7 @@
               description: "LeunaPets",
               amount: { currency_code: "EUR", value: tot, breakdown: { item_total: { currency_code: "EUR", value: tot } } },
               items: itens.map(function (it) {
-                return { name: nome(it.p).slice(0, 120), sku: it.p.id.slice(0, 120), quantity: String(it.q), unit_amount: { currency_code: "EUR", value: it.p.precio.toFixed(2) }, category: "PHYSICAL_GOODS" };
+                return { name: it.nome.slice(0, 120), sku: it.k.slice(0, 120), quantity: String(it.q), unit_amount: { currency_code: "EUR", value: it.preco.toFixed(2) }, category: "PHYSICAL_GOODS" };
               })
             }],
             application_context: { shipping_preference: "GET_FROM_FILE", brand_name: "LeunaPets" }
@@ -291,7 +326,7 @@
     .then(function (lista) {
       PRODUTOS = (Array.isArray(lista) ? lista : []).filter(function (p) { return p && p.id && p.imagenes && p.imagenes.length && p.precio > 0; });
       PRODUTOS.forEach(function (p) { porId[p.id] = p; });
-      Object.keys(carrinho).forEach(function (id) { if (!porId[id]) delete carrinho[id]; });
+      Object.keys(carrinho).forEach(function (k) { if (!resolver(k)) delete carrinho[k]; });
       contador(); redesenhar(); iniciarPagamento();
     });
 })();

@@ -159,7 +159,7 @@ function abrir(pid){
       '<div><label>Categoria</label><select class="campo" id="dCat">'+opcoes(CATS,estado.cat)+'</select></div></div>'+
       '<div class="linha"><div><label>Animal</label><select class="campo" id="dAnimal">'+opcoes(ANIMAIS,animal)+'</select></div>'+
       '<div><label>&nbsp;</label><label style="margin:0;color:#1d2340"><input type="checkbox" id="dDest"> Destaque na página inicial</label></div></div>'+
-      (d.variantes.length>1?'<div class="aviso">Tem '+d.variantes.length+' variações (cor/tamanho). A loja vende a 1ª: '+esc(d.variantes[0].nome)+'</div>':'')+
+      (d.variantes.length>1?'<div class="aviso" style="background:#e3f6ec;border-color:#9fdcbc;color:#14653f">Tem '+d.variantes.length+' variações (cor/tamanho). O cliente escolhe na loja. Variação mais cara sobe o preço sozinha.</div>':'')+
       '<p style="font-size:12px;color:#6b7190">Sugerido: '+eur(d.sugerido)+' (2× o custo, mínimo +8 €). Ao publicar, o texto em espanhol é escrito sozinho. Dá para mudar depois em "Na loja".</p>'+
       '<div class="acoes"><button class="bt cinza" id="dFechar">Fechar</button><button class="bt verde" id="dPub"'+(d.entregaTodos?"":" disabled")+'>Publicar na loja</button></div>';
     function conta(){var p=parseFloat($("#dPreco").value)||0;var l=lucro(p,d.custoEur||0);var c=$("#cLucro");c.querySelector("b").textContent=eur(l);c.className="conta "+(l>=5?"lucro":"ruim")}

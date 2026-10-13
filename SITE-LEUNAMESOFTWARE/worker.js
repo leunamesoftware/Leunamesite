@@ -37,14 +37,22 @@ async function pagar(req, env) {
     const p = cat[it && it.id];
     const q = Math.max(1, Math.min(9, parseInt(it && it.q, 10) || 0));
     if (!p) return json({ erro: "produto", id: it && it.id }, 400);
+    let v = null;
+    if (Array.isArray(p.variantes) && p.variantes.length > 1) {
+      v = p.variantes.find((x) => x.vid === (it && it.v));
+      if (!v) return json({ erro: "variacao", id: p.id }, 400);
+    }
+    const preco = v ? v.precio : p.precio;
     const info = p[lang] || p.es || {};
     f.set(`line_items[${n}][quantity]`, String(q));
     f.set(`line_items[${n}][price_data][currency]`, "eur");
-    f.set(`line_items[${n}][price_data][unit_amount]`, String(Math.round(p.precio * 100)));
-    f.set(`line_items[${n}][price_data][product_data][name]`, String(info.nombre || p.id).slice(0, 200));
-    if (p.imagenes && p.imagenes[0]) f.set(`line_items[${n}][price_data][product_data][images][0]`, p.imagenes[0]);
+    f.set(`line_items[${n}][price_data][unit_amount]`, String(Math.round(preco * 100)));
+    f.set(`line_items[${n}][price_data][product_data][name]`, (String(info.nombre || p.id) + (v ? " — " + v.nombre : "")).slice(0, 200));
+    const img = (v && v.img) || (p.imagenes && p.imagenes[0]);
+    if (img) f.set(`line_items[${n}][price_data][product_data][images][0]`, /^https?:/.test(img) ? img : SITE + "/" + img.replace(/^\//, ""));
     f.set(`line_items[${n}][price_data][product_data][metadata][cj]`, p.id);
-    resumo.push(`${q}x ${p.id}`);
+    if (v) f.set(`line_items[${n}][price_data][product_data][metadata][vid]`, v.vid);
+    resumo.push(`${q}x ${p.id}${v ? ":" + v.vid : ""}`);
     n++;
   }
   f.set("metadata[itens]", resumo.join(", ").slice(0, 490));

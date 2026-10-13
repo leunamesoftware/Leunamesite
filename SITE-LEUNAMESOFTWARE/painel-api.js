@@ -175,7 +175,7 @@ async function detalhe(env, pid) {
     custoEur, sugerido, lucro: sugerido == null ? null : lucro(sugerido, custoEur),
     plazo: nums.length ? `${Math.min(...nums)}-${Math.max(...nums)}` : "",
     imagens, temVideo: videos.length > 0,
-    variantes: variantes.slice(0, 12).map((v) => ({ vid: v.vid, nome: v.variantNameEn || v.variantKey || "", custoUsd: num(v.variantSellPrice) })),
+    variantes: variantes.slice(0, 24).map((v) => ({ vid: v.vid, chave: v.variantKey || "", nome: v.variantNameEn || v.variantKey || "", img: v.variantImage || "", custoUsd: num(v.variantSellPrice) })),
     linkCJ: `https://cjdropshipping.com/product/-p-${d.pid || pid}.html`,
   };
 }
@@ -273,6 +273,33 @@ export async function catalogo(env, req) {
   return [...mapa.values()];
 }
 
+// nomes das variações (CJ: "Pink-Large") em espanhol
+const PALAVRAS = {
+  black: "Negro", white: "Blanco", red: "Rojo", blue: "Azul", green: "Verde", yellow: "Amarillo", pink: "Rosa", purple: "Morado",
+  orange: "Naranja", grey: "Gris", gray: "Gris", brown: "Marrón", beige: "Beige", khaki: "Caqui", navy: "Azul marino", gold: "Dorado",
+  silver: "Plateado", rose: "Rosa", coffee: "Café", camel: "Camel", cyan: "Cian", transparent: "Transparente", colorful: "Multicolor",
+  light: "claro", dark: "oscuro", sky: "cielo", army: "militar", wine: "Vino", apricot: "Albaricoque", mint: "Menta",
+  small: "Pequeño", medium: "Mediano", large: "Grande", big: "Grande", style: "Modelo", type: "Tipo", random: "Aleatorio",
+};
+export function rotulo(v) {
+  let t = String(v.chave || "").trim();
+  if (!t) t = String(v.nome || "").split(" ").slice(-2).join(" ");
+  return t.split(/[-_/]+/).map((parte) => {
+    const w = parte.trim().split(/\s+/).map((x) => PALAVRAS[x.toLowerCase()] || x);
+    if (w.length > 1 && ["claro", "oscuro"].includes(w[0])) w.push(w.shift());   // "Light Blue" → "Azul claro"
+    return w.join(" ");
+  }).filter(Boolean).join(" / ").slice(0, 60);
+}
+export function variacoes(d, precio) {
+  const lista = (d.variantes || []).filter((v) => v.vid && v.custoUsd != null);
+  if (lista.length < 2) return [];
+  const base = d.custoProdutoUsd;
+  return lista.map((v) => {
+    const extra = Math.max(0, v.custoUsd - base) * USD_EUR * 2;   // variação mais cara: preço sobe na mesma margem
+    return { vid: v.vid, nombre: rotulo(v), img: v.img || "", precio: extra > 0.01 ? Math.ceil(precio + extra) - 0.01 : precio };
+  });
+}
+
 function montar(pid, d, campos, textos) {
   const preco = Math.round((num(campos.precio) || d.sugerido) * 100) / 100;
   return {
@@ -282,6 +309,7 @@ function montar(pid, d, campos, textos) {
     nuevo: campos.nuevo !== false, destaque: !!campos.destaque,
     precio: preco, imagenes: d.imagenes.slice(0, 6), video: "", plazo: d.plazo,
     cj: { vid: d.vid, sku: d.sku, custoEur: d.custoEur, painel: true },
+    variantes: variacoes(d, preco),
   };
 }
 
@@ -310,7 +338,14 @@ async function editar(req, env) {
     if (!row) return json({ erro: "id" }, 404);
     p = JSON.parse(row.dados);
   }
-  if (c.precio != null) { const v = num(c.precio); if (v > 0 && v < 1000) p.precio = Math.round(v * 100) / 100; }
+  if (c.precio != null) {
+    const v = num(c.precio);
+    if (v > 0 && v < 1000) {
+      const novo = Math.round(v * 100) / 100, dif = novo - p.precio;
+      p.precio = novo;
+      if (Array.isArray(p.variantes)) p.variantes = p.variantes.map((x) => ({ ...x, precio: Math.round((x.precio + dif) * 100) / 100 }));
+    }
+  }
   if (CATS.includes(c.categoria)) p.categoria = c.categoria;
   if (ANIMAIS.includes(c.animal)) p.animal = c.animal;
   if (typeof c.destaque === "boolean") p.destaque = c.destaque;

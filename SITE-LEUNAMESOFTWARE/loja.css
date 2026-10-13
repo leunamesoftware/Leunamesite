@@ -400,3 +400,12 @@ h1,h2,h3{font-family:var(--tit);letter-spacing:-.02em;line-height:1.1}
 .ssl svg{color:#4ADE80}
 .pie-bajo{align-items:center}
 .seguro{display:flex;align-items:flex-start;gap:6px}.seguro svg{flex:none;color:#16A34A;margin-top:1px}
+
+/* variações (cor/tamanho) na página do produto */
+.vars{margin:10px 0 14px}
+.vars-t{margin:0 0 6px;font-weight:600;font-size:14px}
+.vars-l{display:flex;flex-wrap:wrap;gap:8px}
+.vars-l button{display:flex;align-items:center;gap:6px;border:2px solid #e3e5ef;background:#fff;border-radius:12px;padding:5px 10px 5px 5px;cursor:pointer;font:inherit;font-size:13px;color:#0F1E44}
+.vars-l button img{width:34px;height:34px;object-fit:cover;border-radius:8px}
+.vars-l button:not(:has(img)){padding:8px 12px}
+.vars-l button.on{border-color:#E62E73;background:#fff4f8}
