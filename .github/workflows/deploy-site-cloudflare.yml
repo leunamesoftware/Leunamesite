@@ -21,6 +21,8 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Baixar codigo do repositorio
         uses: actions/checkout@v4
@@ -34,6 +36,16 @@ jobs:
         env:
           CJ_API_KEY: ${{ secrets.CJ_API_KEY }}
         run: python3 ferramentas-loja/cj_sync.py
+
+      - name: Salvar catálogo da CJ no branch dados-cj (para o Claude ler)
+        run: |
+          if [ -s SITE-LEUNAMESOFTWARE/catalogo-cj.json ]; then
+            mkdir -p /tmp/dados && cp SITE-LEUNAMESOFTWARE/catalogo-cj.json /tmp/dados/
+            cd /tmp/dados && git init -q && git checkout -q -b dados-cj
+            git config user.name "robo-cj" && git config user.email "robo-cj@users.noreply.github.com"
+            git add . && git commit -qm "catálogo CJ $(date -u +%F)"
+            git push -qf "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" dados-cj
+          fi
 
       - name: Guardar catálogo da CJ (para o Claude traduzir)
         uses: actions/upload-artifact@v4
