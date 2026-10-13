@@ -1,0 +1,17 @@
+name: CJ — diagnóstico
+on: workflow_dispatch
+jobs:
+  debug:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Diagnóstico
+        env:
+          CJ_API_KEY: ${{ secrets.CJ_API_KEY }}
+        run: |
+          cd ferramentas-loja && python3 cj_debug.py
+          mkdir -p /tmp/d && cp debug.json /tmp/d/ && cd /tmp/d && git init -q && git checkout -q -b dados-cj-debug
+          git config user.name robo-cj && git config user.email robo-cj@users.noreply.github.com
+          git add . && git commit -qm debug && git push -qf "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" dados-cj-debug
