@@ -166,7 +166,7 @@ async function detalhe(env, pid) {
   const sugerido = custoEur == null ? null : precoVenda(custoEur);
   const nums = validos.flatMap((f) => (f.prazo.match(/\d+/g) || []).map(Number));
   const imagens = [...new Set([d.bigImage, ...lista(d.productImageSet)].filter(Boolean))].slice(0, 8);
-  const videos = lista(d.productVideo || d.videoList).map((x) => (typeof x === "object" ? x.videoUrl || x.url : x)).filter((x) => /^https?:/.test(x || ""));
+  const videos = lista(d.productVideo || d.videoList).filter(Boolean);
   return {
     pid: d.pid || pid, sku: d.productSku || "", vid, nomeEn: d.productNameEn || "",
     descricaoEn: String(d.description || "").replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim().slice(0, 2500),
@@ -174,10 +174,49 @@ async function detalhe(env, pid) {
     custoProdutoUsd: custo, freteUsd, fretes, entregaTodos: validos.length === FRETE_TESTE.length,
     custoEur, sugerido, lucro: sugerido == null ? null : lucro(sugerido, custoEur),
     plazo: nums.length ? `${Math.min(...nums)}-${Math.max(...nums)}` : "",
-    imagens, video: videos[0] || "",
+    imagens, temVideo: videos.length > 0,
     variantes: variantes.slice(0, 12).map((v) => ({ vid: v.vid, nome: v.variantNameEn || v.variantKey || "", custoUsd: num(v.variantSellPrice) })),
     linkCJ: `https://cjdropshipping.com/product/-p-${d.pid || pid}.html`,
   };
+}
+
+// ---------- vídeos: a CJ dá o link por queryVideosByProductId; guardamos no R2 (pede Referer) ----------
+const seguro = (pid) => String(pid).replace(/[^A-Za-z0-9-]/g, "").slice(0, 64);
+async function videosCJ(env, pid) {
+  const d = await cj(env, "POST", "/product/queryVideosByProductId", { corpo: { productId: pid } });
+  return (Array.isArray(d.data) ? d.data : []).filter((v) => v && v.videoUrl && v.videoState !== "OFF_STATE").map((v) => v.videoUrl);
+}
+async function guardarVideo(env, pid) {
+  if (!env.DOWNLOADS) return "";
+  try {
+    for (const u of (await videosCJ(env, pid)).slice(0, 3)) {
+      const r = await fetch(u, { headers: { Referer: "https://developers.cjdropshipping.com/" } });
+      if (!r.ok) continue;
+      const tam = parseInt(r.headers.get("content-length") || "0", 10);
+      if (tam > 90e6) continue;
+      const buf = await r.arrayBuffer();
+      if (buf.byteLength < 10000) continue;
+      await env.DOWNLOADS.put(`leunapets/videos/${seguro(pid)}.mp4`, buf, { httpMetadata: { contentType: "video/mp4" } });
+      return `/v/${seguro(pid)}.mp4`;
+    }
+  } catch { /* sem vídeo */ }
+  return "";
+}
+export async function servirVideo(req, env, nome) {
+  if (!env.DOWNLOADS || !/^[A-Za-z0-9-]+\.mp4$/.test(nome)) return new Response("404", { status: 404 });
+  const chave = "leunapets/videos/" + nome;
+  const range = req.headers.get("Range");
+  const o = await env.DOWNLOADS.get(chave, range ? { range: req.headers } : undefined);
+  if (!o) return new Response("404", { status: 404 });
+  const h = new Headers({ "Content-Type": "video/mp4", "Accept-Ranges": "bytes", "Cache-Control": "public, max-age=86400" });
+  if (new URL(req.url).searchParams.has("baixar")) h.set("Content-Disposition", `attachment; filename="leunapets-${nome}"`);
+  if (range && o.range) {
+    const ini = o.range.offset || 0, fim = ini + (o.range.length || o.size - ini) - 1;
+    h.set("Content-Range", `bytes ${ini}-${fim}/${o.size}`); h.set("Content-Length", String(fim - ini + 1));
+    return new Response(o.body, { status: 206, headers: h });
+  }
+  h.set("Content-Length", String(o.size));
+  return new Response(o.body, { headers: h });
 }
 
 // ---------- tradução automática (Workers AI) ----------
@@ -241,7 +280,7 @@ function montar(pid, d, campos, textos) {
     categoria: CATS.includes(campos.categoria) ? campos.categoria : "juguetes",
     animal: ANIMAIS.includes(campos.animal) ? campos.animal : "ambos",
     nuevo: campos.nuevo !== false, destaque: !!campos.destaque,
-    precio: preco, imagenes: d.imagenes.slice(0, 6), video: d.video, plazo: d.plazo,
+    precio: preco, imagenes: d.imagenes.slice(0, 6), video: "", plazo: d.plazo,
     cj: { vid: d.vid, sku: d.sku, custoEur: d.custoEur, painel: true },
   };
 }
@@ -256,6 +295,7 @@ async function publicar(req, env) {
   if (!d.imagens.length) return json({ erro: "sem-fotos" }, 400);
   const textos = c.es && c.es.nombre ? { es: c.es, en: c.en || c.es, ia: false } : await traduzir(env, d.nomeEn, d.descricaoEn, c.animal);
   const p = montar(pid, d, c, textos);
+  p.video = await guardarVideo(env, pid);
   await env.DB.prepare("INSERT OR REPLACE INTO produtos (id, dados, ativo, atualizado) VALUES (?,?,1,datetime('now'))").bind(pid, JSON.stringify(p)).run();
   return json({ ok: true, produto: p, ia: textos.ia, lucro: lucro(p.precio, d.custoEur) });
 }
@@ -292,7 +332,7 @@ async function publicados(req, env) {
   return json({ itens: [...loja, ...fora].map((p) => ({
     id: p.id, nome: (p.es && p.es.nombre) || p.id, img: (p.imagenes || [])[0] || "", precio: p.precio,
     categoria: p.categoria, animal: p.animal, destaque: !!p.destaque, nuevo: !!p.nuevo, es: p.es,
-    custoEur: p.cj && p.cj.custoEur, ativo: !p._fora, painel: !!(p.cj && p.cj.painel),
+    video: /^\/v\//.test(p.video || "") ? p.video : "", custoEur: p.cj && p.cj.custoEur, ativo: !p._fora, painel: !!(p.cj && p.cj.painel),
   })) });
 }
 
@@ -311,6 +351,16 @@ export async function painel(req, env, url) {
     }
     if (rota === "publicar" && req.method === "POST") return await publicar(req, env);
     if (rota === "editar" && req.method === "POST") return await editar(req, env);
+    if (rota === "video" && req.method === "POST") {
+      const c = await req.json().catch(() => ({}));
+      const p = (await catalogo(env, req)).find((x) => x.id === c.id);
+      if (!p) return json({ erro: "id" }, 404);
+      const v = await guardarVideo(env, p.id);
+      if (!v) return json({ erro: "sem-video", detalhe: "A CJ não tem vídeo deste produto." }, 404);
+      p.video = v;
+      await env.DB.prepare("INSERT OR REPLACE INTO produtos (id, dados, ativo, criado, atualizado) VALUES (?,?,1,COALESCE((SELECT criado FROM produtos WHERE id=?),datetime('now')),datetime('now'))").bind(p.id, JSON.stringify(p), p.id).run();
+      return json({ ok: true, video: v });
+    }
     if (rota === "publicados") return await publicados(req, env);
     if (rota === "sair" && req.method === "POST") {
       const m = /^Bearer (\w+)$/.exec(req.headers.get("Authorization") || "");

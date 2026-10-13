@@ -54,6 +54,7 @@ label{display:block;font-size:13px;color:var(--suave);margin-top:8px}
 .prod img{width:62px;height:62px;border-radius:9px;object-fit:cover;flex:none}
 .prod .tx{flex:1;min-width:0}.prod .nm{font-weight:600;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .prod.fora{opacity:.55}
+.mini{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap}.mini .bt{padding:6px 10px;font-size:12px;text-decoration:none;font-weight:600}
 #login{max-width:360px;margin:60px auto;background:#fff;border-radius:16px;padding:22px;text-align:center}
 #login img{width:190px}
 .toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--azul);color:#fff;padding:10px 16px;border-radius:10px;display:none;z-index:20;max-width:90%}
@@ -150,7 +151,7 @@ function abrir(pid){
     var animal=/cat|kitten|kitty/i.test(d.nomeEn)&&!/dog|puppy/i.test(d.nomeEn)?"gato":/dog|puppy/i.test(d.nomeEn)&&!/cat/i.test(d.nomeEn)?"perro":"ambos";
     var preco=d.sugerido;
     $("#janela").innerHTML='<div class="fotos">'+d.imagens.map(function(s){return '<img src="'+esc(s)+'" alt="">'}).join("")+'</div>'+
-      '<h3 style="margin:10px 0 2px">'+esc(d.nomeEn)+'</h3><small style="color:#6b7190">'+esc(d.categoriaCJ)+' · '+d.popularidade+' lojas vendem · prazo '+esc(d.plazo||"?")+' dias · <a href="'+esc(d.linkCJ)+'" target="_blank">ver na CJ</a></small>'+
+      '<h3 style="margin:10px 0 2px">'+esc(d.nomeEn)+(d.temVideo?' <span class="tag vid">🎬 vídeo vai junto</span>':'')+'</h3><small style="color:#6b7190">'+esc(d.categoriaCJ)+' · '+d.popularidade+' lojas vendem · prazo '+esc(d.plazo||"?")+' dias · <a href="'+esc(d.linkCJ)+'" target="_blank">ver na CJ</a></small>'+
       (d.entregaTodos?'':'<div class="aviso">A CJ não entrega em todos os países testados. Melhor escolher outro.</div>')+
       '<div class="contas"><div class="conta"><small>Produto (CJ)</small><b>$'+d.custoProdutoUsd.toFixed(2)+'</b></div><div class="conta"><small>Frete + IVA (pior país)</small><b>$'+(d.freteUsd==null?"—":d.freteUsd.toFixed(2))+'</b></div>'+
       '<div class="conta"><small>Custo total</small><b>'+eur(d.custoEur)+'</b></div><div class="conta lucro" id="cLucro"><small>Seu lucro por venda</small><b>—</b></div></div>'+
@@ -181,8 +182,14 @@ function desenhar(){var f=$("#filtro").value.toLowerCase();
   $("#lista").innerHTML='<p style="font-size:13px;color:#6b7190">'+LOJA.filter(function(p){return p.ativo}).length+' produtos à venda</p>'+l.map(function(p,i){
     return '<div class="prod'+(p.ativo?"":" fora")+'"><img src="'+esc(p.img)+'" alt=""><div class="tx"><div class="nm">'+esc(p.nome)+'</div>'+
     '<div class="tags"><span class="tag">'+eur(p.precio)+'</span><span class="tag">'+(CATS[p.categoria]||p.categoria)+'</span>'+(p.destaque?'<span class="tag pop">destaque</span>':'')+(p.ativo?'':'<span class="tag">fora da loja</span>')+
-    (p.custoEur?'<span class="tag ok">lucro '+eur(lucro(p.precio,p.custoEur))+'</span>':'')+'</div></div><button class="bt cinza" data-id="'+esc(p.id)+'">Editar</button></div>'}).join("")}
-$("#lista").onclick=function(ev){var b=ev.target.closest("[data-id]");if(!b)return;var p=LOJA.find(function(x){return x.id===b.dataset.id});if(p)editar(p)};
+    (p.custoEur?'<span class="tag ok">lucro '+eur(lucro(p.precio,p.custoEur))+'</span>':'')+'</div><div class="mini">'+
+    (p.video?'<a class="bt cinza" href="'+esc(p.video)+'?baixar=1" target="_blank">🎬 Baixar vídeo</a>':'<button class="bt cinza" data-vid="'+esc(p.id)+'">🎬 Pegar vídeo</button>')+
+    '<button class="bt cinza" data-link="'+esc(p.id)+'">🔗 Copiar link</button></div></div><button class="bt cinza" data-id="'+esc(p.id)+'">Editar</button></div>'}).join("")}
+function copiar(t){(navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(function(){toast("Link copiado. Cole na bio ou no post.")}).catch(function(){prompt("Copie o link:",t)})}
+$("#lista").onclick=function(ev){
+  var l=ev.target.closest("[data-link]");if(l){copiar("https://pets.leuname.com/producto.html?id="+encodeURIComponent(l.dataset.link));return}
+  var v=ev.target.closest("[data-vid]");if(v){v.disabled=true;v.textContent="Buscando vídeo…";api("video",{id:v.dataset.vid}).then(function(){toast("Vídeo pronto (já está na loja também)");carregarLoja()}).catch(function(e){v.disabled=false;v.textContent="🎬 Pegar vídeo";toast(e.message)});return}
+  var b=ev.target.closest("[data-id]");if(!b)return;var p=LOJA.find(function(x){return x.id===b.dataset.id});if(p)editar(p)};
 function editar(p){var es=p.es||{};
   $("#janela").innerHTML='<h3 style="margin:0 0 6px">Editar produto</h3>'+
     '<label>Nome (espanhol)</label><input class="campo" id="eNome" value="'+esc(es.nombre)+'">'+

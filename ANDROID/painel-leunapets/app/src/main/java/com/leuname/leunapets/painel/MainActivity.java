@@ -61,6 +61,10 @@ public class MainActivity extends Activity {
                 }
             }
         });
+        // downloads (vídeos, APK): abre no navegador, que baixa para a Galeria/Downloads
+        web.setDownloadListener((url, ua, disp, tipo, tam) -> {
+            try { startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url))); } catch (Exception e) { /* nada */ }
+        });
         if (salvo != null) web.restoreState(salvo); else web.loadUrl(PAINEL);
     }
 

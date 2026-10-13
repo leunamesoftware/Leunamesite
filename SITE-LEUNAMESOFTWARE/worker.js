@@ -1,7 +1,7 @@
 // Loja Europa LeunaPets (pets.leuname.com): serve o site estático e o pagamento por cartão (Stripe Checkout).
 // A chave fica no segredo STRIPE_SECRET_KEY do Worker (vem do segredo do GitHub, nunca do código).
 // O preço é SEMPRE o de produtos.json (o navegador só manda id e quantidade).
-import { painel, catalogo } from "./painel-api.js";
+import { painel, catalogo, servirVideo } from "./painel-api.js";
 
 const PAISES = ["DE", "FR", "ES", "IT", "NL", "BE", "AT", "PT", "IE"];
 const SITE = "https://pets.leuname.com";
@@ -78,6 +78,7 @@ export default {
       if (!o) return new Response("O app ainda está sendo gerado. Tente em alguns minutos.", { status: 404, headers: { "Content-Type": "text/plain; charset=utf-8" } });
       return new Response(o.body, { headers: { "Content-Type": "application/vnd.android.package-archive", "Content-Disposition": 'attachment; filename="PainelLeunaPets.apk"', "Cache-Control": "no-cache" } });
     }
+    if (url.pathname.startsWith("/v/")) return servirVideo(req, env, url.pathname.slice(3));
     if (url.pathname.startsWith("/api/painel/")) return painel(req, env, url);
     if (url.pathname === "/api/config") return json({ stripe: !!env.STRIPE_SECRET_KEY });
     if (url.pathname === "/api/pagar" && req.method === "POST") return pagar(req, env);
