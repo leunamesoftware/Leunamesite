@@ -138,7 +138,7 @@
     $("#pPreco").textContent = euro(p.precio);
     $("#pDesc").textContent = i.descripcion || "";
     $("#pLista").innerHTML = (i.puntos || []).map(function (x) { return "<li>" + esc(x) + "</li>"; }).join("");
-    $("#pPrazo").textContent = (p.plazo ? p.plazo + " " + T("días laborables", "dias úteis", "business days") : T("3–10 días laborables", "3–10 dias úteis", "3–10 business days"));
+    $("#pPrazo").textContent = (p.plazo ? p.plazo + " " + T("días laborables", "dias úteis", "business days") : T("7–15 días laborables", "7–15 dias úteis", "7–15 business days"));
     var foto = $("#pFoto"); foto.src = p.imagenes[0]; foto.alt = nome(p);
     $("#pMinis").innerHTML = p.imagenes.map(function (src, k) {
       return '<button type="button" class="' + (k ? "" : "on") + '" data-src="' + esc(src) + '"><img src="' + esc(src) + '" alt=""></button>';

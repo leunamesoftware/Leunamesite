@@ -123,7 +123,7 @@ def cabeca(titulo, desc, caminho, indexar=True):
 RODAPE = f'''
 <section class="garantias">
   <div class="wrap gar-in">
-    <div>{ico('camiao', 'gi')}<span><b>{t('Envío gratis', 'Envio grátis', 'Free shipping')}</b>{t('Desde almacenes en la UE, sin aduanas', 'De armazéns na UE, sem alfândega', 'From EU warehouses, no customs')}</span></div>
+    <div>{ico('camiao', 'gi')}<span><b>{t('Envío gratis', 'Envio grátis', 'Free shipping')}</b>{t('Con seguimiento, sin costes extra al recibir', 'Com seguimento, sem custos extra na entrega', 'Tracked, no extra fees on delivery')}</span></div>
     <div>{ico('escudo', 'gi')}<span><b>{t('Pago seguro', 'Pagamento seguro', 'Secure payment')}</b>{t('Tarjeta, Apple Pay o PayPal', 'Cartão, Apple Pay ou PayPal', 'Card, Apple Pay or PayPal')}</span></div>
     <div>{ico('volta', 'gi')}<span><b>{t('Devoluciones fáciles', 'Devoluções fáceis', 'Easy returns')}</b>{t('14 días para cambiar de opinión', '14 dias para mudar de ideias', '14 days to change your mind')}</span></div>
     <div>{ico('apoio', 'gi')}<span><b>{t('Atención al cliente', 'Apoio ao cliente', 'Customer care')}</b>{t('Respuesta en menos de 24 h', 'Resposta em menos de 24 h', 'Reply within 24 h')}</span></div>
@@ -162,7 +162,7 @@ SLIDES = [
 slides = ''.join(f'''<div class="slide{' on' if i == 0 else ''}{' slide-luz' if img in ('hero', 'banner-casa') else ''}{' slide-clara' if img.startswith('banner') and img != 'banner-casa' else ''}{' slide-roxo' if img == 'banner-2' else ''}" data-slide>
     <picture>{f'<source media="(max-width:720px)" srcset="img/{img}-m.webp">' if img.startswith('banner') else ''}<img class="slide-foto" src="img/{img}.webp" alt="" {'fetchpriority="high"' if i == 0 else 'loading="lazy"'}></picture>
     <div class="wrap slide-tx">
-      <p class="selo">{t('Envío gratis desde Europa', 'Envio grátis a partir da Europa', 'Free shipping from Europe')}</p>
+      <p class="selo">{t('Envío gratis a toda Europa', 'Envio grátis para toda a Europa', 'Free shipping across Europe')}</p>
       <h1>{h}</h1>
       <p class="hero-p">{p}</p>
       <a class="bt bt-cor" href="#novedades">{t('Comprar ahora', 'Comprar agora', 'Shop now')} {ico('seta')}</a>
@@ -201,7 +201,7 @@ index = f'''<main>
   <div class="porque-tx">
     <h2>{t('¿Por qué LeunaPets?', 'Porquê a LeunaPets?', 'Why LeunaPets?')}</h2>
     <p>{t('Somos una tienda especializada solo en perros y gatos. Probamos y elegimos cada producto pensando en su bienestar y en tu casa.', 'Somos uma loja especializada só em cães e gatos. Escolhemos cada produto a pensar no bem-estar deles e na sua casa.', 'We are a shop specialised only in dogs and cats. Every product is chosen with their wellbeing and your home in mind.')}</p>
-    <ul><li>{ico('camiao')}{t('Envío gratis desde almacenes en Europa', 'Envio grátis a partir de armazéns na Europa', 'Free shipping from European warehouses')}</li>
+    <ul><li>{ico('camiao')}{t('Envío gratis con seguimiento a toda Europa', 'Envio grátis com seguimento para toda a Europa', 'Free tracked shipping across Europe')}</li>
     <li>{ico('volta')}{t('14 días para devolver', '14 dias para devolver', '14-day returns')}</li>
     <li>{ico('escudo')}{t('Pago seguro con tarjeta o PayPal', 'Pagamento seguro com cartão ou PayPal', 'Secure payment by card or PayPal')}</li></ul>
   </div>
@@ -285,23 +285,23 @@ def legal(nome, titulos, textos, desc):
 
 legal('envios.html', ('Envíos y devoluciones', 'Envios e devoluções', 'Shipping & returns'), (f'''
 <h2>Dónde enviamos</h2><p>{PAISES[0]}. El envío es gratuito.</p>
-<h2>Plazos</h2><p>Preparamos tu pedido en 1–2 días laborables. Los productos salen de almacenes situados en la Unión Europea; la entrega suele tardar entre 3 y 10 días laborables según el producto y el país (lo ves en cada ficha). Te enviamos el número de seguimiento por email.</p>
-<h2>Precios e impuestos</h2><p>Los precios son finales, en euros e incluyen el IVA. No hay costes de aduana porque los envíos salen desde la UE.</p>
+<h2>Plazos</h2><p>Preparamos tu pedido en 1–3 días laborables y te enviamos el número de seguimiento por email. Los productos se envían desde los almacenes de nuestro socio logístico internacional; la entrega suele tardar entre 7 y 15 días laborables según el producto y el país (lo ves en cada ficha).</p>
+<h2>Precios e impuestos</h2><p>Los precios son finales, en euros e incluyen el IVA. En los pedidos de hasta 150 € el IVA se declara y paga en origen (régimen IOSS de la UE), así que no tendrás que pagar nada más al recibir el paquete.</p>
 <h2 id="desistimiento">Derecho de desistimiento (14 días)</h2><p>Tienes 14 días naturales desde que recibes el producto para desistir de la compra sin dar explicaciones. Escríbenos por email con tu número de pedido; te indicaremos la dirección de devolución. Te reembolsaremos todos los importes pagados, incluido el envío inicial, en un plazo máximo de 14 días desde que nos comuniques el desistimiento, por el mismo medio de pago. Podemos retener el reembolso hasta recibir el producto o la prueba de su envío. Los gastos de la devolución corren a cargo del cliente, salvo que el producto llegue defectuoso o no sea el pedido.</p>
 <p>Modelo de desistimiento: «Por la presente le comunico que desisto de mi contrato de venta del siguiente bien: [producto], pedido el [fecha] / recibido el [fecha]. Nombre, dirección, fecha.»</p>
 <h2>Productos defectuosos o dañados</h2><p>Si algo llega roto o no funciona, envíanos una foto por email y te enviamos otro o te devolvemos el dinero, sin coste para ti. </p>
 <h2>Garantía</h2><p>Todos los productos tienen la garantía legal de conformidad que establece la normativa de la Unión Europea, en los plazos que marca la ley de tu país.</p>
 <h2>Pedidos no recibidos</h2><p>Si tu pedido no llega en el plazo indicado, escríbenos y lo resolvemos: reenvío o reembolso completo.</p>''', f'''
 <h2>Para onde enviamos</h2><p>{PAISES[1]}. O envio é gratuito.</p>
-<h2>Prazos</h2><p>Preparamos a sua encomenda em 1–2 dias úteis. Os produtos saem de armazéns na União Europeia; a entrega costuma demorar entre 3 e 10 dias úteis conforme o produto e o país (vê o prazo em cada página). Enviamos o número de seguimento por email.</p>
-<h2>Preços e impostos</h2><p>Os preços são finais, em euros e com IVA incluído. Não há custos de alfândega porque os envios saem da UE.</p>
+<h2>Prazos</h2><p>Preparamos a sua encomenda em 1–3 dias úteis e enviamos o número de seguimento por email. Os produtos são enviados a partir dos armazéns do nosso parceiro logístico internacional; a entrega costuma demorar entre 7 e 15 dias úteis conforme o produto e o país (vê o prazo em cada página).</p>
+<h2>Preços e impostos</h2><p>Os preços são finais, em euros e com IVA incluído. Nas encomendas até 150 € o IVA é declarado e pago na origem (regime IOSS da UE), por isso não paga nada a mais ao receber.</p>
 <h2 id="desistimiento">Direito de livre resolução (14 dias)</h2><p>Tem 14 dias de calendário a partir da receção do produto para desistir da compra sem justificação. Envie-nos um email com o número da encomenda; indicamos a morada de devolução. Reembolsamos todos os valores pagos, incluindo o envio inicial, no prazo máximo de 14 dias após a sua comunicação, pelo mesmo meio de pagamento. Podemos reter o reembolso até recebermos o produto ou a prova do seu envio. Os custos da devolução ficam a cargo do cliente, exceto se o produto chegar com defeito ou não for o encomendado.</p>
 <p>Modelo de livre resolução: «Pela presente comunico que desisto do meu contrato de compra do seguinte bem: [produto], encomendado em [data] / recebido em [data]. Nome, morada, data.»</p>
 <h2>Produtos com defeito ou danificados</h2><p>Se algo chegar partido ou não funcionar, envie-nos uma foto por email e enviamos outro ou devolvemos o dinheiro, sem custos para si. Tem ainda a garantia legal de conformidade prevista na lei do seu país.</p>
 <h2>Encomendas não recebidas</h2><p>Se a encomenda não chegar no prazo indicado, escreva-nos e resolvemos: reenvio ou reembolso total.</p>''', f'''
 <h2>Where we ship</h2><p>{PAISES[2]}. Shipping is free.</p>
-<h2>Delivery times</h2><p>We process your order within 1–2 business days. Products ship from warehouses inside the European Union; delivery usually takes 3–10 business days depending on the product and country (shown on each product page). We email you the tracking number.</p>
-<h2>Prices and taxes</h2><p>Prices are final, in euros and include VAT. There are no customs fees because orders ship from within the EU.</p>
+<h2>Delivery times</h2><p>We process your order within 1–3 business days and email you the tracking number. Products ship from our international logistics partner's warehouses; delivery usually takes 7–15 business days depending on the product and country (shown on each product page).</p>
+<h2>Prices and taxes</h2><p>Prices are final, in euros and include VAT. For orders up to €150, VAT is declared and paid at origin (EU IOSS scheme), so there is nothing extra to pay on delivery.</p>
 <h2 id="desistimiento">Right of withdrawal (14 days)</h2><p>You have 14 calendar days from receiving your item to cancel the purchase without giving a reason. Email us with your order number and we will send you the return address. We will refund all payments received, including the original shipping cost, within 14 days of your notice, using the same payment method. We may withhold the refund until we receive the item or proof that it was sent back. Return shipping costs are paid by the customer unless the item is faulty or not what you ordered.</p>
 <p>Model withdrawal form: “I hereby give notice that I withdraw from my contract of sale of the following goods: [product], ordered on [date] / received on [date]. Name, address, date.”</p>
 <h2>Faulty or damaged items</h2><p>If something arrives broken or does not work, email us a photo and we will send a replacement or refund you at no cost. </p>
@@ -311,15 +311,15 @@ legal('envios.html', ('Envíos y devoluciones', 'Envios e devoluções', 'Shippi
 
 legal('aviso-legal.html', ('Aviso legal', 'Aviso legal', 'Legal notice'), ('''
 <h2>Titular de la tienda</h2><p data-titular>Titular: LeuName Softwares (marca LeunaPets) · Correo: <a href="#" data-mail>contacto por email</a> · Web: leunamesoftware.com</p>
-<h2>Objeto</h2><p>Venta a distancia de productos para perros y gatos a consumidores de la Unión Europea. Los pedidos se envían desde almacenes de nuestros socios logísticos en la UE.</p>
+<h2>Objeto</h2><p>Venta a distancia de productos para perros y gatos a consumidores de la Unión Europea. Los pedidos se envían a través de nuestro socio logístico internacional, con seguimiento.</p>
 <h2>Precios y pago</h2><p>Precios en euros con IVA incluido. Pago con tarjeta, Apple Pay o Google Pay (procesado por Stripe) o con PayPal. El contrato se perfecciona al recibir la confirmación del pago.</p>
 <h2>Resolución de litigios</h2><p>Si tienes cualquier problema, escríbenos primero: lo solucionamos. También puedes acudir a los organismos de consumo de tu país.</p>''', '''
 <h2>Titular da loja</h2><p data-titular>Titular: LeuName Softwares (marca LeunaPets) · Email: <a href="#" data-mail>contacto por email</a> · Site: leunamesoftware.com</p>
-<h2>Objeto</h2><p>Venda à distância de produtos para cães e gatos a consumidores da União Europeia. As encomendas são enviadas a partir de armazéns dos nossos parceiros logísticos na UE.</p>
+<h2>Objeto</h2><p>Venda à distância de produtos para cães e gatos a consumidores da União Europeia. As encomendas são enviadas através do nosso parceiro logístico internacional, com seguimento.</p>
 <h2>Preços e pagamento</h2><p>Preços em euros com IVA incluído. Pagamento com cartão, Apple Pay ou Google Pay (processado pela Stripe) ou com PayPal. O contrato fica concluído com a confirmação do pagamento.</p>
 <h2>Resolução de litígios</h2><p>Se tiver algum problema, escreva-nos primeiro: resolvemos. Em Portugal pode também usar o Livro de Reclamações Eletrónico (livroreclamacoes.pt) e as entidades de resolução alternativa de litígios de consumo.</p>''', '''
 <h2>Shop owner</h2><p data-titular>Owner: LeuName Softwares (LeunaPets brand) · Email: <a href="#" data-mail>contact by email</a> · Website: leunamesoftware.com</p>
-<h2>Purpose</h2><p>Distance selling of products for dogs and cats to consumers in the European Union. Orders ship from our logistics partners' warehouses inside the EU.</p>
+<h2>Purpose</h2><p>Distance selling of products for dogs and cats to consumers in the European Union. Orders ship through our international logistics partner, with tracking.</p>
 <h2>Prices and payment</h2><p>Prices in euros including VAT. Payment by card, Apple Pay or Google Pay (processed by Stripe) or by PayPal. The contract is concluded when you receive payment confirmation.</p>
 <h2>Disputes</h2><p>If you have any problem, please contact us first and we will sort it out. You can also contact the consumer authorities in your country.</p>'''),
       'Shop owner details and terms of LeunaPets.')
@@ -361,7 +361,7 @@ novidades = '''<!doctype html>
 <body class="nov">
 <main class="wrap">
   <h1>🤖 Novidades da CJ (Europa)</h1>
-  <p class="nov-sub">O robô procura todo dia produtos baratos com estoque em armazém europeu, calcula o frete para os 9 países da loja (usa o mais caro) e sugere o preço. <b>Para vender um produto</b>, toque em "Quero vender" e mande para o Claude: ele traduz e coloca na loja.</p>
+  <p class="nov-sub">O robô procura todo dia produtos baratos de pet (os mais vendidos de cada categoria da CJ), calcula o frete com IVA para a Europa (usa o mais caro) e sugere o preço. <b>Para vender um produto</b>, toque em "Quero vender" e mande para o Claude: ele traduz e coloca na loja.</p>
   <p class="nov-sub" id="nAtual"></p>
   <div class="nov-filtros"><button data-f="todos" class="on">Todos</button><button data-f="video">Com vídeo</button><button data-f="aprovado">À venda</button><button data-f="barato">Lucro ≥ 10 €</button></div>
   <div class="nov-grade" id="nGrade"></div>

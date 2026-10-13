@@ -135,6 +135,9 @@ def detalhar(cj, pid, armazem=ORIGEM, categoria=''):
         ops = [o for o in (f.get('data') or []) if num(o.get('logisticPrice')) is not None]
         if not ops:
             return None                                  # não entrega nesse país
+        for o in ops:                                     # frete + IVA/IOSS e taxas que a CJ cobra
+            tot = num(o.get('totalPostageFee'))
+            o['logisticPrice'] = tot if tot else num(o['logisticPrice']) + (num(o.get('taxesFee')) or 0) + (num(o.get('clearanceOperationFee')) or 0)
         def dias(o):
             n = [int(x) for x in __import__('re').findall(r'\d+', str(o.get('logisticAging') or ''))]
             return max(n) if n else 99
