@@ -321,7 +321,7 @@ function montar(pid, d, campos, textos, L) {
     categoria: catsDe(L).includes(campos.categoria) ? campos.categoria : catsDe(L)[0],
     animal: L.id === "pets" && ANIMAIS.includes(campos.animal) ? campos.animal : "ambos",
     nuevo: campos.nuevo !== false, destaque: !!campos.destaque,
-    precio: preco, imagenes: d.imagenes.slice(0, 6), video: "", plazo: d.plazo,
+    precio: preco, imagenes: d.imagens.slice(0, 6), video: "", plazo: d.plazo,
     cj: { vid: d.vid, sku: d.sku, custoEur: d.custoEur, painel: true },
     variantes: variacoes(d, preco),
   };
