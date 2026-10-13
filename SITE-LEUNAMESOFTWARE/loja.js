@@ -162,6 +162,24 @@
       nums.map(function (k) { return k === "…" ? "<span>…</span>" : k === pag ? '<b aria-current="page">' + k + "</b>" : '<a href="' + link(k) + '">' + k + "</a>"; }).join("") +
       (pag < pags ? '<a class="pg-seta" href="' + link(pag + 1) + '">' + T("Siguiente", "Seguinte", "Next") + " ›</a>" : "");
   }
+  /* colagens de fotos (lojas sem banner fixo): fotos reais dos produtos, clicáveis e com preço */
+  function colagens() {
+    if (!PRODUTOS.length) return;
+    var lista = PRODUTOS.filter(function (p) { return p.destaque; }).concat(PRODUTOS.filter(function (p) { return !p.destaque; }));
+    $$("[data-colagem]").forEach(function (box, b) {
+      $$(".cel", box).forEach(function (c, k) {
+        var p = lista[(k + b * 4) % lista.length];
+        if (p && !c.querySelector("img")) {
+          c.insertAdjacentHTML("beforeend", '<a class="cel-link" href="producto.html?id=' + encodeURIComponent(p.id) + '"><img src="' + esc(p.imagenes[0]) + '" alt="' + esc(nome(p)) + '" loading="lazy"><em class="cel-preco">' + euro(p.precio) + "</em></a>");
+          c.classList.add("tem-foto");
+        }
+      });
+    });
+    $$("[data-colagem-cat]").forEach(function (box) {
+      var p = PRODUTOS.filter(function (x) { return x.categoria === box.getAttribute("data-colagem-cat"); })[0];
+      if (p && !box.querySelector("img")) { box.insertAdjacentHTML("beforeend", '<img src="' + esc(p.imagenes[0]) + '" alt="" loading="lazy">'); box.classList.add("tem-foto"); }
+    });
+  }
   /* fileiras com setas (sem buracos quando há poucos produtos) */
   function trilhos() {
     $$(".grade").forEach(function (g) {
@@ -413,6 +431,6 @@
       PRODUTOS = (Array.isArray(lista) ? lista : []).filter(function (p) { return p && p.id && p.imagenes && p.imagenes.length && p.precio > 0; });
       PRODUTOS.forEach(function (p) { porId[p.id] = p; });
       Object.keys(carrinho).forEach(function (k) { if (!resolver(k)) delete carrinho[k]; });
-      contador(); redesenhar(); colagens(); iniciarPagamento();
+      [contador, redesenhar, colagens, iniciarPagamento].forEach(function (f) { try { f(); } catch (e) { if (window.console) console.error(e); } });
     });
 })();

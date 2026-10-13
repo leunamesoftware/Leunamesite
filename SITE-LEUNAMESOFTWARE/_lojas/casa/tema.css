@@ -117,3 +117,10 @@ h1,h2,h3{letter-spacing:-.01em}
 .paginas b{background:var(--verde)}
 .topo-bt{background:var(--verde)}
 .trilho-pontos i.on{background:var(--oro)}
+/* colagem com fotos reais dos produtos (clicáveis, com preço) */
+.colagem .cel.tem-foto{background:#fff;border-color:transparent;box-shadow:0 14px 30px -18px rgba(0,0,0,.6)}
+.cel-link{position:absolute;inset:0;display:block}
+.cel-link img{transition:transform .4s}
+.cel-link:hover img{transform:scale(1.04)}
+.cel-preco{position:absolute;left:10px;bottom:10px;background:var(--verde);color:#fff;font:700 14px/1 Inter,sans-serif;font-style:normal;padding:7px 10px;border-radius:999px;box-shadow:0 6px 14px -6px rgba(0,0,0,.5)}
+.cb-colagem .cel3{display:none}

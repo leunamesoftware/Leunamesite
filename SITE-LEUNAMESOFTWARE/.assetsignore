@@ -3,3 +3,4 @@ wrangler.toml
 .assetsignore
 worker.js
 painel-api.js
+_lojas/casa/img/ia
