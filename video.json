@@ -1,0 +1,46 @@
+{
+ "https://developers.cjdropshipping.com/en/api/api2/api/product.html": {
+  "caminhos": [
+   "/api2.0/v1/product/addToMyProduct",
+   "/api2.0/v1/product/cjPackaging/query",
+   "/api2.0/v1/product/getCategory",
+   "/api2.0/v1/product/globalWarehouseList",
+   "/api2.0/v1/product/individualization/add",
+   "/api2.0/v1/product/list",
+   "/api2.0/v1/product/listV2",
+   "/api2.0/v1/product/myProduct/query",
+   "/api2.0/v1/product/packagingProduct/query",
+   "/api2.0/v1/product/productComments",
+   "/api2.0/v1/product/productDetail/query",
+   "/api2.0/v1/product/query",
+   "/api2.0/v1/product/queryProductsByImage",
+   "/api2.0/v1/product/queryVideosByProductId",
+   "/api2.0/v1/product/sizeChart/query",
+   "/api2.0/v1/product/sourcing/create",
+   "/api2.0/v1/product/sourcing/query",
+   "/api2.0/v1/product/sourcing/queryList",
+   "/api2.0/v1/product/stock/getInventoryByPid",
+   "/api2.0/v1/product/stock/queryBySku",
+   "/api2.0/v1/product/stock/queryByVid",
+   "/api2.0/v1/product/variant/query",
+   "/api2.0/v1/product/variant/queryByVid"
+  ],
+  "trechos": [
+   "ants (GET) 2.2 Variant Id Inquiry (GET) 3 Inventory 3.1 Inventory Inquiry(GET) 3.2 Query Inventory by SKU (GET) 3.3 Query inventory by product ID (GET) 4 Product Reviews 4.1 Inquiry Reviews (GET) 5 Sourcing 5.1 Create Sourcing (POST) 5.2 Query Sourcing(POST) 5.3 Query Sourcing List(GET) 6 Video 6.1 Query Product Videos (POST) 4 Storage 5 Shopping 6 Logistic 7 Dispute 8 Webhook 9 Shop 10 Ticket 11 AI Data 12 Listing # 3 Product # 1 Products # 1.1 Category List(GET) Get product categories from CJ. # URL https://developers.cjdropshipping.com/api2.0/v1/product/getCategory # CURL curl --location --request GET 'https://developers.cjdropshipping.com/api2.0/v1/product/getCategory' \\ --header 'CJ-Access-Token: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx' # Return success { &quot;code&quot;: 200, &quot;result&quot;: true, &quot;message&quot;: &quot;Success&quot;, &quot;data&quot;: [ { &quot;categoryFirstName&quot;: &quot;Computer &amp; Office&quot;, &quot;categoryFirstList&quot;: [ { &quot;categorySecondName&quot;: &quot;Office Electronics&quot;, &quot;categorySecondList&quot;: [ { &quot;categoryId&quot;: &quot;2252588B-72E3-4397-8C92-7D9967161084&quot;, &quot;categoryName&quot;: &quot;Office &amp; School Supplies&quot; }, ]... } ] } ], &quot;requestId&quot;: &quot;ae543fd1-cdd7-4a61-974a-1340fea678c6&quot; } Field Definition Type Length Note categoryFirstName First level category name string 200 categoryFirstList First level category list Array - categorySecondName Second level category name string 200 categorySecondList Second level category list Array - categoryId Third level category ID string 200 categoryName Third level category name string 200 error { &quot;code&quot;: 1600100, &quot;result&quot;: false, &quot;message&quot;: &quot;Param error&quot;, &quot;data&quot;: null, &quot;re",
+   " Product Status Status Code Description 3 On Sale # Customization Version Customization Version remark 0 Non-POD products 1 Platform Customized Version V1 2 Platform Customized Version V2 3 Customer Customized Version V1 4 Customer Customized Version V2 5 POD 3.0 Platform Customized # 6 Video # 6.1 Query Product Videos (POST) Note It is recommended that customers cache videos on their own servers instead of using CJ video URLs directly for end users. Heavy direct usage of CJ video playback URLs may affect service stability and could be rate-limited. Important When downloading videos, you must include a Referer header with the value https://developers.cjdropshipping.com/ in your request, otherwise the video server will reject the request. Example: curl -H &quot;Referer: https://developers.cjdropshipping.com&quot; -O &quot;https://download-only-api.cjdropshipping.com/xxxxxx/video.mp4&quot; # URL https://developers.cjdropshipping.com/api2.0/v1/product/queryVideosByProductId # CURL curl --location 'https://developers.cjdropshipping.com/api2.0/v1/product/queryVideosByProductId' \\ --header 'CJ-Access-Token: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx' \\ --header 'Content-Type: application/json' \\ --data '{ &quot;productId&quot;: &quot;1658748072937136128&quot; }' # Request Parameters Parameter Definition Type Required Length Note productId CJ Product Id string Y 100 # Return success { &quot;success&quot; : true , &quot;code&quot; : 0 , &quot;message&quot; : &quot;success&quot; , &quot;data&quot; : [ { &quot;id&quot; : &quot;abc39e6946dc4aa6b53f1813b53cfcb1&quot; , &quot;locProductId&quot; : &quot;1964955178105954305&quot; , &quot;videoName&quot; : &quot;123&quot; , &quot;videoState&quot; : &quot;ON_STATE&quot; , &quot;videoUrl&quot; : &quot;https://download-only-api.cjdropshipping.com"
+  ]
+ },
+ "query_campos_video": {
+  "productVideo": [
+   "208ce97cc9dd71eebae30764b3ec0102",
+   "7096382dc9de71ee8daf5017f0e90102"
+  ]
+ },
+ "video_id": "208ce97cc9dd71eebae30764b3ec0102",
+ "tentativa /product/video/query": "{\"code\": 1600101, \"result\": false, \"message\": \"Interface not found\", \"data\": null, \"requestId\": \"d579eb5b46eb47838ecafe20e112c2af\", \"pointsInfo\": {\"total\": 0, \"usedToday\": 0, \"remaining\": 0}, \"success\": false}",
+ "tentativa /product/queryVideo": "{\"code\": 1600101, \"result\": false, \"message\": \"Interface not found\", \"data\": null, \"requestId\": \"85913fb9ce7145a99165cf781179d605\", \"pointsInfo\": {\"total\": 0, \"usedToday\": 0, \"remaining\": 0}, \"success\": false}",
+ "tentativa /product/video/list": "{\"code\": 1600101, \"result\": false, \"message\": \"Interface not found\", \"data\": null, \"requestId\": \"34c05bce59db4db4aff9e7af0bd1c843\", \"pointsInfo\": {\"total\": 0, \"usedToday\": 0, \"remaining\": 0}, \"success\": false}",
+ "tentativa /product/video": "{\"code\": 1600101, \"result\": false, \"message\": \"Interface not found\", \"data\": null, \"requestId\": \"4ca62e23c9bd4fe7b95746c3dbea1a96\", \"pointsInfo\": {\"total\": 0, \"usedToday\": 0, \"remaining\": 0}, \"success\": false}",
+ "tentativa /product/getVideoUrl": "{\"code\": 1600101, \"result\": false, \"message\": \"Interface not found\", \"data\": null, \"requestId\": \"599293d211234861ab9cd0f1740d2000\", \"pointsInfo\": {\"total\": 0, \"usedToday\": 0, \"remaining\": 0}, \"success\": false}",
+ "tentativa /product/video/getPlayInfo": "{\"code\": 1600101, \"result\": false, \"message\": \"Interface not found\", \"data\": null, \"requestId\": \"698f1e80e6ac41b1b73a1ab655f9bd6a\", \"pointsInfo\": {\"total\": 0, \"usedToday\": 0, \"remaining\": 0}, \"success\": false}"
+}
