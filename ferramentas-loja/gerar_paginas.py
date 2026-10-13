@@ -155,13 +155,15 @@ def pagina(nome, titulo, desc, corpo, indexar=True):
 
 # ---------------- INÍCIO ----------------
 SLIDES = [
+    ('banner-1', t('Todo lo que tu perro<br><em class="v">necesita y adora</em>', 'Tudo o que o seu cão<br><em class="v">precisa e adora</em>', 'Everything your dog<br><em class="v">needs and loves</em>'),
+     t('Camas, juguetes, collares y mucho más. Envío gratis desde Europa.', 'Camas, brinquedos, coleiras e muito mais. Envio grátis a partir da Europa.', 'Beds, toys, collars and more. Free shipping from Europe.')),
     ('hero', t('Todo para tu perro<br>y tu gato, <em class="v">en casa</em>', 'Tudo para o seu cão<br>e o seu gato, <em class="v">em casa</em>', 'Everything for your dog<br>and cat, <em class="v">at home</em>'),
      t('Camas, fuentes, juguetes y accesorios que ellos adoran y que quedan bonitos en tu salón.', 'Camas, fontes, brinquedos e acessórios que eles adoram e que ficam bonitos na sala.', 'Beds, fountains, toys and accessories they love, that look great in your living room.')),
     ('cat-mascotas', t('Menos pelos,<br><em class="v">más mimos</em>', 'Menos pelos,<br><em class="v">mais mimos</em>', 'Less fur,<br><em class="v">more cuddles</em>'),
      t('Cepillos, rodillos y limpieza para que tu casa siga perfecta.', 'Escovas, rolos e limpeza para a casa continuar perfeita.', 'Brushes, rollers and cleaning to keep your home spotless.')),
 ]
-slides = ''.join(f'''<div class="slide{' on' if i == 0 else ''}" data-slide>
-    <img class="slide-foto" src="img/{img}.webp" alt="" {'fetchpriority="high"' if i == 0 else 'loading="lazy"'}>
+slides = ''.join(f'''<div class="slide{' on' if i == 0 else ''}{' slide-clara' if img.startswith('banner') else ''}" data-slide>
+    <picture>{f'<source media="(max-width:720px)" srcset="img/{img}-m.webp">' if img.startswith('banner') else ''}<img class="slide-foto{' foto-clara' if img.startswith('banner') else ''}" src="img/{img}.webp" alt="" {'fetchpriority="high"' if i == 0 else 'loading="lazy"'}></picture>
     <div class="wrap slide-tx">
       <p class="selo">{t('Envío gratis desde Europa', 'Envio grátis a partir da Europa', 'Free shipping from Europe')}</p>
       <h1>{h}</h1>
@@ -184,7 +186,10 @@ index = f'''<main>
   <div class="pontos" data-pontos></div>
 </section>
 <section class="wrap bolhas">{bolhas}</section>
-<section class="wrap animais"><a class="animal an-c" href="./?animal=perro"><b>{t('Perros', 'Cães', 'Dogs')}</b><span>{t('Paseo, camas y juguetes', 'Passeio, camas e brinquedos', 'Walks, beds and toys')}</span>{ico('cao', 'ai')}</a><a class="animal an-g" href="./?animal=gato"><b>{t('Gatos', 'Gatos', 'Cats')}</b><span>{t('Rascadores, fuentes y juegos', 'Arranhadores, fontes e jogos', 'Scratchers, fountains and play')}</span>{ico('gato', 'ai')}</a></section>
+<section class="wrap animais">
+  <a class="animal an-c" href="./?animal=perro"><div class="an-tx"><b>{t('Perros', 'Cães', 'Dogs')}</b><span>{t('Paseo, camas y juguetes para su bienestar.', 'Passeio, camas e brinquedos para o bem-estar dele.', 'Walks, beds and toys for their wellbeing.')}</span><em class="an-bt">{t('Ver productos', 'Ver produtos', 'Shop now')} {ico('seta')}</em></div><img src="img/card-perros.webp" alt="" loading="lazy"></a>
+  <a class="animal an-g" href="./?animal=gato"><div class="an-tx"><b>{t('Gatos', 'Gatos', 'Cats')}</b><span>{t('Rascadores, fuentes y juegos para su felicidad.', 'Arranhadores, fontes e jogos para a felicidade dele.', 'Scratchers, fountains and play for their happiness.')}</span><em class="an-bt">{t('Ver productos', 'Ver produtos', 'Shop now')} {ico('seta')}</em></div><img src="img/card-gatos.webp" alt="" loading="lazy"></a>
+</section>
 <section class="wrap destaque-sec" id="novedades">
   <div class="sec-cab"><h2>{t('Novedades', 'Novidades', 'New in')}</h2><p class="sec-sub">{t('Elegidos uno a uno para tu mascota', 'Escolhidos um a um para o seu animal', 'Hand-picked for your pet')}</p></div>
   <div class="grade" data-grade="destaque"></div>

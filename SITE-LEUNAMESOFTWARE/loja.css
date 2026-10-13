@@ -310,3 +310,32 @@ h1,h2,h3{font-family:var(--tit);letter-spacing:-.02em;line-height:1.1}
 .pie .logo{background:#fff;border-radius:14px;padding:8px 14px;display:inline-flex}
 .pie .logo-img{height:46px}
 @media (max-width:720px){.logo-img{height:44px}}
+/* banner próprio (fundo laranja/rosa): sem escurecer, texto branco com sombra suave */
+.slide-clara::after{background:linear-gradient(90deg,rgba(150,40,0,.18) 0,rgba(150,40,0,0) 55%)}
+.slide-clara .slide-foto{object-position:right center}
+.slide-clara h1,.slide-clara .hero-p{text-shadow:0 2px 18px rgba(120,30,0,.25)}
+.slide-clara h1 .v{color:#fff;text-decoration:underline;text-decoration-thickness:.08em;text-underline-offset:.12em;text-decoration-color:rgba(255,255,255,.55)}
+.slide-clara .hero-p{color:#fff}
+.slide-clara .bt.bt-cor{background:#0F1E44}.slide-clara .bt.bt-cor:hover{background:#08122E}
+@media (max-width:720px){.slide-clara .slide-tx{background:linear-gradient(120deg,#FF8A1F,#F0307A)}.slide-clara .slide-foto{object-position:center}}
+/* cartões Perros / Gatos com foto */
+.slide-clara h1 .v{text-decoration:none}
+.animais .animal{min-height:260px;padding:0;flex-direction:row;align-items:stretch;justify-content:flex-start}
+.an-c{background:linear-gradient(110deg,#FF9A1F 0,#FF5E5B 45%,#F0307A 100%)}
+.an-g{background:linear-gradient(110deg,#2A0F6B 0,#5A1FB0 50%,#8A3FD6 100%)}
+.an-tx{position:relative;z-index:2;display:flex;flex-direction:column;justify-content:center;gap:10px;padding:28px 0 28px 32px;width:52%}
+.animais .animal .an-tx b{font:800 clamp(38px,4.4vw,64px)/1 var(--tit);color:#fff;margin:0}
+.an-tx>span{color:#fff;font-size:clamp(14px,1.3vw,17px);line-height:1.45}
+.an-bt{align-self:flex-start;display:inline-flex;align-items:center;gap:8px;background:#fff;font-style:normal;font-weight:700;font-size:15px;padding:12px 22px;border-radius:999px;margin-top:6px;box-shadow:0 10px 24px -12px rgba(0,0,0,.4)}
+.an-c .an-bt{color:#E62E73}.an-g .an-bt{color:#5A1FB0}
+.an-bt svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.animal>img{position:absolute;right:0;top:0;height:100%;width:56%;object-fit:cover;object-position:center;-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 26%);mask-image:linear-gradient(90deg,transparent 0,#000 26%)}
+@media (max-width:720px){
+  .animais{grid-template-columns:1fr;gap:14px}
+  .animais .animal{min-height:190px}
+  .an-tx{padding:20px 0 20px 20px;width:58%;gap:6px}
+  .an-tx>span{font-size:13.5px}
+  .an-bt{padding:9px 16px;font-size:13.5px}
+  .animal>img{width:52%}
+}
+@media (min-width:721px){.animais .animal{min-height:300px}.an-tx{width:46%}.animal>img{width:60%}}
