@@ -196,7 +196,7 @@ index = f'''<main>
   <div class="vazio-in" id="semBusca" hidden><h2>{t('Sin resultados', 'Sem resultados', 'No results')}</h2><p>{t('Prueba con otra palabra.', 'Experimente outra palavra.', 'Try another word.')}</p></div>
 </section>
 <section class="wrap porque">
-  <img src="img/cat-mascotas.webp" alt="" loading="lazy">
+  <picture class="porque-foto"><source media="(max-width:720px)" srcset="img/familia-m.webp"><img src="img/familia.webp" alt="" loading="lazy"></picture>
   <div class="porque-tx">
     <h2>{t('¿Por qué LeunaPets?', 'Porquê a LeunaPets?', 'Why LeunaPets?')}</h2>
     <p>{t('Somos una tienda especializada solo en perros y gatos. Probamos y elegimos cada producto pensando en su bienestar y en tu casa.', 'Somos uma loja especializada só em cães e gatos. Escolhemos cada produto a pensar no bem-estar deles e na sua casa.', 'We are a shop specialised only in dogs and cats. Every product is chosen with their wellbeing and your home in mind.')}</p>

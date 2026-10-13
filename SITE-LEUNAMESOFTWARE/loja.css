@@ -362,3 +362,20 @@ h1,h2,h3{font-family:var(--tit);letter-spacing:-.02em;line-height:1.1}
 .slide-luz::after{background:linear-gradient(90deg,rgba(253,240,236,.75) 0,rgba(253,240,236,.45) 30%,rgba(253,240,236,0) 52%)}
 .slide-luz h1{font-size:clamp(34px,4.6vw,62px)}
 @media (max-width:720px){.slide-luz .slide-foto{object-position:center}.slide-luz .slide-tx{background:#FBEFEA}}
+/* bloco "Por qué" com a foto da família de animais */
+.porque{display:block;position:relative;border:0;background:none;border-radius:28px;overflow:hidden;box-shadow:var(--sombra)}
+.porque-foto img{width:100%;height:auto;aspect-ratio:2000/750;object-fit:cover;min-height:0;max-height:none;display:block}
+.porque-tx{position:absolute;inset:auto 0 0 0;padding:clamp(20px,3vw,40px);background:linear-gradient(0deg,rgba(15,30,68,.92) 0,rgba(15,30,68,.75) 55%,rgba(15,30,68,0) 100%);color:#fff;display:grid;grid-template-columns:1fr 1.2fr;gap:8px 40px;align-items:end}
+.porque-tx h2{color:#fff;margin:0;grid-column:1}
+.porque-tx p{color:#E6E9F4;margin:0;grid-column:1}
+.porque-tx ul{grid-column:2;grid-row:1/3;display:flex;flex-wrap:wrap;gap:10px;justify-content:flex-end}
+.porque-tx li{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.25);border-radius:999px;padding:8px 14px 8px 8px;font-size:14px;color:#fff;gap:8px}
+.porque-tx li .ic{width:28px;height:28px;padding:6px;background:#fff;color:var(--coral)}
+@media (max-width:900px){
+  .porque-foto img{aspect-ratio:1/1}
+  .porque-tx{grid-template-columns:1fr}
+  .porque-tx ul{grid-column:1;grid-row:auto;justify-content:flex-start}
+}
+@media (max-width:720px){.porque{border-radius:20px}.porque-foto img{aspect-ratio:4/5}.porque-tx li{font-size:13px}}
+@media (max-width:900px){.porque{background:var(--tinta)}.porque-tx{position:static;background:var(--tinta)}.porque-foto img{aspect-ratio:4/3}}
+@media (max-width:720px){.porque-foto img{aspect-ratio:4/3}}
