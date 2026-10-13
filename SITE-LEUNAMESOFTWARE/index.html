@@ -1,306 +1,216 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>LeuName Softwares — Productos digitales que transforman ideas en realidad</title>
-<meta name="description" content="Aplicaciones, sistemas, libros, plantillas, recetas y soluciones digitales de LeuName Softwares.">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LeuName Hallazgos — Productos útiles para casa, cocina y oficina</title>
+<meta name="description" content="Selección de productos útiles y bien valorados para el hogar, la cocina, la oficina en casa y las mascotas, con compra directa en Amazon España.">
+<link rel="canonical" href="https://leunamesoftware.com/">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='16' fill='%231f3d31'/><text x='32' y='44' font-size='34' text-anchor='middle' fill='%23f6c76b' font-family='Georgia'>L</text></svg>">
+<link rel="stylesheet" href="estilo.css">
+<script src="config.js"></script>
 </head>
 <body>
-
-<a class="skip-link" href="#main">Saltar al contenido</a>
-
-<header class="site-header" id="siteHeader">
-
-  <!-- Fila 1: barra de utilidad -->
-  <div class="topbar">
-    <div class="container topbar-inner">
-      <p class="topbar-msg">
-        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2c3 1 5 4 5 8 0 3-1.5 6-5 11-3.5-5-5-8-5-11 0-4 2-7 5-8Z"/><circle cx="12" cy="9" r="2"/></svg>
-        <span>Productos digitales que transforman ideas en realidad.</span>
-      </p>
-      <ul class="topbar-badges">
-        <li><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3 4.5 6v6c0 4.5 3.2 7.9 7.5 9 4.3-1.1 7.5-4.5 7.5-9V6L12 3Z"/><path d="m9 12 2 2 4-4"/></svg> Compra segura</li>
-        <li><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8Z"/></svg> Entrega digital inmediata</li>
-        <li><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 13a8 8 0 0 1 16 0"/><rect x="3" y="13" width="4" height="6" rx="1.5"/><rect x="17" y="13" width="4" height="6" rx="1.5"/><path d="M20 19v1a3 3 0 0 1-3 3h-3"/></svg> Soporte especializado</li>
-      </ul>
-      <button class="lang-select" type="button" aria-label="Seleccionar idioma">
-        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 4 6 4 9s-1.5 6.4-4 9c-2.5-2.6-4-6-4-9s1.5-6.4 4-9Z"/></svg>
-        <span>ES</span>
-        <svg class="chevron" viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
-      </button>
-    </div>
-  </div>
-
-  <!-- Fila 2: logo + busqueda + cuenta + carrito -->
-  <div class="mainbar">
-    <div class="container mainbar-inner">
-      <button class="menu-toggle" id="menuToggle" type="button" aria-label="Abrir menú" aria-expanded="false" aria-controls="categoryNav">
-        <span></span><span></span><span></span>
-      </button>
-
-      <a href="index.html" class="brand" aria-label="LeuName Softwares — Inicio">
-        <img class="brand-mark" src="assets/img/logo-mark.png" alt="" width="48" height="48">
-        <span class="brand-text">
-          <span class="brand-word">LEUNAME</span>
-          <span class="brand-sub">SOFTWARES</span>
-        </span>
-      </a>
-
-      <form class="searchbar" role="search" action="categoria.html" method="get">
-        <label class="sr-only" for="siteSearch">¿Qué estás buscando?</label>
-        <input id="siteSearch" name="q" type="search" placeholder="¿Qué estás buscando?" autocomplete="off">
-        <button type="submit" aria-label="Buscar">
-          <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
-        </button>
-      </form>
-      <div class="mainbar-actions">
-        <a href="login.html" class="action-link">
-          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 20c1.5-4 5-6 8-6s6.5 2 8 6"/></svg>
-          <span class="action-text"><small>Entrar</small>Mi cuenta</span>
-        </a>
-        <a href="carrito.html" class="action-link cart-link">
-          <span class="cart-ic-wrap">
-            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="21" r="1.4"/><circle cx="18" cy="21" r="1.4"/><path d="M2.5 3h2.2l2.4 12.2a2 2 0 0 0 2 1.6h8.2a2 2 0 0 0 2-1.6L21 7H6"/></svg>
-            <span class="cart-badge">0</span>
-          </span>
-          <span class="action-text"><small>Carrito</small>0,00 €</span>
-        </a>
-      </div>
-    </div>
-    <form class="searchbar searchbar-mobile" id="searchbarMobile" role="search" action="categoria.html" method="get">
-      <label class="sr-only" for="siteSearchMobile">¿Qué estás buscando?</label>
-      <input id="siteSearchMobile" name="q" type="search" placeholder="¿Qué estás buscando?" autocomplete="off">
-      <button type="submit" aria-label="Buscar">
-        <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
-      </button>
-    </form>
-  </div>
-
-  <!-- Fila 3: categorias -->
-  <nav class="categorybar" id="categoryNav" aria-label="Categorías">
-    <div class="container categorybar-inner">
-      <button class="all-cats" type="button" onclick="location.href='categoria.html'">
-        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
-        Todas las categorías
-        <svg class="chevron" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
-      </button>
-      <ul class="cat-links">
-        <li><a href="categoria.html?slug=aplicaciones"><span class="cat-ic cat-ic-blue"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="12" rx="1.5"/><path d="M2 20h20"/></svg></span>Aplicaciones y Sistemas</a></li>
-        <li><a href="categoria.html?slug=templates"><span class="cat-ic cat-ic-green"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.2"/><rect x="14" y="3" width="7" height="7" rx="1.2"/><rect x="3" y="14" width="7" height="7" rx="1.2"/><rect x="14" y="14" width="7" height="7" rx="1.2"/></svg></span>Templates</a></li>
-        <li><a href="categoria.html?slug=libros"><span class="cat-ic cat-ic-amber"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H12v18H6.5A2.5 2.5 0 0 1 4 18.5v-13Z"/><path d="M20 5.5A2.5 2.5 0 0 0 17.5 3H12v18h5.5a2.5 2.5 0 0 0 2.5-2.5v-13Z"/></svg></span>Libros</a></li>
-        <li><a href="categoria.html?slug=recetas"><span class="cat-ic cat-ic-pink"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 10c0-3 2.5-6 6-6s6 3 6 6"/><path d="M4 10h16l-1.2 9a2 2 0 0 1-2 1.8H7.2a2 2 0 0 1-2-1.8L4 10Z"/></svg></span>Recetas</a></li>
-        <li><a href="categoria.html?slug=diseno"><span class="cat-ic cat-ic-purple"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3a9 9 0 1 0 0 18c1.1 0 1.5-.7 1.5-1.4 0-.4-.2-.7-.4-1-.2-.3-.4-.6-.4-1 0-.8.6-1.4 1.4-1.4H16a4 4 0 0 0 4-4c0-5-3.6-9-8-9Z"/><circle cx="7.5" cy="10.5" r="1"/><circle cx="12" cy="7.5" r="1"/><circle cx="16.5" cy="10.5" r="1"/></svg></span>Diseño y Logos</a></li>
-        <li><a href="categoria.html?slug=otros"><span class="cat-ic cat-ic-gray"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 12v7a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-7"/><rect x="2" y="7" width="20" height="5" rx="1"/><path d="M12 7v13M12 7c-1.5-3-5.5-3.5-5.5-1S9 7 12 7Zm0 0c1.5-3 5.5-3.5 5.5-1S15 7 12 7Z"/></svg></span>Otros productos</a></li>
-      </ul>
-    </div>
-  </nav>
-
-  <div class="mobile-cat-scroll" aria-hidden="true">
-    <button onclick="location.href='categoria.html?slug=aplicaciones'"><span class="cat-ic cat-ic-blue"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="12" rx="1.5"/><path d="M2 20h20"/></svg></span>Aplicaciones</button>
-    <button onclick="location.href='categoria.html?slug=templates'"><span class="cat-ic cat-ic-green"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.2"/><rect x="14" y="3" width="7" height="7" rx="1.2"/><rect x="3" y="14" width="7" height="7" rx="1.2"/><rect x="14" y="14" width="7" height="7" rx="1.2"/></svg></span>Templates</button>
-    <button onclick="location.href='categoria.html?slug=libros'"><span class="cat-ic cat-ic-amber"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H12v18H6.5A2.5 2.5 0 0 1 4 18.5v-13Z"/><path d="M20 5.5A2.5 2.5 0 0 0 17.5 3H12v18h5.5a2.5 2.5 0 0 0 2.5-2.5v-13Z"/></svg></span>Libros</button>
-    <button onclick="location.href='categoria.html?slug=recetas'"><span class="cat-ic cat-ic-pink"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 10c0-3 2.5-6 6-6s6 3 6 6"/><path d="M4 10h16l-1.2 9a2 2 0 0 1-2 1.8H7.2a2 2 0 0 1-2-1.8L4 10Z"/></svg></span>Recetas</button>
-    <button onclick="location.href='categoria.html?slug=diseno'"><span class="cat-ic cat-ic-purple"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3a9 9 0 1 0 0 18c1.1 0 1.5-.7 1.5-1.4 0-.4-.2-.7-.4-1-.2-.3-.4-.6-.4-1 0-.8.6-1.4 1.4-1.4H16a4 4 0 0 0 4-4c0-5-3.6-9-8-9Z"/><circle cx="7.5" cy="10.5" r="1"/><circle cx="12" cy="7.5" r="1"/><circle cx="16.5" cy="10.5" r="1"/></svg></span>Diseño</button>
-    <button onclick="location.href='categoria.html?slug=otros'"><span class="cat-ic cat-ic-gray"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 12v7a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-7"/><rect x="2" y="7" width="20" height="5" rx="1"/><path d="M12 7v13M12 7c-1.5-3-5.5-3.5-5.5-1S9 7 12 7Zm0 0c1.5-3 5.5-3.5 5.5-1S15 7 12 7Z"/></svg></span>Otros</button>
+<header class="top">
+  <div class="wrap top-in">
+    <a class="logo" href="./"><span class="logo-m">L</span><span><b>LeuName</b><i>Hallazgos</i></span></a>
+    <nav class="nav"><a href="./#hogar">Hogar</a><a href="./#cocina">Cocina</a><a href="./#tecnologia">Tecnología</a><a href="./#mascotas">Mascotas</a><a href="./#oficina">Oficina en casa</a></nav>
   </div>
 </header>
 
-<div class="nav-overlay" id="navOverlay"></div>
-
-<main id="main">
-<section class="promo-banner">
-  <div class="promo-track" id="promoTrack">
-    <a class="promo-slide promo-theme-azul" href="categoria.html" aria-label="Banner promocional"></a>
-    <a class="promo-slide promo-theme-vermelho" href="producto.html?id=leuname-gestao" aria-label="Banner promocional"></a>
-    <a class="promo-slide promo-theme-verde" href="categoria.html" aria-label="Banner promocional"></a>
-  </div>
-  <div class="promo-dots" id="promoDots" role="group" aria-label="Banners">
-    <button class="promo-dot is-active" type="button" aria-current="true" aria-label="Diapositiva 1"></button>
-    <button class="promo-dot" type="button" aria-label="Diapositiva 2"></button>
-    <button class="promo-dot" type="button" aria-label="Diapositiva 3"></button>
-  </div>
-  <button class="promo-arrow promo-arrow-prev" type="button" aria-label="Anterior"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 6-6 6 6 6"/></svg></button>
-  <button class="promo-arrow promo-arrow-next" type="button" aria-label="Siguiente"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6"/></svg></button>
-</section>
-
-<section class="section">
-  <div class="container">
-    <div class="section-head">
-      <h2 class="section-title">Explora por categoría</h2>
-    </div>
-    <div class="cat-grid" id="catGrid"></div>
-  </div>
-</section>
-
-<section class="section" style="padding-top:0;">
-  <div class="container">
-    <div class="section-head">
-      <div>
-        <h2 class="section-title">Productos destacados</h2>
-        <p class="section-sub">Los productos más elegidos por nuestra comunidad.</p>
-      </div>
-      <a class="section-link" href="categoria.html">Ver todos →</a>
-    </div>
-    <div class="carousel-wrap">
-      <button class="carousel-arrow carousel-arrow-prev" type="button" data-carousel-prev="featuredGrid" aria-label="Ver productos anteriores">
-        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4"><path d="m15 18-6-6 6-6"/></svg>
-      </button>
-      <div class="product-carousel" id="featuredGrid"></div>
-      <button class="carousel-arrow carousel-arrow-next" type="button" data-carousel-next="featuredGrid" aria-label="Ver más productos">
-        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4"><path d="m9 18 6-6-6-6"/></svg>
-      </button>
-    </div>
-  </div>
-</section>
-
-<section class="section" style="padding-top:0;">
-  <div class="container promo-grid">
-    <div class="promo-card promo-card-templates">
-      <span class="promo-card-glyph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="3" y="3" width="7" height="7" rx="1.2"/><rect x="14" y="3" width="7" height="7" rx="1.2"/><rect x="3" y="14" width="7" height="7" rx="1.2"/><rect x="14" y="14" width="7" height="7" rx="1.2"/></svg></span>
-      <h3>Templates Profesionales</h3>
-      <p>Sitios web listos para usar y personalizar.</p>
-      <a class="btn btn-primary" href="categoria.html?slug=templates">Ver templates →</a>
-    </div>
-    <div class="promo-card promo-card-libros">
-      <span class="promo-card-glyph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H12v18H6.5A2.5 2.5 0 0 1 4 18.5v-13Z"/><path d="M20 5.5A2.5 2.5 0 0 0 17.5 3H12v18h5.5a2.5 2.5 0 0 0 2.5-2.5v-13Z"/></svg></span>
-      <h3>Libros Digitales</h3>
-      <p>Conocimiento que te acompaña siempre.</p>
-      <a class="btn btn-primary" href="categoria.html?slug=libros">Explorar libros →</a>
-    </div>
-  </div>
-</section>
-
-<section class="section" style="padding-top:0;">
-  <div class="container">
-    <div class="section-head">
-      <div>
-        <h2 class="section-title">Novedades</h2>
-        <p class="section-sub">Lo más reciente en nuestro catálogo.</p>
-      </div>
-      <a class="section-link" href="categoria.html">Ver todos →</a>
-    </div>
-    <div class="carousel-wrap">
-      <button class="carousel-arrow carousel-arrow-prev" type="button" data-carousel-prev="newArrivalsGrid" aria-label="Ver productos anteriores">
-        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4"><path d="m15 18-6-6 6-6"/></svg>
-      </button>
-      <div class="product-carousel" id="newArrivalsGrid"></div>
-      <button class="carousel-arrow carousel-arrow-next" type="button" data-carousel-next="newArrivalsGrid" aria-label="Ver más productos">
-        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4"><path d="m9 18 6-6-6-6"/></svg>
-      </button>
-    </div>
-  </div>
-</section>
-
-<section class="trust-strip">
-  <div class="container trust-grid">
-    <div class="trust-item"><span class="trust-ic"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3 4.5 6v6c0 4.5 3.2 7.9 7.5 9 4.3-1.1 7.5-4.5 7.5-9V6L12 3Z"/><path d="m9 12 2 2 4-4"/></svg></span><div><h4>Compra segura</h4><p>Tus datos protegidos</p></div></div>
-    <div class="trust-item"><span class="trust-ic"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8Z"/></svg></span><div><h4>Entrega digital inmediata</h4><p>Acceso al instante</p></div></div>
-    <div class="trust-item"><span class="trust-ic"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 13a8 8 0 0 1 16 0"/><rect x="3" y="13" width="4" height="6" rx="1.5"/><rect x="17" y="13" width="4" height="6" rx="1.5"/><path d="M20 19v1a3 3 0 0 1-3 3h-3"/></svg></span><div><h4>Soporte especializado</h4><p>Siempre contigo</p></div></div>
-    <div class="trust-item"><span class="trust-ic"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="5"/><path d="m8.5 12.5-1.5 7 5-2.5 5 2.5-1.5-7"/></svg></span><div><h4>Garantía de satisfacción</h4><p>Tu tranquilidad es nuestra prioridad</p></div></div>
-  </div>
-</section>
-<section class="newsletter">
-  <div class="container newsletter-inner">
-    <div>
-      <h3>Suscríbete a nuestro boletín</h3>
-      <p>Recibe novedades, lanzamientos y ofertas de LeuName Softwares directamente en tu correo.</p>
-    </div>
-    <div>
-      <!-- Formulario 100% del lado del cliente: no hay ningún servicio de email real conectado todavía. -->
-      <form class="newsletter-form" id="newsletterForm">
-        <label class="sr-only" for="newsletterEmail">Correo electrónico</label>
-        <input id="newsletterEmail" type="email" required placeholder="tu@correo.com">
-        <button type="submit" class="btn btn-primary">Suscribirme</button>
+<main>
+<section class="hero">
+  <div class="wrap hero-in">
+    <div class="hero-txt">
+      <span class="sello">Compra segura en Amazon España</span>
+      <h1>Hallazgos que de verdad <em>facilitan tu día</em></h1>
+      <p>Elegimos productos útiles y bien valorados para casa, cocina, oficina y mascotas. Tú comparas y compras directamente en Amazon, con su envío rápido y su garantía.</p>
+      <form class="busca" id="busca" role="search">
+        <input type="search" id="buscaQ" placeholder="¿Qué buscas? Ej.: freidora de aire" aria-label="Buscar en Amazon">
+        <button type="submit">Buscar en Amazon</button>
       </form>
-      <p class="newsletter-msg" id="newsletterMsg" hidden></p>
+      <ul class="ventajas"><li>✓ Precio igual que en Amazon</li><li>✓ Pago seguro en Amazon</li><li>✓ Sin registros ni datos aquí</li></ul>
+    </div>
+    <div class="hero-arte" aria-hidden="true">
+      <div class="burb b1" style="--bg:#FBEFE3">🍳</div><div class="burb b2" style="--bg:#E8EEF9">🔌</div>
+      <div class="burb b3" style="--bg:#E9F2EC">🏠</div><div class="burb b4" style="--bg:#F6EAF1">🐾</div><div class="burb b5" style="--bg:#F3F0E4">💻</div>
     </div>
   </div>
 </section>
-
+<nav class="chips wrap" aria-label="Categorías"><a class="chip" href="#hogar" style="--bg:#E9F2EC;--fg:#2F6B4F"><span>🏠</span>Hogar</a><a class="chip" href="#cocina" style="--bg:#FBEFE3;--fg:#B4541E"><span>🍳</span>Cocina</a><a class="chip" href="#tecnologia" style="--bg:#E8EEF9;--fg:#2B4C8C"><span>🔌</span>Tecnología</a><a class="chip" href="#mascotas" style="--bg:#F6EAF1;--fg:#8E3B67"><span>🐾</span>Mascotas</a><a class="chip" href="#oficina" style="--bg:#F3F0E4;--fg:#6B5A17"><span>💻</span>Oficina en casa</a></nav>
+<section class="cat" id="hogar">
+  <div class="wrap">
+    <div class="cat-cab"><span class="cat-ico" style="--bg:#E9F2EC;--fg:#2F6B4F">🏠</span><div><h2>Hogar</h2><p>Orden, limpieza y pequeños lujos para casa</p></div></div>
+    <div class="grid"><article class="card">
+        <div class="card-ico" style="--bg:#E9F2EC;--fg:#2F6B4F"><span>🧲</span></div>
+        <h3>Organizador de cables magnético</h3><p>Adiós a los cables por el suelo: se pegan al escritorio y se quitan en un segundo.</p>
+        <a class="btn-amz" data-q="organizador cables magnetico" href="https://www.amazon.es/s?k=organizador+cables+magnetico" target="_blank" rel="sponsored noopener">Ver precios en Amazon <span aria-hidden="true">→</span></a>
+      </article><article class="card">
+        <div class="card-ico" style="--bg:#E9F2EC;--fg:#2F6B4F"><span>💡</span></div>
+        <h3>Luces LED con sensor de movimiento</h3><p>Se encienden solas en el pasillo o el armario. Recargables, sin obras.</p>
+        <a class="btn-amz" data-q="luz led sensor movimiento recargable" href="https://www.amazon.es/s?k=luz+led+sensor+movimiento+recargable" target="_blank" rel="sponsored noopener">Ver precios en Amazon <span aria-hidden="true">→</span></a>
+      </article><article class="card">
+        <div class="card-ico" style="--bg:#E9F2EC;--fg:#2F6B4F"><span>🧹</span></div>
+        <h3>Aspirador de mano sin cable</h3><p>Para migas, sofá y coche. Ligero y siempre a mano.</p>
+        <a class="btn-amz" data-q="aspirador de mano sin cable" href="https://www.amazon.es/s?k=aspirador+de+mano+sin+cable" target="_blank" rel="sponsored noopener">Ver precios en Amazon <span aria-hidden="true">→</span></a>
+      </article><article class="card">
+        <div class="card-ico" style="--bg:#E9F2EC;--fg:#2F6B4F"><span>🧶</span></div>
+        <h3>Quitapelusas eléctrico</h3><p>Deja jerséis y sofás como nuevos en minutos.</p>
+        <a class="btn-amz" data-q="quitapelusas electrico" href="https://www.amazon.es/s?k=quitapelusas+electrico" target="_blank" rel="sponsored noopener">Ver precios en Amazon <span aria-hidden="true">→</span></a>
+      </article><article class="card">
+        <div class="card-ico" style="--bg:#E9F2EC;--fg:#2F6B4F"><span>👕</span></div>
+        <h3>Bolsas de vacío para ropa</h3><p>Triplica el espacio del armario al guardar ropa de temporada.</p>
+        <a class="btn-amz" data-q="bolsas vacio ropa" href="https://www.amazon.es/s?k=bolsas+vacio+ropa" target="_blank" rel="sponsored noopener">Ver precios en Amazon <span aria-hidden="true">→</span></a>
+      </article><article class="card">
+        <div class="card-ico" style="--bg:#E9F2EC;--fg:#2F6B4F"><span>🌿</span></div>
+        <h3>Difusor de aromas ultrasónico</h3><p>Ambiente agradable y luz suave para descansar.</p>
+        <a class="btn-amz" data-q="difusor aromas ultrasonico" href="https://www.amazon.es/s?k=difusor+aromas+ultrasonico" target="_blank" rel="sponsored noopener">Ver precios en Amazon <span aria-hidden="true">→</span></a>
+      </article></div>
+  </div>
+</section><section class="cat" id="cocina">
+  <div class="wrap">
+    <div class="cat-cab"><span class="cat-ico" style="--bg:#FBEFE3;--fg:#B4541E">🍳</span><div><h2>Cocina</h2><p>Cocinar más rápido y con menos lío</p></div></div>
+    <div class="grid"><article class="card">
+        <div class="card-ico" style="--bg:#FBEFE3;--fg:#B4541E"><span>🍟</span></div>
+        <h3>Freidora de aire</h3><p>Patatas crujientes con una cucharada de aceite. La reina de las cocinas.</p>
+        <a class="btn-amz" data-q="freidora de aire" href="https://www.amazon.es/s?k=freidora+de+aire" target="_blank" rel="sponsored noopener">Ver precios en Amazon <span aria-hidden="true">→</span></a>
+      </article><article class="card">
+        <div class="card-ico" style="--bg:#FBEFE3;--fg:#B4541E"><span>🧅</span></div>
+        <h3>Picadora eléctrica</h3><p>Cebolla, ajo y verduras picadas en segundos, sin lágrimas.</p>
+        <a class="btn-amz" data-q="picadora electrica" href="https://www.amazon.es/s?k=picadora+electrica" target="_blank" rel="sponsored noopener">Ver precios en Amazon <span aria-hidden="true">→</span></a>
+      </article><article class="card">
+        <div class="card-ico" style="--bg:#FBEFE3;--fg:#B4541E"><span>⚖️</span></div>
+        <h3>Báscula de cocina digital</h3><p>Recetas exactas y raciones controladas.</p>
+        <a class="btn-amz" data-q="bascula cocina digital" href="https://www.amazon.es/s?k=bascula+cocina+digital" target="_blank" rel="sponsored noopener">Ver precios en Amazon <span aria-hidden="true">→</span></a>
+      </article><article class="card">
+        <div class="card-ico" style="--bg:#FBEFE3;--fg:#B4541E"><span>🥗</span></div>
+        <h3>Recipientes herméticos de vidrio</h3><p>Para llevar la comida al trabajo y guardar sin olores.</p>
+        <a class="btn-amz" data-q="recipientes vidrio hermeticos" href="https://www.amazon.es/s?k=recipientes+vidrio+hermeticos" target="_blank" rel="sponsored noopener">Ver precios en Amazon <span aria-hidden="true">→</span></a>
+      </article><article class="card">
+        <div class="card-ico" style="--bg:#FBEFE3;--fg:#B4541E"><span>☕</span></div>
+        <h3>Espumador de leche</h3><p>Cafés de cafetería en casa por muy poco.</p>
+        <a class="btn-amz" data-q="espumador de leche" href="https://www.amazon.es/s?k=espumador+de+leche" target="_blank" rel="sponsored noopener">Ver precios en Amazon <span aria-hidden="true">→</span></a>
+      </article><article class="card">
+        <div class="card-ico" style="--bg:#FBEFE3;--fg:#B4541E"><span>🥒</span></div>
+        <h3>Cortador de verduras en espiral</h3><p>Espaguetis de calabacín y ensaladas que entran por los ojos.</p>
+        <a class="btn-amz" data-q="cortador espiral verduras" href="https://www.amazon.es/s?k=cortador+espiral+verduras" target="_blank" rel="sponsored noopener">Ver precios en Amazon <span aria-hidden="true">→</span></a>
+      </article></div>
+  </div>
+</section><section class="cat" id="tecnologia">
+  <div class="wrap">
+    <div class="cat-cab"><span class="cat-ico" style="--bg:#E8EEF9;--fg:#2B4C8C">🔌</span><div><h2>Tecnología</h2><p>Gadgets útiles para el día a día</p></div></div>
+    <div class="grid"><article class="card">
+        <div class="card-ico" style="--bg:#E8EEF9;--fg:#2B4C8C"><span>🔋</span></div>
+        <h3>Batería externa magnética</h3><p>Se pega al móvil y lo carga sin cables en cualquier sitio.</p>
+        <a class="btn-amz" data-q="bateria externa magnetica" href="https://www.amazon.es/s?k=bateria+externa+magnetica" target="_blank" rel="sponsored noopener">Ver precios en Amazon <span aria-hidden="true">→</span></a>
+      </article><article class="card">
+        <div class="card-ico" style="--bg:#E8EEF9;--fg:#2B4C8C"><span>⚡</span></div>
+        <h3>Cargador rápido GaN</h3><p>Pequeño y potente: carga móvil y portátil con uno solo.</p>
+        <a class="btn-amz" data-q="cargador gan 65w" href="https://www.amazon.es/s?k=cargador+gan+65w" target="_blank" rel="sponsored noopener">Ver precios en Amazon <span aria-hidden="true">→</span></a>
+      </article><article class="card">
+        <div class="card-ico" style="--bg:#E8EEF9;--fg:#2B4C8C"><span>🔌</span></div>
+        <h3>Enchufe inteligente</h3><p>Apaga y programa aparatos desde el móvil y ahorra luz.</p>
+        <a class="btn-amz" data-q="enchufe inteligente wifi" href="https://www.amazon.es/s?k=enchufe+inteligente+wifi" target="_blank" rel="sponsored noopener">Ver precios en Amazon <span aria-hidden="true">→</span></a>
+      </article><article class="card">
+        <div class="card-ico" style="--bg:#E8EEF9;--fg:#2B4C8C"><span>🚗</span></div>
+        <h3>Soporte de móvil para coche</h3><p>Navegador a la vista y manos libres al volante.</p>
+        <a class="btn-amz" data-q="soporte movil coche magnetico" href="https://www.amazon.es/s?k=soporte+movil+coche+magnetico" target="_blank" rel="sponsored noopener">Ver precios en Amazon <span aria-hidden="true">→</span></a>
+      </article><article class="card">
+        <div class="card-ico" style="--bg:#E8EEF9;--fg:#2B4C8C"><span>🎧</span></div>
+        <h3>Auriculares inalámbricos</h3><p>Música y llamadas sin cables, con buena batería.</p>
+        <a class="btn-amz" data-q="auriculares inalambricos bluetooth" href="https://www.amazon.es/s?k=auriculares+inalambricos+bluetooth" target="_blank" rel="sponsored noopener">Ver precios en Amazon <span aria-hidden="true">→</span></a>
+      </article><article class="card">
+        <div class="card-ico" style="--bg:#E8EEF9;--fg:#2B4C8C"><span>🔑</span></div>
+        <h3>Localizador para llaves y maletas</h3><p>Encuentra llaves, cartera o equipaje desde el móvil.</p>
+        <a class="btn-amz" data-q="localizador bluetooth llaves" href="https://www.amazon.es/s?k=localizador+bluetooth+llaves" target="_blank" rel="sponsored noopener">Ver precios en Amazon <span aria-hidden="true">→</span></a>
+      </article></div>
+  </div>
+</section><section class="cat" id="mascotas">
+  <div class="wrap">
+    <div class="cat-cab"><span class="cat-ico" style="--bg:#F6EAF1;--fg:#8E3B67">🐾</span><div><h2>Mascotas</h2><p>Para perros y gatos felices (y casas limpias)</p></div></div>
+    <div class="grid"><article class="card">
+        <div class="card-ico" style="--bg:#F6EAF1;--fg:#8E3B67"><span>💧</span></div>
+        <h3>Fuente de agua para gatos</h3><p>Agua fresca en movimiento: beben más y mejor.</p>
+        <a class="btn-amz" data-q="fuente agua gatos" href="https://www.amazon.es/s?k=fuente+agua+gatos" target="_blank" rel="sponsored noopener">Ver precios en Amazon <span aria-hidden="true">→</span></a>
+      </article><article class="card">
+        <div class="card-ico" style="--bg:#F6EAF1;--fg:#8E3B67"><span>🥣</span></div>
+        <h3>Comedero automático</h3><p>Raciones a su hora aunque no estés en casa.</p>
+        <a class="btn-amz" data-q="comedero automatico mascotas" href="https://www.amazon.es/s?k=comedero+automatico+mascotas" target="_blank" rel="sponsored noopener">Ver precios en Amazon <span aria-hidden="true">→</span></a>
+      </article><article class="card">
+        <div class="card-ico" style="--bg:#F6EAF1;--fg:#8E3B67"><span>🪮</span></div>
+        <h3>Cepillo quitapelo con botón</h3><p>Saca el pelo muerto y se limpia con un clic.</p>
+        <a class="btn-amz" data-q="cepillo quitapelo perro gato" href="https://www.amazon.es/s?k=cepillo+quitapelo+perro+gato" target="_blank" rel="sponsored noopener">Ver precios en Amazon <span aria-hidden="true">→</span></a>
+      </article><article class="card">
+        <div class="card-ico" style="--bg:#F6EAF1;--fg:#8E3B67"><span>🐈</span></div>
+        <h3>Rodillo quitapelos reutilizable</h3><p>Sofá y ropa sin pelos, sin gastar recambios.</p>
+        <a class="btn-amz" data-q="rodillo quitapelos reutilizable" href="https://www.amazon.es/s?k=rodillo+quitapelos+reutilizable" target="_blank" rel="sponsored noopener">Ver precios en Amazon <span aria-hidden="true">→</span></a>
+      </article><article class="card">
+        <div class="card-ico" style="--bg:#F6EAF1;--fg:#8E3B67"><span>🎾</span></div>
+        <h3>Juguete interactivo</h3><p>Entretiene y cansa a tu mascota cuando se aburre.</p>
+        <a class="btn-amz" data-q="juguete interactivo perro" href="https://www.amazon.es/s?k=juguete+interactivo+perro" target="_blank" rel="sponsored noopener">Ver precios en Amazon <span aria-hidden="true">→</span></a>
+      </article><article class="card">
+        <div class="card-ico" style="--bg:#F6EAF1;--fg:#8E3B67"><span>🛏️</span></div>
+        <h3>Cama ortopédica</h3><p>Descanso cómodo para mascotas mayores o grandes.</p>
+        <a class="btn-amz" data-q="cama ortopedica perro" href="https://www.amazon.es/s?k=cama+ortopedica+perro" target="_blank" rel="sponsored noopener">Ver precios en Amazon <span aria-hidden="true">→</span></a>
+      </article></div>
+  </div>
+</section><section class="cat" id="oficina">
+  <div class="wrap">
+    <div class="cat-cab"><span class="cat-ico" style="--bg:#F3F0E4;--fg:#6B5A17">💻</span><div><h2>Oficina en casa</h2><p>Trabajar desde casa con comodidad</p></div></div>
+    <div class="grid"><article class="card">
+        <div class="card-ico" style="--bg:#F3F0E4;--fg:#6B5A17"><span>💻</span></div>
+        <h3>Soporte para portátil</h3><p>Pantalla a la altura de los ojos: adiós dolor de cuello.</p>
+        <a class="btn-amz" data-q="soporte portatil ajustable" href="https://www.amazon.es/s?k=soporte+portatil+ajustable" target="_blank" rel="sponsored noopener">Ver precios en Amazon <span aria-hidden="true">→</span></a>
+      </article><article class="card">
+        <div class="card-ico" style="--bg:#F3F0E4;--fg:#6B5A17"><span>🪔</span></div>
+        <h3>Lámpara de escritorio LED</h3><p>Luz regulable que cansa menos la vista.</p>
+        <a class="btn-amz" data-q="lampara escritorio led regulable" href="https://www.amazon.es/s?k=lampara+escritorio+led+regulable" target="_blank" rel="sponsored noopener">Ver precios en Amazon <span aria-hidden="true">→</span></a>
+      </article><article class="card">
+        <div class="card-ico" style="--bg:#F3F0E4;--fg:#6B5A17"><span>🖱️</span></div>
+        <h3>Alfombrilla de escritorio XXL</h3><p>Teclado y ratón sobre una superficie suave y ordenada.</p>
+        <a class="btn-amz" data-q="alfombrilla escritorio xxl" href="https://www.amazon.es/s?k=alfombrilla+escritorio+xxl" target="_blank" rel="sponsored noopener">Ver precios en Amazon <span aria-hidden="true">→</span></a>
+      </article><article class="card">
+        <div class="card-ico" style="--bg:#F3F0E4;--fg:#6B5A17"><span>🪑</span></div>
+        <h3>Cojín lumbar ergonómico</h3><p>Espalda recta durante las horas de silla.</p>
+        <a class="btn-amz" data-q="cojin lumbar ergonomico" href="https://www.amazon.es/s?k=cojin+lumbar+ergonomico" target="_blank" rel="sponsored noopener">Ver precios en Amazon <span aria-hidden="true">→</span></a>
+      </article><article class="card">
+        <div class="card-ico" style="--bg:#F3F0E4;--fg:#6B5A17"><span>🦶</span></div>
+        <h3>Reposapiés ergonómico</h3><p>Mejor postura y piernas más descansadas.</p>
+        <a class="btn-amz" data-q="reposapies ergonomico" href="https://www.amazon.es/s?k=reposapies+ergonomico" target="_blank" rel="sponsored noopener">Ver precios en Amazon <span aria-hidden="true">→</span></a>
+      </article><article class="card">
+        <div class="card-ico" style="--bg:#F3F0E4;--fg:#6B5A17"><span>🗂️</span></div>
+        <h3>Organizador de escritorio</h3><p>Todo en su sitio y la mesa despejada.</p>
+        <a class="btn-amz" data-q="organizador escritorio" href="https://www.amazon.es/s?k=organizador+escritorio" target="_blank" rel="sponsored noopener">Ver precios en Amazon <span aria-hidden="true">→</span></a>
+      </article></div>
+  </div>
+</section>
+<section class="como">
+  <div class="wrap como-in">
+    <div><h2>Cómo elegimos</h2><p>Solo recomendamos tipos de producto que resuelven un problema real, con muchas opiniones positivas en Amazon. Revisa siempre la ficha, las opiniones y el vendedor antes de comprar: el precio y la disponibilidad los marca Amazon y pueden cambiar.</p></div>
+    <ol><li><b>Eliges</b> la idea que te interesa.</li><li><b>Comparas</b> modelos y precios en Amazon.</li><li><b>Compras</b> con el envío y la devolución de Amazon.</li></ol>
+  </div>
+</section>
 </main>
-
-<footer class="site-footer">
-  <div class="container footer-grid">
-    <div class="footer-col footer-col-brand">
-      <div class="footer-brand">
-        <img src="assets/img/logo-mark.png" alt="" width="38" height="38">
-        <span class="footer-brand-text">LEUNAME SOFTWARES</span>
-      </div>
-      <p>Productos digitales que transforman ideas en oportunidades: aplicaciones, templates, libros, recetas, diseños y mucho más — todo en un solo lugar.</p>
-      <div class="footer-socials">
-        <a href="#" aria-label="Facebook"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M13.5 21v-7h2.3l.4-2.7h-2.7v-1.9c0-.8.2-1.3 1.4-1.3h1.4V5.7c-.7-.1-1.6-.2-2.6-.2-2.6 0-4.4 1.6-4.4 4.4v2.4H7v2.7h2.3V21h4.2Z"/></svg></a>
-        <a href="#" aria-label="Instagram"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="1"/></svg></a>
-        <a href="#" aria-label="YouTube"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2.5" y="6" width="19" height="12" rx="3"/><path d="m10.5 9.5 5 2.5-5 2.5v-5Z" fill="currentColor" stroke="none"/></svg></a>
-        <a href="#" aria-label="X (Twitter)"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 4l16 16M20 4 4 20"/></svg></a>
-        <a href="#" aria-label="Pinterest"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M9.5 19c.6-2.4 1.6-6.3 2.2-8.8M12 12.5a3 3 0 1 0-2.8-4"/></svg></a>
-        <a href="#" aria-label="LinkedIn"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M7.5 10.5v6M7.5 8v.01M12 16.5v-3.7c0-1.2.8-2 2-2s2 .8 2 2v3.7"/></svg></a>
-      </div>
-    </div>
-    <div class="footer-col">
-      <h5>Enlaces rápidos</h5>
-      <ul>
-        <li><a href="index.html">Inicio</a></li>
-        <li><a href="categoria.html">Todos los productos</a></li>
-        <li><a href="sobre-nosotros.html">Sobre nosotros</a></li>
-        <li><a href="blog.html">Blog</a></li>
-        <li><a href="contacto.html">Contacto</a></li>
-      </ul>
-    </div>
-    <div class="footer-col">
-      <h5>Categorías</h5>
-      <ul>
-        <li><a href="categoria.html?slug=aplicaciones">Aplicaciones y Sistemas</a></li>
-        <li><a href="categoria.html?slug=templates">Templates</a></li>
-        <li><a href="categoria.html?slug=libros">Libros</a></li>
-        <li><a href="categoria.html?slug=recetas">Recetas</a></li>
-        <li><a href="categoria.html?slug=diseno">Diseño y Logos</a></li>
-        <li><a href="categoria.html?slug=otros">Otros productos</a></li>
-      </ul>
-    </div>
-    <div class="footer-col">
-      <h5>Ayuda</h5>
-      <ul>
-        <li><a href="preguntas-frecuentes.html">Preguntas frecuentes</a></li>
-        <li><a href="terminos-de-uso.html">Términos de uso</a></li>
-        <li><a href="politica-de-privacidad.html">Política de privacidad</a></li>
-        <li><a href="politica-de-reembolso.html">Política de reembolso</a></li>
-        <li><a href="mailto:soporte@leunamesoftware.com">Soporte</a></li>
-      </ul>
-    </div>
-    <div class="footer-col">
-      <h5>Contacto</h5>
-      <ul>
-        <li><a href="mailto:contacto@leunamesoftware.com">contacto@leunamesoftware.com</a></li>
-        <li><a href="mailto:soporte@leunamesoftware.com">soporte@leunamesoftware.com</a></li>
-        <li>Atención 100% online</li>
-      </ul>
-    </div>
+<section class="aviso-af">
+  <div class="wrap">
+    <p><b>Transparencia:</b> en calidad de Afiliado de Amazon, obtenemos ingresos por las compras adscritas que cumplen los requisitos aplicables. A ti no te cuesta nada más: el precio es el mismo y compras directamente en Amazon, con su envío, garantía y devolución.</p>
   </div>
-  <div class="container footer-bottom">
-    <p>© 2026 LeuName Softwares. Todos los derechos reservados.</p>
-    <p>Creando hoy un mejor mañana.</p>
+</section>
+<footer class="pie">
+  <div class="wrap pie-in">
+    <div><a class="logo" href="./"><span class="logo-m">L</span><span><b>LeuName</b><i>Hallazgos</i></span></a>
+      <p>Seleccionamos productos útiles para el hogar, la cocina, la oficina y las mascotas, con enlaces a Amazon España.</p></div>
+    <div><h4>Categorías</h4><a href="./#hogar">Hogar</a><a href="./#cocina">Cocina</a><a href="./#tecnologia">Tecnología</a><a href="./#mascotas">Mascotas</a><a href="./#oficina">Oficina en casa</a></div>
+    <div><h4>Legal</h4><a href="aviso-legal.html">Aviso legal</a><a href="privacidad.html">Política de privacidad</a><a href="cookies.html">Política de cookies</a><a href="#" data-mail>Contacto</a></div>
   </div>
+  <div class="wrap pie-bajo">© <span data-ano>2026</span> LeuName Hallazgos · leunamesoftware.com</div>
 </footer>
-
-<script src="js/products.js"></script>
-<script src="js/cart.js"></script>
-<script src="js/api.js"></script>
-<script src="js/main.js"></script>
-<script src="js/site-config.js"></script>
-<script>
-  document.addEventListener('DOMContentLoaded', function () {
-    if (!window.LeuStore) return;
-    var all = LeuStore.PRODUCTS;
-    LeuStore.mountCategoryGrid('catGrid');
-    LeuStore.mountProductGrid('featuredGrid', all);
-    var novedades = all.filter(function (p) { return p.tag === 'novedad'; });
-    LeuStore.mountProductGrid('newArrivalsGrid', novedades.length ? novedades.concat(all.filter(function (p) { return p.tag !== 'novedad'; })) : all);
-  });
-</script>
+<div class="cookies" id="cookies" hidden>
+  <p>Usamos solo lo necesario para que la web funcione. Al pulsar un enlace de Amazon, Amazon puede usar sus propias cookies. <a href="cookies.html">Más información</a></p>
+  <button type="button" id="cookiesOk">Entendido</button>
+</div>
+<script src="app.js"></script>
 </body>
 </html>
