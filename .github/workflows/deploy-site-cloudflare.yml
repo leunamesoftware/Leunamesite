@@ -10,10 +10,13 @@ name: Deploy Site LeuName Softwares (Cloudflare)
 # SITE-LEUNAMESOFTWARE/ muda num push.
 on:
   workflow_dispatch:
+  schedule:
+    - cron: '17 5 * * *'   # robô da CJ: todo dia ~2h da manhã (Brasília)
   push:
     branches: [claude/leuname-github-setup-qwkedw]
     paths:
       - 'SITE-LEUNAMESOFTWARE/**'
+      - 'ferramentas-loja/**'
 
 jobs:
   deploy:
@@ -26,6 +29,18 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '22'
+
+      - name: Robô da CJ (produtos da loja Europa)
+        env:
+          CJ_API_KEY: ${{ secrets.CJ_API_KEY }}
+        run: python3 ferramentas-loja/cj_sync.py
+
+      - name: Guardar catálogo da CJ (para o Claude traduzir)
+        uses: actions/upload-artifact@v4
+        with:
+          name: catalogo-cj
+          path: SITE-LEUNAMESOFTWARE/catalogo-cj.json
+          if-no-files-found: ignore
 
       - name: Publicar o site (static assets)
         working-directory: SITE-LEUNAMESOFTWARE

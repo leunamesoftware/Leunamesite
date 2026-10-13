@@ -3,214 +3,114 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>LeuName Hallazgos — Productos útiles para casa, cocina y oficina</title>
-<meta name="description" content="Selección de productos útiles y bien valorados para el hogar, la cocina, la oficina en casa y las mascotas, con compra directa en Amazon España.">
+<title>LeuName — Ideas prácticas para casa, cocina y mascotas</title>
+<meta name="description" content="Gadgets prácticos para casa, cocina y mascotas con envío gratis a España y Portugal. Pago seguro con PayPal y 14 días para devolver.">
 <link rel="canonical" href="https://leunamesoftware.com/">
+<meta name="theme-color" content="#161616">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='16' fill='%231f3d31'/><text x='32' y='44' font-size='34' text-anchor='middle' fill='%23f6c76b' font-family='Georgia'>L</text></svg>">
-<link rel="stylesheet" href="estilo.css">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='18' fill='%23161616'/><circle cx='46' cy='18' r='7' fill='%23ff5a36'/><text x='29' y='45' font-size='32' text-anchor='middle' fill='%23fff' font-family='Arial' font-weight='700'>L</text></svg>">
+<link rel="stylesheet" href="loja.css">
+<script>try{var l=localStorage.getItem("lang")||((navigator.language||"").toLowerCase().indexOf("pt")===0?"pt":"es");if(/[?&]lang=pt/.test(location.search))l="pt";if(/[?&]lang=es/.test(location.search))l="es";document.documentElement.lang=l}catch(e){}</script>
 <script src="config.js"></script>
 </head>
 <body>
+<div class="faixa"><span class="es">🚚 Envío gratis a España y Portugal · Devolución en 14 días</span><span class="pt">🚚 Envio grátis para Portugal e Espanha · Devolução em 14 dias</span></div>
 <header class="top">
   <div class="wrap top-in">
-    <a class="logo" href="./"><span class="logo-m">L</span><span><b>LeuName</b><i>Hallazgos</i></span></a>
-    <nav class="nav"><a href="./#hogar">Hogar</a><a href="./#cocina">Cocina</a><a href="./#tecnologia">Tecnología</a><a href="./#mascotas">Mascotas</a><a href="./#oficina">Oficina en casa</a></nav>
+    <a class="logo" href="./"><span class="logo-m">L</span><span class="logo-t">LeuName<i><span class="es">ideas para casa</span><span class="pt">ideias para casa</span></i></span></a>
+    <nav class="nav" aria-label="Categorías"><a href="./#mascotas"><span class="es">Mascotas</span><span class="pt">Animais</span></a><a href="./#casa"><span class="es">Hogar</span><span class="pt">Casa</span></a><a href="./#cocina"><span class="es">Cocina</span><span class="pt">Cozinha</span></a><a href="./#belleza"><span class="es">Belleza</span><span class="pt">Beleza</span></a><a href="./#tech"><span class="es">Gadgets</span><span class="pt">Gadgets</span></a><a href="./#coche"><span class="es">Coche</span><span class="pt">Carro</span></a></nav>
+    <div class="acoes">
+      <button class="idioma" type="button" data-idioma aria-label="Idioma"><span class="es">PT</span><span class="pt">ES</span></button>
+      <a class="sacola" href="carrito.html" aria-label="Carrito">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 7h12l-1 13H7L6 7z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg>
+        <b data-qtd hidden>0</b>
+      </a>
+    </div>
   </div>
 </header>
-
 <main>
 <section class="hero">
   <div class="wrap hero-in">
-    <div class="hero-txt">
-      <span class="sello">Selección independiente · enlaces a Amazon.es</span>
-      <h1>Hallazgos que de verdad <em>facilitan tu día</em></h1>
-      <p>Elegimos productos útiles y bien valorados para casa, cocina, oficina y mascotas. Tú comparas y compras directamente en Amazon, con su envío rápido y su garantía.</p>
-      <form class="busca" id="busca" role="search">
-        <input type="search" id="buscaQ" placeholder="¿Qué buscas? Ej.: freidora de aire" aria-label="Buscar en Amazon">
-        <button type="submit">Buscar en Amazon</button>
-      </form>
-      <ul class="ventajas"><li>✓ Precio igual que en Amazon</li><li>✓ Pago seguro en Amazon</li><li>✓ Sin registros ni datos aquí</li></ul>
+    <div>
+      <span class="selo"><span class="es">Novedades cada semana</span><span class="pt">Novidades todas as semanas</span></span>
+      <h1><span class="es">Cosas pequeñas que <em>arreglan</em> tu día.</span><span class="pt">Coisas pequenas que <em>resolvem</em> o seu dia.</span></h1>
+      <p><span class="es">Gadgets prácticos para tu casa, tu cocina y tu mascota. Precio final, envío gratis desde Europa y 14 días para devolver.</span><span class="pt">Gadgets práticos para a casa, a cozinha e o seu animal. Preço final, envio grátis a partir da Europa e 14 dias para devolver.</span></p>
+      <div class="hero-bt"><a class="bt" href="#tienda"><span class="es">Ver productos</span><span class="pt">Ver produtos</span></a><a class="bt bt-l" href="envios.html"><span class="es">Cómo funcionan los envíos</span><span class="pt">Como funcionam os envios</span></a></div>
+      <ul class="selos"><li>✓ <span class="es">IVA incluido</span><span class="pt">IVA incluído</span></li><li>✓ <span class="es">Pago con PayPal</span><span class="pt">Pagamento com PayPal</span></li><li>✓ <span class="es">Sin sorpresas en aduana</span><span class="pt">Sem surpresas na alfândega</span></li></ul>
     </div>
-    <div class="hero-arte" aria-hidden="true">
-      <div class="burb b1" style="--bg:#FBEFE3">🍳</div><div class="burb b2" style="--bg:#E8EEF9">🔌</div>
-      <div class="burb b3" style="--bg:#E9F2EC">🏠</div><div class="burb b4" style="--bg:#F6EAF1">🐾</div><div class="burb b5" style="--bg:#F3F0E4">💻</div>
+    <div class="hero-mosaico" id="mosaico" aria-hidden="true">
+      <div class="m1">🐶</div><div class="m2">🍳</div><div class="m3">💡</div><div class="m4">🧺</div>
     </div>
   </div>
 </section>
-<nav class="chips wrap" aria-label="Categorías"><a class="chip" href="#hogar" style="--bg:#E9F2EC;--fg:#2F6B4F"><span>🏠</span>Hogar</a><a class="chip" href="#cocina" style="--bg:#FBEFE3;--fg:#B4541E"><span>🍳</span>Cocina</a><a class="chip" href="#tecnologia" style="--bg:#E8EEF9;--fg:#2B4C8C"><span>🔌</span>Tecnología</a><a class="chip" href="#mascotas" style="--bg:#F6EAF1;--fg:#8E3B67"><span>🐾</span>Mascotas</a><a class="chip" href="#oficina" style="--bg:#F3F0E4;--fg:#6B5A17"><span>💻</span>Oficina en casa</a></nav>
-<section class="cat" id="hogar">
-  <div class="wrap">
-    <div class="cat-cab"><span class="cat-ico" style="--bg:#E9F2EC;--fg:#2F6B4F">🏠</span><div><h2>Hogar</h2><p>Orden, limpieza y pequeños lujos para casa</p></div></div>
-    <div class="grid"><article class="card">
-        <div class="card-ico" style="--bg:#E9F2EC;--fg:#2F6B4F"><span>🧲</span></div>
-        <h3>Organizador de cables magnético</h3><p>Adiós a los cables por el suelo: se pegan al escritorio y se quitan en un segundo.</p>
-        <a class="btn-amz" data-q="organizador cables magnetico" href="https://www.amazon.es/s?k=organizador+cables+magnetico" target="_blank" rel="sponsored noopener">Ver precios en Amazon <span aria-hidden="true">→</span></a>
-      </article><article class="card">
-        <div class="card-ico" style="--bg:#E9F2EC;--fg:#2F6B4F"><span>💡</span></div>
-        <h3>Luces LED con sensor de movimiento</h3><p>Se encienden solas en el pasillo o el armario. Recargables, sin obras.</p>
-        <a class="btn-amz" data-q="luz led sensor movimiento recargable" href="https://www.amazon.es/s?k=luz+led+sensor+movimiento+recargable" target="_blank" rel="sponsored noopener">Ver precios en Amazon <span aria-hidden="true">→</span></a>
-      </article><article class="card">
-        <div class="card-ico" style="--bg:#E9F2EC;--fg:#2F6B4F"><span>🧹</span></div>
-        <h3>Aspirador de mano sin cable</h3><p>Para migas, sofá y coche. Ligero y siempre a mano.</p>
-        <a class="btn-amz" data-q="aspirador de mano sin cable" href="https://www.amazon.es/s?k=aspirador+de+mano+sin+cable" target="_blank" rel="sponsored noopener">Ver precios en Amazon <span aria-hidden="true">→</span></a>
-      </article><article class="card">
-        <div class="card-ico" style="--bg:#E9F2EC;--fg:#2F6B4F"><span>🧶</span></div>
-        <h3>Quitapelusas eléctrico</h3><p>Deja jerséis y sofás como nuevos en minutos.</p>
-        <a class="btn-amz" data-q="quitapelusas electrico" href="https://www.amazon.es/s?k=quitapelusas+electrico" target="_blank" rel="sponsored noopener">Ver precios en Amazon <span aria-hidden="true">→</span></a>
-      </article><article class="card">
-        <div class="card-ico" style="--bg:#E9F2EC;--fg:#2F6B4F"><span>👕</span></div>
-        <h3>Bolsas de vacío para ropa</h3><p>Triplica el espacio del armario al guardar ropa de temporada.</p>
-        <a class="btn-amz" data-q="bolsas vacio ropa" href="https://www.amazon.es/s?k=bolsas+vacio+ropa" target="_blank" rel="sponsored noopener">Ver precios en Amazon <span aria-hidden="true">→</span></a>
-      </article><article class="card">
-        <div class="card-ico" style="--bg:#E9F2EC;--fg:#2F6B4F"><span>🌿</span></div>
-        <h3>Difusor de aromas ultrasónico</h3><p>Ambiente agradable y luz suave para descansar.</p>
-        <a class="btn-amz" data-q="difusor aromas ultrasonico" href="https://www.amazon.es/s?k=difusor+aromas+ultrasonico" target="_blank" rel="sponsored noopener">Ver precios en Amazon <span aria-hidden="true">→</span></a>
-      </article></div>
-  </div>
-</section><section class="cat" id="cocina">
-  <div class="wrap">
-    <div class="cat-cab"><span class="cat-ico" style="--bg:#FBEFE3;--fg:#B4541E">🍳</span><div><h2>Cocina</h2><p>Cocinar más rápido y con menos lío</p></div></div>
-    <div class="grid"><article class="card">
-        <div class="card-ico" style="--bg:#FBEFE3;--fg:#B4541E"><span>🍟</span></div>
-        <h3>Freidora de aire</h3><p>Patatas crujientes con una cucharada de aceite. La reina de las cocinas.</p>
-        <a class="btn-amz" data-q="freidora de aire" href="https://www.amazon.es/s?k=freidora+de+aire" target="_blank" rel="sponsored noopener">Ver precios en Amazon <span aria-hidden="true">→</span></a>
-      </article><article class="card">
-        <div class="card-ico" style="--bg:#FBEFE3;--fg:#B4541E"><span>🧅</span></div>
-        <h3>Picadora eléctrica</h3><p>Cebolla, ajo y verduras picadas en segundos, sin lágrimas.</p>
-        <a class="btn-amz" data-q="picadora electrica" href="https://www.amazon.es/s?k=picadora+electrica" target="_blank" rel="sponsored noopener">Ver precios en Amazon <span aria-hidden="true">→</span></a>
-      </article><article class="card">
-        <div class="card-ico" style="--bg:#FBEFE3;--fg:#B4541E"><span>⚖️</span></div>
-        <h3>Báscula de cocina digital</h3><p>Recetas exactas y raciones controladas.</p>
-        <a class="btn-amz" data-q="bascula cocina digital" href="https://www.amazon.es/s?k=bascula+cocina+digital" target="_blank" rel="sponsored noopener">Ver precios en Amazon <span aria-hidden="true">→</span></a>
-      </article><article class="card">
-        <div class="card-ico" style="--bg:#FBEFE3;--fg:#B4541E"><span>🥗</span></div>
-        <h3>Recipientes herméticos de vidrio</h3><p>Para llevar la comida al trabajo y guardar sin olores.</p>
-        <a class="btn-amz" data-q="recipientes vidrio hermeticos" href="https://www.amazon.es/s?k=recipientes+vidrio+hermeticos" target="_blank" rel="sponsored noopener">Ver precios en Amazon <span aria-hidden="true">→</span></a>
-      </article><article class="card">
-        <div class="card-ico" style="--bg:#FBEFE3;--fg:#B4541E"><span>☕</span></div>
-        <h3>Espumador de leche</h3><p>Cafés de cafetería en casa por muy poco.</p>
-        <a class="btn-amz" data-q="espumador de leche" href="https://www.amazon.es/s?k=espumador+de+leche" target="_blank" rel="sponsored noopener">Ver precios en Amazon <span aria-hidden="true">→</span></a>
-      </article><article class="card">
-        <div class="card-ico" style="--bg:#FBEFE3;--fg:#B4541E"><span>🥒</span></div>
-        <h3>Cortador de verduras en espiral</h3><p>Espaguetis de calabacín y ensaladas que entran por los ojos.</p>
-        <a class="btn-amz" data-q="cortador espiral verduras" href="https://www.amazon.es/s?k=cortador+espiral+verduras" target="_blank" rel="sponsored noopener">Ver precios en Amazon <span aria-hidden="true">→</span></a>
-      </article></div>
-  </div>
-</section><section class="cat" id="tecnologia">
-  <div class="wrap">
-    <div class="cat-cab"><span class="cat-ico" style="--bg:#E8EEF9;--fg:#2B4C8C">🔌</span><div><h2>Tecnología</h2><p>Gadgets útiles para el día a día</p></div></div>
-    <div class="grid"><article class="card">
-        <div class="card-ico" style="--bg:#E8EEF9;--fg:#2B4C8C"><span>🔋</span></div>
-        <h3>Batería externa magnética</h3><p>Se pega al móvil y lo carga sin cables en cualquier sitio.</p>
-        <a class="btn-amz" data-q="bateria externa magnetica" href="https://www.amazon.es/s?k=bateria+externa+magnetica" target="_blank" rel="sponsored noopener">Ver precios en Amazon <span aria-hidden="true">→</span></a>
-      </article><article class="card">
-        <div class="card-ico" style="--bg:#E8EEF9;--fg:#2B4C8C"><span>⚡</span></div>
-        <h3>Cargador rápido GaN</h3><p>Pequeño y potente: carga móvil y portátil con uno solo.</p>
-        <a class="btn-amz" data-q="cargador gan 65w" href="https://www.amazon.es/s?k=cargador+gan+65w" target="_blank" rel="sponsored noopener">Ver precios en Amazon <span aria-hidden="true">→</span></a>
-      </article><article class="card">
-        <div class="card-ico" style="--bg:#E8EEF9;--fg:#2B4C8C"><span>🔌</span></div>
-        <h3>Enchufe inteligente</h3><p>Apaga y programa aparatos desde el móvil y ahorra luz.</p>
-        <a class="btn-amz" data-q="enchufe inteligente wifi" href="https://www.amazon.es/s?k=enchufe+inteligente+wifi" target="_blank" rel="sponsored noopener">Ver precios en Amazon <span aria-hidden="true">→</span></a>
-      </article><article class="card">
-        <div class="card-ico" style="--bg:#E8EEF9;--fg:#2B4C8C"><span>🚗</span></div>
-        <h3>Soporte de móvil para coche</h3><p>Navegador a la vista y manos libres al volante.</p>
-        <a class="btn-amz" data-q="soporte movil coche magnetico" href="https://www.amazon.es/s?k=soporte+movil+coche+magnetico" target="_blank" rel="sponsored noopener">Ver precios en Amazon <span aria-hidden="true">→</span></a>
-      </article><article class="card">
-        <div class="card-ico" style="--bg:#E8EEF9;--fg:#2B4C8C"><span>🎧</span></div>
-        <h3>Auriculares inalámbricos</h3><p>Música y llamadas sin cables, con buena batería.</p>
-        <a class="btn-amz" data-q="auriculares inalambricos bluetooth" href="https://www.amazon.es/s?k=auriculares+inalambricos+bluetooth" target="_blank" rel="sponsored noopener">Ver precios en Amazon <span aria-hidden="true">→</span></a>
-      </article><article class="card">
-        <div class="card-ico" style="--bg:#E8EEF9;--fg:#2B4C8C"><span>🔑</span></div>
-        <h3>Localizador para llaves y maletas</h3><p>Encuentra llaves, cartera o equipaje desde el móvil.</p>
-        <a class="btn-amz" data-q="localizador bluetooth llaves" href="https://www.amazon.es/s?k=localizador+bluetooth+llaves" target="_blank" rel="sponsored noopener">Ver precios en Amazon <span aria-hidden="true">→</span></a>
-      </article></div>
-  </div>
-</section><section class="cat" id="mascotas">
-  <div class="wrap">
-    <div class="cat-cab"><span class="cat-ico" style="--bg:#F6EAF1;--fg:#8E3B67">🐾</span><div><h2>Mascotas</h2><p>Para perros y gatos felices (y casas limpias)</p></div></div>
-    <div class="grid"><article class="card">
-        <div class="card-ico" style="--bg:#F6EAF1;--fg:#8E3B67"><span>💧</span></div>
-        <h3>Fuente de agua para gatos</h3><p>Agua fresca en movimiento: beben más y mejor.</p>
-        <a class="btn-amz" data-q="fuente agua gatos" href="https://www.amazon.es/s?k=fuente+agua+gatos" target="_blank" rel="sponsored noopener">Ver precios en Amazon <span aria-hidden="true">→</span></a>
-      </article><article class="card">
-        <div class="card-ico" style="--bg:#F6EAF1;--fg:#8E3B67"><span>🥣</span></div>
-        <h3>Comedero automático</h3><p>Raciones a su hora aunque no estés en casa.</p>
-        <a class="btn-amz" data-q="comedero automatico mascotas" href="https://www.amazon.es/s?k=comedero+automatico+mascotas" target="_blank" rel="sponsored noopener">Ver precios en Amazon <span aria-hidden="true">→</span></a>
-      </article><article class="card">
-        <div class="card-ico" style="--bg:#F6EAF1;--fg:#8E3B67"><span>🪮</span></div>
-        <h3>Cepillo quitapelo con botón</h3><p>Saca el pelo muerto y se limpia con un clic.</p>
-        <a class="btn-amz" data-q="cepillo quitapelo perro gato" href="https://www.amazon.es/s?k=cepillo+quitapelo+perro+gato" target="_blank" rel="sponsored noopener">Ver precios en Amazon <span aria-hidden="true">→</span></a>
-      </article><article class="card">
-        <div class="card-ico" style="--bg:#F6EAF1;--fg:#8E3B67"><span>🐈</span></div>
-        <h3>Rodillo quitapelos reutilizable</h3><p>Sofá y ropa sin pelos, sin gastar recambios.</p>
-        <a class="btn-amz" data-q="rodillo quitapelos reutilizable" href="https://www.amazon.es/s?k=rodillo+quitapelos+reutilizable" target="_blank" rel="sponsored noopener">Ver precios en Amazon <span aria-hidden="true">→</span></a>
-      </article><article class="card">
-        <div class="card-ico" style="--bg:#F6EAF1;--fg:#8E3B67"><span>🎾</span></div>
-        <h3>Juguete interactivo</h3><p>Entretiene y cansa a tu mascota cuando se aburre.</p>
-        <a class="btn-amz" data-q="juguete interactivo perro" href="https://www.amazon.es/s?k=juguete+interactivo+perro" target="_blank" rel="sponsored noopener">Ver precios en Amazon <span aria-hidden="true">→</span></a>
-      </article><article class="card">
-        <div class="card-ico" style="--bg:#F6EAF1;--fg:#8E3B67"><span>🛏️</span></div>
-        <h3>Cama ortopédica</h3><p>Descanso cómodo para mascotas mayores o grandes.</p>
-        <a class="btn-amz" data-q="cama ortopedica perro" href="https://www.amazon.es/s?k=cama+ortopedica+perro" target="_blank" rel="sponsored noopener">Ver precios en Amazon <span aria-hidden="true">→</span></a>
-      </article></div>
-  </div>
-</section><section class="cat" id="oficina">
-  <div class="wrap">
-    <div class="cat-cab"><span class="cat-ico" style="--bg:#F3F0E4;--fg:#6B5A17">💻</span><div><h2>Oficina en casa</h2><p>Trabajar desde casa con comodidad</p></div></div>
-    <div class="grid"><article class="card">
-        <div class="card-ico" style="--bg:#F3F0E4;--fg:#6B5A17"><span>💻</span></div>
-        <h3>Soporte para portátil</h3><p>Pantalla a la altura de los ojos: adiós dolor de cuello.</p>
-        <a class="btn-amz" data-q="soporte portatil ajustable" href="https://www.amazon.es/s?k=soporte+portatil+ajustable" target="_blank" rel="sponsored noopener">Ver precios en Amazon <span aria-hidden="true">→</span></a>
-      </article><article class="card">
-        <div class="card-ico" style="--bg:#F3F0E4;--fg:#6B5A17"><span>🪔</span></div>
-        <h3>Lámpara de escritorio LED</h3><p>Luz regulable que cansa menos la vista.</p>
-        <a class="btn-amz" data-q="lampara escritorio led regulable" href="https://www.amazon.es/s?k=lampara+escritorio+led+regulable" target="_blank" rel="sponsored noopener">Ver precios en Amazon <span aria-hidden="true">→</span></a>
-      </article><article class="card">
-        <div class="card-ico" style="--bg:#F3F0E4;--fg:#6B5A17"><span>🖱️</span></div>
-        <h3>Alfombrilla de escritorio XXL</h3><p>Teclado y ratón sobre una superficie suave y ordenada.</p>
-        <a class="btn-amz" data-q="alfombrilla escritorio xxl" href="https://www.amazon.es/s?k=alfombrilla+escritorio+xxl" target="_blank" rel="sponsored noopener">Ver precios en Amazon <span aria-hidden="true">→</span></a>
-      </article><article class="card">
-        <div class="card-ico" style="--bg:#F3F0E4;--fg:#6B5A17"><span>🪑</span></div>
-        <h3>Cojín lumbar ergonómico</h3><p>Espalda recta durante las horas de silla.</p>
-        <a class="btn-amz" data-q="cojin lumbar ergonomico" href="https://www.amazon.es/s?k=cojin+lumbar+ergonomico" target="_blank" rel="sponsored noopener">Ver precios en Amazon <span aria-hidden="true">→</span></a>
-      </article><article class="card">
-        <div class="card-ico" style="--bg:#F3F0E4;--fg:#6B5A17"><span>🦶</span></div>
-        <h3>Reposapiés ergonómico</h3><p>Mejor postura y piernas más descansadas.</p>
-        <a class="btn-amz" data-q="reposapies ergonomico" href="https://www.amazon.es/s?k=reposapies+ergonomico" target="_blank" rel="sponsored noopener">Ver precios en Amazon <span aria-hidden="true">→</span></a>
-      </article><article class="card">
-        <div class="card-ico" style="--bg:#F3F0E4;--fg:#6B5A17"><span>🗂️</span></div>
-        <h3>Organizador de escritorio</h3><p>Todo en su sitio y la mesa despejada.</p>
-        <a class="btn-amz" data-q="organizador escritorio" href="https://www.amazon.es/s?k=organizador+escritorio" target="_blank" rel="sponsored noopener">Ver precios en Amazon <span aria-hidden="true">→</span></a>
-      </article></div>
+<div class="wrap chips" id="tienda"><a class="chip" href="#mascotas"><span>🐾</span><span class="es">Mascotas</span><span class="pt">Animais</span></a><a class="chip" href="#casa"><span>🏠</span><span class="es">Hogar</span><span class="pt">Casa</span></a><a class="chip" href="#cocina"><span>🍳</span><span class="es">Cocina</span><span class="pt">Cozinha</span></a><a class="chip" href="#belleza"><span>✨</span><span class="es">Belleza</span><span class="pt">Beleza</span></a><a class="chip" href="#tech"><span>🔌</span><span class="es">Gadgets</span><span class="pt">Gadgets</span></a><a class="chip" href="#coche"><span>🚗</span><span class="es">Coche</span><span class="pt">Carro</span></a></div>
+<section class="wrap destaque-sec" id="destaques" hidden>
+  <div class="sec-cab"><h2><span class="es">Lo más vendido</span><span class="pt">Os mais vendidos</span></h2></div>
+  <div class="grade" data-grade="destaque"></div>
+</section>
+<section class="wrap cat" id="mascotas" hidden>
+  <div class="sec-cab"><span class="sec-ico">🐾</span><h2><span class="es">Mascotas</span><span class="pt">Animais</span></h2></div>
+  <div class="grade" data-grade="mascotas"></div>
+</section><section class="wrap cat" id="casa" hidden>
+  <div class="sec-cab"><span class="sec-ico">🏠</span><h2><span class="es">Hogar</span><span class="pt">Casa</span></h2></div>
+  <div class="grade" data-grade="casa"></div>
+</section><section class="wrap cat" id="cocina" hidden>
+  <div class="sec-cab"><span class="sec-ico">🍳</span><h2><span class="es">Cocina</span><span class="pt">Cozinha</span></h2></div>
+  <div class="grade" data-grade="cocina"></div>
+</section><section class="wrap cat" id="belleza" hidden>
+  <div class="sec-cab"><span class="sec-ico">✨</span><h2><span class="es">Belleza</span><span class="pt">Beleza</span></h2></div>
+  <div class="grade" data-grade="belleza"></div>
+</section><section class="wrap cat" id="tech" hidden>
+  <div class="sec-cab"><span class="sec-ico">🔌</span><h2><span class="es">Gadgets</span><span class="pt">Gadgets</span></h2></div>
+  <div class="grade" data-grade="tech"></div>
+</section><section class="wrap cat" id="coche" hidden>
+  <div class="sec-cab"><span class="sec-ico">🚗</span><h2><span class="es">Coche</span><span class="pt">Carro</span></h2></div>
+  <div class="grade" data-grade="coche"></div>
+</section>
+<section class="wrap vazio" id="vazio" hidden>
+  <div class="vazio-in">
+    <b>📦</b>
+    <h2><span class="es">Estamos preparando la tienda</span><span class="pt">Estamos a preparar a loja</span></h2>
+    <p><span class="es">Los primeros productos llegan en unos días. Escríbenos y te avisamos.</span><span class="pt">Os primeiros produtos chegam dentro de dias. Escreva-nos e avisamos.</span></p>
+    <a class="bt" href="#" data-mail><span class="es">Avisarme</span><span class="pt">Avisar-me</span></a>
   </div>
 </section>
 <section class="como">
   <div class="wrap como-in">
-    <div><h2>Cómo elegimos</h2><p>Solo recomendamos tipos de producto que resuelven un problema real, con muchas opiniones positivas en Amazon. Revisa siempre la ficha, las opiniones y el vendedor antes de comprar: el precio y la disponibilidad los marca Amazon y pueden cambiar.</p></div>
-    <ol><li><b>Eliges</b> la idea que te interesa.</li><li><b>Comparas</b> modelos y precios en Amazon.</li><li><b>Compras</b> con el envío y la devolución de Amazon.</li></ol>
+    <div><h2><span class="es">Así de fácil</span><span class="pt">Simples assim</span></h2><p><span class="es">Sin registros ni cuentas. Eliges, pagas con PayPal y lo recibes en casa.</span><span class="pt">Sem registos nem contas. Escolhe, paga com PayPal e recebe em casa.</span></p></div>
+    <ol>
+      <li><b><span class="es">Elige</span><span class="pt">Escolha</span></b><span class="es">Añade lo que te guste al carrito.</span><span class="pt">Junte o que gostar ao carrinho.</span></li>
+      <li><b><span class="es">Paga seguro</span><span class="pt">Pague com segurança</span></b><span class="es">Con PayPal o tarjeta, en euros.</span><span class="pt">Com PayPal ou cartão, em euros.</span></li>
+      <li><b><span class="es">Recíbelo</span><span class="pt">Receba</span></b><span class="es">Te enviamos el número de seguimiento por email.</span><span class="pt">Enviamos o número de seguimento por email.</span></li>
+    </ol>
   </div>
 </section>
 </main>
-<section class="aviso-af">
-  <div class="wrap">
-    <p><b>Transparencia:</b> en calidad de Afiliado de Amazon, obtenemos ingresos por las compras adscritas que cumplen los requisitos aplicables. A ti no te cuesta nada más: el precio es el mismo y compras directamente en Amazon, con su envío, garantía y devolución.</p>
+
+<section class="garantias">
+  <div class="wrap gar-in">
+    <div><b>🚚</b><h4><span class="es">Envío gratis</span><span class="pt">Envio grátis</span></h4><p><span class="es">Desde almacenes en Europa a España y Portugal.</span><span class="pt">De armazéns na Europa para Portugal e Espanha.</span></p></div>
+    <div><b>🔒</b><h4><span class="es">Pago seguro</span><span class="pt">Pagamento seguro</span></h4><p><span class="es">Con PayPal o tarjeta. Nunca vemos tus datos bancarios.</span><span class="pt">Com PayPal ou cartão. Nunca vemos os seus dados bancários.</span></p></div>
+    <div><b>↩️</b><h4><span class="es">14 días para devolver</span><span class="pt">14 dias para devolver</span></h4><p><span class="es">Si no te convence, nos lo devuelves.</span><span class="pt">Se não gostar, pode devolver.</span></p></div>
+    <div><b>💬</b><h4><span class="es">Atención por email</span><span class="pt">Apoio por email</span></h4><p><span class="es">Respondemos en menos de 24 h laborables.</span><span class="pt">Respondemos em menos de 24 h úteis.</span></p></div>
   </div>
 </section>
 <footer class="pie">
   <div class="wrap pie-in">
-    <div><a class="logo" href="./"><span class="logo-m">L</span><span><b>LeuName</b><i>Hallazgos</i></span></a>
-      <p>Seleccionamos productos útiles para el hogar, la cocina, la oficina y las mascotas, con enlaces a Amazon España.</p></div>
-    <div><h4>Categorías</h4><a href="./#hogar">Hogar</a><a href="./#cocina">Cocina</a><a href="./#tecnologia">Tecnología</a><a href="./#mascotas">Mascotas</a><a href="./#oficina">Oficina en casa</a></div>
-    <div><h4>Legal</h4><a href="aviso-legal.html">Aviso legal</a><a href="privacidad.html">Política de privacidad</a><a href="cookies.html">Política de cookies</a><a href="#" data-mail>Contacto</a></div>
+    <div><a class="logo" href="./"><span class="logo-m">L</span><span class="logo-t">LeuName<i><span class="es">ideas para casa</span><span class="pt">ideias para casa</span></i></span></a>
+      <p><span class="es">Pequeñas cosas que hacen la vida más fácil, enviadas a España y Portugal.</span><span class="pt">Pequenas coisas que facilitam a vida, enviadas para Portugal e Espanha.</span></p></div>
+    <div><h4><span class="es">Tienda</span><span class="pt">Loja</span></h4><a href="./#mascotas"><span class="es">Mascotas</span><span class="pt">Animais</span></a><a href="./#casa"><span class="es">Hogar</span><span class="pt">Casa</span></a><a href="./#cocina"><span class="es">Cocina</span><span class="pt">Cozinha</span></a><a href="./#belleza"><span class="es">Belleza</span><span class="pt">Beleza</span></a><a href="./#tech"><span class="es">Gadgets</span><span class="pt">Gadgets</span></a><a href="./#coche"><span class="es">Coche</span><span class="pt">Carro</span></a></div>
+    <div><h4><span class="es">Ayuda</span><span class="pt">Ajuda</span></h4><a href="envios.html"><span class="es">Envíos y devoluciones</span><span class="pt">Envios e devoluções</span></a><a href="#" data-mail><span class="es">Contacto</span><span class="pt">Contacto</span></a><a href="carrito.html"><span class="es">Mi carrito</span><span class="pt">O meu carrinho</span></a></div>
+    <div><h4>Legal</h4><a href="aviso-legal.html"><span class="es">Aviso legal</span><span class="pt">Aviso legal</span></a><a href="envios.html#desistimiento"><span class="es">Derecho de desistimiento</span><span class="pt">Direito de livre resolução</span></a><a href="privacidad.html"><span class="es">Privacidad</span><span class="pt">Privacidade</span></a><a href="cookies.html">Cookies</a></div>
   </div>
-  <div class="wrap pie-bajo">© <span data-ano>2026</span> LeuName Hallazgos · leunamesoftware.com</div>
+  <div class="wrap pie-bajo"><span>© <span data-ano>2026</span> LeuName · leunamesoftware.com</span><span class="pagos">PayPal · Visa · Mastercard</span></div>
 </footer>
 <div class="cookies" id="cookies" hidden>
-  <p>Usamos solo lo necesario para que la web funcione. Al pulsar un enlace de Amazon, Amazon puede usar sus propias cookies. <a href="cookies.html">Más información</a></p>
-  <button type="button" id="cookiesOk">Entendido</button>
+  <p><span class="es">Solo usamos lo necesario para que la tienda funcione (carrito e idioma). Al pagar, PayPal usa sus propias cookies.</span><span class="pt">Só usamos o necessário para a loja funcionar (carrinho e idioma). Ao pagar, o PayPal usa os seus próprios cookies.</span> <a href="cookies.html"><span class="es">Más información</span><span class="pt">Saber mais</span></a></p>
+  <button type="button" id="cookiesOk">OK</button>
 </div>
-<script src="app.js"></script>
+<div class="aviso" id="aviso" role="status"></div>
+<script src="loja.js"></script>
 </body>
 </html>
