@@ -136,7 +136,7 @@ RODAPE = f'''
     <div><h4>{t('Ayuda', 'Ajuda', 'Help')}</h4><a href="envios.html">{t('Envíos y devoluciones', 'Envios e devoluções', 'Shipping & returns')}</a><a href="#" data-mail>{t('Contacto', 'Contacto', 'Contact')}</a><a href="carrito.html">{t('Mi carrito', 'O meu carrinho', 'My cart')}</a></div>
     <div><h4>Legal</h4><a href="aviso-legal.html">{t('Aviso legal', 'Aviso legal', 'Legal notice')}</a><a href="envios.html#desistimiento">{t('Derecho de desistimiento', 'Direito de livre resolução', 'Right of withdrawal')}</a><a href="privacidad.html">{t('Privacidad', 'Privacidade', 'Privacy')}</a><a href="cookies.html">Cookies</a></div>
   </div>
-  <div class="wrap pie-bajo"><span>© <span data-ano>2026</span> {MARCA} · leunamesoftware.com</span><span class="pagos">Visa · Mastercard · Apple Pay · Google Pay · PayPal</span></div>
+  <div class="wrap pie-bajo"><span>© <span data-ano>2026</span> {MARCA} · leunamesoftware.com</span><span class="pagos" aria-label="Formas de pago"><i class="pg pg-paypal"><b>Pay</b>Pal</i><i class="pg pg-stripe">stripe</i><i class="pg pg-visa">VISA</i><i class="pg pg-mc"><span></span><span></span></i><i class="pg pg-apple"><svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path fill="currentColor" d="M16.4 12.6c0-2.4 2-3.5 2.1-3.6-1.1-1.7-2.9-1.9-3.5-1.9-1.5-.2-2.9.9-3.7.9s-1.9-.9-3.2-.8c-1.6 0-3.1 1-4 2.4-1.7 3-.4 7.3 1.2 9.7.8 1.2 1.8 2.5 3 2.4 1.2 0 1.7-.8 3.1-.8s1.9.8 3.2.8c1.3 0 2.1-1.2 2.9-2.4.9-1.4 1.3-2.7 1.3-2.8 0 0-2.4-1-2.4-3.9zM14 5.5c.7-.8 1.1-1.9 1-3-1 0-2.1.7-2.8 1.5-.6.7-1.2 1.8-1 2.9 1.1.1 2.1-.6 2.8-1.4z"/></svg>Pay</i><i class="pg pg-gpay"><b>G</b> Pay</i></span></div>
 </footer>
 <div class="cookies" id="cookies" hidden>
   <p>{t('Solo usamos lo necesario para que la tienda funcione (carrito e idioma). Al pagar, Stripe o PayPal usan sus propias cookies.', 'Só usamos o necessário para a loja funcionar (carrinho e idioma). No pagamento, a Stripe ou o PayPal usam os seus próprios cookies.', 'We only store what the shop needs to work (cart and language). At checkout, Stripe or PayPal use their own cookies.')} <a href="cookies.html">{t('Más información', 'Saber mais', 'Learn more')}</a></p>
@@ -155,10 +155,10 @@ def pagina(nome, titulo, desc, corpo, indexar=True):
 
 # ---------------- INÍCIO ----------------
 SLIDES = [
-    ('banner-1', t('Todo lo que tu perro<br><em class="v">necesita y adora</em>', 'Tudo o que o seu cão<br><em class="v">precisa e adora</em>', 'Everything your dog<br><em class="v">needs and loves</em>'),
-     t('Camas, juguetes, collares y mucho más. Envío gratis desde Europa.', 'Camas, brinquedos, coleiras e muito mais. Envio grátis a partir da Europa.', 'Beds, toys, collars and more. Free shipping from Europe.')),
+    ('hero', t('Todo para tu perro<br>y tu gato, <em class="v">en casa</em>', 'Tudo para o seu cão<br>e o seu gato, <em class="v">em casa</em>', 'Everything for your dog<br>and cat, <em class="v">at home</em>'),
+     t('Camas, fuentes, juguetes y accesorios que ellos adoran y que quedan bonitos en tu salón.', 'Camas, fontes, brinquedos e acessórios que eles adoram e que ficam bonitos na sala.', 'Beds, fountains, toys and accessories they love, that look great in your living room.')),
 ]
-slides = ''.join(f'''<div class="slide{' on' if i == 0 else ''}{' slide-clara' if img.startswith('banner') else ''}{' slide-roxo' if img == 'banner-2' else ''}" data-slide>
+slides = ''.join(f'''<div class="slide{' on' if i == 0 else ''}{' slide-luz' if img == 'hero' else ''}{' slide-clara' if img.startswith('banner') else ''}{' slide-roxo' if img == 'banner-2' else ''}" data-slide>
     <picture>{f'<source media="(max-width:720px)" srcset="img/{img}-m.webp">' if img.startswith('banner') else ''}<img class="slide-foto{' foto-clara' if img.startswith('banner') else ''}" src="img/{img}.webp" alt="" {'fetchpriority="high"' if i == 0 else 'loading="lazy"'}></picture>
     <div class="wrap slide-tx">
       <p class="selo">{t('Envío gratis desde Europa', 'Envio grátis a partir da Europa', 'Free shipping from Europe')}</p>

@@ -342,3 +342,19 @@ h1,h2,h3{font-family:var(--tit);letter-spacing:-.02em;line-height:1.1}
 .slide-roxo h1,.slide-roxo .hero-p{text-shadow:0 2px 18px rgba(30,0,80,.3)}
 .slide-roxo .bt.bt-cor{background:#fff;color:#5A1FB0}.slide-roxo .bt.bt-cor:hover{background:#F3ECFF}
 @media (max-width:720px){.slide-roxo .slide-tx{background:linear-gradient(120deg,#3A10A0,#7B2BD6)}}
+/* selos de pagamento no rodapé */
+.pagos{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.pg{display:inline-flex;align-items:center;justify-content:center;gap:2px;height:30px;min-width:52px;padding:0 10px;border-radius:6px;background:#fff;font-style:normal;font-weight:800;font-size:14px;line-height:1;font-family:Arial,Helvetica,sans-serif;box-shadow:0 1px 0 rgba(0,0,0,.08)}
+.pg-paypal{color:#009CDE;font-style:italic}.pg-paypal b{color:#003087}
+.pg-stripe{color:#635BFF;font-size:16px;letter-spacing:-.02em;font-weight:700}
+.pg-visa{color:#1A1F71;font-style:italic;font-size:15px;letter-spacing:.02em}
+.pg-mc span{width:16px;height:16px;border-radius:50%;background:#EB001B;display:block}.pg-mc span+span{background:#F79E1B;margin-left:-7px;mix-blend-mode:multiply}
+.pg-apple{color:#000;font-weight:600}
+.pg-gpay{color:#5F6368;font-weight:600}.pg-gpay b{color:#4285F4}
+/* banner fixo claro */
+.slide-luz::after{background:linear-gradient(90deg,rgba(255,249,244,.97) 0,rgba(255,249,244,.9) 32%,rgba(255,249,244,.2) 58%,rgba(255,249,244,0) 70%)}
+.slide-luz .slide-tx{color:var(--tinta)}
+.slide-luz .selo{background:var(--verde-c);border-color:transparent;color:var(--coral-e)}
+.slide-luz h1{color:var(--tinta)}.slide-luz h1 .v{color:var(--coral)}
+.slide-luz .hero-p{color:var(--suave)}
+@media (max-width:720px){.slide-luz .slide-tx{background:var(--fundo)}.slide-luz .slide-foto{object-position:70% center}}
