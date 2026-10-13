@@ -23,6 +23,13 @@ O dono fala português do Brasil, quer respostas curtas e diretas. Ele está sem
 | `.github/workflows/deploy-site-cloudflare.yml` | Publica o site. **push** = só remonta `produtos.json` com o catálogo salvo no branch `dados-cj` (não gasta a CJ). **agenda diária / manual** = roda o robô inteiro (~15 min) e salva o catálogo no branch `dados-cj`. |
 | `.github/workflows/cj-debug.yml` + `ferramentas-loja/cj_debug.py` | Diagnóstico da API da CJ; grava `debug.json` no branch `dados-cj-debug`. |
 
+## Painel do dono — https://pets.leuname.com/painel/ (instalável)
+- Login com `LOJA_ADMIN_SENHA` (6 erros = 15 min bloqueado; sessão 60 dias). Busca ao vivo na CJ, mostra custo, frete+IVA (DE/FR/ES/IT), preço sugerido e lucro.
+- "Publicar" grava o produto no D1 **leunapets** (binding `DB`, id ad40b547-8532-4316-aafe-45280db14070) com texto es/en escrito pelo Workers AI (`AI`, llama-3.3-70b).
+- A loja lê `/produtos.json` pelo Worker = `produtos.json` do robô + D1 (o D1 manda; `ativo=0` tira da loja). O checkout usa a mesma lista.
+- Código: `SITE-LEUNAMESOFTWARE/painel-api.js` (API `/api/painel/*`) e `painel/index.html`. O workflow passa STRIPE_SECRET_KEY, CJ_API_KEY e LOJA_ADMIN_SENHA para o Worker.
+- Teste no ar: workflow `estado.yml` grava `painel.txt` no branch `dados-estado`.
+
 ## Segredos (GitHub → Settings → Secrets → Actions). Nunca pedir ao dono para colar chave na conversa.
 - `CJ_API_KEY` — **já está** (loja "LeunaPets" criada na CJ: Authorization → API → Chave de API).
 - `STRIPE_SECRET_KEY` — o dono disse que colocou; o workflow passa para o Worker com `wrangler secret put`. Conferir com `/api/config` (`{"stripe":true}`).
@@ -52,7 +59,7 @@ Disparar o robô: `gh api -X POST repos/leunamesoftware/Leunamesite/actions/work
 1. Escolher ~20–30 produtos do catálogo, traduzir (es/pt/en), conferir preço na Amazon.es e preencher `aprovados.json` → push.
 2. PayPal Client ID em `config.js`; confirmar Stripe ligado. Preencher `titular` (nome, endereço, NIF/CPF/CNPJ) quando o dono mandar.
 3. **Pedido automático na CJ:** webhook do Stripe/PayPal → Worker cria pedido (`/shopping/order/createOrderV2`) com o endereço e paga com saldo CJ; manda rastreio por e-mail.
-4. **Painel do dono:** vendas por dia/mês com gráfico, quanto entrou no Stripe/PayPal, custo CJ, lucro, status dos pedidos. (Precisa de D1 para guardar pedidos.)
+4. **Painel do dono — parte 2:** vendas por dia/mês com gráfico, quanto entrou no Stripe/PayPal, custo CJ, lucro, status dos pedidos. (Precisa de D1 para guardar pedidos.)
 5. Robô de novidades com tradução automática (precisa de uma API de tradução paga; hoje o dono aprova pela página novidades e o Claude traduz).
 6. Feed para Google Merchant Center (anúncios grátis no Google Shopping) e depois tráfego pago pequeno.
 7. Irmão do dono (brasileiro, na Europa sem documentos): loja separada no nome dele (CPF, PayPal/Stripe dele), outro nicho, mesmo sistema — ele não deve manusear produto (só dropshipping).
