@@ -1,0 +1,1278 @@
+{
+ "listV2_pet_DE": {
+  "code": 200,
+  "result": true,
+  "message": "Success",
+  "data": {
+   "pageSize": 5,
+   "pageNumber": 1,
+   "totalRecords": 43,
+   "totalPages": 9,
+   "content": [
+    {
+     "productList": [
+      {
+       "id": "1990486404844150785",
+       "nameEn": "  Extendable Pet Barrier 82,   Extendable Pet Barrier 82,",
+       "sku": "CJYE2598122",
+       "isCollect": 0,
+       "listedNum": 40,
+       "bigImage": "https://cf.cjdropshipping.com/17633376/9af0d938-56db-432c-8cce-62fdbfa561a6.jpg",
+       "sellPrice": "40.56",
+       "nowPrice": null,
+       "authorityStatus": "1",
+       "addMarkStatus": 1,
+       "isVedio": 0,
+       "productType": "5",
+       "isAut": "0",
+       "categoryId": "77A1D79C-B67E-42C0-850F-00005042548C",
+       "threeCategoryName": null,
+       "twoCategoryId": null,
+       "twoCategoryName": null,
+       "oneCategoryId": null,
+       "oneCategoryName": null,
+       "directMinOrderNum": null,
+       "supplierName": null,
+       "zoneRecommendJson": null,
+       "createAt": null,
+       "setRecommendedTime": null,
+       "autStatus": "1",
+       "isList": 0,
+       "isAd": 0,
+       "activityId": null,
+       "isPersonalized": 0,
+       "saleStatus": "3",
+       "syncListedProductStatus": null,
+       "videoList": [],
+       "deliveryCycle": null,
+       "warehouseInventoryNum": 65,
+       "discountPrice": null,
+       "discountPriceRate": null,
+       "myProduct": false,
+       "currency": null,
+       "totalVerifiedInventory": 0,
+       "totalUnVerifiedInventory": null
+      },
+      {
+       "id": "1990468931922599938",
+       "nameEn": "  Dining Chairs, 2 pcs. Transparent PET",
+       "sku": "CJFU2597487",
+       "isCollect": 0,
+       "listedNum": 10,
+       "bigImage": "https://cf.cjdropshipping.com/17633376/de1f11cb-85c7-44b5-851d-9a3bc1aa9e59.jpg",
+       "sellPrice": "80.04 -- 120.79",
+       "nowPrice": null,
+       "authorityStatus": "1",
+       "addMarkStatus": 1,
+       "isVedio": 0,
+       "productType": "5",
+       "isAut": "0",
+       "categoryId": "2410301014451618100",
+       "threeCategoryName": null,
+       "twoCategoryId": null,
+       "twoCategoryName": null,
+       "oneCategoryId": null,
+       "oneCategoryName": null,
+       "directMinOrderNum": null,
+       "supplierName": null,
+       "zoneRecommendJson": null,
+       "createAt": null,
+       "setRecommendedTime": null,
+       "autStatus": "1",
+       "isList": 0,
+       "isAd": 0,
+       "activityId": null,
+       "isPersonalized": 0,
+       "saleStatus": "3",
+       "syncListedProductStatus": null,
+       "videoList": [],
+       "deliveryCycle": null,
+       "warehouseInventoryNum": 332,
+       "discountPrice": null,
+       "discountPriceRate": null,
+       "myProduct": false,
+       "currency": null,
+       "totalVerifiedInventory": 0,
+       "totalUnVerifiedInventory": null
+      },
+      {
+       "id": "2067217662089027585",
+       "nameEn": "Modern Extendable Counter Table & Dining Table, Swivel High Small Counter Table  With Pet Area, Without Pet Food Plate & Pet Cushion, White, Marble Look Table Top, 120-80x40x100 Cm",
+       "sku": "CJFU2940721",
+       "isCollect": 0,
+       "listedNum": 1,
+       "bigImage": "https://cf.cjdropshipping.com/17816544/bfa9e0af-c991-4170-ae60-89822bab6562.jpg",
+       "sellPrice": "183.74",
+       "nowPrice": null,
+       "authorityStatus": "1",
+       "addMarkStatus": 1,
+       "isVedio": 0,
+       "productType": "5",
+       "isAut": "0",
+       "categoryId": "2410301014451618100",
+       "threeCategoryName": null,
+       "twoCategoryId": null,
+       "twoCategoryName": null,
+       "oneCategoryId": null,
+       "oneCategoryName": null,
+       "directMinOrderNum": null,
+       "supplierName": null,
+       "zoneRecommendJson": null,
+       "createAt": null,
+       "setRecommendedTime": null,
+       "autStatus": "1",
+       "isList": 0,
+       "isAd": 0,
+       "activityId": null,
+       "isPersonalized": 0,
+       "saleStatus": "3",
+       "syncListedProductStatus": null,
+       "videoList": [],
+       "deliveryCycle": null,
+       "warehouseInventoryNum": 95,
+       "discountPrice": null,
+       "discountPriceRate": null,
+       "myProduct": false,
+       "currency": null,
+       "totalVerifiedInventory": 0,
+       "totalUnVerifiedInventory": null
+      }
+     ],
+     "relatedCategoryList": [
+      {
+       "id": "77A1D79C-B67E-42C0-850F-00005042548C",
+       "name": "Baby Care",
+       "currentLevel": 3
+      },
+      {
+       "id": "2410301014451618100",
+       "name": "Furniture",
+       "currentLevel": 3
+      }
+     ],
+     "keyWord": "pet",
+     "keyWordOld": "pet"
+    }
+   ]
+  },
+  "requestId": "eedeafc34e4e4b289c65171aef3fc45a",
+  "pointsInfo": {
+   "total": 50000,
+   "usedToday": 12160,
+   "remaining": 50000
+  },
+  "success": true
+ },
+ "listV2_pet_semPais": {
+  "code": 200,
+  "result": true,
+  "message": "Success",
+  "data": {
+   "pageSize": 5,
+   "pageNumber": 1,
+   "totalRecords": 4485,
+   "totalPages": 897,
+   "content": [
+    {
+     "productList": [
+      {
+       "id": "1373084960507957248",
+       "nameEn": "Pet clothes",
+       "sku": "CJJT1048826",
+       "isCollect": 0,
+       "listedNum": 2814,
+       "bigImage": "https://cf.cjdropshipping.com/1616203488791.jpg",
+       "sellPrice": "0.62 -- 0.70",
+       "nowPrice": null,
+       "authorityStatus": "1",
+       "addMarkStatus": 0,
+       "isVedio": 0,
+       "productType": "0",
+       "isAut": "0",
+       "categoryId": "87CF251F-8D11-4DE0-A154-9694D9858EB3",
+       "threeCategoryName": null,
+       "twoCategoryId": null,
+       "twoCategoryName": null,
+       "oneCategoryId": null,
+       "oneCategoryName": null,
+       "directMinOrderNum": null,
+       "supplierName": null,
+       "zoneRecommendJson": null,
+       "createAt": null,
+       "setRecommendedTime": null,
+       "autStatus": "1",
+       "isList": 0,
+       "isAd": 0,
+       "activityId": null,
+       "isPersonalized": 0,
+       "saleStatus": "3",
+       "syncListedProductStatus": null,
+       "videoList": [],
+       "deliveryCycle": null,
+       "warehouseInventoryNum": 160000,
+       "discountPrice": null,
+       "discountPriceRate": null,
+       "myProduct": false,
+       "currency": null,
+       "totalVerifiedInventory": 0,
+       "totalUnVerifiedInventory": null
+      },
+      {
+       "id": "1402447024040841216",
+       "nameEn": "Folding Pet Bowl Pet Bowl Travel Hanging Pet",
+       "sku": "CJJT1166027",
+       "isCollect": 0,
+       "listedNum": 1148,
+       "bigImage": "https://cf.cjdropshipping.com/1623204340180.jpg",
+       "sellPrice": "0.96 -- 6.30",
+       "nowPrice": null,
+       "authorityStatus": "1",
+       "addMarkStatus": 0,
+       "isVedio": 0,
+       "productType": "0",
+       "isAut": "0",
+       "categoryId": "87CF251F-8D11-4DE0-A154-9694D9858EB3",
+       "threeCategoryName": null,
+       "twoCategoryId": null,
+       "twoCategoryName": null,
+       "oneCategoryId": null,
+       "oneCategoryName": null,
+       "directMinOrderNum": null,
+       "supplierName": null,
+       "zoneRecommendJson": null,
+       "createAt": null,
+       "setRecommendedTime": null,
+       "autStatus": "1",
+       "isList": 0,
+       "isAd": 0,
+       "activityId": null,
+       "isPersonalized": 0,
+       "saleStatus": "3",
+       "syncListedProductStatus": null,
+       "videoList": [],
+       "deliveryCycle": null,
+       "warehouseInventoryNum": 69771,
+       "discountPrice": null,
+       "discountPriceRate": null,
+       "myProduct": false,
+       "currency": null,
+       "totalVerifiedInventory": 0,
+       "totalUnVerifiedInventory": null
+      },
+      {
+       "id": "1378250073569366016",
+       "nameEn": "Pet Backpack, Pet Outing Bag, Portable Pet Bag",
+       "sku": "CJCC1064754",
+       "isCollect": 0,
+       "listedNum": 1784,
+       "bigImage": "https://cf.cjdropshipping.com/1617435166717.jpg",
+       "sellPrice": "4.21 -- 6.01",
+       "nowPrice": null,
+       "authorityStatus": "1",
+       "addMarkStatus": 0,
+       "isVedio": 0,
+       "productType": "0",
+       "isAut": "0",
+       "categoryId": "C1394E10-1EDF-4107-AA93-F142B44C3136",
+       "threeCategoryName": null,
+       "twoCategoryId": null,
+       "twoCategoryName": null,
+       "oneCategoryId": null,
+       "oneCategoryName": null,
+       "directMinOrderNum": null,
+       "supplierName": null,
+       "zoneRecommendJson": null,
+       "createAt": null,
+       "setRecommendedTime": null,
+       "autStatus": "1",
+       "isList": 0,
+       "isAd": 0,
+       "activityId": null,
+       "isPersonalized": 0,
+       "saleStatus": "3",
+       "syncListedProductStatus": null,
+       "videoList": [],
+       "deliveryCycle": null,
+       "warehouseInventoryNum": 320000,
+       "discountPrice": null,
+       "discountPriceRate": null,
+       "myProduct": false,
+       "currency": null,
+       "totalVerifiedInventory": 0,
+       "totalUnVerifiedInventory": null
+      }
+     ],
+     "relatedCategoryList": [
+      {
+       "id": "87CF251F-8D11-4DE0-A154-9694D9858EB3",
+       "name": "Home Office Storage",
+       "currentLevel": 3
+      },
+      {
+       "id": "C1394E10-1EDF-4107-AA93-F142B44C3136",
+       "name": "Storage Bottles & Jars",
+       "currentLevel": 3
+      }
+     ],
+     "keyWord": "pet",
+     "keyWordOld": "pet"
+    }
+   ]
+  },
+  "requestId": "d048f11476894f40b35ec1533d516971",
+  "pointsInfo": {
+   "total": 50000,
+   "usedToday": 12210,
+   "remaining": 50000
+  },
+  "success": true
+ },
+ "listV2_catbed": {
+  "code": 200,
+  "result": true,
+  "message": "Success",
+  "data": {
+   "pageSize": 5,
+   "pageNumber": 1,
+   "totalRecords": 1110,
+   "totalPages": 222,
+   "content": [
+    {
+     "productList": [
+      {
+       "id": "1389761927684689920",
+       "nameEn": "Four Seasons Universal Cat  Recliner Cat Bed",
+       "sku": "CJMY1112786",
+       "isCollect": 0,
+       "listedNum": 3506,
+       "bigImage": "https://cf.cjdropshipping.com/1620179853665.jpg",
+       "sellPrice": "11.09 -- 13.78",
+       "nowPrice": null,
+       "authorityStatus": "1",
+       "addMarkStatus": 0,
+       "isVedio": 0,
+       "productType": "0",
+       "isAut": "0",
+       "categoryId": "2410110357221629500",
+       "threeCategoryName": null,
+       "twoCategoryId": null,
+       "twoCategoryName": null,
+       "oneCategoryId": null,
+       "oneCategoryName": null,
+       "directMinOrderNum": null,
+       "supplierName": null,
+       "zoneRecommendJson": null,
+       "createAt": null,
+       "setRecommendedTime": null,
+       "autStatus": "1",
+       "isList": 0,
+       "isAd": 0,
+       "activityId": null,
+       "isPersonalized": 0,
+       "saleStatus": "3",
+       "syncListedProductStatus": null,
+       "videoList": [],
+       "deliveryCycle": null,
+       "warehouseInventoryNum": 129042,
+       "discountPrice": null,
+       "discountPriceRate": null,
+       "myProduct": false,
+       "currency": null,
+       "totalVerifiedInventory": 0,
+       "totalUnVerifiedInventory": null
+      },
+      {
+       "id": "2104511357964464129",
+       "nameEn": "Cat Ears  Cat Bed,Cat Face Cat Bed",
+       "sku": "CJPN3206096",
+       "isCollect": 0,
+       "listedNum": 1,
+       "bigImage": "https://cf.cjdropshipping.com/b914e64a-7cd9-45cb-b11c-4e36ad12a4c3.jpg",
+       "sellPrice": "9.31",
+       "nowPrice": null,
+       "authorityStatus": "1",
+       "addMarkStatus": 0,
+       "isVedio": 0,
+       "productType": "5",
+       "isAut": "0",
+       "categoryId": "2410110357511615700",
+       "threeCategoryName": null,
+       "twoCategoryId": null,
+       "twoCategoryName": null,
+       "oneCategoryId": null,
+       "oneCategoryName": null,
+       "directMinOrderNum": null,
+       "supplierName": null,
+       "zoneRecommendJson": null,
+       "createAt": null,
+       "setRecommendedTime": null,
+       "autStatus": "1",
+       "isList": 0,
+       "isAd": 0,
+       "activityId": null,
+       "isPersonalized": 0,
+       "saleStatus": "3",
+       "syncListedProductStatus": null,
+       "videoList": [],
+       "deliveryCycle": null,
+       "warehouseInventoryNum": 258,
+       "discountPrice": null,
+       "discountPriceRate": null,
+       "myProduct": false,
+       "currency": null,
+       "totalVerifiedInventory": 0,
+       "totalUnVerifiedInventory": null
+      },
+      {
+       "id": "1420647255421095936",
+       "nameEn": "Cat Tent Bed Frame, Dog Bed, Pet Bed, Cat Bed",
+       "sku": "CJMY1231877",
+       "isCollect": 0,
+       "listedNum": 597,
+       "bigImage": "https://cf.cjdropshipping.com/d025c3d9-8da2-4cb9-a76e-bedd1ce581a9.jpg",
+       "sellPrice": "14.33 -- 14.77",
+       "nowPrice": null,
+       "authorityStatus": "1",
+       "addMarkStatus": 0,
+       "isVedio": 0,
+       "productType": "0",
+       "isAut": "0",
+       "categoryId": "2410110357091627600",
+       "threeCategoryName": null,
+       "twoCategoryId": null,
+       "twoCategoryName": null,
+       "oneCategoryId": null,
+       "oneCategoryName": null,
+       "directMinOrderNum": null,
+       "supplierName": null,
+       "zoneRecommendJson": null,
+       "createAt": null,
+       "setRecommendedTime": null,
+       "autStatus": "1",
+       "isList": 0,
+       "isAd": 0,
+       "activityId": null,
+       "isPersonalized": 0,
+       "saleStatus": "3",
+       "syncListedProductStatus": null,
+       "videoList": [],
+       "deliveryCycle": null,
+       "warehouseInventoryNum": 158713,
+       "discountPrice": null,
+       "discountPriceRate": null,
+       "myProduct": false,
+       "currency": null,
+       "totalVerifiedInventory": 0,
+       "totalUnVerifiedInventory": null
+      }
+     ],
+     "relatedCategoryList": [
+      {
+       "id": "2410110357221629500",
+       "name": "Pet Hammocks",
+       "currentLevel": 3
+      },
+      {
+       "id": "2410110357511615700",
+       "name": "Pet Nests",
+       "currentLevel": 3
+      },
+      {
+       "id": "2410110357091627600",
+       "name": "Pet Tents",
+       "currentLevel": 3
+      }
+     ],
+     "keyWord": "cat bed",
+     "keyWordOld": "cat bed"
+    }
+   ]
+  },
+  "requestId": "85c1970fc99841d387135891b1ecc61f",
+  "pointsInfo": {
+   "total": 50000,
+   "usedToday": 12410,
+   "remaining": 50000
+  },
+  "success": true
+ },
+ "list_pet_DE": {
+  "code": 200,
+  "result": true,
+  "message": "Success",
+  "data": {
+   "pageNum": 1,
+   "pageSize": 5,
+   "total": 71,
+   "list": [
+    {
+     "pid": "2108855030681157633",
+     "productName": "[\"Hunderampe Klappbar 2 in 1 Haustierrampe mit Fußst\",\"Haustierrampe klappbar\",\"Haustiertreppe Hund\",\"2-in-1 Haustierrampe\"]",
+     "productNameEn": "2 In 1 Folding Pet Ramp With Foot Support For Dogs & Cats",
+     "productSku": "CJDS3241060",
+     "productImage": "https://cf.cjdropshipping.com/dd5aaf61-56a0-40d7-a446-b8df89de00c7.png",
+     "productWeight": "2200",
+     "productType": "SUPPLIER_SHIPPED_PRODUCT",
+     "productUnit": null,
+     "categoryName": "Dog Stairs & Steps",
+     "listingCount": 0,
+     "sellPrice": "39.00",
+     "remark": "",
+     "addMarkStatus": "1",
+     "isFreeShipping": true,
+     "createTime": 1791590400000,
+     "isVideo": null,
+     "saleStatus": 3,
+     "listedNum": 0,
+     "supplierName": "Shenzhen Upton Technology Co., Ltd.",
+     "supplierId": "2035970134899957760",
+     "categoryId": "2410110356561607500",
+     "sourceFrom": "0",
+     "shippingCountryCodes": [
+      "DE"
+     ],
+     "threeCategoryName": null,
+     "twoCategoryId": null,
+     "twoCategoryName": null,
+     "oneCategoryId": null,
+     "oneCategoryName": null,
+     "customizationVersion": null,
+     "isTestProduct": false
+    },
+    {
+     "pid": "2106279496371990530",
+     "productName": "[\"Pet Flying Disc\",\"Cat Disc Launcher\",\"Apportierspielzeug für Haustiere\",\" Pet Toys\",\"Pet Chase Toys\"]",
+     "productNameEn": "Pet Flying Disc Cat Disc Launcher USB Rechargeable Interactive Cat Fetch Launcher With 10 Flying Pet Toys Pet Chase Toys",
+     "productSku": "CJCT3217466",
+     "productImage": "https://cf.cjdropshipping.com/8798d9b6-26d1-4ac6-9808-b92b14a70077.png",
+     "productWeight": "109",
+     "productType": "SUPPLIER_SHIPPED_PRODUCT",
+     "productUnit": null,
+     "categoryName": "Pet Chase Toys",
+     "listingCount": 4,
+     "sellPrice": "10.50",
+     "remark": "",
+     "addMarkStatus": "1",
+     "isFreeShipping": true,
+     "createTime": 1790985600000,
+     "isVideo": null,
+     "saleStatus": 3,
+     "listedNum": 4,
+     "supplierName": "Foshan Disken Trading Co., Ltd.",
+     "supplierId": "1950454947753762816",
+     "categoryId": "2410110339311602900",
+     "sourceFrom": "0",
+     "shippingCountryCodes": [
+      "DE"
+     ],
+     "threeCategoryName": null,
+     "twoCategoryId": null,
+     "twoCategoryName": null,
+     "oneCategoryId": null,
+     "oneCategoryName": null,
+     "customizationVersion": null,
+     "isTestProduct": false
+    },
+    {
+     "pid": "2090355968285581313",
+     "productName": "[\"Foldable Soft Dog Crate 66x48x48cm\",\"Portable Pet Carrier Bag 15kg\",\"Collapsible Dog Crate Stainless Steel Frame\"]",
+     "productNameEn": "Gardner Pet Foldable Dog Crate, Grey, 66 X 48 X 48 Cm, Cats And Dogs Up To 15 Kg",
+     "productSku": "CJPB3078041",
+     "productImage": "https://cf.cjdropshipping.com/db853349-9736-4281-8038-ba953c83350f.jpg",
+     "productWeight": "3220",
+     "productType": "SUPPLIER_SHIPPED_PRODUCT",
+     "productUnit": null,
+     "categoryName": "Pet Bags",
+     "listingCount": 13,
+     "sellPrice": "47.00",
+     "remark": "",
+     "addMarkStatus": "1",
+     "isFreeShipping": true,
+     "createTime": 1787184000000,
+     "isVideo": null,
+     "saleStatus": 3,
+     "listedNum": 13,
+     "supplierName": "Shenzhen Upton Technology Co., Ltd.",
+     "supplierId": "2035970134899957760",
+     "categoryId": "2410110342571606700",
+     "sourceFrom": "0",
+     "shippingCountryCodes": [
+      "DE"
+     ],
+     "threeCategoryName": null,
+     "twoCategoryId": null,
+     "twoCategoryName": null,
+     "oneCategoryId": null,
+     "oneCategoryName": null,
+     "customizationVersion": null,
+     "isTestProduct": false
+    }
+   ]
+  },
+  "requestId": "4cad5a243a1d4f21870374999554cdfe",
+  "pointsInfo": {
+   "total": 50000,
+   "usedToday": 12460,
+   "remaining": 50000
+  },
+  "success": true
+ },
+ "list_dogbed": {
+  "code": 200,
+  "result": true,
+  "message": "Success",
+  "data": {
+   "pageNum": 1,
+   "pageSize": 5,
+   "total": 27108,
+   "list": [
+    {
+     "pid": "2610130932211627100",
+     "productName": "[\"跨境宠物速干浴袍狗狗吸水穿戴式浴巾大狗洗澡清洁连帽毛巾家居服\",\"跨境宠物速干浴袍狗\",\"狗吸水穿戴式浴巾大\"]",
+     "productNameEn": "Pet Quick-drying Bathrobe Dog Towel",
+     "productSku": "CJYD3253969",
+     "productImage": "https://cf.cjdropshipping.com/quick/product/e5f1af6c-62ba-484f-80b5-eeef8d9be705.jpg",
+     "productWeight": "100.00-160.00",
+     "productType": "ORDINARY_PRODUCT",
+     "productUnit": null,
+     "categoryName": "Pet Tops",
+     "listingCount": 0,
+     "sellPrice": "1.38 -- 2.30",
+     "remark": "<p><img src=\"https://oss-cf.cjdropshipping.com/product/2026/10/13/09/a359847b-1172-4fd2-88bb-e0e64916d676.jpg\" style=\"max-width:100%;\" contenteditable=\"false\"/></p>",
+     "addMarkStatus": "0",
+     "isFreeShipping": false,
+     "createTime": 1791883941000,
+     "isVideo": null,
+     "saleStatus": 3,
+     "listedNum": 0,
+     "supplierName": null,
+     "supplierId": "9999",
+     "categoryId": "2410110348271614500",
+     "sourceFrom": "0",
+     "shippingCountryCodes": [
+      "CN",
+      "CN_US"
+     ],
+     "threeCategoryName": null,
+     "twoCategoryId": null,
+     "twoCategoryName": null,
+     "oneCategoryId": null,
+     "oneCategoryName": null,
+     "customizationVersion": null,
+     "isTestProduct": false
+    },
+    {
+     "pid": "2610130901201634400",
+     "productName": "[\"狗狗胸背带适配airtag定位器胸背户外训练防丢狗狗牵引绳\",\"狗狗胸背带\",\"胸背带\"]",
+     "productNameEn": "Dog Harness Compatible With Airtag Tracker",
+     "productSku": "CJYD3253683",
+     "productImage": "https://cf.cjdropshipping.com/quick/product/35b867c1-f322-4dea-8405-b80768f26a5d.jpg",
+     "productWeight": "100.00-270.00",
+     "productType": "ORDINARY_PRODUCT",
+     "productUnit": null,
+     "categoryName": "Pet Harnesses",
+     "listingCount": 0,
+     "sellPrice": "4.28 -- 5.73",
+     "remark": "<p><img src=\"https://oss-cf.cjdropshipping.com/product/2026/10/13/08/e3e4dad2-aaed-4090-9a56-c90690169222.jpg\" style=\"max-width:100%;\" contenteditable=\"false\"/></p>",
+     "addMarkStatus": "0",
+     "isFreeShipping": false,
+     "createTime": 1791882080000,
+     "isVideo": null,
+     "saleStatus": 3,
+     "listedNum": 0,
+     "supplierName": null,
+     "supplierId": "9999",
+     "categoryId": "2410110352591600400",
+     "sourceFrom": "0",
+     "shippingCountryCodes": [
+      "CN",
+      "CN_US"
+     ],
+     "threeCategoryName": null,
+     "twoCategoryId": null,
+     "twoCategoryName": null,
+     "oneCategoryId": null,
+     "oneCategoryName": null,
+     "customizationVersion": null,
+     "isTestProduct": false
+    },
+    {
+     "pid": "2610130856431634100",
+     "productName": "[\"【现货】充气PVC车载儿童床植绒婴儿床长途出行汽车折叠旅行床\",\"现货充气pvc车载\",\"儿童床植绒婴儿床\"]",
+     "productNameEn": "Inflatable PVC Car-Foldable Travel Bed",
+     "productSku": "CJYD3253702",
+     "productImage": "https://cf.cjdropshipping.com/quick/product/05b5a2d1-ea37-4229-a57e-d2c1b8d0694a.jpg",
+     "productWeight": "880.00",
+     "productType": "ORDINARY_PRODUCT",
+     "productUnit": null,
+     "categoryName": "Stowing Tidying",
+     "listingCount": 0,
+     "sellPrice": "8.68",
+     "remark": "<p><img src=\"https://oss-cf.cjdropshipping.com/product/2026/10/13/08/a20535cc-fc05-4bdb-b2ff-936c6e7fc2c7.jpg\" style=\"max-width:100%;\" contenteditable=\"false\"/></p>",
+     "addMarkStatus": "0",
+     "isFreeShipping": false,
+     "createTime": 1791881803000,
+     "isVideo": null,
+     "saleStatus": 3,
+     "listedNum": 0,
+     "supplierName": null,
+     "supplierId": "8888",
+     "categoryId": "D44C3391-0AF1-455A-A671-29214DA68F27",
+     "sourceFrom": "0",
+     "shippingCountryCodes": [
+      "CN",
+      "CN_US"
+     ],
+     "threeCategoryName": null,
+     "twoCategoryId": null,
+     "twoCategoryName": null,
+     "oneCategoryId": null,
+     "oneCategoryName": null,
+     "customizationVersion": 0,
+     "isTestProduct": false
+    }
+   ]
+  },
+  "requestId": "59b10dc9217641f49f5fe94be4c3591d",
+  "pointsInfo": {
+   "total": 50000,
+   "usedToday": 12560,
+   "remaining": 50000
+  },
+  "success": true
+ },
+ "categorias": [
+  [
+   "Pet Supplies",
+   [
+    [
+     "Pet Toys",
+     [
+      [
+       "2410110339311602900",
+       "Pet Chase Toys"
+      ],
+      [
+       "2410110339451623300",
+       "Pet Chew Toys"
+      ],
+      [
+       "2410110340031614900",
+       "Pet Training and Educational Toys"
+      ],
+      [
+       "2410110340161623400",
+       "Pet Sound Toys"
+      ],
+      [
+       "2410110340291603400",
+       "Pet Tunnel Toys"
+      ],
+      [
+       "2410110340411608400",
+       "Pet Toy Set"
+      ],
+      [
+       "2410110340531618900",
+       "Pet Plush Toys"
+      ]
+     ]
+    ],
+    [
+     "Pet Drinking & Feeding",
+     [
+      [
+       "2410110341061612000",
+       "Pet Bowls"
+      ],
+      [
+       "2410110341331606800",
+       "Pet Drinking Tools"
+      ],
+      [
+       "2410110341451628800",
+       "Pet Feeding Tools"
+      ]
+     ]
+    ],
+    [
+     "Pet Outdoor Supplies",
+     [
+      [
+       "2410110342021620700",
+       "Barking Control Equipments"
+      ],
+      [
+       "2410110342161616300",
+       "Trainers"
+      ],
+      [
+       "2410110342321607200",
+       "Dog Training Pads & Diapers"
+      ],
+      [
+       "2410110342461620700",
+       "Pet Snacks"
+      ],
+      [
+       "2410110342571606700",
+       "Pet Bags"
+      ],
+      [
+       "2410110343091603200",
+       "Pet Seat Belts"
+      ],
+      [
+       "2410110343211625200",
+       "Pet Car Mats"
+      ],
+      [
+       "2410110343361612300",
+       "Pet Guardrails"
+      ]
+     ]
+    ],
+    [
+     "Bird Supplies",
+     [
+      [
+       "2410110343481625100",
+       "Bird Feeders"
+      ],
+      [
+       "2410110344031621500",
+       "Bird Cages"
+      ],
+      [
+       "2410110344161629700",
+       "Bird Swings"
+      ],
+      [
+       "2410110344291609800",
+       "Bird Toys"
+      ],
+      [
+       "2410110344421608600",
+       "Bird Travel Bags"
+      ],
+      [
+       "2410110344551611100",
+       "Bird Accessories"
+      ]
+     ]
+    ],
+    [
+     "Fish & Aquatic Pets",
+     [
+      [
+       "2410110345121610800",
+       "Fish Tanks"
+      ],
+      [
+       "2410110345231624700",
+       "Fish Tank Decorations"
+      ],
+      [
+       "2410110347591607300",
+       "Fish Tank Cleaning Supplies"
+      ]
+     ]
+    ],
+    [
+     "Pet Apparels",
+     [
+      [
+       "2410110348131619300",
+       "Pet Dresses"
+      ],
+      [
+       "2410110348271614500",
+       "Pet Tops"
+      ],
+      [
+       "2410110348401611500",
+       "Pet Sweaters"
+      ],
+      [
+       "2410110348531624100",
+       "Pet Sweatshirts & Hoodies"
+      ],
+      [
+       "2410110349061619800",
+       "Pet Coats & Jackets"
+      ],
+      [
+       "2410110349201623700",
+       "Pet Jumpsuits"
+      ],
+      [
+       "2410110349341618600",
+       "Pet Pajamas"
+      ],
+      [
+       "2410110349471606300",
+       "Pet Clothings"
+      ],
+      [
+       "2410110350021615300",
+       "Pet Functional Clothings"
+      ],
+      [
+       "2410110350161600700",
+       "Pet Clothing Sets"
+      ],
+      [
+       "2410110350311612500",
+       "Pet Down & Parkas"
+      ],
+      [
+       "2410110350451606900",
+       "Pet Shoes & Socks"
+      ],
+      [
+       "2410110350591620800",
+       "Pet Scarves"
+      ],
+      [
+       "2410110351121613900",
+       "Pet Bags"
+      ]
+     ]
+    ],
+    [
+     "Pet Collars, Harnesses & Accessories",
+     [
+      [
+       "2410110351231616600",
+       "Pet Hair Accessories"
+      ],
+      [
+       "2410110351401621300",
+       "Pet Bows & Ties"
+      ],
+      [
+       "2410110351521627800",
+       "Pet Necklaces"
+      ],
+      [
+       "2410110352051607900",
+       "Pet Headwears"
+      ],
+      [
+       "2410110352191611200",
+       "Pet Glasses"
+      ],
+      [
+       "2410110352331629800",
+       "Pet Collars"
+      ],
+      [
+       "2410110352471611400",
+       "Pet Leashes"
+      ],
+      [
+       "2410110352591600400",
+       "Pet Harnesses"
+      ],
+      [
+       "2410110353131601000",
+       "Pet Muzzles"
+      ],
+      [
+       "2410110353301600600",
+       "Pet Collar, Leash & Harness Sets"
+      ],
+      [
+       "2410110354301620700",
+       "Custom Pet tags, Collars, Leashes & Harnesses"
+      ]
+     ]
+    ],
+    [
+     "Pet Groomings",
+     [
+      [
+       "2410110354491625800",
+       "Pet Hair Removers & Combs"
+      ],
+      [
+       "2410110355021623200",
+       "Pet Nail Polishers"
+      ],
+      [
+       "2410110355151622300",
+       "Pet Shower Products"
+      ],
+      [
+       "2410110355321622400",
+       "Pet Towels"
+      ]
+     ]
+    ],
+    [
+     "Pet Furnitures",
+     [
+      [
+       "2410110355491614000",
+       "Cat Scratching Posts"
+      ],
+      [
+       "2410110356041603300",
+       "Pet Furniture Protectors"
+      ],
+      [
+       "2410110356161627200",
+       "Cat Trees & Condos"
+      ],
+      [
+       "2410110356301618100",
+       "Pet Furniture Tools"
+      ],
+      [
+       "2410110356441603600",
+       "Pet Houses & Cages"
+      ],
+      [
+       "2410110356561607500",
+       "Dog Stairs & Steps"
+      ],
+      [
+       "2410110357091627600",
+       "Pet Tents"
+      ],
+      [
+       "2410110357221629500",
+       "Pet Hammocks"
+      ]
+     ]
+    ],
+    [
+     "Pet Bedding",
+     [
+      [
+       "2410110357391611900",
+       "Pet Mats"
+      ],
+      [
+       "2410110357511615700",
+       "Pet Nests"
+      ],
+      [
+       "2410110358051626100",
+       "Pet Beds"
+      ],
+      [
+       "2410110358191601900",
+       "Pet Blankets & Quilts"
+      ]
+     ]
+    ]
+   ]
+  ],
+  [
+   "Toys, Kids & Babies",
+   [
+    [
+     "Toys & Hobbies",
+     [
+      [
+       "6614840A-DB50-4FBB-80FD-705F4FD59BFA",
+       "Electronic Pets"
+      ],
+      [
+       "835F7743-8432-4D0F-90F0-E76C89F7C5B7",
+       "Blocks"
+      ],
+      [
+       "AEABDF3C-35E9-4BDA-8F5B-DA602BC5B9C8",
+       "RC Helicopters"
+      ],
+      [
+       "DD918287-C279-466A-B9C6-56079DE4B37A",
+       "Stuffed & Plush Animals"
+      ],
+      [
+       "F18491A9-2F33-4D85-A154-78EE4CD2AD33",
+       "Action & Toy Figures"
+      ]
+     ]
+    ],
+    [
+     "Shoes & Bags",
+     [
+      [
+       "2502190154341624400",
+       "Children's Shoes"
+      ],
+      [
+       "5AF1783E-547C-44E5-AD8A-82B354860BCB",
+       "Boys Shoes"
+      ],
+      [
+       "62A4235C-31EE-40E3-9D61-8F310470FEBC",
+       "School Bags"
+      ],
+      [
+       "929F5F58-AFBB-43AE-B1BB-CC6AA3844530",
+       "Kids Wallets"
+      ],
+      [
+       "C6FBABFE-2E34-4BD8-B643-C3060E9D343B",
+       "Girls Shoes"
+      ],
+      [
+       "C7FEF0C8-C59D-44DC-9715-7C377441ECFE",
+       "Baby's First Walkers"
+      ]
+     ]
+    ],
+    [
+     "Boys Clothing",
+     [
+      [
+       "7BF9295D-69A0-483C-871C-9E3AF2A3496C",
+       "Boy Jeans"
+      ],
+      [
+       "8DA1BB63-9FC2-4817-9271-3474CDBDDB30",
+       "Boy T-Shirts"
+      ],
+      [
+       "BB0B0BAD-326B-4328-B1BF-319C420DF782",
+       "Boy Hoodies & Sweatshirts"
+      ],
+      [
+       "BE16F1EB-5C31-4A1E-B80F-F1905F046E7F",
+       "Outerwear & Coats"
+      ],
+      [
+       "C938C806-CB88-46AB-B782-89ECD0B25E25",
+       "Boy Clothing Sets"
+      ],
+      [
+       "D91A4505-6495-4DFD-9984-C8E728913127",
+       "Boy Accessories"
+      ]
+     ]
+    ],
+    [
+     "Baby Clothing",
+     [
+      [
+       "04D82B39-7CF8-4CA5-ABC9-279181DE7E26",
+       "Baby Clothing Sets"
+      ],
+      [
+       "80304DEB-99FB-4E29-9065-A99F732702C4",
+       "Baby Rompers"
+      ],
+      [
+       "8F8C7970-3965-4EB6-8E13-ED77EB686DBA",
+       "Baby Accessories"
+      ],
+      [
+       "A91DDCDF-A80E-40EE-ADB6-C3CB20CCB07E",
+       "Baby Outerwear"
+      ],
+      [
+       "B34957D5-3AF6-4BE7-AC9F-72BAB8433CB6",
+       "Baby Dresses"
+      ],
+      [
+       "B81FEFAC-C995-4665-8154-631E447F7236",
+       "Baby Pants"
+      ]
+     ]
+    ],
+    [
+     "Baby & Mother",
+     [
+      [
+       "0B08F5C8-0381-446D-A1C0-B90F69F45041",
+       "Nappy Changing"
+      ],
+      [
+       "4065FFF7-4AAA-4CFA-B04B-639C93624469",
+       "Activity & Gear"
+      ],
+      [
+       "5C374126-AE88-4617-B732-011174077E00",
+       "Backpacks & Carriers"
+      ],
+      [
+       "77A1D79C-B67E-42C0-850F-00005042548C",
+       "Baby Care"
+      ],
+      [
+       "CBAB567C-28EA-4916-97C9-786EEA80A3B8",
+       "Maternity"
+      ]
+     ]
+    ],
+    [
+     "Girls Clothing",
+     [
+      [
+       "1357514957859721216",
+       "Girls Underwear"
+      ],
+      [
+       "2601070549181635500",
+       "Girls' Pants"
+      ],
+      [
+       "5795C34B-0DF0-4838-A78C-C125AA3BED18",
+       "Family Matching Outfits"
+      ],
+      [
+       "5CC68C6B-8D69-41B2-838A-A98CB7DDD744",
+       "Sleepwear & Robes"
+      ],
+      [
+       "6ED3E32C-89DD-4DD1-A991-FEAA4F3C1BFD",
+       "Tops & Tees"
+      ],
+      [
+       "713CBA54-B38E-4C86-9323-1252113E437F",
+       "Girl Clothing Sets"
+      ],
+      [
+       "88856603-65DA-419C-8C64-4C1E91A9E983",
+       "Girl Accessories"
+      ],
+      [
+       "C421D769-76CC-4515-909E-4E7167EE6ABE",
+       "Girl Dresses"
+      ]
+     ]
+    ]
+   ]
+  ]
+ ],
+ "frete_pid": "2108855030681157633",
+ "inventario": null,
+ "frete_CN_DE": "Success",
+ "frete_CN_FR": "Success",
+ "frete_CN_ES": "Success",
+ "frete_CN_IT": "Success",
+ "frete_CN_NL": "Success",
+ "frete_CN_BE": "Success",
+ "frete_CN_AT": "Success",
+ "frete_CN_PT": "Success",
+ "frete_CN_IE": "Success",
+ "frete_DE_DE": [
+  [
+   "DHL DE to DE",
+   0.0,
+   "2-3"
+  ]
+ ],
+ "frete_DE_FR": "Success",
+ "frete_DE_ES": "Success",
+ "frete_DE_IT": "Success",
+ "frete_DE_NL": "Success",
+ "frete_DE_BE": "Success",
+ "frete_DE_AT": "Success",
+ "frete_DE_PT": "Success",
+ "frete_DE_IE": "Success"
+}
