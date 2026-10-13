@@ -25,6 +25,7 @@ async function pagar(req, env) {
   const cat = await produtos(env, req);
   const f = new URLSearchParams();
   f.set("mode", "payment");
+  f.set("payment_method_types[0]", "card");
   f.set("locale", lang === "en" ? "auto" : lang);
   f.set("success_url", `${SITE}/gracias.html?ok=1&pedido={CHECKOUT_SESSION_ID}`);
   f.set("cancel_url", `${SITE}/carrito.html`);
