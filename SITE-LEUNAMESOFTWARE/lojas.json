@@ -1,0 +1,66 @@
+[
+ {
+  "id": "pets",
+  "marca": "LeunaPets",
+  "host": "pets.leuname.com",
+  "pasta": "",
+  "cats": [
+   [
+    "camas",
+    "Camas"
+   ],
+   [
+    "comer",
+    "Comer y beber"
+   ],
+   [
+    "juguetes",
+    "Juguetes"
+   ],
+   [
+    "paseo",
+    "Paseo"
+   ],
+   [
+    "higiene",
+    "Pelo e higiene"
+   ],
+   [
+    "rascadores",
+    "Rascadores"
+   ]
+  ]
+ },
+ {
+  "id": "casa",
+  "marca": "LeunaCasa",
+  "host": "casa.leuname.com",
+  "pasta": "/_lojas/casa",
+  "cats": [
+   [
+    "cocina",
+    "Cocina"
+   ],
+   [
+    "orden",
+    "Orden"
+   ],
+   [
+    "bano",
+    "Baño"
+   ],
+   [
+    "deco",
+    "Decoración"
+   ],
+   [
+    "luz",
+    "Iluminación"
+   ],
+   [
+    "jardin",
+    "Jardín y terraza"
+   ]
+  ]
+ }
+]

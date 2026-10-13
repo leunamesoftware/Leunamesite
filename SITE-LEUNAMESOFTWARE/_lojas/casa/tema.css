@@ -1,0 +1,69 @@
+/* Tema da loja de casa e jardim (LeunaCasa): verde floresta + terracota sobre linho.
+   Carrega DEPOIS do loja.css (o mesmo de todas as lojas) e só troca cores e o topo. */
+:root{--fundo:#FAF6EF;--branco:#fff;--tinta:#1F2A24;--suave:#5F6B63;--linha:#E8DFD0;--verde:#1E3A2F;--verde-e:#132A21;--verde-m:#C8643B;--verde-c:#F1E7D8;--escuro:#1E3A2F;--areia:#F4ECDF;--laranja:#C8643B;--coral:#C8643B;--coral-e:#A54E2A;--menta:#E7EEE5;--tit:"Fraunces",Outfit,Georgia,serif}
+h1,h2,h3{letter-spacing:-.01em}
+.top{background:rgba(250,246,239,.96)}
+.barra{color:#E9F0E9}
+
+/* logo provisório em texto (troca quando o logo chegar) */
+.logo-txt{gap:10px}
+.lc-ic{width:46px;height:46px;border-radius:14px;background:var(--verde);display:grid;place-items:center;flex:none}
+.lc-ic svg{width:26px;height:26px;fill:none;stroke:#fff;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.lc-ic svg path:first-child{stroke:#E9A27F}
+.lc-nome{font:600 30px/1 var(--tit);color:var(--verde);letter-spacing:-.02em;display:flex;flex-direction:column}
+.lc-nome b{font-weight:800;color:var(--coral);display:inline}
+.lc-nome{display:block}
+.lc-nome i{display:block;font:600 10px/1.2 Inter,sans-serif;font-style:normal;color:var(--suave);letter-spacing:.24em;text-transform:uppercase;margin-top:5px}
+.pie .lc-nome{color:#fff}.pie .lc-nome i{color:#B9C8BE}.pie .lc-ic{background:var(--coral)}
+.pie .lc-ic svg path:first-child{stroke:#fff}
+@media (max-width:720px){.lc-ic{width:38px;height:38px;border-radius:11px}.lc-ic svg{width:22px;height:22px}.lc-nome{font-size:24px}.lc-nome i{font-size:8.5px;letter-spacing:.18em}}
+
+/* topo da página: texto + colagem de fotos dos produtos */
+.hero-casa{height:auto;background:linear-gradient(135deg,#F4ECDF 0,#FAF6EF 55%,#E7EEE5 100%)}
+.hc-in{display:grid;grid-template-columns:1.05fr 1fr;gap:clamp(24px,4vw,64px);align-items:center;padding:clamp(34px,5vw,70px) 0}
+.hc-tx .selo{display:inline-block;background:var(--verde-c);color:var(--coral-e);font-size:12.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:7px 14px;border-radius:999px;margin-bottom:18px}
+.hc-tx h1{font-size:clamp(36px,5vw,66px);font-weight:700;line-height:1.04;color:var(--verde);margin-bottom:16px}
+.hc-tx h1 .v{color:var(--coral);font-style:italic}
+.hc-tx .hero-p{font-size:clamp(16px,1.5vw,19px);color:var(--suave);max-width:520px;margin-bottom:26px}
+.hc-bts{display:flex;gap:12px;flex-wrap:wrap}
+.hc-li{list-style:none;display:flex;flex-wrap:wrap;gap:10px 22px;margin-top:26px;font-size:14px;font-weight:600;color:var(--verde)}
+.hc-li li{display:flex;align-items:center;gap:8px}
+.hc-li .ic{color:var(--coral)}
+.colagem{display:grid;grid-template-columns:1.2fr 1fr;grid-template-rows:1fr 1fr;gap:14px;aspect-ratio:1.1/1}
+.colagem .cel{position:relative;border-radius:22px;overflow:hidden;display:grid;place-items:center;box-shadow:var(--sombra)}
+.colagem .cel0{grid-row:1/3;background:#E9DCC7}.colagem .cel1{background:#DCE6D9}.colagem .cel2{background:#F2D9C9}.colagem .cel3{background:#E5E0F0;display:none}
+.colagem .cel-ic .bi{width:56px;height:56px;color:var(--verde);opacity:.55;fill:none;stroke:currentColor;stroke-width:1.3}
+.colagem .cel img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#fff}
+.colagem .cel.tem-foto .cel-ic{display:none}
+.hero-casa .preco-selo{right:3%;top:auto;bottom:8%;background:var(--coral)}
+@media (max-width:860px){
+  .hc-in{grid-template-columns:1fr;padding:26px 0 30px}
+  .colagem{aspect-ratio:1.5/1;order:-1}
+  .hc-tx .bt{flex:1}
+  .hero-casa .preco-selo{top:16px;bottom:auto;right:14px;width:90px;height:90px}
+}
+
+/* bolhas de categoria em tons naturais */
+.bolhas .bolha:nth-child(1) .bolha-c{background:#F1E2CF!important}.bolhas .bolha:nth-child(2) .bolha-c{background:#DDE7DA!important}.bolhas .bolha:nth-child(3) .bolha-c{background:#DCE8EC!important}.bolhas .bolha:nth-child(4) .bolha-c{background:#F3DCCF!important}.bolhas .bolha:nth-child(5) .bolha-c{background:#F6EBC9!important}.bolhas .bolha:nth-child(6) .bolha-c{background:#D7E6CF!important}
+.bi{color:var(--verde)}
+
+/* cartões Cocina / Jardín */
+.ambientes .am-in{background:linear-gradient(110deg,#A54E2A 0,#C8643B 50%,#DB8A5B 100%)}
+.ambientes .am-ex{background:linear-gradient(110deg,#132A21 0,#1E3A2F 50%,#3D6B50 100%)}
+.am-in .an-bt{color:var(--coral-e)}.am-ex .an-bt{color:var(--verde)}
+.am-foto{position:absolute;right:0;top:0;height:100%;width:52%;display:grid;place-items:center;-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 26%);mask-image:linear-gradient(90deg,transparent 0,#000 26%)}
+.am-foto .bi{width:110px;height:110px;color:#fff;opacity:.35;fill:none;stroke:currentColor;stroke-width:1.1}
+.am-foto img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.am-foto.tem-foto .bi{display:none}
+
+/* "Por qué": colagem em vez da foto fixa */
+.porque-casa .colagem-p{aspect-ratio:auto;min-height:340px;padding:14px;background:var(--areia);border-radius:0}
+.porque-casa .colagem-p .cel3{display:grid}
+.porque-casa .colagem-p{grid-template-columns:1fr 1fr}
+.porque-casa .colagem-p .cel0{grid-row:auto}
+@media (max-width:900px){.porque-casa .colagem-p{min-height:0;aspect-ratio:1.4/1}}
+
+/* detalhes */
+.vars-l button{color:var(--tinta)}.vars-l button.on{border-color:var(--coral);background:#FBF1EA}
+.card .tag{background:var(--verde)}
+.mais{background:var(--coral)}

@@ -1,27 +1,29 @@
-// Loja Europa LeunaPets (pets.leuname.com): serve o site estático e o pagamento por cartão (Stripe Checkout).
+// Lojas drop da Europa (subdomínios de leuname.com, lista em lojas.json): site estático + pagamento (Stripe Checkout).
+// Cada host é uma loja: pets.leuname.com = raiz do site; as outras = pasta _lojas/<id>/ (o que faltar vem da raiz:
+// loja.js, loja.css, painel...). Os produtos de cada loja ficam separados (coluna "loja" no D1).
 // A chave fica no segredo STRIPE_SECRET_KEY do Worker (vem do segredo do GitHub, nunca do código).
 // O preço é SEMPRE o de produtos.json (o navegador só manda id e quantidade).
-import { painel, catalogo, servirVideo } from "./painel-api.js";
+import { painel, catalogo, servirVideo, lojaPorHost } from "./painel-api.js";
 
 const PAISES = ["DE", "FR", "ES", "IT", "NL", "BE", "AT", "PT", "IE"];
-const SITE = "https://pets.leuname.com";
 const HOST_LOJA = "pets.leuname.com";
 
 const json = (dados, status = 200) =>
   new Response(JSON.stringify(dados), { status, headers: { "Content-Type": "application/json", "Cache-Control": "no-store" } });
 
-async function produtos(env, req) {
+async function produtos(env, req, L) {
   const mapa = {};
-  for (const p of await catalogo(env, req)) if (p && p.id && p.precio > 0) mapa[p.id] = p;
+  for (const p of await catalogo(env, req, L.id)) if (p && p.id && p.precio > 0) mapa[p.id] = p;
   return mapa;
 }
 
-async function pagar(req, env) {
+async function pagar(req, env, L) {
+  const SITE = "https://" + L.host;
   if (!env.STRIPE_SECRET_KEY) return json({ erro: "stripe-desligado" }, 503);
   const corpo = await req.json().catch(() => null);
   if (!corpo || !Array.isArray(corpo.itens) || !corpo.itens.length || corpo.itens.length > 30) return json({ erro: "carrinho" }, 400);
   const lang = ["es", "pt", "en"].includes(corpo.lang) ? corpo.lang : "en";
-  const cat = await produtos(env, req);
+  const cat = await produtos(env, req, L);
   const f = new URLSearchParams();
   f.set("mode", "payment");
   f.set("payment_method_types[0]", "card");
@@ -56,6 +58,7 @@ async function pagar(req, env) {
     n++;
   }
   f.set("metadata[itens]", resumo.join(", ").slice(0, 490));
+  f.set("metadata[loja]", L.id);
   const r = await fetch("https://api.stripe.com/v1/checkout/sessions", {
     method: "POST",
     headers: { Authorization: `Bearer ${env.STRIPE_SECRET_KEY}`, "Content-Type": "application/x-www-form-urlencoded" },
@@ -78,8 +81,9 @@ export default {
     if (/^(www\.)?leuname\.com$/.test(url.hostname)) {
       return Response.redirect("https://" + HOST_LOJA + url.pathname + url.search, 301);
     }
+    const L = lojaPorHost(url.hostname);
     if (url.pathname === "/produtos.json") {
-      return new Response(JSON.stringify(await catalogo(env, req)), { headers: { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-cache" } });
+      return new Response(JSON.stringify(await catalogo(env, req, L.id)), { headers: { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-cache" } });
     }
     if (url.pathname === "/painel/app.apk" && env.DOWNLOADS) {
       const o = await env.DOWNLOADS.get("leunapets-painel.apk");
@@ -89,8 +93,17 @@ export default {
     if (url.pathname.startsWith("/v/")) return servirVideo(req, env, url.pathname.slice(3));
     if (url.pathname.startsWith("/api/painel/")) return painel(req, env, url);
     if (url.pathname === "/api/config") return json({ stripe: !!env.STRIPE_SECRET_KEY });
-    if (url.pathname === "/api/pagar" && req.method === "POST") return pagar(req, env);
+    if (url.pathname === "/api/pagar" && req.method === "POST") return pagar(req, env, L);
     if (url.pathname.startsWith("/api/")) return json({ erro: "404" }, 404);
+    // loja com pasta própria: tenta _lojas/<id>/<caminho>; se não existir, usa o arquivo comum da raiz
+    if (L.pasta && !url.pathname.startsWith("/painel") && !url.pathname.startsWith("/_lojas/")) {
+      const r = await env.ASSETS.fetch(new Request(new URL(L.pasta + url.pathname + url.search, url), req));
+      if ([301, 302, 307, 308].includes(r.status)) {   // ex.: /carrito.html → /carrito (sem mostrar a pasta interna)
+        const destino = new URL(r.headers.get("location") || "/", url);
+        if (destino.pathname.startsWith(L.pasta)) return Response.redirect(url.origin + (destino.pathname.slice(L.pasta.length) || "/") + destino.search, r.status);
+      }
+      if (r.status !== 404) return r;
+    }
     return env.ASSETS.fetch(req);
   },
 };

@@ -43,6 +43,7 @@ public class MainActivity extends Activity {
         web.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView v, WebResourceRequest r) {
+                if (!r.isForMainFrame()) return false;   // aba "Ver loja" (iframe) abre dentro do app
                 Uri u = r.getUrl();
                 String host = u.getHost() == null ? "" : u.getHost();
                 if (host.equals("pets.leuname.com") && u.getPath() != null && u.getPath().startsWith("/painel")) return false;

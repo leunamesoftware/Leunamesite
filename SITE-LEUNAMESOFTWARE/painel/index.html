@@ -57,6 +57,12 @@ label{display:block;font-size:13px;color:var(--suave);margin-top:8px}
 .mini{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap}.mini .bt{padding:6px 10px;font-size:12px;text-decoration:none;font-weight:600}
 #login{max-width:360px;margin:60px auto;background:#fff;border-radius:16px;padding:22px;text-align:center}
 #login img{width:190px}
+.lojas{display:flex;gap:8px;padding:10px 16px 0;max-width:1100px;margin:auto;overflow-x:auto}
+.lj{flex:none;border:2px solid var(--borda);background:#fff;border-radius:99px;padding:8px 14px;font-weight:700;cursor:pointer;color:var(--tx)}
+.lj small{background:#eef0f7;border-radius:99px;padding:1px 7px;margin-left:4px;font-size:12px;color:var(--suave)}
+.lj.on{background:var(--c);border-color:var(--c);color:#fff}.lj.on small{background:#ffffff33;color:#fff}
+.ver-barra{display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:13px;color:var(--suave);margin-bottom:8px}
+#verFrame{width:100%;height:calc(100vh - 230px);min-height:480px;border:1px solid var(--borda);border-radius:12px;background:#fff}
 .toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--azul);color:#fff;padding:10px 16px;border-radius:10px;display:none;z-index:20;max-width:90%}
 </style>
 </head>
@@ -71,8 +77,9 @@ label{display:block;font-size:13px;color:var(--suave);margin-top:8px}
 </div>
 
 <div id="app" hidden>
-  <div class="topo"><b>Painel LeunaPets</b><a class="baixar" href="app.apk">📲 App</a><a href="/" target="_blank">Ver loja</a><button id="sair">Sair</button></div>
-  <div class="abas"><button class="aba on" data-aba="buscar">Buscar na CJ</button><button class="aba" data-aba="loja">Na loja</button></div>
+  <div class="topo"><b>Painel das lojas</b><a class="baixar" href="app.apk">📲 App</a><button id="sair">Sair</button></div>
+  <div class="lojas" id="lojas"></div>
+  <div class="abas"><button class="aba on" data-aba="buscar">Buscar na CJ</button><button class="aba" data-aba="loja">Na loja</button><button class="aba" data-aba="ver">Ver loja</button></div>
   <main>
     <section class="caixa" id="buscar">
       <form class="busca" id="fBusca"><input id="q" placeholder="Ex.: cat toy, dog bed, leash…" enterkeyhint="search"><button class="bt">Buscar</button></form>
@@ -80,6 +87,10 @@ label{display:block;font-size:13px;color:var(--suave);margin-top:8px}
       <div id="resultado" class="grade"></div>
       <p class="msg" id="msgBusca">Busque em inglês (a CJ é em inglês). Toque em <b>Ver preço</b> para ver frete, preço sugerido e lucro.</p>
       <button class="bt cinza mais" id="mais" hidden>Carregar mais</button>
+    </section>
+    <section class="caixa" id="ver" hidden>
+      <div class="ver-barra"><span id="verHost"></span><a id="verAbrir" target="_blank">Abrir em tela cheia ↗</a></div>
+      <iframe id="verFrame" title="Loja" loading="lazy"></iframe>
     </section>
     <section class="caixa" id="loja" hidden>
       <div class="busca"><input id="filtro" placeholder="Filtrar produtos da loja"></div>
@@ -94,36 +105,64 @@ label{display:block;font-size:13px;color:var(--suave);margin-top:8px}
 <script>
 (function(){
 "use strict";
-var CATS={camas:"Camas",comer:"Comer y beber",juguetes:"Juguetes",paseo:"Paseo",higiene:"Higiene",rascadores:"Rascadores"};
+var LOJAS_CFG={
+ pets:{nome:"LeunaPets",emoji:"🐾",host:"pets.leuname.com",cor:"#0F1E44",animal:true,
+  cats:{camas:"Camas",comer:"Comer y beber",juguetes:"Juguetes",paseo:"Paseo",higiene:"Higiene",rascadores:"Rascadores"},
+  atalhos:[["dog leash","paseo"],["dog harness","paseo"],["cat scratcher","rascadores"],["cat tree","rascadores"],["cat toy","juguetes"],["dog toy","juguetes"],["pet bed","camas"],["pet water fountain","comer"],["slow feeder","comer"],["pet grooming","higiene"],["lint roller pet hair","higiene"],["pet backpack carrier","paseo"]],
+  regras:[[/bed|mat|cushion|house|nest/,"camas"],[/bowl|feed|fountain|water|food/,"comer"],[/leash|harness|collar|carrier|backpack|car seat/,"paseo"],[/groom|brush|comb|nail|hair|clean|litter/,"higiene"],[/scratch|tree|tower/,"rascadores"]],padrao:"juguetes"},
+ casa:{nome:"LeunaCasa",emoji:"🏡",host:"casa.leuname.com",cor:"#1E3A2F",animal:false,
+  cats:{cocina:"Cocina",orden:"Orden",bano:"Baño",deco:"Decoración",luz:"Iluminación",jardin:"Jardín y terraza"},
+  atalhos:[["kitchen gadgets","cocina"],["kitchen organizer","cocina"],["storage box","orden"],["vacuum storage bag","orden"],["bathroom organizer","bano"],["shower head","bano"],["wall decor","deco"],["artificial plants","deco"],["led night light","luz"],["led strip light","luz"],["solar garden light","jardin"],["plant pot","jardin"]],
+  regras:[[/kitchen|cook|knife|cut|peel|spice|oil|pan|bowl|cup|bottle/,"cocina"],[/storage|organiz|box|hanger|rack|shelf|bag|drawer/,"orden"],[/bath|shower|toilet|towel|soap/,"bano"],[/light|lamp|led|bulb/,"luz"],[/garden|solar|plant|pot|outdoor|patio|lawn|watering/,"jardin"]],padrao:"deco"}
+};
+var LOJA="pets";try{LOJA=localStorage.getItem("lp_loja")||"pets"}catch(e){}
+if(!LOJAS_CFG[LOJA])LOJA="pets";
+var CFG=LOJAS_CFG[LOJA],CATS=CFG.cats,ATALHOS=CFG.atalhos;
 var ANIMAIS={ambos:"Cães e gatos",perro:"Cão",gato:"Gato"};
-var ATALHOS=[["dog leash","paseo"],["dog harness","paseo"],["cat scratcher","rascadores"],["cat tree","rascadores"],["cat toy","juguetes"],["dog toy","juguetes"],["pet bed","camas"],["pet water fountain","comer"],["slow feeder","comer"],["pet grooming","higiene"],["lint roller pet hair","higiene"],["pet backpack carrier","paseo"]];
 var $=function(s){return document.querySelector(s)};
 var token="";try{token=localStorage.getItem("lp_painel")||""}catch(e){}
-var estado={q:"",pagina:1,cat:"juguetes"};
+var estado={q:"",pagina:1,cat:CFG.padrao};
 var esc=function(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})};
 var eur=function(v){return v==null?"—":v.toFixed(2).replace(".",",")+" €"};
 var lucro=function(p,c){return Math.round((p-c-(p*0.07+0.35))*100)/100};
 function toast(t){var e=$("#toast");e.textContent=t;e.style.display="block";clearTimeout(toast.t);toast.t=setTimeout(function(){e.style.display="none"},3500)}
 function api(rota,corpo){
+  rota+=(rota.indexOf("?")<0?"?":"&")+"loja="+LOJA;
   return fetch("/api/painel/"+rota,{method:corpo?"POST":"GET",headers:{"Content-Type":"application/json","Authorization":"Bearer "+token},body:corpo?JSON.stringify(corpo):undefined})
   .then(function(r){return r.json().catch(function(){return{}}).then(function(d){if(r.status===401&&rota!=="login"){sair();throw new Error("Entre de novo")}if(!r.ok)throw new Error(d.detalhe||d.erro||("erro "+r.status));return d})});
 }
-function entrar(){$("#login").hidden=true;$("#app").hidden=false;api("estado").then(function(e){if(!e.cj)toast("Atenção: chave da CJ não chegou no servidor")}).catch(function(){})}
+function entrar(){$("#login").hidden=true;$("#app").hidden=false;desenharLojas();contar();api("estado").then(function(e){if(!e.cj)toast("Atenção: chave da CJ não chegou no servidor")}).catch(function(){})}
 function sair(){if(token)fetch("/api/painel/sair",{method:"POST",headers:{Authorization:"Bearer "+token}}).catch(function(){});token="";try{localStorage.removeItem("lp_painel")}catch(e){}$("#app").hidden=true;$("#login").hidden=false}
 $("#fLogin").onsubmit=function(ev){ev.preventDefault();$("#erroLogin").textContent="";
-  api("login",{senha:$("#senha").value}).then(function(d){token=d.token;try{localStorage.setItem("lp_painel",token)}catch(e){}$("#senha").value="";entrar()})
+  fetch("/api/painel/login",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({senha:$("#senha").value})}).then(function(r){return r.json().then(function(d){if(!r.ok)throw new Error(d.erro||"erro");return d})}).then(function(d){token=d.token;try{localStorage.setItem("lp_painel",token)}catch(e){}$("#senha").value="";entrar()})
   .catch(function(e){$("#erroLogin").textContent=e.message==="senha"?"Senha errada":e.message==="muitas-tentativas"?"Muitas tentativas. Espere 15 minutos.":e.message})};
 $("#sair").onclick=sair;
 document.querySelectorAll(".aba").forEach(function(b){b.onclick=function(){
   document.querySelectorAll(".aba").forEach(function(x){x.classList.toggle("on",x===b)});
-  $("#buscar").hidden=b.dataset.aba!=="buscar";$("#loja").hidden=b.dataset.aba!=="loja";if(b.dataset.aba==="loja")carregarLoja()}});
+  ["buscar","loja","ver"].forEach(function(a){$("#"+a).hidden=b.dataset.aba!==a});
+  if(b.dataset.aba==="loja")carregarLoja();
+  if(b.dataset.aba==="ver"){var f=$("#verFrame"),u="https://"+CFG.host+"/";if(f.getAttribute("src")!==u)f.setAttribute("src",u)}}});
+function desenharLojas(contagem){
+  $("#lojas").innerHTML=Object.keys(LOJAS_CFG).map(function(id){var c=LOJAS_CFG[id];
+    return '<button class="lj'+(id===LOJA?" on":"")+'" data-loja="'+id+'" style="--c:'+c.cor+'">'+c.emoji+' '+esc(c.nome)+(contagem&&contagem[id]!=null?' <small>'+contagem[id]+'</small>':'')+'</button>'}).join("");
+  document.documentElement.style.setProperty("--azul",CFG.cor);
+  $("#verHost").textContent=CFG.host;$("#verAbrir").href="https://"+CFG.host+"/";
+}
+$("#lojas").onclick=function(ev){var b=ev.target.closest("[data-loja]");if(!b||b.dataset.loja===LOJA)return;
+  LOJA=b.dataset.loja;try{localStorage.setItem("lp_loja",LOJA)}catch(e){}
+  CFG=LOJAS_CFG[LOJA];CATS=CFG.cats;ATALHOS=CFG.atalhos;estado={q:"",pagina:1,cat:CFG.padrao};
+  $("#q").value="";$("#resultado").innerHTML="";$("#mais").hidden=true;$("#msgBusca").textContent="Loja "+CFG.nome+": busque produtos para ela.";
+  $("#atalhos").innerHTML=ATALHOS.map(function(a,i){return '<button class="chip" data-i="'+i+'">'+esc(a[0])+'</button>'}).join("");
+  desenharLojas(window.CONTAGEM);LOJA_ATUAL_MUDOU();toast("Agora você está na loja "+CFG.emoji+" "+CFG.nome)};
+function LOJA_ATUAL_MUDOU(){var aba=document.querySelector(".aba.on").dataset.aba;if(aba==="loja")carregarLoja();if(aba==="ver")$("#verFrame").setAttribute("src","https://"+CFG.host+"/")}
+function contar(){api("lojas").then(function(d){window.CONTAGEM={};d.lojas.forEach(function(l){window.CONTAGEM[l.id]=l.publicados});desenharLojas(window.CONTAGEM)}).catch(function(){})}
 
 // ---- busca ----
 $("#atalhos").innerHTML=ATALHOS.map(function(a,i){return '<button class="chip" data-i="'+i+'">'+esc(a[0])+'</button>'}).join("");
 $("#atalhos").onclick=function(ev){var b=ev.target.closest(".chip");if(!b)return;var a=ATALHOS[b.dataset.i];$("#q").value=a[0];estado.cat=a[1];buscar(true)};
 $("#fBusca").onsubmit=function(ev){ev.preventDefault();estado.cat=adivinhaCat($("#q").value);buscar(true)};
 $("#mais").onclick=function(){estado.pagina++;buscar(false)};
-function adivinhaCat(q){q=q.toLowerCase();if(/bed|mat|cushion|house|nest/.test(q))return"camas";if(/bowl|feed|fountain|water|food/.test(q))return"comer";if(/leash|harness|collar|carrier|backpack|car seat/.test(q))return"paseo";if(/groom|brush|comb|nail|hair|clean|litter/.test(q))return"higiene";if(/scratch|tree|tower/.test(q))return"rascadores";return"juguetes"}
+function adivinhaCat(q){q=q.toLowerCase();for(var k=0;k<CFG.regras.length;k++)if(CFG.regras[k][0].test(q))return CFG.regras[k][1];return CFG.padrao}
 function buscar(novo){
   if(novo){estado.q=$("#q").value.trim();estado.pagina=1;$("#resultado").innerHTML=""}
   $("#msgBusca").textContent="Buscando na CJ…";$("#mais").hidden=true;
@@ -148,7 +187,7 @@ function opcoes(obj,sel){return Object.keys(obj).map(function(k){return '<option
 function abrir(pid){
   $("#janela").innerHTML='<p class="msg">Calculando frete para Alemanha, França, Espanha e Itália… (uns 6 segundos)</p>';$("#fundo").classList.add("on");
   api("detalhe?pid="+encodeURIComponent(pid)).then(function(d){
-    var animal=/cat|kitten|kitty/i.test(d.nomeEn)&&!/dog|puppy/i.test(d.nomeEn)?"gato":/dog|puppy/i.test(d.nomeEn)&&!/cat/i.test(d.nomeEn)?"perro":"ambos";
+    var animal=!CFG.animal?"ambos":/cat|kitten|kitty/i.test(d.nomeEn)&&!/dog|puppy/i.test(d.nomeEn)?"gato":/dog|puppy/i.test(d.nomeEn)&&!/cat/i.test(d.nomeEn)?"perro":"ambos";
     var preco=d.sugerido;
     $("#janela").innerHTML='<div class="fotos">'+d.imagens.map(function(s){return '<img src="'+esc(s)+'" alt="">'}).join("")+'</div>'+
       '<h3 style="margin:10px 0 2px">'+esc(d.nomeEn)+(d.temVideo?' <span class="tag vid">🎬 vídeo vai junto</span>':'')+'</h3><small style="color:#6b7190">'+esc(d.categoriaCJ)+' · '+d.popularidade+' lojas vendem · prazo '+esc(d.plazo||"?")+' dias · <a href="'+esc(d.linkCJ)+'" target="_blank">ver na CJ</a></small>'+
@@ -157,7 +196,7 @@ function abrir(pid){
       '<div class="conta"><small>Custo total</small><b>'+eur(d.custoEur)+'</b></div><div class="conta lucro" id="cLucro"><small>Seu lucro por venda</small><b>—</b></div></div>'+
       '<div class="linha"><div><label>Preço na loja (€)</label><input class="campo" id="dPreco" type="number" step="0.01" min="1" value="'+(preco||"")+'"></div>'+
       '<div><label>Categoria</label><select class="campo" id="dCat">'+opcoes(CATS,estado.cat)+'</select></div></div>'+
-      '<div class="linha"><div><label>Animal</label><select class="campo" id="dAnimal">'+opcoes(ANIMAIS,animal)+'</select></div>'+
+      '<div class="linha"><div'+(CFG.animal?'':' hidden')+'><label>Animal</label><select class="campo" id="dAnimal">'+opcoes(ANIMAIS,animal)+'</select></div>'+
       '<div><label>&nbsp;</label><label style="margin:0;color:#1d2340"><input type="checkbox" id="dDest"> Destaque na página inicial</label></div></div>'+
       (d.variantes.length>1?'<div class="aviso" style="background:#e3f6ec;border-color:#9fdcbc;color:#14653f">Tem '+d.variantes.length+' variações (cor/tamanho). O cliente escolhe na loja. Variação mais cara sobe o preço sozinha.</div>':'')+
       '<p style="font-size:12px;color:#6b7190">Sugerido: '+eur(d.sugerido)+' (2× o custo, mínimo +8 €). Ao publicar, o texto em espanhol é escrito sozinho. Dá para mudar depois em "Na loja".</p>'+
@@ -166,7 +205,7 @@ function abrir(pid){
     $("#dPreco").oninput=conta;conta();$("#dFechar").onclick=fechar;
     $("#dPub").onclick=function(){var b=this;b.disabled=true;b.textContent="Publicando e traduzindo…";
       api("publicar",{pid:d.pid,precio:parseFloat($("#dPreco").value),categoria:$("#dCat").value,animal:$("#dAnimal").value,destaque:$("#dDest").checked,nuevo:true})
-      .then(function(r){fechar();toast("Publicado: "+r.produto.es.nombre+(r.ia?"":" (tradução falhou: edite o nome em Na loja)"));
+      .then(function(r){fechar();contar();toast("Publicado em "+CFG.nome+": "+r.produto.es.nombre+(r.ia?"":" (tradução falhou: edite o nome em Na loja)"));
         var bt=document.querySelector('[data-pid="'+CSS.escape(d.pid)+'"]');if(bt)bt.parentNode.querySelector(".tags").insertAdjacentHTML("beforeend",'<span class="tag ok">na loja</span>')})
       .catch(function(e){b.disabled=false;b.textContent="Publicar na loja";toast("Erro: "+e.message)})};
   }).catch(function(e){$("#janela").innerHTML='<p class="msg">Erro: '+esc(e.message)+'</p><button class="bt cinza" onclick="document.getElementById(\'fundo\').classList.remove(\'on\')">Fechar</button>'});
@@ -187,7 +226,7 @@ function desenhar(){var f=$("#filtro").value.toLowerCase();
     '<button class="bt cinza" data-link="'+esc(p.id)+'">🔗 Copiar link</button></div></div><button class="bt cinza" data-id="'+esc(p.id)+'">Editar</button></div>'}).join("")}
 function copiar(t){(navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(function(){toast("Link copiado. Cole na bio ou no post.")}).catch(function(){prompt("Copie o link:",t)})}
 $("#lista").onclick=function(ev){
-  var l=ev.target.closest("[data-link]");if(l){copiar("https://pets.leuname.com/producto.html?id="+encodeURIComponent(l.dataset.link));return}
+  var l=ev.target.closest("[data-link]");if(l){copiar("https://"+CFG.host+"/producto.html?id="+encodeURIComponent(l.dataset.link));return}
   var v=ev.target.closest("[data-vid]");if(v){v.disabled=true;v.textContent="Buscando vídeo…";api("video",{id:v.dataset.vid}).then(function(){toast("Vídeo pronto (já está na loja também)");carregarLoja()}).catch(function(e){v.disabled=false;v.textContent="🎬 Pegar vídeo";toast(e.message)});return}
   var b=ev.target.closest("[data-id]");if(!b)return;var p=LOJA.find(function(x){return x.id===b.dataset.id});if(p)editar(p)};
 function editar(p){var es=p.es||{};
@@ -197,7 +236,7 @@ function editar(p){var es=p.es||{};
     '<label>Descrição</label><textarea class="campo" id="eDesc" rows="3">'+esc(es.descripcion)+'</textarea>'+
     '<label>Pontos (um por linha)</label><textarea class="campo" id="ePontos" rows="4">'+esc((es.puntos||[]).join("\n"))+'</textarea>'+
     '<div class="linha"><div><label>Preço (€)</label><input class="campo" id="ePreco" type="number" step="0.01" value="'+p.precio+'"></div><div><label>Categoria</label><select class="campo" id="eCat">'+opcoes(CATS,p.categoria)+'</select></div></div>'+
-    '<div class="linha"><div><label>Animal</label><select class="campo" id="eAnimal">'+opcoes(ANIMAIS,p.animal)+'</select></div><div><label>&nbsp;</label><label style="margin:0;color:#1d2340"><input type="checkbox" id="eDest"'+(p.destaque?" checked":"")+'> Destaque</label><label style="margin:4px 0 0;color:#1d2340"><input type="checkbox" id="eNovo"'+(p.nuevo?" checked":"")+'> Novidade</label></div></div>'+
+    '<div class="linha"><div'+(CFG.animal?'':' hidden')+'><label>Animal</label><select class="campo" id="eAnimal">'+opcoes(ANIMAIS,p.animal||"ambos")+'</select></div><div><label>&nbsp;</label><label style="margin:0;color:#1d2340"><input type="checkbox" id="eDest"'+(p.destaque?" checked":"")+'> Destaque</label><label style="margin:4px 0 0;color:#1d2340"><input type="checkbox" id="eNovo"'+(p.nuevo?" checked":"")+'> Novidade</label></div></div>'+
     (p.custoEur?'<p style="font-size:13px">Custo '+eur(p.custoEur)+' · lucro <b id="eLucro"></b></p>':'')+
     '<div class="acoes"><button class="bt cinza" id="eTirar">'+(p.ativo?"Tirar da loja":"Voltar para a loja")+'</button><button class="bt verde" id="eSalvar">Salvar</button></div>';
   function conta(){if(p.custoEur)$("#eLucro").textContent=eur(lucro(parseFloat($("#ePreco").value)||0,p.custoEur))}

@@ -1,11 +1,19 @@
-// Painel do dono da LeunaPets (pets.leuname.com/painel/): login, busca na CJ ao vivo e "Publicar" com 1 clique.
+// Painel do dono das lojas drop (pets.leuname.com/painel/): login, busca na CJ ao vivo e "Publicar" com 1 clique.
+// Várias lojas (lojas.json): cada produto do D1 tem a coluna "loja"; uma loja nunca vê os produtos da outra.
 // Segredos do Worker (vêm dos segredos do GitHub pelo workflow): LOJA_ADMIN_SENHA, CJ_API_KEY. Nunca no código.
 // Banco D1 "leunapets" (binding DB): produtos publicados pelo painel, sessões, token da CJ.
 const CJ = "https://developers.cjdropshipping.com/api2.0/v1";
 const USD_EUR = 0.93;
 const FRETE_TESTE = ["DE", "FR", "ES", "IT"];
 const PRAZO_MAX = 18;
-const CATS = ["camas", "comer", "juguetes", "paseo", "higiene", "rascadores"];
+import LOJAS from "./lojas.json";
+export const lojaPorId = (id) => LOJAS.find((l) => l.id === id) || LOJAS[0];
+export const lojaPorHost = (host) => LOJAS.find((l) => l.host === host) || LOJAS[0];
+const catsDe = (L) => L.cats.map((c) => c[0]);
+const DESC_LOJA = {
+  pets: "a pet shop for dogs and cats in Spain",
+  casa: "a home, kitchen, décor and garden shop in Spain",
+};
 const ANIMAIS = ["perro", "gato", "ambos"];
 const MODELO = "@cf/meta/llama-3.3-70b-instruct-fp8-fast";
 
@@ -33,6 +41,9 @@ async function tabelas(env) {
     env.DB.prepare("CREATE TABLE IF NOT EXISTS sessoes (token TEXT PRIMARY KEY, expira INTEGER NOT NULL)"),
     env.DB.prepare("CREATE TABLE IF NOT EXISTS tentativas (ip TEXT PRIMARY KEY, n INTEGER NOT NULL, desde INTEGER NOT NULL)"),
     env.DB.prepare("CREATE TABLE IF NOT EXISTS config (chave TEXT PRIMARY KEY, valor TEXT NOT NULL)"),
+    env.DB.prepare("CREATE TABLE IF NOT EXISTS produtos_v2 (loja TEXT NOT NULL, id TEXT NOT NULL, dados TEXT NOT NULL, ativo INTEGER NOT NULL DEFAULT 1, criado TEXT NOT NULL DEFAULT (datetime('now')), atualizado TEXT NOT NULL DEFAULT (datetime('now')), PRIMARY KEY (loja, id))"),
+    // produtos publicados antes das várias lojas = LeunaPets
+    env.DB.prepare("INSERT OR IGNORE INTO produtos_v2 (loja, id, dados, ativo, criado, atualizado) SELECT 'pets', id, dados, ativo, criado, atualizado FROM produtos"),
   ]);
   tabelasOk = true;
 }
@@ -105,7 +116,7 @@ async function cj(env, metodo, caminho, { params, corpo } = {}) {
   return {};
 }
 
-async function buscar(env, url) {
+async function buscar(env, url, L) {
   const q = (url.searchParams.get("q") || "").trim().slice(0, 80);
   const pagina = Math.max(1, Math.min(50, parseInt(url.searchParams.get("pagina"), 10) || 1));
   const params = { page: pagina, size: 30 };
@@ -115,7 +126,7 @@ async function buscar(env, url) {
   if (!q && !params.categoryId) params.keyWord = "pet";
   const d = await cj(env, "GET", "/product/listV2", { params });
   if (!d.result && d.code !== 200) return json({ erro: "cj", detalhe: d.message || "sem resposta" }, 502);
-  const publicados = new Set((await env.DB.prepare("SELECT id FROM produtos WHERE ativo=1").all()).results.map((r) => r.id));
+  const publicados = new Set((await env.DB.prepare("SELECT id FROM produtos_v2 WHERE loja=? AND ativo=1").bind(L.id).all()).results.map((r) => r.id));
   const itens = [];
   for (const b of (d.data && d.data.content) || []) {
     for (const p of b.productList || []) {
@@ -223,14 +234,14 @@ export async function servirVideo(req, env, nome) {
 function textoBase(nome) {
   return { nombre: nome.slice(0, 80), gancho: "", descripcion: nome, puntos: [] };
 }
-async function traduzir(env, nomeEn, descricaoEn, animal) {
+async function traduzir(env, nomeEn, descricaoEn, animal, L) {
   if (!env.AI) return { es: textoBase(nomeEn), en: textoBase(nomeEn), ia: false };
   const pedido = `Product from a supplier (English, may be messy):
 NAME: ${nomeEn}
 DESCRIPTION: ${descricaoEn.slice(0, 1800)}
-Animal: ${animal === "perro" ? "dog" : animal === "gato" ? "cat" : "dogs and cats"}
+${L.id === "pets" ? "Animal: " + (animal === "perro" ? "dog" : animal === "gato" ? "cat" : "dogs and cats") : ""}
 
-Write store copy for "LeunaPets", a pet shop in Spain. Return ONLY valid JSON, no markdown:
+Write store copy for "${L.marca}", ${DESC_LOJA[L.id] || "an online shop in Spain"}. Return ONLY valid JSON, no markdown:
 {"es":{"nombre":"...","gancho":"...","descripcion":"...","puntos":["...","...","..."]},"en":{"nombre":"...","gancho":"...","descripcion":"...","puntos":["...","...","..."]}}
 Rules: "es" in natural Spanish from Spain, "en" in English. nombre: short product name, max 6 words, no brand, no supplier codes.
 gancho: one warm short sentence (max 12 words). descripcion: 2 sentences, honest, no medical claims, no "best seller", no invented numbers.
@@ -252,15 +263,18 @@ puntos: 3 or 4 short factual benefits based only on the description (size/materi
 }
 
 // ---------- catálogo da loja = produtos.json (robô) + D1 (painel; o D1 manda) ----------
-export async function catalogo(env, req) {
-  const r = await env.ASSETS.fetch(new Request(new URL("/produtos.json", req.url)));
-  const base = r.ok ? await r.json().catch(() => []) : [];
+export async function catalogo(env, req, lojaId = "pets") {
+  let base = [];
+  if (lojaId === "pets") {   // só a LeunaPets tem o produtos.json do robô diário
+    const r = await env.ASSETS.fetch(new Request(new URL("/produtos.json", req.url)));
+    base = r.ok ? await r.json().catch(() => []) : [];
+  }
   const mapa = new Map();
   for (const p of Array.isArray(base) ? base : []) if (p && p.id) mapa.set(p.id, p);
   if (env.DB) {
     try {
       await tabelas(env);
-      const { results } = await env.DB.prepare("SELECT id, dados, ativo FROM produtos ORDER BY criado DESC").all();
+      const { results } = await env.DB.prepare("SELECT id, dados, ativo FROM produtos_v2 WHERE loja=? ORDER BY criado DESC").bind(lojaId).all();
       const novos = [];
       for (const row of results) {
         if (!row.ativo) { mapa.delete(row.id); continue; }
@@ -300,12 +314,12 @@ export function variacoes(d, precio) {
   });
 }
 
-function montar(pid, d, campos, textos) {
+function montar(pid, d, campos, textos, L) {
   const preco = Math.round((num(campos.precio) || d.sugerido) * 100) / 100;
   return {
     id: pid, es: textos.es, pt: textos.es, en: textos.en,
-    categoria: CATS.includes(campos.categoria) ? campos.categoria : "juguetes",
-    animal: ANIMAIS.includes(campos.animal) ? campos.animal : "ambos",
+    categoria: catsDe(L).includes(campos.categoria) ? campos.categoria : catsDe(L)[0],
+    animal: L.id === "pets" && ANIMAIS.includes(campos.animal) ? campos.animal : "ambos",
     nuevo: campos.nuevo !== false, destaque: !!campos.destaque,
     precio: preco, imagenes: d.imagenes.slice(0, 6), video: "", plazo: d.plazo,
     cj: { vid: d.vid, sku: d.sku, custoEur: d.custoEur, painel: true },
@@ -313,7 +327,7 @@ function montar(pid, d, campos, textos) {
   };
 }
 
-async function publicar(req, env) {
+async function publicar(req, env, L) {
   const c = await req.json().catch(() => ({}));
   const pid = String(c.pid || "").slice(0, 64);
   if (!pid) return json({ erro: "pid" }, 400);
@@ -321,20 +335,20 @@ async function publicar(req, env) {
   if (!d) return json({ erro: "produto-nao-encontrado" }, 404);
   if (!d.entregaTodos) return json({ erro: "nao-entrega", detalhe: "A CJ não entrega em todos os países testados." }, 400);
   if (!d.imagens.length) return json({ erro: "sem-fotos" }, 400);
-  const textos = c.es && c.es.nombre ? { es: c.es, en: c.en || c.es, ia: false } : await traduzir(env, d.nomeEn, d.descricaoEn, c.animal);
-  const p = montar(pid, d, c, textos);
+  const textos = c.es && c.es.nombre ? { es: c.es, en: c.en || c.es, ia: false } : await traduzir(env, d.nomeEn, d.descricaoEn, c.animal, L);
+  const p = montar(pid, d, c, textos, L);
   p.video = await guardarVideo(env, pid);
-  await env.DB.prepare("INSERT OR REPLACE INTO produtos (id, dados, ativo, atualizado) VALUES (?,?,1,datetime('now'))").bind(pid, JSON.stringify(p)).run();
+  await env.DB.prepare("INSERT OR REPLACE INTO produtos_v2 (loja, id, dados, ativo, criado, atualizado) VALUES (?,?,?,1,COALESCE((SELECT criado FROM produtos_v2 WHERE loja=? AND id=?),datetime('now')),datetime('now'))").bind(L.id, pid, JSON.stringify(p), L.id, pid).run();
   return json({ ok: true, produto: p, ia: textos.ia, lucro: lucro(p.precio, d.custoEur) });
 }
 
-async function editar(req, env) {
+async function editar(req, env, L) {
   const c = await req.json().catch(() => ({}));
   const id = String(c.id || "");
-  const todos = await catalogo(env, req);
+  const todos = await catalogo(env, req, L.id);
   let p = todos.find((x) => x.id === id);
   if (!p) {
-    const row = await env.DB.prepare("SELECT dados FROM produtos WHERE id=?").bind(id).first();
+    const row = await env.DB.prepare("SELECT dados FROM produtos_v2 WHERE loja=? AND id=?").bind(L.id, id).first();
     if (!row) return json({ erro: "id" }, 404);
     p = JSON.parse(row.dados);
   }
@@ -346,7 +360,7 @@ async function editar(req, env) {
       if (Array.isArray(p.variantes)) p.variantes = p.variantes.map((x) => ({ ...x, precio: Math.round((x.precio + dif) * 100) / 100 }));
     }
   }
-  if (CATS.includes(c.categoria)) p.categoria = c.categoria;
+  if (catsDe(L).includes(c.categoria)) p.categoria = c.categoria;
   if (ANIMAIS.includes(c.animal)) p.animal = c.animal;
   if (typeof c.destaque === "boolean") p.destaque = c.destaque;
   if (typeof c.nuevo === "boolean") p.nuevo = c.nuevo;
@@ -355,14 +369,14 @@ async function editar(req, env) {
     p.pt = p.es;
   }
   const ativo = c.ativo === false ? 0 : 1;
-  await env.DB.prepare("INSERT OR REPLACE INTO produtos (id, dados, ativo, criado, atualizado) VALUES (?,?,?,COALESCE((SELECT criado FROM produtos WHERE id=?),datetime('now')),datetime('now'))")
-    .bind(id, JSON.stringify(p), ativo, id).run();
+  await env.DB.prepare("INSERT OR REPLACE INTO produtos_v2 (loja, id, dados, ativo, criado, atualizado) VALUES (?,?,?,?,COALESCE((SELECT criado FROM produtos_v2 WHERE loja=? AND id=?),datetime('now')),datetime('now'))")
+    .bind(L.id, id, JSON.stringify(p), ativo, L.id, id).run();
   return json({ ok: true, produto: p, ativo: !!ativo });
 }
 
-async function publicados(req, env) {
-  const loja = await catalogo(env, req);
-  const { results } = await env.DB.prepare("SELECT id, dados FROM produtos WHERE ativo=0").all();
+async function publicados(req, env, L) {
+  const loja = await catalogo(env, req, L.id);
+  const { results } = await env.DB.prepare("SELECT id, dados FROM produtos_v2 WHERE loja=? AND ativo=0").bind(L.id).all();
   const fora = results.map((r) => ({ ...JSON.parse(r.dados), _fora: true }));
   return json({ itens: [...loja, ...fora].map((p) => ({
     id: p.id, nome: (p.es && p.es.nombre) || p.id, img: (p.imagenes || [])[0] || "", precio: p.precio,
@@ -377,26 +391,32 @@ export async function painel(req, env, url) {
   const rota = url.pathname.replace("/api/painel/", "");
   if (rota === "login" && req.method === "POST") return login(req, env);
   if (!(await logado(req, env))) return json({ erro: "login" }, 401);
+  const L = lojaPorId(url.searchParams.get("loja") || "pets");
   try {
+    if (rota === "lojas") {
+      const { results } = await env.DB.prepare("SELECT loja, COUNT(*) n FROM produtos_v2 WHERE ativo=1 GROUP BY loja").all();
+      const n = Object.fromEntries(results.map((r) => [r.loja, r.n]));
+      return json({ lojas: LOJAS.map((l) => ({ ...l, publicados: n[l.id] || 0 })) });
+    }
     if (rota === "estado") return json({ ok: true, cj: !!env.CJ_API_KEY, ia: !!env.AI, stripe: !!env.STRIPE_SECRET_KEY });
-    if (rota === "buscar") return await buscar(env, url);
+    if (rota === "buscar") return await buscar(env, url, L);
     if (rota === "detalhe") {
       const d = await detalhe(env, String(url.searchParams.get("pid") || "").slice(0, 64));
       return d ? json(d) : json({ erro: "produto-nao-encontrado" }, 404);
     }
-    if (rota === "publicar" && req.method === "POST") return await publicar(req, env);
-    if (rota === "editar" && req.method === "POST") return await editar(req, env);
+    if (rota === "publicar" && req.method === "POST") return await publicar(req, env, L);
+    if (rota === "editar" && req.method === "POST") return await editar(req, env, L);
     if (rota === "video" && req.method === "POST") {
       const c = await req.json().catch(() => ({}));
-      const p = (await catalogo(env, req)).find((x) => x.id === c.id);
+      const p = (await catalogo(env, req, L.id)).find((x) => x.id === c.id);
       if (!p) return json({ erro: "id" }, 404);
       const v = await guardarVideo(env, p.id);
       if (!v) return json({ erro: "sem-video", detalhe: "A CJ não tem vídeo deste produto." }, 404);
       p.video = v;
-      await env.DB.prepare("INSERT OR REPLACE INTO produtos (id, dados, ativo, criado, atualizado) VALUES (?,?,1,COALESCE((SELECT criado FROM produtos WHERE id=?),datetime('now')),datetime('now'))").bind(p.id, JSON.stringify(p), p.id).run();
+      await env.DB.prepare("INSERT OR REPLACE INTO produtos_v2 (loja, id, dados, ativo, criado, atualizado) VALUES (?,?,?,1,COALESCE((SELECT criado FROM produtos_v2 WHERE loja=? AND id=?),datetime('now')),datetime('now'))").bind(L.id, p.id, JSON.stringify(p), L.id, p.id).run();
       return json({ ok: true, video: v });
     }
-    if (rota === "publicados") return await publicados(req, env);
+    if (rota === "publicados") return await publicados(req, env, L);
     if (rota === "sair" && req.method === "POST") {
       const m = /^Bearer (\w+)$/.exec(req.headers.get("Authorization") || "");
       if (m) await env.DB.prepare("DELETE FROM sessoes WHERE token=?").bind(await sha(m[1])).run();

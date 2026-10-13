@@ -54,3 +54,8 @@ binding = "AI"
 [[r2_buckets]]
 binding = "DOWNLOADS"
 bucket_name = "leuname-downloads"
+
+# Loja de casa e jardim (nome provisório LeunaCasa). Arquivos em _lojas/casa/.
+[[routes]]
+pattern = "casa.leuname.com"
+custom_domain = true
