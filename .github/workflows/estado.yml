@@ -17,7 +17,9 @@ jobs:
           cfg=$(curl -s https://pets.leuname.com/api/config || echo erro)
           home=$(curl -s -o /dev/null -w '%{http_code}' https://pets.leuname.com/ || echo erro)
           prod=$(curl -s https://pets.leuname.com/produtos.json | head -c 200 | tr -d '\n' || echo erro)
+          pagar=$(curl -s -X POST https://pets.leuname.com/api/pagar -H 'Content-Type: application/json' -d '{"lang":"es","itens":[{"id":"1642036884023021568","q":1}]}' | sed 's#cs_live_[A-Za-z0-9_]*#cs_live_OK#g' | head -c 400)
           mkdir -p /tmp/e && cd /tmp/e
+          echo "$pagar" > pagar.txt
           printf '{"stripe":%s,"stripe_tipo":"%s","cj":%s,"admin_senha":%s,"api_config":%s,"home_http":"%s","produtos_inicio":%s}\n' \
             "$(tem "$S1")" "$tipo" "$(tem "$S2")" "$(tem "$S3")" "$(echo "$cfg" | grep -q stripe && echo "$cfg" || echo '"erro"')" "$home" "$(python3 -c 'import json,sys;print(json.dumps(sys.argv[1]))' "$prod")" > estado.json
           cat estado.json
