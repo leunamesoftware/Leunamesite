@@ -83,13 +83,28 @@
     var temAlgum = PRODUTOS.length > 0;
     $("#vazio").hidden = temAlgum;
     var grade = $('[data-grade="destaque"]');
-    if (busca) {
+    var pr = new URLSearchParams(location.search), animal = pr.get("animal"), catF = pr.get("cat");
+    var minimo = PRODUTOS.reduce(function (m, p) { return Math.min(m, p.precio); }, Infinity);
+    if ($("#desde") && isFinite(minimo)) { $("#desde b").textContent = euro(minimo); $("#desde").hidden = false; }
+    $$("[data-bolha]").forEach(function (a) {
+      var c = a.getAttribute("data-bolha"), p = PRODUTOS.filter(function (x) { return x.categoria === c; })[0];
+      var bc = $(".bolha-c", a);
+      if (p && !bc.querySelector("img")) { bc.insertAdjacentHTML("beforeend", '<img src="' + esc(p.imagenes[0]) + '" alt="">'); bc.classList.add("tem-foto"); }
+    });
+    if (busca || animal || catF) {
       var q = sem(busca);
       var achados = PRODUTOS.filter(function (p) {
+        if (animal && p.animal && p.animal !== animal && p.animal !== "ambos") return false;
+        if (catF && p.categoria !== catF) return false;
+        if (!busca) return true;
         return ["es", "pt", "en"].some(function (l) { var x = p[l] || {}; return sem(x.nombre + " " + (x.gancho || "") + " " + (x.descripcion || "")).indexOf(q) >= 0; });
       });
-      $("#destacados h2").textContent = T("Resultados para", "Resultados para", "Results for") + " “" + busca + "”";
-      $("#destacados .sec-centro p").textContent = achados.length + " " + T("productos", "produtos", "products");
+      var titulo = busca ? T("Resultados para", "Resultados para", "Results for") + " “" + busca + "”" :
+        animal === "perro" ? T("Para perros", "Para cães", "For dogs") : animal === "gato" ? T("Para gatos", "Para gatos", "For cats") :
+        ($('#' + catF + ' h2') ? $('#' + catF + ' h2').textContent : "");
+      $("#novedades h2").textContent = titulo;
+      $("#novedades .sec-sub").textContent = achados.length + " " + T("productos", "produtos", "products");
+      setTimeout(function () { $("#novedades").scrollIntoView(); }, 50);
       grade.innerHTML = achados.map(cartao).join("");
       $("#semBusca").hidden = !temAlgum || achados.length > 0;
       $$(".cat").forEach(function (s) { s.hidden = true; });
@@ -118,7 +133,7 @@
     $(".prod-in").hidden = !p; $("#pNada").hidden = !!p;
     if (!p) return;
     var i = info(p);
-    document.title = nome(p) + " — Casa Oliva";
+    document.title = nome(p) + " — LeunaPet";
     $("#pNome").textContent = nome(p);
     $("#pPreco").textContent = euro(p.precio);
     $("#pDesc").textContent = i.descripcion || "";
@@ -221,13 +236,13 @@
           var tot = total().toFixed(2);
           return actions.order.create({
             purchase_units: [{
-              description: "Casa Oliva",
+              description: "LeunaPet",
               amount: { currency_code: "EUR", value: tot, breakdown: { item_total: { currency_code: "EUR", value: tot } } },
               items: itens.map(function (it) {
                 return { name: nome(it.p).slice(0, 120), sku: it.p.id.slice(0, 120), quantity: String(it.q), unit_amount: { currency_code: "EUR", value: it.p.precio.toFixed(2) }, category: "PHYSICAL_GOODS" };
               })
             }],
-            application_context: { shipping_preference: "GET_FROM_FILE", brand_name: "Casa Oliva" }
+            application_context: { shipping_preference: "GET_FROM_FILE", brand_name: "LeunaPet" }
           });
         },
         onShippingAddressChange: function (d, actions) {
@@ -247,6 +262,23 @@
   }
   var nr = $("#nrPedido");
   if (nr) { if (/[?&]ok=1/.test(location.search)) { carrinho = {}; salvar(); } var n = new URLSearchParams(location.search).get("pedido"); if (n) nr.textContent = T("Pedido nº ", "Encomenda nº ", "Order no. ") + n; }
+
+  /* ---------- banner rotativo ---------- */
+  var slides = $$("[data-slide]"), atual = 0, timer;
+  if (slides.length > 1) {
+    var pts = $("[data-pontos]");
+    pts.innerHTML = slides.map(function (_, i) { return '<button type="button" aria-label="' + (i + 1) + '"></button>'; }).join("");
+    var ir = function (n) {
+      atual = (n + slides.length) % slides.length;
+      slides.forEach(function (s, i) { s.classList.toggle("on", i === atual); });
+      $$("button", pts).forEach(function (b, i) { b.classList.toggle("on", i === atual); });
+      clearInterval(timer); timer = setInterval(function () { ir(atual + 1); }, 6000);
+    };
+    $$("button", pts).forEach(function (b, i) { b.addEventListener("click", function () { ir(i); }); });
+    $("[data-ant]").addEventListener("click", function () { ir(atual - 1); });
+    $("[data-prox]").addEventListener("click", function () { ir(atual + 1); });
+    ir(0);
+  } else { $$(".seta-s").forEach(function (b) { b.hidden = true; }); }
 
   function redesenhar() { desenharLoja(); desenharProduto(); desenharCarrinho(); }
 

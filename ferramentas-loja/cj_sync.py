@@ -22,9 +22,9 @@ API = 'https://developers.cjdropshipping.com/api2.0/v1'
 
 ARMAZENS = ['ES', 'DE', 'FR', 'IT', 'PL', 'CZ']          # estoque na Europa = chega rápido
 DESTINOS = ['DE', 'FR', 'ES', 'IT', 'NL', 'BE', 'AT', 'PT', 'IE']   # maiores mercados da UE
-BUSCAS = ['pet hair remover', 'dog toy', 'cat toy', 'pet water fountain', 'pet bed', 'dog leash',
-          'storage organizer', 'drawer organizer', 'motion sensor light', 'led light', 'bathroom organizer',
-          'kitchen organizer', 'plant watering', 'garden tool']
+BUSCAS = ['pet hair remover', 'cat water fountain', 'pet feeder', 'dog bed', 'cat bed', 'cat scratcher',
+          'interactive cat toy', 'dog toy', 'dog leash', 'dog harness', 'pet grooming', 'pet bowl',
+          'cat litter', 'pet blanket']
 CUSTO_MAX_USD = 15        # produto barato
 USD_EUR = 0.93
 MAX_DETALHES = 40         # quantos candidatos detalhar (1 chamada/s na CJ)
@@ -182,7 +182,9 @@ def montar_loja(aprovados, por_id):
         loja.append({
             'id': pid,
             'es': a['es'], 'pt': a['pt'], 'en': a.get('en') or a['es'],
-            'categoria': a.get('categoria', 'organizacion'),
+            'categoria': a.get('categoria', 'juguetes'),
+            'animal': a.get('animal', 'ambos'),
+            'nuevo': bool(a.get('nuevo')),
             'precio': a.get('precio') or c['precoSugerido'],
             'imagenes': a.get('imagenes') or c['imagens'],
             'video': next((v for v in c['videos'] if v.startswith('http')), ''),

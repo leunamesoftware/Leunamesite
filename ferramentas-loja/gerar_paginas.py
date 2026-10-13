@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
-"""Gera as páginas da loja Europa "Leuna" (casa + pets) em SITE-LEUNAMESOFTWARE/.
+"""Gera as páginas da loja Europa "LeunaPet" (cães e gatos) em SITE-LEUNAMESOFTWARE/.
 Três idiomas: t('espanhol', 'português', 'inglês'). A troca é só CSS (html[lang])."""
 import os
 
 AQUI = os.path.dirname(os.path.abspath(__file__))
 SITE = os.path.join(AQUI, '..', 'SITE-LEUNAMESOFTWARE')
 DATA = ('13 de octubre de 2026', '13 de outubro de 2026', '13 October 2026')
-MARCA = 'Leuna'
+MARCA = 'LeunaPet'
 
 
 def t(es, pt, en):
@@ -34,6 +34,14 @@ I = {
     'apoio': '<path d="M4 14v-2a8 8 0 0 1 16 0v2"/><rect x="3" y="14" width="4" height="6" rx="1.5"/><rect x="17" y="14" width="4" height="6" rx="1.5"/>',
     'lupa': '<circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/>',
     'carrinho': '<path d="M3 4h2l2.4 11.2a1 1 0 0 0 1 .8h8.9a1 1 0 0 0 1-.8L20 8H6"/><circle cx="9" cy="20" r="1.4"/><circle cx="17" cy="20" r="1.4"/>',
+    'cama': '<path d="M3 15c0-3 2-5 5-5h8c3 0 5 2 5 5v3H3z"/><path d="M6 10c0-2 1-3 3-3h6c2 0 3 1 3 3"/><path d="M3 18v2M21 18v2"/>',
+    'tigela': '<path d="M3 12h18c0 4-3 7-9 7s-9-3-9-7z"/><path d="M8 9c0-2 1-3 2-3M13 8c0-2 1-3 2-3"/>',
+    'bola': '<circle cx="12" cy="12" r="8"/><path d="M5 9c4 1 10 1 14 0M5 15c4-1 10-1 14 0"/>',
+    'trela': '<circle cx="6" cy="6" r="3"/><path d="M8 8l8 8"/><rect x="15" y="15" width="6" height="6" rx="2"/>',
+    'escova': '<rect x="3" y="4" width="14" height="7" rx="3"/><path d="M5 11v3M8 11v3M11 11v3M14 11v3"/><path d="M17 7h4"/>',
+    'arranhador': '<rect x="9" y="7" width="6" height="12"/><path d="M5 21h14M6 7h12l-2-4H8z"/><path d="M9 11h6M9 15h6"/>',
+    'cao': '<path d="M5 9l-2-4 5 2h8l5-2-2 4"/><path d="M5 9c0 6 3 11 7 11s7-5 7-11"/><circle cx="9.5" cy="12" r=".8"/><circle cx="14.5" cy="12" r=".8"/><path d="M11 15.5h2l-1 1z"/>',
+    'gato': '<path d="M5 4l3 5h8l3-5"/><path d="M5 4v8c0 5 3 8 7 8s7-3 7-8V4"/><circle cx="9.5" cy="12" r=".8"/><circle cx="14.5" cy="12" r=".8"/><path d="M11 15h2l-1 1z"/>',
     'seta': '<path d="M5 12h14M13 6l6 6-6 6"/>',
 }
 
@@ -43,20 +51,21 @@ def ico(n, cls='ic'):
 
 
 CATS = [  # id, ícone, es, pt, en
-    ('mascotas', 'pata', 'Mascotas', 'Animais', 'Pets'),
-    ('organizacion', 'caixa', 'Organización', 'Arrumação', 'Storage'),
-    ('cocina', 'cozinha', 'Cocina', 'Cozinha', 'Kitchen'),
-    ('iluminacion', 'luz', 'Iluminación', 'Iluminação', 'Lighting'),
-    ('bano', 'banho', 'Baño', 'Casa de banho', 'Bathroom'),
-    ('jardin', 'folha', 'Jardín', 'Jardim', 'Garden'),
+    ('camas', 'cama', 'Camas', 'Camas', 'Beds'),
+    ('comer', 'tigela', 'Comer y beber', 'Comer e beber', 'Food & water'),
+    ('juguetes', 'bola', 'Juguetes', 'Brinquedos', 'Toys'),
+    ('paseo', 'trela', 'Paseo', 'Passeio', 'Walks'),
+    ('higiene', 'escova', 'Pelo e higiene', 'Pelo e higiene', 'Grooming'),
+    ('rascadores', 'arranhador', 'Rascadores', 'Arranhadores', 'Scratchers'),
 ]
 
-LOGO = ('<svg class="logo-f" viewBox="0 0 48 48" aria-hidden="true"><path d="M24 44C10 40 4 28 8 10c12 2 20 10 16 34z" fill="#3E8E4F"/>'
-        '<path d="M24 44c14-4 20-16 16-34-12 2-20 10-16 34z" fill="#1F5A33"/><path d="M24 44V22" stroke="#FAF7F1" stroke-width="1.6"/></svg>')
+LOGO = ('<svg class="logo-f" viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="24" fill="#FF7A59"/>'
+        '<g fill="#fff"><ellipse cx="15" cy="20" rx="3.6" ry="4.6"/><ellipse cx="22" cy="14" rx="3.6" ry="4.6"/><ellipse cx="30" cy="14" rx="3.6" ry="4.6"/>'
+        '<ellipse cx="36" cy="21" rx="3.4" ry="4.4"/><path d="M15 33c0-6 5-10 10-10s10 4 10 10c0 4-4 4-10 4s-10 0-10-4z"/></g></svg>')
 
-ICONE = ("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'>"
-         "<rect width='48' height='48' rx='12' fill='%23FAF7F1'/><path d='M24 42C11 38 6 27 9 11c11 2 18 9 15 31z' fill='%233E8E4F'/>"
-         "<path d='M24 42c13-4 18-15 15-31-11 2-18 9-15 31z' fill='%231F5A33'/></svg>")
+ICONE = ("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'><circle cx='24' cy='24' r='24' fill='%23FF7A59'/>"
+         "<g fill='%23fff'><ellipse cx='15' cy='20' rx='3.6' ry='4.6'/><ellipse cx='22' cy='14' rx='3.6' ry='4.6'/><ellipse cx='30' cy='14' rx='3.6' ry='4.6'/>"
+         "<ellipse cx='36' cy='21' rx='3.4' ry='4.4'/><path d='M15 33c0-6 5-10 10-10s10 4 10 10c0 4-4 4-10 4s-10 0-10-4z'/></g></svg>")
 
 IDIOMA_JS = ('try{var q=location.search.match(/[?&]lang=(es|en)/),g=localStorage.getItem("lang"),'
              'l=(q&&q[1])||(g==="en"?"en":"es");document.documentElement.lang=l}'
@@ -78,7 +87,7 @@ def cabeca(titulo, desc, caminho, indexar=True):
 <title>{titulo}</title>
 <meta name="description" content="{desc}">
 {robots}<link rel="canonical" href="https://leunamesoftware.com/{caminho}">
-<meta name="theme-color" content="#1B3D27">
+<meta name="theme-color" content="#1D2B4F">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="icon" href="{ICONE}">
@@ -97,14 +106,14 @@ def cabeca(titulo, desc, caminho, indexar=True):
 </div>
 <header class="top">
   <div class="wrap top-in">
-    <a class="logo" href="./">{LOGO}<span class="logo-t">{MARCA}<i>{t('Hogar · Mascotas', 'Casa · Animais', 'Home · Pets')}</i></span></a>
+    <a class="logo" href="./">{LOGO}<span class="logo-t">Leuna<b>Pet</b><i>{t('Perros y gatos', 'Cães e gatos', 'Dogs & cats')}</i></span></a>
     <form class="busca" role="search" action="./" data-busca>
-      <input type="search" name="q" autocomplete="off" aria-label="Buscar" data-ph-es="¿Qué buscas para tu hogar o tu mascota?" data-ph-pt="O que procura para a casa ou o seu animal?" data-ph-en="What are you looking for?">
+      <input type="search" name="q" autocomplete="off" aria-label="Buscar" data-ph-es="¿Qué buscas para tu perro o tu gato?" data-ph-pt="O que procura para o seu cão ou gato?" data-ph-en="What are you looking for?">
       <button type="submit" aria-label="Buscar">{ico('lupa')}</button>
     </form>
     <a class="sacola" href="carrito.html" aria-label="Cart">{ico('carrinho')}<span>{t('Carrito', 'Carrinho', 'Cart')}</span><b data-qtd hidden>0</b></a>
   </div>
-  <nav class="menu" aria-label="Menu"><div class="wrap menu-in"><a href="./" class="on">{ico('casa')}{t('Inicio', 'Início', 'Home')}</a>{nav}</div></nav>
+  <nav class="menu" aria-label="Menu"><div class="wrap menu-in"><a href="./" class="on">{ico('casa')}{t('Inicio', 'Início', 'Home')}</a><a href="./?animal=perro">{ico('cao')}{t('Perros', 'Cães', 'Dogs')}</a><a href="./?animal=gato">{ico('gato')}{t('Gatos', 'Gatos', 'Cats')}</a>{nav}</div></nav>
 </header>
 '''
 
@@ -120,8 +129,8 @@ RODAPE = f'''
 </section>
 <footer class="pie">
   <div class="wrap pie-in">
-    <div><a class="logo" href="./">{LOGO}<span class="logo-t">{MARCA}<i>{t('Hogar · Mascotas', 'Casa · Animais', 'Home · Pets')}</i></span></a>
-      <p>{t('Soluciones prácticas y bonitas para tu casa y tus mascotas, enviadas a toda Europa.', 'Soluções práticas e bonitas para a sua casa e os seus animais, enviadas para toda a Europa.', 'Practical, beautiful finds for your home and pets, shipped across Europe.')}</p></div>
+    <div><a class="logo" href="./">{LOGO}<span class="logo-t">Leuna<b>Pet</b><i>{t('Perros y gatos', 'Cães e gatos', 'Dogs & cats')}</i></span></a>
+      <p>{t('Tienda especializada en perros y gatos. Productos bonitos y prácticos, enviados a toda Europa.', 'Loja especializada em cães e gatos. Produtos bonitos e práticos, enviados para toda a Europa.', 'A shop for dogs and cats only. Practical, beautiful products shipped across Europe.')}</p></div>
     <div><h4>{t('Tienda', 'Loja', 'Shop')}</h4>{links_cats()}</div>
     <div><h4>{t('Ayuda', 'Ajuda', 'Help')}</h4><a href="envios.html">{t('Envíos y devoluciones', 'Envios e devoluções', 'Shipping & returns')}</a><a href="#" data-mail>{t('Contacto', 'Contacto', 'Contact')}</a><a href="carrito.html">{t('Mi carrito', 'O meu carrinho', 'My cart')}</a></div>
     <div><h4>Legal</h4><a href="aviso-legal.html">{t('Aviso legal', 'Aviso legal', 'Legal notice')}</a><a href="envios.html#desistimiento">{t('Derecho de desistimiento', 'Direito de livre resolução', 'Right of withdrawal')}</a><a href="privacidad.html">{t('Privacidad', 'Privacidade', 'Privacy')}</a><a href="cookies.html">Cookies</a></div>
@@ -144,50 +153,62 @@ def pagina(nome, titulo, desc, corpo, indexar=True):
 
 
 # ---------------- INÍCIO ----------------
-BANNERS = [
-    ('organizacion', 'cat-hogar', 'Hogar', 'Casa', 'Home', 'Orden y estilo para tu día a día.', 'Arrumação e estilo para o dia a dia.', 'Order and style for every day.', '#EFE7DA'),
-    ('jardin', 'cat-jardin', 'Jardín', 'Jardim', 'Garden', 'Todo para tus plantas y tu terraza.', 'Tudo para as plantas e a varanda.', 'Everything for your plants and patio.', '#E3ECDD'),
-    ('mascotas', 'cat-mascotas', 'Mascotas', 'Animais', 'Pets', 'Para su bienestar y su felicidad.', 'Para o bem-estar e a felicidade deles.', 'For their comfort and happiness.', '#F1E6DA'),
+SLIDES = [
+    ('hero', t('Todo para tu perro<br>y tu gato, <em class="v">en casa</em>', 'Tudo para o seu cão<br>e o seu gato, <em class="v">em casa</em>', 'Everything for your dog<br>and cat, <em class="v">at home</em>'),
+     t('Camas, fuentes, juguetes y accesorios que ellos adoran y que quedan bonitos en tu salón.', 'Camas, fontes, brinquedos e acessórios que eles adoram e que ficam bonitos na sala.', 'Beds, fountains, toys and accessories they love, that look great in your living room.')),
+    ('cat-mascotas', t('Menos pelos,<br><em class="v">más mimos</em>', 'Menos pelos,<br><em class="v">mais mimos</em>', 'Less fur,<br><em class="v">more cuddles</em>'),
+     t('Cepillos, rodillos y limpieza para que tu casa siga perfecta.', 'Escovas, rolos e limpeza para a casa continuar perfeita.', 'Brushes, rollers and cleaning to keep your home spotless.')),
 ]
-banners = ''.join(f'''<a class="ban" href="#{c}" style="--bg:{bg}"><div class="ban-tx"><h3>{t(es, pt, en)}</h3><p>{t(des, dpt, den)}</p><span class="ban-bt">{t('Ver categoría', 'Ver categoria', 'Shop now')} {ico('seta')}</span></div><img src="img/{img}.webp" alt="" loading="lazy"></a>'''
-                  for c, img, es, pt, en, des, dpt, den, bg in BANNERS)
+slides = ''.join(f'''<div class="slide{' on' if i == 0 else ''}" data-slide>
+    <img class="slide-foto" src="img/{img}.webp" alt="" {'fetchpriority="high"' if i == 0 else 'loading="lazy"'}>
+    <div class="wrap slide-tx">
+      <p class="selo">{t('Envío gratis desde Europa', 'Envio grátis a partir da Europa', 'Free shipping from Europe')}</p>
+      <h1>{h}</h1>
+      <p class="hero-p">{p}</p>
+      <a class="bt bt-cor" href="#novedades">{t('Comprar ahora', 'Comprar agora', 'Shop now')} {ico('seta')}</a>
+    </div>
+  </div>''' for i, (img, h, p) in enumerate(SLIDES))
+bolhas = ''.join(f'<a class="bolha" href="./#{c}" data-bolha="{c}"><span class="bolha-c" style="--c:{cor}">{ico(i, "bi")}</span>{t(es, pt, en)}</a>'
+                 for (c, i, es, pt, en), cor in zip(CATS, ['#FFE3D6', '#DFF3EA', '#FFF1C7', '#E3E8FF', '#FCE1EC', '#E2F2F8']))
 secoes = ''.join(f'''<section class="wrap cat" id="{c}" hidden>
-  <div class="sec-cab"><h2>{ico(i)}{t(es, pt, en)}</h2></div>
+  <div class="sec-cab"><h2>{t(es, pt, en)}</h2><a href="./?cat={c}" class="ver">{t('Ver todo', 'Ver tudo', 'See all')} {ico('seta')}</a></div>
   <div class="grade" data-grade="{c}"></div>
 </section>
 ''' for c, i, es, pt, en in CATS)
 index = f'''<main>
-<section class="hero">
-  <img class="hero-foto" src="img/hero.webp" alt="" fetchpriority="high">
-  <div class="wrap hero-in">
-    <p class="selo">{t('Hogar · Jardín · Mascotas', 'Casa · Jardim · Animais', 'Home · Garden · Pets')}</p>
-    <h1>{t('Un hogar mejor<br><em class="v">para una vida más feliz</em>', 'Uma casa melhor<br><em class="v">para uma vida mais feliz</em>', 'A better home<br><em class="v">for a happier life</em>')}</h1>
-    <p class="hero-p">{t('Soluciones prácticas, modernas y accesibles para tu casa, tu jardín y tus mascotas.', 'Soluções práticas, modernas e acessíveis para a sua casa, o seu jardim e os seus animais.', 'Practical, modern and affordable finds for your home, garden and pets.')}</p>
-    <a class="bt" href="#destacados">{t('Descubrir productos', 'Descobrir produtos', 'Discover products')} {ico('seta')}</a>
-    <ul class="hero-li"><li>{ico('folha')}{t('Ideas para tu hogar', 'Ideias para a casa', 'Ideas for your home')}</li><li>{ico('casa')}{t('Jardín más verde', 'Jardim mais verde', 'A greener garden')}</li><li>{ico('pata')}{t('Mascotas más felices', 'Animais mais felizes', 'Happier pets')}</li></ul>
-  </div>
+<section class="hero" aria-label="Destacado">
+  {slides}
+  <div class="preco-selo" id="desde" hidden><small>{t('Desde', 'Desde', 'From')}</small><b></b></div>
+  <button class="seta-s seta-e" type="button" data-ant aria-label="Anterior">‹</button><button class="seta-s seta-d" type="button" data-prox aria-label="Siguiente">›</button>
+  <div class="pontos" data-pontos></div>
 </section>
-<section class="wrap bans">{banners}</section>
-<section class="faixa-conf"><div class="wrap conf-in">
-  <div>{ico('camiao', 'gi')}<span><b>{t('Envío rápido a toda Europa', 'Envio rápido para toda a Europa', 'Fast shipping across Europe')}</b>{t('Desde nuestros almacenes europeos', 'A partir dos nossos armazéns europeus', 'From our European warehouses')}</span></div>
-  <div>{ico('escudo', 'gi')}<span><b>{t('Pago seguro', 'Pagamento seguro', 'Secure payment')}</b>{t('Tus datos siempre protegidos', 'Os seus dados sempre protegidos', 'Your data always protected')}</span></div>
-  <div>{ico('caixa', 'gi')}<span><b>{t('Devoluciones fáciles', 'Devoluções fáceis', 'Easy returns')}</b>{t('Compra con tranquilidad', 'Compre com tranquilidade', 'Shop with peace of mind')}</span></div>
-  <div>{ico('apoio', 'gi')}<span><b>{t('Atención al cliente', 'Apoio ao cliente', 'Customer care')}</b>{t('Siempre a tu lado', 'Sempre do seu lado', 'Always here for you')}</span></div>
-</div></section>
-<section class="wrap destaque-sec" id="destacados">
-  <div class="sec-centro"><h2>{t('Productos destacados', 'Produtos em destaque', 'Featured products')}</h2><p>{t('Lo más popular para tu hogar, jardín y mascotas', 'O mais popular para a casa, o jardim e os animais', 'Most popular for your home, garden and pets')}</p></div>
+<section class="wrap bolhas">{bolhas}</section>
+<section class="wrap animais"><a class="animal an-c" href="./?animal=perro"><b>{t('Perros', 'Cães', 'Dogs')}</b><span>{t('Paseo, camas y juguetes', 'Passeio, camas e brinquedos', 'Walks, beds and toys')}</span>{ico('cao', 'ai')}</a><a class="animal an-g" href="./?animal=gato"><b>{t('Gatos', 'Gatos', 'Cats')}</b><span>{t('Rascadores, fuentes y juegos', 'Arranhadores, fontes e jogos', 'Scratchers, fountains and play')}</span>{ico('gato', 'ai')}</a></section>
+<section class="wrap destaque-sec" id="novedades">
+  <div class="sec-cab"><h2>{t('Novedades', 'Novidades', 'New in')}</h2><p class="sec-sub">{t('Elegidos uno a uno para tu mascota', 'Escolhidos um a um para o seu animal', 'Hand-picked for your pet')}</p></div>
   <div class="grade" data-grade="destaque"></div>
   <div class="vazio-in" id="vazio" hidden>
-    <h2>{t('Estamos llenando las estanterías', 'Estamos a encher as prateleiras', 'We are stocking the shelves')}</h2>
+    <span class="vazio-ic">{ico('pata', 'bi')}</span>
+    <h2>{t('Estamos preparando la tienda', 'Estamos a preparar a loja', 'Our shop opens very soon')}</h2>
     <p>{t('Los primeros productos llegan en unos días. Escríbenos y te avisamos.', 'Os primeiros produtos chegam dentro de dias. Escreva-nos e avisamos.', 'The first products arrive in a few days. Drop us a line and we will let you know.')}</p>
     <a class="bt" href="#" data-mail>{t('Avisarme', 'Avisar-me', 'Notify me')}</a>
   </div>
   <div class="vazio-in" id="semBusca" hidden><h2>{t('Sin resultados', 'Sem resultados', 'No results')}</h2><p>{t('Prueba con otra palabra.', 'Experimente outra palavra.', 'Try another word.')}</p></div>
 </section>
+<section class="wrap porque">
+  <img src="img/cat-mascotas.webp" alt="" loading="lazy">
+  <div class="porque-tx">
+    <h2>{t('¿Por qué LeunaPet?', 'Porquê a LeunaPet?', 'Why LeunaPet?')}</h2>
+    <p>{t('Somos una tienda especializada solo en perros y gatos. Probamos y elegimos cada producto pensando en su bienestar y en tu casa.', 'Somos uma loja especializada só em cães e gatos. Escolhemos cada produto a pensar no bem-estar deles e na sua casa.', 'We are a shop specialised only in dogs and cats. Every product is chosen with their wellbeing and your home in mind.')}</p>
+    <ul><li>{ico('camiao')}{t('Envío gratis desde almacenes en Europa', 'Envio grátis a partir de armazéns na Europa', 'Free shipping from European warehouses')}</li>
+    <li>{ico('volta')}{t('14 días para devolver', '14 dias para devolver', '14-day returns')}</li>
+    <li>{ico('escudo')}{t('Pago seguro con tarjeta o PayPal', 'Pagamento seguro com cartão ou PayPal', 'Secure payment by card or PayPal')}</li></ul>
+  </div>
+</section>
 {secoes}</main>
 '''
-pagina('index.html', f'{MARCA} — Home & pet essentials · Free shipping across Europe',
-       'Practical, modern finds for your home, garden and pets with free shipping to Germany, France, Spain, Italy, the Netherlands, Belgium, Austria, Portugal and Ireland. 14-day returns.',
+pagina('index.html', 'LeunaPet — Todo para tu perro y tu gato · Envío gratis en Europa',
+       'Camas, fuentes, juguetes y accesorios para perros y gatos con envío gratis a España, Portugal, Francia, Alemania, Italia, Países Bajos, Bélgica, Austria e Irlanda. 14 días para devolver.',
        index)
 
 # ---------------- PRODUTO ----------------
@@ -216,7 +237,7 @@ produto = f'''<main class="wrap prod" id="prod">
   <div class="vazio-in" id="pNada" hidden><h2>{t('Producto no encontrado', 'Produto não encontrado', 'Product not found')}</h2><a class="bt" href="./">{t('Ver la tienda', 'Ver a loja', 'Go to shop')}</a></div>
 </main>
 '''
-pagina('producto.html', 'Product — Leuna', 'Product details, free shipping across Europe.', produto)
+pagina('producto.html', 'Product — LeunaPet', 'Product details, free shipping across Europe.', produto)
 
 # ---------------- CARRINHO ----------------
 carrito = f'''<main class="wrap carr">
@@ -239,7 +260,7 @@ carrito = f'''<main class="wrap carr">
   </div>
 </main>
 '''
-pagina('carrito.html', 'Cart — Leuna', 'Your cart.', carrito, indexar=False)
+pagina('carrito.html', 'Cart — LeunaPet', 'Your cart.', carrito, indexar=False)
 
 gracias = f'''<main class="wrap ok">
   <div class="vazio-in">
@@ -250,7 +271,7 @@ gracias = f'''<main class="wrap ok">
   </div>
 </main>
 '''
-pagina('gracias.html', 'Thank you — Leuna', 'Order received.', gracias, indexar=False)
+pagina('gracias.html', 'Thank you — LeunaPet', 'Order received.', gracias, indexar=False)
 
 
 # ---------------- LEGAIS ----------------
@@ -258,7 +279,7 @@ def legal(nome, titulos, textos, desc):
     corpo = (f'<main class="wrap legal"><h1>{t(*titulos)}</h1>'
              f'<div class="es">{textos[0]}</div><div class="pt">{textos[1]}</div><div class="en">{textos[2]}</div>'
              f'<p class="act">{t("Última actualización: " + DATA[0], "Última atualização: " + DATA[1], "Last updated: " + DATA[2])}.</p></main>')
-    pagina(nome, f'{titulos[2]} — Leuna', desc, corpo)
+    pagina(nome, f'{titulos[2]} — LeunaPet', desc, corpo)
 
 
 legal('envios.html', ('Envíos y devoluciones', 'Envios e devoluções', 'Shipping & returns'), (f'''
@@ -288,19 +309,19 @@ legal('envios.html', ('Envíos y devoluciones', 'Envios e devoluções', 'Shippi
       'Free shipping to 9 EU countries, delivery times and 14-day right of withdrawal.')
 
 legal('aviso-legal.html', ('Aviso legal', 'Aviso legal', 'Legal notice'), ('''
-<h2>Titular de la tienda</h2><p data-titular>Titular: LeuName Softwares (marca Leuna) · Correo: <a href="#" data-mail>contacto por email</a> · Web: leunamesoftware.com</p>
-<h2>Objeto</h2><p>Venta a distancia de artículos para el hogar, el jardín y las mascotas a consumidores de la Unión Europea. Los pedidos se envían desde almacenes de nuestros socios logísticos en la UE.</p>
+<h2>Titular de la tienda</h2><p data-titular>Titular: LeuName Softwares (marca LeunaPet) · Correo: <a href="#" data-mail>contacto por email</a> · Web: leunamesoftware.com</p>
+<h2>Objeto</h2><p>Venta a distancia de productos para perros y gatos a consumidores de la Unión Europea. Los pedidos se envían desde almacenes de nuestros socios logísticos en la UE.</p>
 <h2>Precios y pago</h2><p>Precios en euros con IVA incluido. Pago con tarjeta, Apple Pay o Google Pay (procesado por Stripe) o con PayPal. El contrato se perfecciona al recibir la confirmación del pago.</p>
 <h2>Resolución de litigios</h2><p>Si tienes cualquier problema, escríbenos primero: lo solucionamos. También puedes acudir a los organismos de consumo de tu país.</p>''', '''
-<h2>Titular da loja</h2><p data-titular>Titular: LeuName Softwares (marca Leuna) · Email: <a href="#" data-mail>contacto por email</a> · Site: leunamesoftware.com</p>
-<h2>Objeto</h2><p>Venda à distância de artigos para casa, jardim e animais a consumidores da União Europeia. As encomendas são enviadas a partir de armazéns dos nossos parceiros logísticos na UE.</p>
+<h2>Titular da loja</h2><p data-titular>Titular: LeuName Softwares (marca LeunaPet) · Email: <a href="#" data-mail>contacto por email</a> · Site: leunamesoftware.com</p>
+<h2>Objeto</h2><p>Venda à distância de produtos para cães e gatos a consumidores da União Europeia. As encomendas são enviadas a partir de armazéns dos nossos parceiros logísticos na UE.</p>
 <h2>Preços e pagamento</h2><p>Preços em euros com IVA incluído. Pagamento com cartão, Apple Pay ou Google Pay (processado pela Stripe) ou com PayPal. O contrato fica concluído com a confirmação do pagamento.</p>
 <h2>Resolução de litígios</h2><p>Se tiver algum problema, escreva-nos primeiro: resolvemos. Em Portugal pode também usar o Livro de Reclamações Eletrónico (livroreclamacoes.pt) e as entidades de resolução alternativa de litígios de consumo.</p>''', '''
-<h2>Shop owner</h2><p data-titular>Owner: LeuName Softwares (Leuna brand) · Email: <a href="#" data-mail>contact by email</a> · Website: leunamesoftware.com</p>
-<h2>Purpose</h2><p>Distance selling of home, garden and pet products to consumers in the European Union. Orders ship from our logistics partners' warehouses inside the EU.</p>
+<h2>Shop owner</h2><p data-titular>Owner: LeuName Softwares (LeunaPet brand) · Email: <a href="#" data-mail>contact by email</a> · Website: leunamesoftware.com</p>
+<h2>Purpose</h2><p>Distance selling of products for dogs and cats to consumers in the European Union. Orders ship from our logistics partners' warehouses inside the EU.</p>
 <h2>Prices and payment</h2><p>Prices in euros including VAT. Payment by card, Apple Pay or Google Pay (processed by Stripe) or by PayPal. The contract is concluded when you receive payment confirmation.</p>
 <h2>Disputes</h2><p>If you have any problem, please contact us first and we will sort it out. You can also contact the consumer authorities in your country.</p>'''),
-      'Shop owner details and terms of Leuna.')
+      'Shop owner details and terms of LeunaPet.')
 
 legal('privacidad.html', ('Política de privacidad', 'Política de privacidade', 'Privacy policy'), ('''
 <h2>Responsable</h2><p>LeuName Softwares (<a href="#" data-mail>email</a>).</p>
