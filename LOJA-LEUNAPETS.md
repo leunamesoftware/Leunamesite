@@ -3,8 +3,9 @@
 Loja só de **cães e gatos**, em **espanhol** (inglês opcional; o português foi tirado de propósito),
 para **9 países da UE**: DE, FR, ES, IT, NL, BE, AT, PT, IE. Preços em **euro**, IVA incluído.
 Fornecedor: **CJ Dropshipping** (envio da China com rastreio, 7–15 dias, IVA via IOSS da CJ).
-Endereço hoje: **https://leunamesoftware.com** (Worker `leuname-site`). Domínio próprio planejado: **leunapets.com**
-(o dono ainda não comprou; quando comprar na Cloudflare, adicionar as rotas em `SITE-LEUNAMESOFTWARE/wrangler.toml`).
+Endereço: **https://pets.leuname.com** (Worker `leuname-site`). **leuname.com** (comprado na Cloudflare em 13/10/2026) é o domínio-mãe das lojas drop:
+cada nicho = um subdomínio (pets., casa., ...); leuname.com hoje redireciona para pets. **leunamesoftware.com NÃO é da loja**: fica para o site
+de softwares em espanhol (hoje mostra `_software/index.html` "próximamente"; /admin continua). Regras no `worker.js`.
 
 O dono fala português do Brasil, quer respostas curtas e diretas. Ele está sem dinheiro: não sugerir gastos sem necessidade.
 

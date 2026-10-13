@@ -61,9 +61,13 @@ async function pagar(req, env) {
 export default {
   async fetch(req, env) {
     const url = new URL(req.url);
-    // Endereços antigos/secundários vão para a loja (menos as páginas internas /admin)
-    if (url.hostname !== HOST_LOJA && !url.hostname.endsWith(".workers.dev") && url.hostname !== "localhost"
-        && !url.pathname.startsWith("/admin") && !url.pathname.startsWith("/api/")) {
+    // leunamesoftware.com = site dos softwares (em espanhol, futuro). Por enquanto: página "próximamente".
+    if (/(^|\.)leunamesoftware\.com$/.test(url.hostname) && !url.pathname.startsWith("/admin") && !url.pathname.startsWith("/api/")) {
+      const r = await env.ASSETS.fetch(new Request(new URL("/_software/", url), req));
+      return new Response(r.body, { status: 200, headers: { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-cache" } });
+    }
+    // leuname.com / www.leuname.com = domínio-mãe das lojas drop; com uma loja só, leva para a LeunaPets
+    if (/^(www\.)?leuname\.com$/.test(url.hostname)) {
       return Response.redirect("https://" + HOST_LOJA + url.pathname + url.search, 301);
     }
     if (url.pathname === "/api/config") return json({ stripe: !!env.STRIPE_SECRET_KEY });
