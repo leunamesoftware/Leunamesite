@@ -39,9 +39,9 @@ jobs:
             for u in / /carrito.html /producto.html /tema.css /loja.js /produtos.json /robots.txt /img/favicon.png; do
               curl -s -L -o /tmp/e/x -w "$u http=%{http_code} final=%{url_effective} bytes=%{size_download}\n" "https://casa.leuname.com$u" >> /tmp/e/painel.txt
             done
-            grep -o '<title>[^<]*' /dev/null; curl -s https://casa.leuname.com/ | grep -o '<title>[^<]*' >> /tmp/e/painel.txt
-            curl -s https://pets.leuname.com/ | grep -o '<title>[^<]*' >> /tmp/e/painel.txt
-            curl -s -I https://casa.leuname.com/ | grep -i 'content-security\|x-frame' >> /tmp/e/painel.txt
+            curl -s https://casa.leuname.com/ | grep -o '<title>[^<]*' >> /tmp/e/painel.txt || true
+            curl -s https://pets.leuname.com/ | grep -o '<title>[^<]*' >> /tmp/e/painel.txt || true
+            curl -s -I https://casa.leuname.com/ | grep -i 'content-security\|x-frame' >> /tmp/e/painel.txt || true
             curl -s -X POST https://pets.leuname.com/api/painel/sair -H "Authorization: Bearer $tk" > /dev/null
           else
             jq -nc --arg s "$S3" '{senha:$s}' | curl -s -X POST https://pets.leuname.com/api/painel/login -H 'Content-Type: application/json' -d @- > /tmp/e/painel.txt
