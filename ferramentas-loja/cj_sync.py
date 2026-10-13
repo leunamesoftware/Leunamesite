@@ -192,6 +192,32 @@ def pior_prazo(fretes):
     return '%d-%d' % (ini, fim) if fim else ''
 
 
+def baixar_imagens(pid, urls, maximo=5):
+    """Copia as fotos do produto para o site (img/p/). Se falhar, mantém o link da CJ."""
+    pasta = os.path.join(SITE, 'img', 'p')
+    os.makedirs(pasta, exist_ok=True)
+    out = []
+    for n, u in enumerate(urls[:maximo]):
+        ext = os.path.splitext(urllib.parse.urlparse(u).path)[1].lower()
+        ext = ext if ext in ('.jpg', '.jpeg', '.png', '.webp') else '.jpg'
+        nome = '%s-%d%s' % (''.join(ch for ch in pid if ch.isalnum())[:40], n, ext)
+        destino = os.path.join(pasta, nome)
+        try:
+            if not os.path.exists(destino):
+                req = urllib.request.Request(u, headers={'User-Agent': 'Mozilla/5.0'})
+                with urllib.request.urlopen(req, timeout=30) as r:
+                    dados = r.read()
+                if len(dados) < 2000:
+                    raise ValueError('imagem vazia')
+                with open(destino, 'wb') as f:
+                    f.write(dados)
+            out.append('img/p/' + nome)
+        except Exception as e:
+            print('  aviso imagem', pid, e, file=sys.stderr)
+            out.append(u)
+    return out or urls[:1]
+
+
 def montar_loja(aprovados, por_id):
     loja = []
     for pid, a in aprovados.items():
@@ -206,7 +232,7 @@ def montar_loja(aprovados, por_id):
             'animal': a.get('animal', 'ambos'),
             'nuevo': bool(a.get('nuevo')),
             'precio': a.get('precio') or c['precoSugerido'],
-            'imagenes': a.get('imagenes') or c['imagens'],
+            'imagenes': a.get('imagenes') or baixar_imagens(pid, c['imagens']),
             'video': next((v for v in c['videos'] if v.startswith('http')), ''),
             'plazo': a.get('plazo') or prazo,
             'destaque': bool(a.get('destaque')),

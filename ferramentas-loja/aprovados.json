@@ -1,1 +1,668 @@
-{}
+{
+ "1642036884023021568": {
+  "categoria": "comer",
+  "animal": "gato",
+  "precio": 32.99,
+  "destaque": true,
+  "nuevo": false,
+  "es": {
+   "nombre": "Fuente de agua inteligente para gatos",
+   "gancho": "Agua fresca y en movimiento todo el día",
+   "descripcion": "Fuente con circulación continua y filtro que anima a tu gato a beber más. Silenciosa y fácil de limpiar.",
+   "puntos": [
+    "Agua filtrada y en movimiento",
+    "Funcionamiento silencioso",
+    "Fácil de desmontar y limpiar"
+   ]
+  },
+  "pt": {
+   "nombre": "Fonte de água inteligente para gatos",
+   "gancho": "Água fresca e em movimento o dia todo",
+   "descripcion": "Fonte com circulação contínua e filtro que incentiva o gato a beber mais. Silenciosa e fácil de limpar.",
+   "puntos": [
+    "Água filtrada e em movimento",
+    "Funcionamento silencioso",
+    "Fácil de desmontar e limpar"
+   ]
+  },
+  "en": {
+   "nombre": "Smart cat water fountain",
+   "gancho": "Fresh, flowing water all day",
+   "descripcion": "Continuously circulating fountain with filter that encourages your cat to drink more. Quiet and easy to clean.",
+   "puntos": [
+    "Filtered, flowing water",
+    "Quiet operation",
+    "Easy to take apart and clean"
+   ]
+  }
+ },
+ "BF2CF58D-6B5C-4332-A34E-965221402684": {
+  "categoria": "juguetes",
+  "animal": "gato",
+  "precio": 22.99,
+  "destaque": true,
+  "nuevo": true,
+  "es": {
+   "nombre": "Pez saltarín eléctrico para gatos",
+   "gancho": "Se mueve solo y despierta su instinto cazador",
+   "descripcion": "Pez de peluche que se agita al tocarlo. Recargable por USB, ideal para gatos que se aburren en casa.",
+   "puntos": [
+    "Se activa al tocarlo",
+    "Recargable por USB",
+    "Con hierba gatera para más diversión"
+   ]
+  },
+  "pt": {
+   "nombre": "Peixe saltitante elétrico para gatos",
+   "gancho": "Mexe-se sozinho e desperta o instinto caçador",
+   "descripcion": "Peixe de peluche que se agita ao toque. Recarregável por USB, ideal para gatos que se aborrecem em casa.",
+   "puntos": [
+    "Ativa-se ao toque",
+    "Recarregável por USB",
+    "Com erva-gateira para mais diversão"
+   ]
+  },
+  "en": {
+   "nombre": "Electric flopping fish cat toy",
+   "gancho": "Moves by itself and wakes up their hunting instinct",
+   "descripcion": "Plush fish that wiggles when touched. USB rechargeable, perfect for indoor cats that get bored.",
+   "puntos": [
+    "Activates on touch",
+    "USB rechargeable",
+    "With catnip for extra fun"
+   ]
+  }
+ },
+ "A32A66DE-F864-49A6-B342-963C763E617C": {
+  "categoria": "juguetes",
+  "animal": "gato",
+  "precio": 22.99,
+  "destaque": false,
+  "nuevo": false,
+  "es": {
+   "nombre": "Juguete interactivo eléctrico para gatos",
+   "gancho": "Horas de juego aunque no estés en casa",
+   "descripcion": "Juguete automático con movimientos aleatorios que mantiene a tu gato activo y entretenido.",
+   "puntos": [
+    "Movimientos aleatorios",
+    "Ayuda a quemar energía",
+    "Ideal para gatos de interior"
+   ]
+  },
+  "pt": {
+   "nombre": "Brinquedo interativo elétrico para gatos",
+   "gancho": "Horas de brincadeira mesmo quando não está em casa",
+   "descripcion": "Brinquedo automático com movimentos aleatórios que mantém o gato ativo e entretido.",
+   "puntos": [
+    "Movimentos aleatórios",
+    "Ajuda a gastar energia",
+    "Ideal para gatos de interior"
+   ]
+  },
+  "en": {
+   "nombre": "Electric interactive cat toy",
+   "gancho": "Hours of play even when you are out",
+   "descripcion": "Automatic toy with random movements that keeps your cat active and entertained.",
+   "puntos": [
+    "Random movements",
+    "Helps burn energy",
+    "Great for indoor cats"
+   ]
+  }
+ },
+ "2090701323421270017": {
+  "categoria": "camas",
+  "animal": "gato",
+  "precio": 42.99,
+  "destaque": true,
+  "nuevo": true,
+  "es": {
+   "nombre": "Cama árbol de Navidad para gatos",
+   "gancho": "La cama más bonita para este invierno",
+   "descripcion": "Casita semicerrada, gruesa y calentita con forma de árbol de Navidad. Perfecta para gatos y perros pequeños.",
+   "puntos": [
+    "Acolchada y muy calentita",
+    "Semicerrada: se sienten protegidos",
+    "Tamaño 50 × 50 × 68 cm"
+   ]
+  },
+  "pt": {
+   "nombre": "Cama árvore de Natal para gatos",
+   "gancho": "A cama mais bonita para este inverno",
+   "descripcion": "Casinha semifechada, grossa e quentinha em forma de árvore de Natal. Perfeita para gatos e cães pequenos.",
+   "puntos": [
+    "Almofadada e muito quentinha",
+    "Semifechada: sentem-se protegidos",
+    "Tamanho 50 × 50 × 68 cm"
+   ]
+  },
+  "en": {
+   "nombre": "Christmas tree pet bed",
+   "gancho": "The cosiest bed for this winter",
+   "descripcion": "Thick, warm semi-enclosed house shaped like a Christmas tree. Perfect for cats and small dogs.",
+   "puntos": [
+    "Padded and very warm",
+    "Semi-enclosed: they feel safe",
+    "Size 50 × 50 × 68 cm"
+   ]
+  }
+ },
+ "1588825450896437248": {
+  "categoria": "higiene",
+  "animal": "perro",
+  "precio": 39.99,
+  "destaque": true,
+  "nuevo": false,
+  "es": {
+   "nombre": "Cortapelos recargable para mascotas",
+   "gancho": "Corta el pelo en casa, sin estrés",
+   "descripcion": "Máquina recargable y silenciosa para recortar el pelo de perros y gatos en casa.",
+   "puntos": [
+    "Recargable",
+    "Bajo ruido y vibración",
+    "Incluye peines guía"
+   ]
+  },
+  "pt": {
+   "nombre": "Máquina de tosquia recarregável para animais",
+   "gancho": "Corte o pelo em casa, sem stress",
+   "descripcion": "Máquina recarregável e silenciosa para aparar o pelo de cães e gatos em casa.",
+   "puntos": [
+    "Recarregável",
+    "Pouco ruído e vibração",
+    "Inclui pentes guia"
+   ]
+  },
+  "en": {
+   "nombre": "Rechargeable pet hair clipper",
+   "gancho": "Groom at home, stress-free",
+   "descripcion": "Quiet rechargeable clipper to trim dog and cat fur at home.",
+   "puntos": [
+    "Rechargeable",
+    "Low noise and vibration",
+    "Guide combs included"
+   ]
+  }
+ },
+ "E167151B-8E89-4B41-BA7A-A6B9B16DB831": {
+  "categoria": "juguetes",
+  "animal": "perro",
+  "precio": 22.99,
+  "destaque": true,
+  "nuevo": false,
+  "es": {
+   "nombre": "Alfombra olfativa para perros",
+   "gancho": "Lo cansa más que un paseo largo",
+   "descripcion": "Esconde premios entre las tiras y deja que tu perro los busque con el olfato. Estimula su mente y reduce la ansiedad.",
+   "puntos": [
+    "Estimula el olfato y la mente",
+    "Ralentiza la comida",
+    "Lavable"
+   ]
+  },
+  "pt": {
+   "nombre": "Tapete olfativo para cães",
+   "gancho": "Cansa mais do que um passeio longo",
+   "descripcion": "Esconda petiscos entre as tiras e deixe o cão procurá-los com o olfato. Estimula a mente e reduz a ansiedade.",
+   "puntos": [
+    "Estimula o olfato e a mente",
+    "Abranda a comida",
+    "Lavável"
+   ]
+  },
+  "en": {
+   "nombre": "Snuffle mat for dogs",
+   "gancho": "Tires them out more than a long walk",
+   "descripcion": "Hide treats in the fabric and let your dog sniff them out. Stimulates the mind and reduces anxiety.",
+   "puntos": [
+    "Stimulates smell and mind",
+    "Slows down eating",
+    "Washable"
+   ]
+  }
+ },
+ "1464547469135319040": {
+  "categoria": "comer",
+  "animal": "perro",
+  "precio": 18.99,
+  "destaque": false,
+  "nuevo": false,
+  "es": {
+   "nombre": "Comedero puzzle interactivo para perros",
+   "gancho": "Come más despacio y se divierte",
+   "descripcion": "Juguete dispensador de comida que convierte cada comida en un juego. Ideal para perros que comen demasiado rápido.",
+   "puntos": [
+    "Ralentiza la comida",
+    "Entretenimiento mental",
+    "Fácil de limpiar"
+   ]
+  },
+  "pt": {
+   "nombre": "Comedouro puzzle interativo para cães",
+   "gancho": "Come mais devagar e diverte-se",
+   "descripcion": "Brinquedo dispensador de comida que transforma cada refeição num jogo. Ideal para cães que comem depressa demais.",
+   "puntos": [
+    "Abranda a comida",
+    "Estímulo mental",
+    "Fácil de limpar"
+   ]
+  },
+  "en": {
+   "nombre": "Interactive puzzle feeder for dogs",
+   "gancho": "Eats slower and has fun",
+   "descripcion": "Food-dispensing toy that turns every meal into a game. Great for dogs that eat too fast.",
+   "puntos": [
+    "Slows down eating",
+    "Mental stimulation",
+    "Easy to clean"
+   ]
+  }
+ },
+ "259E7D67-C375-42B4-8F2C-41620D6C2FF8": {
+  "categoria": "comer",
+  "animal": "ambos",
+  "precio": 17.99,
+  "destaque": false,
+  "nuevo": false,
+  "es": {
+   "nombre": "Comedero doble con bebedero automático",
+   "gancho": "Comida y agua siempre a mano",
+   "descripcion": "Comedero doble con depósito de agua que se rellena solo. Práctico para gatos y perros pequeños.",
+   "puntos": [
+    "Agua que se rellena sola",
+    "Dos cuencos en uno",
+    "Base estable"
+   ]
+  },
+  "pt": {
+   "nombre": "Comedouro duplo com bebedouro automático",
+   "gancho": "Comida e água sempre à mão",
+   "descripcion": "Comedouro duplo com depósito de água que se enche sozinho. Prático para gatos e cães pequenos.",
+   "puntos": [
+    "Água que se enche sozinha",
+    "Duas taças numa",
+    "Base estável"
+   ]
+  },
+  "en": {
+   "nombre": "Double bowl with automatic water dispenser",
+   "gancho": "Food and water always at hand",
+   "descripcion": "Double bowl with a self-refilling water tank. Handy for cats and small dogs.",
+   "puntos": [
+    "Self-refilling water",
+    "Two bowls in one",
+    "Stable base"
+   ]
+  }
+ },
+ "1640184380771545088": {
+  "categoria": "juguetes",
+  "animal": "gato",
+  "precio": 19.99,
+  "destaque": false,
+  "nuevo": false,
+  "es": {
+   "nombre": "Túnel plegable para gatos",
+   "gancho": "Su escondite favorito para jugar",
+   "descripcion": "Túnel ligero y plegable que despierta la curiosidad de tu gato. Se guarda en segundos.",
+   "puntos": [
+    "Plegable y ligero",
+    "Ideal para jugar y esconderse",
+    "Fácil de guardar"
+   ]
+  },
+  "pt": {
+   "nombre": "Túnel dobrável para gatos",
+   "gancho": "O esconderijo favorito para brincar",
+   "descripcion": "Túnel leve e dobrável que desperta a curiosidade do gato. Guarda-se em segundos.",
+   "puntos": [
+    "Dobrável e leve",
+    "Ideal para brincar e esconder-se",
+    "Fácil de guardar"
+   ]
+  },
+  "en": {
+   "nombre": "Foldable cat tunnel",
+   "gancho": "Their favourite place to play and hide",
+   "descripcion": "Light, foldable tunnel that sparks your cat's curiosity. Packs away in seconds.",
+   "puntos": [
+    "Foldable and light",
+    "Perfect for play and hiding",
+    "Easy to store"
+   ]
+  }
+ },
+ "1845745970383310848": {
+  "categoria": "juguetes",
+  "animal": "perro",
+  "precio": 15.99,
+  "destaque": false,
+  "nuevo": false,
+  "es": {
+   "nombre": "Pulpo mordedor con sonido para perros",
+   "gancho": "Juega y limpia sus dientes",
+   "descripcion": "Juguete resistente con textura que ayuda a limpiar los dientes mientras muerde. Con sonido que les encanta.",
+   "puntos": [
+    "Ayuda a limpiar los dientes",
+    "Con sonido",
+    "Material resistente"
+   ]
+  },
+  "pt": {
+   "nombre": "Polvo mordedor com som para cães",
+   "gancho": "Brinca e limpa os dentes",
+   "descripcion": "Brinquedo resistente com textura que ajuda a limpar os dentes enquanto morde. Com som que adoram.",
+   "puntos": [
+    "Ajuda a limpar os dentes",
+    "Com som",
+    "Material resistente"
+   ]
+  },
+  "en": {
+   "nombre": "Squeaky octopus dental chew toy",
+   "gancho": "Plays and cleans teeth",
+   "descripcion": "Durable textured toy that helps clean teeth while chewing. With a squeaker they love.",
+   "puntos": [
+    "Helps clean teeth",
+    "Squeaker inside",
+    "Durable material"
+   ]
+  }
+ },
+ "1851880139106701312": {
+  "categoria": "juguetes",
+  "animal": "perro",
+  "precio": 17.99,
+  "destaque": false,
+  "nuevo": false,
+  "es": {
+   "nombre": "Peluche resistente para perros mordedores",
+   "gancho": "Aguanta los mordiscos más fuertes",
+   "descripcion": "Peluche reforzado pensado para perros que lo destrozan todo. Suave por fuera, resistente por dentro.",
+   "puntos": [
+    "Costuras reforzadas",
+    "Suave y con sonido",
+    "Para mordedores intensos"
+   ]
+  },
+  "pt": {
+   "nombre": "Peluche resistente para cães que roem tudo",
+   "gancho": "Aguenta as dentadas mais fortes",
+   "descripcion": "Peluche reforçado para cães que destroem tudo. Macio por fora, resistente por dentro.",
+   "puntos": [
+    "Costuras reforçadas",
+    "Macio e com som",
+    "Para roedores intensos"
+   ]
+  },
+  "en": {
+   "nombre": "Tough plush toy for heavy chewers",
+   "gancho": "Stands up to the strongest bites",
+   "descripcion": "Reinforced plush for dogs that destroy everything. Soft outside, tough inside.",
+   "puntos": [
+    "Reinforced seams",
+    "Soft with squeaker",
+    "For heavy chewers"
+   ]
+  }
+ },
+ "01CC38CE-3085-4F78-A900-F1305E2C7785": {
+  "categoria": "juguetes",
+  "animal": "ambos",
+  "precio": 16.99,
+  "destaque": false,
+  "nuevo": false,
+  "es": {
+   "nombre": "Tiburón de peluche para mascotas",
+   "gancho": "Su nuevo mejor amigo",
+   "descripcion": "Peluche suave en forma de tiburón para abrazar, morder y jugar.",
+   "puntos": [
+    "Suave y agradable",
+    "Para perros y gatos",
+    "Divertido y resistente"
+   ]
+  },
+  "pt": {
+   "nombre": "Tubarão de peluche para animais",
+   "gancho": "O novo melhor amigo",
+   "descripcion": "Peluche macio em forma de tubarão para abraçar, morder e brincar.",
+   "puntos": [
+    "Macio e agradável",
+    "Para cães e gatos",
+    "Divertido e resistente"
+   ]
+  },
+  "en": {
+   "nombre": "Plush shark pet toy",
+   "gancho": "Their new best friend",
+   "descripcion": "Soft shark-shaped plush to cuddle, chew and play with.",
+   "puntos": [
+    "Soft and cosy",
+    "For dogs and cats",
+    "Fun and durable"
+   ]
+  }
+ },
+ "1730523281935048704": {
+  "categoria": "juguetes",
+  "animal": "gato",
+  "precio": 14.99,
+  "destaque": false,
+  "nuevo": true,
+  "es": {
+   "nombre": "Almohada en U con hierba gatera",
+   "gancho": "Siestas más tranquilas y felices",
+   "descripcion": "Almohada suave en forma de U con hierba gatera que relaja a tu gato y le encanta.",
+   "puntos": [
+    "Con hierba gatera",
+    "Forma ergonómica en U",
+    "Suave y ligera"
+   ]
+  },
+  "pt": {
+   "nombre": "Almofada em U com erva-gateira",
+   "gancho": "Sestas mais tranquilas e felizes",
+   "descripcion": "Almofada macia em forma de U com erva-gateira que relaxa o gato e que ele adora.",
+   "puntos": [
+    "Com erva-gateira",
+    "Forma ergonómica em U",
+    "Macia e leve"
+   ]
+  },
+  "en": {
+   "nombre": "U-shaped catnip pillow",
+   "gancho": "Calmer, happier naps",
+   "descripcion": "Soft U-shaped pillow with catnip that relaxes your cat.",
+   "puntos": [
+    "Contains catnip",
+    "Ergonomic U shape",
+    "Soft and light"
+   ]
+  }
+ },
+ "1574576211270053888": {
+  "categoria": "higiene",
+  "animal": "ambos",
+  "precio": 19.99,
+  "destaque": false,
+  "nuevo": false,
+  "es": {
+   "nombre": "Cortaúñas con luz LED para mascotas",
+   "gancho": "Corta sin miedo a hacer daño",
+   "descripcion": "Cortaúñas con luz LED que ilumina la uña para ver la zona sensible y cortar con seguridad.",
+   "puntos": [
+    "Luz LED integrada",
+    "Corte preciso y seguro",
+    "Para perros y gatos"
+   ]
+  },
+  "pt": {
+   "nombre": "Corta-unhas com luz LED para animais",
+   "gancho": "Corte sem medo de magoar",
+   "descripcion": "Corta-unhas com luz LED que ilumina a unha para ver a zona sensível e cortar com segurança.",
+   "puntos": [
+    "Luz LED integrada",
+    "Corte preciso e seguro",
+    "Para cães e gatos"
+   ]
+  },
+  "en": {
+   "nombre": "LED pet nail clipper",
+   "gancho": "Trim without fear of hurting",
+   "descripcion": "Nail clipper with LED light that shows the quick so you can trim safely.",
+   "puntos": [
+    "Built-in LED light",
+    "Precise, safe cut",
+    "For dogs and cats"
+   ]
+  }
+ },
+ "1508263911743827968": {
+  "categoria": "higiene",
+  "animal": "ambos",
+  "precio": 16.99,
+  "destaque": false,
+  "nuevo": false,
+  "es": {
+   "nombre": "Peine desenredante para pelo largo",
+   "gancho": "Adiós a los nudos y al pelo en el sofá",
+   "descripcion": "Peine que elimina nudos y pelo muerto sin tirones. Ideal para razas de pelo largo.",
+   "puntos": [
+    "Elimina nudos sin tirones",
+    "Reduce el pelo en casa",
+    "Mango cómodo"
+   ]
+  },
+  "pt": {
+   "nombre": "Pente desembaraçador para pelo comprido",
+   "gancho": "Adeus aos nós e ao pelo no sofá",
+   "descripcion": "Pente que remove nós e pelo morto sem puxões. Ideal para raças de pelo comprido.",
+   "puntos": [
+    "Remove nós sem puxões",
+    "Reduz o pelo em casa",
+    "Pega confortável"
+   ]
+  },
+  "en": {
+   "nombre": "Detangling comb for long-haired pets",
+   "gancho": "Goodbye knots and fur on the sofa",
+   "descripcion": "Comb that removes knots and loose fur without pulling. Ideal for long-haired breeds.",
+   "puntos": [
+    "Removes knots gently",
+    "Less fur around the house",
+    "Comfortable handle"
+   ]
+  }
+ },
+ "1450702055269339136": {
+  "categoria": "camas",
+  "animal": "gato",
+  "precio": 18.99,
+  "destaque": false,
+  "nuevo": false,
+  "es": {
+   "nombre": "Hamaca colgante para gatos",
+   "gancho": "Su rincón favorito para dormir",
+   "descripcion": "Hamaca suave que se cuelga de jaulas, sillas o mesas. Le encanta dormir elevado.",
+   "puntos": [
+    "Suave y cómoda",
+    "Fácil de colgar",
+    "Para todo el año"
+   ]
+  },
+  "pt": {
+   "nombre": "Rede suspensa para gatos",
+   "gancho": "O cantinho favorito para dormir",
+   "descripcion": "Rede macia que se pendura em gaiolas, cadeiras ou mesas. Adoram dormir no alto.",
+   "puntos": [
+    "Macia e confortável",
+    "Fácil de pendurar",
+    "Para todo o ano"
+   ]
+  },
+  "en": {
+   "nombre": "Hanging cat hammock",
+   "gancho": "Their favourite spot to sleep",
+   "descripcion": "Soft hammock that hangs from cages, chairs or tables. Cats love sleeping up high.",
+   "puntos": [
+    "Soft and comfy",
+    "Easy to hang",
+    "All seasons"
+   ]
+  }
+ },
+ "2411220305151604900": {
+  "categoria": "camas",
+  "animal": "ambos",
+  "precio": 19.99,
+  "destaque": false,
+  "nuevo": false,
+  "es": {
+   "nombre": "Cama nido calentita para gatos",
+   "gancho": "Calor y suavidad para el invierno",
+   "descripcion": "Nido mullido y cálido donde tu gato se acurruca durante las noches frías.",
+   "puntos": [
+    "Muy suave y cálido",
+    "Bordes para acurrucarse",
+    "Para gatos y perros pequeños"
+   ]
+  },
+  "pt": {
+   "nombre": "Cama ninho quentinha para gatos",
+   "gancho": "Calor e conforto para o inverno",
+   "descripcion": "Ninho fofo e quente onde o gato se aninha nas noites frias.",
+   "puntos": [
+    "Muito macio e quente",
+    "Bordas para se aninhar",
+    "Para gatos e cães pequenos"
+   ]
+  },
+  "en": {
+   "nombre": "Warm cat nest bed",
+   "gancho": "Warmth and softness for winter",
+   "descripcion": "Fluffy, warm nest where your cat curls up on cold nights.",
+   "puntos": [
+    "Very soft and warm",
+    "Raised edges to snuggle",
+    "For cats and small dogs"
+   ]
+  }
+ },
+ "1687069010946437120": {
+  "categoria": "juguetes",
+  "animal": "gato",
+  "precio": 16.99,
+  "destaque": false,
+  "nuevo": false,
+  "es": {
+   "nombre": "Túnel en S para gatos",
+   "gancho": "Correr, esconderse y saltar",
+   "descripcion": "Túnel con forma de S, plegable, que convierte cualquier rincón en una zona de juego.",
+   "puntos": [
+    "Forma de S divertida",
+    "Plegable",
+    "Ligero y fácil de guardar"
+   ]
+  },
+  "pt": {
+   "nombre": "Túnel em S para gatos",
+   "gancho": "Correr, esconder-se e saltar",
+   "descripcion": "Túnel em forma de S, dobrável, que transforma qualquer canto numa zona de brincadeira.",
+   "puntos": [
+    "Forma de S divertida",
+    "Dobrável",
+    "Leve e fácil de guardar"
+   ]
+  },
+  "en": {
+   "nombre": "S-shaped cat tunnel",
+   "gancho": "Run, hide and pounce",
+   "descripcion": "Foldable S-shaped tunnel that turns any corner into a play area.",
+   "puntos": [
+    "Fun S shape",
+    "Foldable",
+    "Light and easy to store"
+   ]
+  }
+ }
+}

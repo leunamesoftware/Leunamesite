@@ -86,8 +86,13 @@
     var pr = new URLSearchParams(location.search), animal = pr.get("animal"), catF = pr.get("cat");
     var minimo = PRODUTOS.reduce(function (m, p) { return Math.min(m, p.precio); }, Infinity);
     if ($("#desde") && isFinite(minimo)) { $("#desde b").textContent = euro(minimo); $("#desde").hidden = false; }
+    $$(".menu a").forEach(function (a) {
+      var m = (a.getAttribute("href") || "").match(/#(\w+)$/);
+      if (m && PRODUTOS.length) a.hidden = !PRODUTOS.some(function (x) { return x.categoria === m[1]; });
+    });
     $$("[data-bolha]").forEach(function (a) {
       var c = a.getAttribute("data-bolha"), p = PRODUTOS.filter(function (x) { return x.categoria === c; })[0];
+      if (PRODUTOS.length) a.hidden = !p;
       var bc = $(".bolha-c", a);
       if (p && !bc.querySelector("img")) { bc.insertAdjacentHTML("beforeend", '<img src="' + esc(p.imagenes[0]) + '" alt="">'); bc.classList.add("tem-foto"); }
     });
