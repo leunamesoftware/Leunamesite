@@ -11,6 +11,13 @@ BASE = 'https://pets.leuname.com/api/painel/'
 LOJA = sys.argv[1] if len(sys.argv) > 1 else 'casa'
 
 LOTES = {
+    'pets': [
+        ('dog leash', 'paseo', True), ('dog harness', 'paseo', False), ('dog poop bag', 'paseo', False),
+        ('pet water bottle', 'paseo', True), ('cat scratcher', 'rascadores', True), ('cat scratching board', 'rascadores', False),
+        ('cat teaser wand', 'juguetes', False), ('dog chew toy', 'juguetes', False), ('cat ball toy', 'juguetes', True),
+        ('pet grooming glove', 'higiene', True), ('pet hair remover', 'higiene', False), ('cat litter mat', 'higiene', False),
+        ('pet bowl', 'comer', False), ('slow feeder bowl', 'comer', False), ('pet blanket', 'camas', False),
+    ],
     'casa': [  # (busca na CJ, categoria, destaque)
         ('table lamp', 'luz', True), ('led night light', 'luz', False),
         ('solar garden light', 'jardin', True), ('plant pot', 'jardin', False),
@@ -20,7 +27,13 @@ LOTES = {
         ('aroma diffuser', 'hogar', True), ('wall shelf', 'muebles', False),
     ],
 }
-LUCRO_MIN, PRECO_MAX, CUSTO_MAX_USD = 5.0, 49.99, 14
+LUCRO_MIN, PRECO_MAX, CUSTO_MAX_USD = 4.0, 39.99, 10
+
+
+def preco_rapido(custo_eur):
+    # preço baixo para vender rápido: sobra ~5 € depois do custo (produto+frete+IVA) e das taxas (7% + 0,35)
+    import math
+    return math.ceil((custo_eur + 5.0 + 0.35) / 0.93) - 0.01
 
 
 def api(rota, corpo=None, token=None, tentativas=3):
@@ -44,11 +57,30 @@ def api(rota, corpo=None, token=None, tentativas=3):
         time.sleep(4)
 
 
+def reprecificar(tk):
+    """Produtos publicados pelo painel: põe o preço rápido (~5 € de lucro)."""
+    rel = []
+    for p in api('publicados', token=tk).get('itens', []):
+        if not p.get('painel') or not p.get('custoEur') or not p.get('ativo'):
+            continue
+        novo = preco_rapido(p['custoEur'])
+        if abs(novo - p['precio']) > 0.009:
+            r = api('editar', {'id': p['id'], 'precio': novo}, token=tk)
+            rel.append({'nome': p['nome'], 'antes': p['precio'], 'depois': novo, 'ok': bool(r.get('ok'))})
+    return rel
+
+
 def main():
     senha = os.environ['LOJA_ADMIN_SENHA']
     tk = api('login', {'senha': senha}).get('token')
     if not tk:
         sys.exit('login falhou')
+    if len(sys.argv) > 2 and sys.argv[2] == 'reprecificar':
+        rel = reprecificar(tk)
+        print(rel)
+        json.dump(rel, open('lote.json', 'w'), ensure_ascii=False, indent=1)
+        api('sair', {}, token=tk)
+        return
     feitos, relatorio = set(), []
     for busca, cat, dest in LOTES[LOJA]:
         r = api('buscar?q=' + urllib.parse.quote(busca), token=tk)
@@ -59,18 +91,20 @@ def main():
             d = api('detalhe?pid=' + urllib.parse.quote(it['pid']), token=tk)
             if d.get('erro') or not d.get('entregaTodos') or not d.get('sugerido'):
                 continue
-            if d['sugerido'] > PRECO_MAX or (d.get('lucro') or 0) < LUCRO_MIN or len(d.get('imagens', [])) < 2:
+            preco = preco_rapido(d['custoEur'])
+            if preco > PRECO_MAX or len(d.get('imagens', [])) < 2:
                 continue
+            d['preco'] = preco
             escolhido = d
             break
         if not escolhido:
             relatorio.append({'busca': busca, 'ok': False})
             continue
-        p = api('publicar', {'pid': escolhido['pid'], 'categoria': cat, 'precio': escolhido['sugerido'],
+        p = api('publicar', {'pid': escolhido['pid'], 'categoria': cat, 'precio': escolhido['preco'],
                              'destaque': dest, 'nuevo': True}, token=tk)
         feitos.add(escolhido['pid'])
         relatorio.append({'busca': busca, 'ok': bool(p.get('ok')), 'nome': (p.get('produto') or {}).get('es', {}).get('nombre'),
-                          'preco': escolhido['sugerido'], 'lucro': p.get('lucro'), 'ia': p.get('ia'),
+                          'preco': escolhido['preco'], 'custo': escolhido['custoEur'], 'lucro': p.get('lucro'), 'ia': p.get('ia'),
                           'video': bool((p.get('produto') or {}).get('video')), 'variacoes': len((p.get('produto') or {}).get('variantes') or []),
                           'erro': p.get('detalhe') if not p.get('ok') else None})
         print(relatorio[-1], flush=True)

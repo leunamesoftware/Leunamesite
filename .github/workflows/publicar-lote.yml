@@ -6,7 +6,7 @@ on:
         description: 'Loja (pets ou casa)'
         default: 'casa'
       publicar:
-        description: 'Publicar produtos (sim) ou só tirar fotos da loja (nao)'
+        description: 'sim = publicar lote; reprecificar = preço rápido nos publicados; nao = só fotos'
         default: 'sim'
 jobs:
   lote:
@@ -16,10 +16,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Publicar
-        if: ${{ github.event.inputs.publicar == 'sim' }}
+        if: ${{ github.event.inputs.publicar != 'nao' }}
         env:
           LOJA_ADMIN_SENHA: ${{ secrets.LOJA_ADMIN_SENHA }}
-        run: cd ferramentas-loja && python3 publicar_lote.py "${{ github.event.inputs.loja }}" && cp lote.json /tmp/
+        run: |
+          cd ferramentas-loja
+          if [ "${{ github.event.inputs.publicar }}" = "reprecificar" ]; then python3 publicar_lote.py "${{ github.event.inputs.loja }}" reprecificar
+          else python3 publicar_lote.py "${{ github.event.inputs.loja }}"; fi
+          cp lote.json /tmp/
       - name: Fotos da loja (celular e computador)
         run: |
           pip install -q playwright && python3 -m playwright install --with-deps chromium > /dev/null
