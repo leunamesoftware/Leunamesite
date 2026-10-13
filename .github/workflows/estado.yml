@@ -1,0 +1,25 @@
+name: Estado da loja (segredos e pagamento)
+on: workflow_dispatch
+jobs:
+  estado:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Conferir (sem mostrar nenhuma chave)
+        env:
+          S1: ${{ secrets.STRIPE_SECRET_KEY }}
+          S2: ${{ secrets.CJ_API_KEY }}
+          S3: ${{ secrets.LOJA_ADMIN_SENHA }}
+        run: |
+          tem() { [ -n "$1" ] && echo true || echo false; }
+          tipo="nenhum"; case "$S1" in sk_live_*) tipo=live;; sk_test_*) tipo=teste;; rk_live_*) tipo=restrita_live;; "") tipo=nenhum;; *) tipo=formato_desconhecido;; esac
+          cfg=$(curl -s https://pets.leuname.com/api/config || echo erro)
+          home=$(curl -s -o /dev/null -w '%{http_code}' https://pets.leuname.com/ || echo erro)
+          prod=$(curl -s https://pets.leuname.com/produtos.json | head -c 200 | tr -d '\n' || echo erro)
+          mkdir -p /tmp/e && cd /tmp/e
+          printf '{"stripe":%s,"stripe_tipo":"%s","cj":%s,"admin_senha":%s,"api_config":%s,"home_http":"%s","produtos_inicio":%s}\n' \
+            "$(tem "$S1")" "$tipo" "$(tem "$S2")" "$(tem "$S3")" "$(echo "$cfg" | grep -q stripe && echo "$cfg" || echo '"erro"')" "$home" "$(python3 -c 'import json,sys;print(json.dumps(sys.argv[1]))' "$prod")" > estado.json
+          cat estado.json
+          git init -q && git checkout -q -b dados-estado && git config user.name robo && git config user.email robo@users.noreply.github.com
+          git add . && git commit -qm estado && git push -qf "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" dados-estado
