@@ -339,3 +339,6 @@ h1,h2,h3{font-family:var(--tit);letter-spacing:-.02em;line-height:1.1}
   .animal>img{width:52%}
 }
 @media (min-width:721px){.animais .animal{min-height:300px}.an-tx{width:46%}.animal>img{width:60%}}
+.slide-roxo h1,.slide-roxo .hero-p{text-shadow:0 2px 18px rgba(30,0,80,.3)}
+.slide-roxo .bt.bt-cor{background:#fff;color:#5A1FB0}.slide-roxo .bt.bt-cor:hover{background:#F3ECFF}
+@media (max-width:720px){.slide-roxo .slide-tx{background:linear-gradient(120deg,#3A10A0,#7B2BD6)}}

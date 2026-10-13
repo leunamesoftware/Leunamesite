@@ -157,12 +157,12 @@ def pagina(nome, titulo, desc, corpo, indexar=True):
 SLIDES = [
     ('banner-1', t('Todo lo que tu perro<br><em class="v">necesita y adora</em>', 'Tudo o que o seu cão<br><em class="v">precisa e adora</em>', 'Everything your dog<br><em class="v">needs and loves</em>'),
      t('Camas, juguetes, collares y mucho más. Envío gratis desde Europa.', 'Camas, brinquedos, coleiras e muito mais. Envio grátis a partir da Europa.', 'Beds, toys, collars and more. Free shipping from Europe.')),
+    ('banner-2', t('Para gatos felices<br><em class="v">y curiosos</em>', 'Para gatos felizes<br><em class="v">e curiosos</em>', 'For happy,<br><em class="v">curious cats</em>'),
+     t('Rascadores, fuentes, juguetes y camas que les encantan.', 'Arranhadores, fontes, brinquedos e camas que eles adoram.', 'Scratchers, fountains, toys and beds they love.')),
     ('hero', t('Todo para tu perro<br>y tu gato, <em class="v">en casa</em>', 'Tudo para o seu cão<br>e o seu gato, <em class="v">em casa</em>', 'Everything for your dog<br>and cat, <em class="v">at home</em>'),
      t('Camas, fuentes, juguetes y accesorios que ellos adoran y que quedan bonitos en tu salón.', 'Camas, fontes, brinquedos e acessórios que eles adoram e que ficam bonitos na sala.', 'Beds, fountains, toys and accessories they love, that look great in your living room.')),
-    ('cat-mascotas', t('Menos pelos,<br><em class="v">más mimos</em>', 'Menos pelos,<br><em class="v">mais mimos</em>', 'Less fur,<br><em class="v">more cuddles</em>'),
-     t('Cepillos, rodillos y limpieza para que tu casa siga perfecta.', 'Escovas, rolos e limpeza para a casa continuar perfeita.', 'Brushes, rollers and cleaning to keep your home spotless.')),
 ]
-slides = ''.join(f'''<div class="slide{' on' if i == 0 else ''}{' slide-clara' if img.startswith('banner') else ''}" data-slide>
+slides = ''.join(f'''<div class="slide{' on' if i == 0 else ''}{' slide-clara' if img.startswith('banner') else ''}{' slide-roxo' if img == 'banner-2' else ''}" data-slide>
     <picture>{f'<source media="(max-width:720px)" srcset="img/{img}-m.webp">' if img.startswith('banner') else ''}<img class="slide-foto{' foto-clara' if img.startswith('banner') else ''}" src="img/{img}.webp" alt="" {'fetchpriority="high"' if i == 0 else 'loading="lazy"'}></picture>
     <div class="wrap slide-tx">
       <p class="selo">{t('Envío gratis desde Europa', 'Envio grátis a partir da Europa', 'Free shipping from Europe')}</p>
