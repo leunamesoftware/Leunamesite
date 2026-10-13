@@ -58,38 +58,51 @@
   var nome = function (p) { return (p[lang()] || p.es || {}).nombre || ""; };
   var info = function (p) { return p[lang()] || p.es || {}; };
 
+  var CARRO = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h2l2.4 11.2a1 1 0 0 0 1 .8h8.9a1 1 0 0 0 1-.8L20 8H6"/><circle cx="9" cy="20" r="1.4"/><circle cx="17" cy="20" r="1.4"/></svg>';
   function cartao(p) {
+    var link = 'producto.html?id=' + encodeURIComponent(p.id);
     return '<article class="card">' +
-      '<a class="card-img" href="producto.html?id=' + encodeURIComponent(p.id) + '"><img loading="lazy" src="' + esc(p.imagenes[0]) + '" alt="' + esc(nome(p)) + '"></a>' +
-      '<div class="card-tx"><a href="producto.html?id=' + encodeURIComponent(p.id) + '"><h3>' + esc(nome(p)) + '</h3></a>' +
+      '<a class="card-img" href="' + link + '"><img loading="lazy" src="' + esc(p.imagenes[0]) + '" alt="' + esc(nome(p)) + '">' +
+      (p.destaque ? '<span class="tag">' + T("Destacado", "Destaque", "Featured") + '</span>' : (p.nuevo ? '<span class="tag tag-n">' + T("Novedad", "Novidade", "New") + '</span>' : '')) + '</a>' +
+      '<div class="card-tx"><a href="' + link + '"><h3>' + esc(nome(p)) + '</h3></a>' +
       '<p class="card-gancho">' + esc(info(p).gancho || "") + '</p>' +
-      '<div class="card-pe"><b>' + euro(p.precio) + '</b><button class="mais" type="button" data-add="' + esc(p.id) + '" >' + T("Añadir", "Adicionar", "Add to cart") + '</button></div></div></article>';
+      '<div class="card-pe"><b>' + euro(p.precio) + '</b><button class="mais" type="button" data-add="' + esc(p.id) + '" aria-label="' + T("Añadir al carrito", "Adicionar ao carrinho", "Add to cart") + '">' + CARRO + '</button></div></div></article>';
   }
 
+  var busca = (new URLSearchParams(location.search).get("q") || "").trim();
+  var sem = function (x) { return String(x || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, ""); };
+  $$("[data-busca] input").forEach(function (i) { i.value = busca; });
+  function placeholders() {
+    $$("[data-busca] input").forEach(function (i) { i.placeholder = i.getAttribute("data-ph-" + lang()) || ""; });
+  }
+  placeholders();
+
   function desenharLoja() {
+    placeholders();
     if (!$("[data-grade]")) return;
     var temAlgum = PRODUTOS.length > 0;
     $("#vazio").hidden = temAlgum;
+    var grade = $('[data-grade="destaque"]');
+    if (busca) {
+      var q = sem(busca);
+      var achados = PRODUTOS.filter(function (p) {
+        return ["es", "pt", "en"].some(function (l) { var x = p[l] || {}; return sem(x.nombre + " " + (x.gancho || "") + " " + (x.descripcion || "")).indexOf(q) >= 0; });
+      });
+      $("#destacados h2").textContent = T("Resultados para", "Resultados para", "Results for") + " “" + busca + "”";
+      $("#destacados .sec-centro p").textContent = achados.length + " " + T("productos", "produtos", "products");
+      grade.innerHTML = achados.map(cartao).join("");
+      $("#semBusca").hidden = !temAlgum || achados.length > 0;
+      $$(".cat").forEach(function (s) { s.hidden = true; });
+      return;
+    }
     var dest = PRODUTOS.filter(function (p) { return p.destaque; });
-    $("#destaques").hidden = !dest.length;
-    $('[data-grade="destaque"]').innerHTML = dest.map(cartao).join("");
+    if (!dest.length) dest = PRODUTOS.slice(0, 10);
+    grade.innerHTML = dest.map(cartao).join("");
     $$(".cat").forEach(function (s) {
       var lista = PRODUTOS.filter(function (p) { return p.categoria === s.id; });
       s.hidden = !lista.length;
       $("[data-grade]", s).innerHTML = lista.map(cartao).join("");
     });
-    $$(".chip").forEach(function (c) {
-      var id = c.getAttribute("href").slice(1);
-      c.hidden = temAlgum && !PRODUTOS.some(function (p) { return p.categoria === id; });
-    });
-    $$(".nav a").forEach(function (a) {
-      var id = a.getAttribute("href").split("#")[1];
-      a.hidden = temAlgum && !PRODUTOS.some(function (p) { return p.categoria === id; });
-    });
-    var arco = $(".arco"), capa = dest[0] || PRODUTOS[0];
-    if (arco && capa && !arco.classList.contains("tem-foto")) {
-      arco.insertAdjacentHTML("afterbegin", '<img src="' + esc(capa.imagenes[0]) + '" alt="">'); arco.classList.add("tem-foto");
-    }
   }
   document.addEventListener("click", function (e) {
     var b = e.target.closest("[data-add]");
@@ -105,7 +118,7 @@
     $(".prod-in").hidden = !p; $("#pNada").hidden = !!p;
     if (!p) return;
     var i = info(p);
-    document.title = nome(p) + " — LeuName";
+    document.title = nome(p) + " — Casa Oliva";
     $("#pNome").textContent = nome(p);
     $("#pPreco").textContent = euro(p.precio);
     $("#pDesc").textContent = i.descripcion || "";
@@ -208,13 +221,13 @@
           var tot = total().toFixed(2);
           return actions.order.create({
             purchase_units: [{
-              description: "LeuName",
+              description: "Casa Oliva",
               amount: { currency_code: "EUR", value: tot, breakdown: { item_total: { currency_code: "EUR", value: tot } } },
               items: itens.map(function (it) {
                 return { name: nome(it.p).slice(0, 120), sku: it.p.id.slice(0, 120), quantity: String(it.q), unit_amount: { currency_code: "EUR", value: it.p.precio.toFixed(2) }, category: "PHYSICAL_GOODS" };
               })
             }],
-            application_context: { shipping_preference: "GET_FROM_FILE", brand_name: "LeuName" }
+            application_context: { shipping_preference: "GET_FROM_FILE", brand_name: "Casa Oliva" }
           });
         },
         onShippingAddressChange: function (d, actions) {

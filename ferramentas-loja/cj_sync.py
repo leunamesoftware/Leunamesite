@@ -22,8 +22,9 @@ API = 'https://developers.cjdropshipping.com/api2.0/v1'
 
 ARMAZENS = ['ES', 'DE', 'FR', 'IT', 'PL', 'CZ']          # estoque na Europa = chega rápido
 DESTINOS = ['DE', 'FR', 'ES', 'IT', 'NL', 'BE', 'AT', 'PT', 'IE']   # maiores mercados da UE
-BUSCAS = ['pet', 'dog', 'cat', 'kitchen gadget', 'home organizer', 'cleaning',
-          'phone holder', 'led light', 'car accessories', 'beauty tool', 'fitness', 'baby']
+BUSCAS = ['pet hair remover', 'dog toy', 'cat toy', 'pet water fountain', 'pet bed', 'dog leash',
+          'storage organizer', 'drawer organizer', 'motion sensor light', 'led light', 'bathroom organizer',
+          'kitchen organizer', 'plant watering', 'garden tool']
 CUSTO_MAX_USD = 15        # produto barato
 USD_EUR = 0.93
 MAX_DETALHES = 40         # quantos candidatos detalhar (1 chamada/s na CJ)
@@ -181,7 +182,7 @@ def montar_loja(aprovados, por_id):
         loja.append({
             'id': pid,
             'es': a['es'], 'pt': a['pt'], 'en': a.get('en') or a['es'],
-            'categoria': a.get('categoria', 'casa'),
+            'categoria': a.get('categoria', 'organizacion'),
             'precio': a.get('precio') or c['precoSugerido'],
             'imagenes': a.get('imagenes') or c['imagens'],
             'video': next((v for v in c['videos'] if v.startswith('http')), ''),
