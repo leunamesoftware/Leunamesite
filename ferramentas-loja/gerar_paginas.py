@@ -155,11 +155,11 @@ def pagina(nome, titulo, desc, corpo, indexar=True):
 
 # ---------------- INÍCIO ----------------
 SLIDES = [
-    ('hero', t('Todo para tu perro<br>y tu gato, <em class="v">en casa</em>', 'Tudo para o seu cão<br>e o seu gato, <em class="v">em casa</em>', 'Everything for your dog<br>and cat, <em class="v">at home</em>'),
-     t('Camas, fuentes, juguetes y accesorios que ellos adoran y que quedan bonitos en tu salón.', 'Camas, fontes, brinquedos e acessórios que eles adoram e que ficam bonitos na sala.', 'Beds, fountains, toys and accessories they love, that look great in your living room.')),
+    ('banner-casa', t('Un rincón suave<br>para <em class="v">quien más quieres</em>', 'Um cantinho macio<br>para <em class="v">quem mais ama</em>', 'A cosy corner<br>for <em class="v">the one you love</em>'),
+     t('Camas, casitas y accesorios para perros y gatos que quedan preciosos en tu casa.', 'Camas, casinhas e acessórios para cães e gatos que ficam lindos na sua casa.', 'Beds, pet houses and accessories for dogs and cats that look lovely in your home.')),
 ]
-slides = ''.join(f'''<div class="slide{' on' if i == 0 else ''}{' slide-luz' if img == 'hero' else ''}{' slide-clara' if img.startswith('banner') else ''}{' slide-roxo' if img == 'banner-2' else ''}" data-slide>
-    <picture>{f'<source media="(max-width:720px)" srcset="img/{img}-m.webp">' if img.startswith('banner') else ''}<img class="slide-foto{' foto-clara' if img.startswith('banner') else ''}" src="img/{img}.webp" alt="" {'fetchpriority="high"' if i == 0 else 'loading="lazy"'}></picture>
+slides = ''.join(f'''<div class="slide{' on' if i == 0 else ''}{' slide-luz' if img in ('hero', 'banner-casa') else ''}{' slide-clara' if img.startswith('banner') and img != 'banner-casa' else ''}{' slide-roxo' if img == 'banner-2' else ''}" data-slide>
+    <picture>{f'<source media="(max-width:720px)" srcset="img/{img}-m.webp">' if img.startswith('banner') else ''}<img class="slide-foto" src="img/{img}.webp" alt="" {'fetchpriority="high"' if i == 0 else 'loading="lazy"'}></picture>
     <div class="wrap slide-tx">
       <p class="selo">{t('Envío gratis desde Europa', 'Envio grátis a partir da Europa', 'Free shipping from Europe')}</p>
       <h1>{h}</h1>

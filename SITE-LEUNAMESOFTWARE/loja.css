@@ -358,3 +358,7 @@ h1,h2,h3{font-family:var(--tit);letter-spacing:-.02em;line-height:1.1}
 .slide-luz h1{color:var(--tinta)}.slide-luz h1 .v{color:var(--coral)}
 .slide-luz .hero-p{color:var(--suave)}
 @media (max-width:720px){.slide-luz .slide-tx{background:var(--fundo)}.slide-luz .slide-foto{object-position:70% center}}
+.slide-luz .slide-foto{object-position:right center}
+.slide-luz::after{background:linear-gradient(90deg,rgba(253,240,236,.75) 0,rgba(253,240,236,.45) 30%,rgba(253,240,236,0) 52%)}
+.slide-luz h1{font-size:clamp(34px,4.6vw,62px)}
+@media (max-width:720px){.slide-luz .slide-foto{object-position:center}.slide-luz .slide-tx{background:#FBEFEA}}
