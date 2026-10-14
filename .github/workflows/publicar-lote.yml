@@ -6,7 +6,7 @@ on:
         description: 'Loja (pets ou casa)'
         default: 'casa'
       publicar:
-        description: 'sim = publicar lote; reprecificar = preço rápido nos publicados; nao = só fotos'
+        description: 'sim = publicar lote; barato = produtos bem baratos; tirar-caros = tira acima de 25 €; reprecificar; nao = só fotos'
         default: 'sim'
 jobs:
   lote:
@@ -21,8 +21,10 @@ jobs:
           LOJA_ADMIN_SENHA: ${{ secrets.LOJA_ADMIN_SENHA }}
         run: |
           cd ferramentas-loja
-          if [ "${{ github.event.inputs.publicar }}" = "reprecificar" ]; then python3 publicar_lote.py "${{ github.event.inputs.loja }}" reprecificar
-          else python3 publicar_lote.py "${{ github.event.inputs.loja }}"; fi
+          case "${{ github.event.inputs.publicar }}" in
+            reprecificar|barato|tirar-caros) python3 publicar_lote.py "${{ github.event.inputs.loja }}" "${{ github.event.inputs.publicar }}" ;;
+            *) python3 publicar_lote.py "${{ github.event.inputs.loja }}" ;;
+          esac
           cp lote.json /tmp/
       - name: Fotos da loja (celular e computador)
         run: |

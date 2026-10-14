@@ -30,6 +30,23 @@ LOTES = {
 }
 LUCRO_MIN, PRECO_MAX, CUSTO_MAX_USD = 4.0, 39.99, 10
 
+# modo "barato": produtos bem baratos (o dono paga a CJ do bolso sem sofrer), preço final até ~15 €
+BARATOS = {
+    'pets': [
+        ('cat toy ball', 'juguetes'), ('cat feather toy', 'juguetes'), ('dog rope toy', 'juguetes'), ('squeaky dog toy', 'juguetes'),
+        ('cat catnip toy', 'juguetes'), ('pet collar', 'paseo'), ('dog poop bag dispenser', 'paseo'), ('pet bandana', 'paseo'),
+        ('pet comb', 'higiene'), ('pet nail clipper', 'higiene'), ('lint roller pet hair', 'higiene'), ('pet towel', 'higiene'),
+        ('cat bowl', 'comer'), ('pet food scoop', 'comer'), ('pet food clip', 'comer'),
+    ],
+    'casa': [
+        ('kitchen gadget', 'hogar'), ('silicone lid', 'hogar'), ('drawer organizer', 'orden'), ('cable organizer', 'orden'),
+        ('hook wall', 'orden'), ('led night light', 'luz'), ('mini lamp', 'luz'), ('plant hanger', 'jardin'),
+        ('seed starter', 'jardin'), ('wall sticker', 'deco'), ('artificial succulent', 'deco'), ('coaster', 'deco'),
+        ('dish towel', 'textil'), ('pillow cover', 'textil'), ('door stopper', 'hogar'),
+    ],
+}
+BARATO_CUSTO_USD, BARATO_PRECO_MAX = 4.0, 15.99
+
 
 def preco_rapido(custo_eur):
     # preço baixo para vender rápido: sobra ~5 € depois do custo (produto+frete+IVA) e das taxas (7% + 0,35)
@@ -71,11 +88,54 @@ def reprecificar(tk):
     return rel
 
 
+def baratos(tk):
+    """Publica 1 produto bem barato por busca: entre os populares, fica com o de menor custo total."""
+    rel, feitos = [], set()
+    for busca, cat in BARATOS[LOJA]:
+        r = api('buscar?q=' + urllib.parse.quote(busca), token=tk)
+        itens = [i for i in r.get('itens', []) if not i.get('publicado') and i['pid'] not in feitos and i['custoUsd'] <= BARATO_CUSTO_USD]
+        itens.sort(key=lambda i: (i.get('video', False), i['popularidade']), reverse=True)
+        melhores = []
+        for it in itens[:5]:
+            d = api('detalhe?pid=' + urllib.parse.quote(it['pid']), token=tk)
+            if d.get('erro') or not d.get('entregaTodos') or not d.get('custoEur') or len(d.get('imagens', [])) < 2:
+                continue
+            preco = preco_rapido(d['custoEur'])
+            if preco <= BARATO_PRECO_MAX:
+                melhores.append((preco, -it['popularidade'], d))
+        if not melhores:
+            rel.append({'busca': busca, 'ok': False})
+            continue
+        preco, _, d = min(melhores, key=lambda x: (x[0], x[1]))
+        p = api('publicar', {'pid': d['pid'], 'categoria': cat, 'precio': preco, 'destaque': False, 'nuevo': True}, token=tk)
+        feitos.add(d['pid'])
+        rel.append({'busca': busca, 'ok': bool(p.get('ok')), 'nome': (p.get('produto') or {}).get('es', {}).get('nombre'),
+                    'preco': preco, 'custo': d['custoEur'], 'lucro': p.get('lucro'), 'erro': p.get('detalhe') if not p.get('ok') else None})
+        print(rel[-1], flush=True)
+    return rel
+
+
+def tirar_caros(tk, limite=25.0):
+    """Tira da loja (desativa — dá para voltar no painel) os produtos acima do limite de preço."""
+    rel = []
+    for p in api('publicados', token=tk).get('itens', []):
+        if p.get('ativo') and p.get('precio', 0) > limite:
+            r = api('editar', {'id': p['id'], 'ativo': False}, token=tk)
+            rel.append({'nome': p['nome'], 'preco': p['precio'], 'tirado': bool(r.get('ok'))})
+    return rel
+
+
 def main():
     senha = os.environ['LOJA_ADMIN_SENHA']
     tk = api('login', {'senha': senha}).get('token')
     if not tk:
         sys.exit('login falhou')
+    if len(sys.argv) > 2 and sys.argv[2] in ('barato', 'tirar-caros'):
+        rel = baratos(tk) if sys.argv[2] == 'barato' else tirar_caros(tk)
+        print(rel)
+        json.dump(rel, open('lote.json', 'w'), ensure_ascii=False, indent=1)
+        api('sair', {}, token=tk)
+        return
     if len(sys.argv) > 2 and sys.argv[2] == 'reprecificar':
         rel = reprecificar(tk)
         print(rel)
