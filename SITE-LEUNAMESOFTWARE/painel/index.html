@@ -65,6 +65,7 @@ label{display:block;font-size:13px;color:var(--suave);margin-top:8px}
 #verFrame{width:100%;height:calc(100vh - 230px);min-height:480px;border:1px solid var(--borda);border-radius:12px;background:#fff}
 .nped{background:#E62E73;color:#fff;border-radius:99px;padding:1px 7px;font-size:12px;margin-left:4px}
 .auto-cj{display:flex;gap:10px;align-items:center;justify-content:space-between;background:#eefaf3;border:1px solid #bfe6cf;border-radius:12px;padding:10px 12px;margin-bottom:10px}.auto-cj small{display:block;color:var(--suave);font-size:12.5px;margin-top:2px}.auto-cj .bt{flex:none;min-width:110px}
+.saldo{margin-top:4px;font-size:13px}
 .cj-st{margin-top:8px;border-radius:10px;padding:8px 10px;font-size:13.5px;font-weight:600}.cj-st.ok{background:#e3f6ec;color:#14653f}.cj-st.falta{background:#fff4e0;color:#8a5a00}.cj-st.erro{background:#fde8e8;color:#a02020}.cj-st .bt{padding:5px 10px;font-size:12px;margin-left:6px;text-decoration:none;display:inline-block}
 .ped-topo a.bt{text-decoration:none}
 .ped-topo{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}.ped-topo .bt{padding:8px 12px;font-size:13px}
@@ -363,7 +364,9 @@ function verificarPedidos(silencioso){
 }
 function desenharAuto(on){$("#autoBt").textContent=on?"LIGADO":"DESLIGADO";$("#autoBt").className="bt "+(on?"verde":"cinza");$("#autoBt").dataset.on=on?"1":"0"}
 $("#autoBt").onclick=function(){var on=this.dataset.on!=="1";api("auto-cj",{ligado:on}).then(function(r){desenharAuto(r.ligado);toast(r.ligado?"Pedido automático ligado":"Pedido automático desligado")})};
-function carregarPedidos(){api("auto-cj").then(function(r){desenharAuto(r.ligado)}).catch(function(){});$("#listaPed").innerHTML='<p class="msg">Carregando…</p>';
+function carregarPedidos(){api("auto-cj").then(function(r){desenharAuto(r.ligado);
+    if(r.saldo!=null){var el=$("#saldoCJ");if(!el){$(".auto-cj small").insertAdjacentHTML("afterend",'<div id="saldoCJ" class="saldo"></div>');el=$("#saldoCJ")}
+      el.innerHTML="Saldo da CJ Wallet: <b>US$ "+r.saldo.toFixed(2)+"</b>"+(r.saldo<15?' — <span style="color:#a02020">coloque saldo (Wallet → Recharge)</span>':"")}}).catch(function(){});$("#listaPed").innerHTML='<p class="msg">Carregando…</p>';
   verificarPedidos(true).then(desenharPedidos).catch(function(e){$("#listaPed").innerHTML='<p class="msg">Erro: '+esc(e.message)+'</p>'})}
 function campo(rot,val){return val?'<div class="cp"><span><small>'+rot+'</small>'+esc(val)+'</span><button class="bt cinza" data-copia="'+esc(val)+'">Copiar</button></div>':''}
 function desenharPedidos(){

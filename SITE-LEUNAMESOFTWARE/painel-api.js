@@ -709,7 +709,8 @@ export async function painel(req, env, url) {
         await env.DB.prepare("INSERT OR REPLACE INTO config (chave, valor) VALUES ('auto_cj', ?)").bind(c.ligado ? "1" : "0").run();
       }
       const v = await env.DB.prepare("SELECT valor FROM config WHERE chave='auto_cj'").first();
-      return json({ ligado: !v || v.valor !== "0" });
+      const b = (await cj(env, "GET", "/shopping/pay/getBalance").catch(() => ({}))).data;
+      return json({ ligado: !v || v.valor !== "0", saldo: b ? num(b.amount) : null });
     }
     if (rota === "rastreios" && req.method === "POST") { await atualizarRastreios(env); return json({ ok: true }); }
     if (rota === "pedido" && req.method === "POST") return await marcarPedido(req, env);
