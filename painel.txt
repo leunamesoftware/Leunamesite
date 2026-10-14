@@ -1,0 +1,54 @@
+login ok
+{"ok":true,"cj":true,"ia":true,"stripe":true}
+{"n":30,"erro":null,"detalhe":null,"primeiros":[{"pid":"89356031-B556-4F6F-9DFF-5503FD7579A8","nome":"Cat scratcher boxed","custoUsd":1.65,"popularidade":87},{"pid":"1BA45C8C-1787-4D9D-8327-C7312B8F715E","nome":"Cat scratcher nest","custoUsd":3.46,"popularidade":86},{"pid":"40672B2B-E9EB-4451-A100-747C43DB16D9","nome":"Scratcher cat toy","custoUsd":0.6,"popularidade":377}]}
+{"pid":"94B0D474-FB43-459E-9F08-EF3FEBC00108","sku":"CJJJCWGX00530","vid":"1DE6771D-31B0-4049-A7B4-C404A2ECC0DA","nomeEn":"Dog leash dog leash pet leash","categoriaCJ":"Pet Supplies > Pet Collars, Harnesses & Accessories > Pet Leashes","popularidade":605,"custoProdutoUsd":0.44,"freteUsd":8.29,"fretes":{"DE":{"usd":6.48,"dias":12,"prazo":"7-12","nome":"LuWei Ordinary US"},"FR":{"usd":5.87,"dias":18,"prazo":"8-18","nome":"CJPacket Ordinary I"},"ES":{"usd":5.05,"dias":9,"prazo":"4-9","nome":"CJPacket Eub"},"IT":{"usd":8.29,"dias":16,"prazo":"8-16","nome":"CJPacket Euro Cosmetic Line"}},"entregaTodos":true,"origem":"CN","custoEur":8.12,"sugerido":16.99,"lucro":7.33,"plazo":"4-18","temVideo":false,"variantes":[{"vid":"1DE6771D-31B0-4049-A7B4-C404A2ECC0DA","chave":"Red-0.8cm in diameter","nome":"Dog leash dog leash pet leash Red 0.8cm in diameter","img":"https://cf.cjdropshipping.com/20200807/1905207724306.jpg","custoUsd":0.44},{"vid":"2033C3CF-9404-444D-8AA1-5610172F9F54","chave":"Purple-0.8cm in diameter","nome":"Dog leash dog leash pet leash Purple 0.8cm in diameter","img":"https://cf.cjdropshipping.com/20200807/93439517216683.jpg","custoUsd":0.94},{"vid":"23CBB6B7-FCB5-42B0-8CC1-11E95242ACBD","chave":"Blue-0.8cm in diameter","nome":"Dog leash dog leash pet leash Blue 0.8cm in diameter","img":"https://cf.cjdropshipping.com/20200807/1996797875822.jpg","custoUsd":0.94},{"vid":"2572543E-A6A5-4367-AB69-803FAAA21586","chave":"Blue-1.2cm in diameter","nome":"Dog leash dog leash pet leash Blue 1.2cm in diameter","img":"https://cf.cjdropshipping.com/20200807/1996797875822.jpg","custoUsd":1.43},{"vid":"2ADB95DC-2A4C-44FA-AC85-99ECC56B044F","chave":"Gold-1.2cm in diameter","nome":"Dog leash dog leash pet leash Gold 1.2cm in diameter","img":"https://cf.cjdropshipping.com/20200807/1610022617929.jpg","custoUsd":1.43},{"vid":"3715DEA6-A1EA-44CA-9A95-6FD2EE9438F1","chave":"Blue-1cm in diameter","nome":"Dog leash dog leash pet leash Blue 1cm in diameter","img":"https://cf.cjdropshipping.com/20200807/1996797875822.jpg","custoUsd":1.18},{"vid":"4303C80A-EFB7-44B7-B162-26E7C02FDC14","chave":"Purple-1cm in diameter","nome":"Dog leash dog leash pet leash Purple 1cm in diameter","img":"https://cf.cjdropshipping.com/20200807/93439517216683.jpg","custoUsd":1.18},{"vid":"4340C2DA-B862-4721-A06C-2B9AC16F45C8","chave":"Gold-0.8cm in diameter","nome":"Dog leash dog leash pet leash Gold 0.8cm in diameter","img":"https://cf.cjdropshipping.com/20200807/1610022617929.jpg","custoUsd":0.94},{"vid":"46388A6A-5A28-4A65-816E-4B0F54055C7B","chave":"Black-1cm in diameter","nome":"Dog leash dog leash pet leash Black 1cm in diameter","img":"https://cf.cjdropshipping.com/20200807/4554208448264.jpg","custoUsd":1.18},{"vid":"7E0DFB59-D06C-4B2B-BFED-C6C0ADCBB024","chave":"Black-1.2cm in diameter","nome":"Dog leash dog leash pet leash Black 1.2cm in diameter","img":"https://cf.cjdropshipping.com/20200807/4554208448264.jpg","custoUsd":1.43},{"vid":"8A2F4A6B-70DC-45B0-A337-B91A8660B9A9","chave":"Purple-1.2cm in diameter","nome":"Dog leash dog leash pet leash Purple 1.2cm in diameter","img":"https://cf.cjdropshipping.com/20200807/93439517216683.jpg","custoUsd":1.43},{"vid":"9FD539BC-DB11-4A96-9206-FC67FDDA7948","chave":"Red-1cm in diameter","nome":"Dog leash dog leash pet leash Red 1cm in diameter","img":"https://cf.cjdropshipping.com/20200807/1905207724306.jpg","custoUsd":1.18},{"vid":"A7329D00-76B1-442E-A21D-2D5EDCA2F764","chave":"Red-1.2cm in diameter","nome":"Dog leash dog leash pet leash Red 1.2cm in diameter","img":"https://cf.cjdropshipping.com/20200807/1905207724306.jpg","custoUsd":1.43},{"vid":"B1E188A4-1613-4AE7-88CE-EB71F3A58A47","chave":"Gold-1cm in diameter","nome":"Dog leash dog leash pet leash Gold 1cm in diameter","img":"https://cf.cjdropshipping.com/20200807/1610022617929.jpg","custoUsd":1.18},{"vid":"D0857EDB-29C9-4039-8C80-DE21A1BB1037","chave":"Black-0.8cm in diameter","nome":"Dog leash dog leash pet leash Black 0.8cm in diameter","img":"https://cf.cjdropshipping.com/20200807/4554208448264.jpg","custoUsd":0.94}],"linkCJ":"https://cjdropshipping.com/product/-p-94B0D474-FB43-459E-9F08-EF3FEBC00108.html"}
+video:
+{"ok":true,"video":"/v/2090701323421270017.mp4"}
+mp4 http=200 bytes=2828269 tipo=video/mp4
+range http=206
+apk http=200 bytes=277024
+pedidos:
+{"n":0,"erro":null,"detalhe":null,"lojas":[],"paises":[]}
+resumo:
+{"dias":30,"erro":null,"detalhe":null,"lojas":["casa","pets"]}
+videos:
+2
+["/v/m/990ef8af6701f0dc3bac.mp4"]
+video-subido http=200 bytes=300000
+1
+auto-cj:
+{"ligado":true,"saldo":0}
+{"ok":true}
+lojas:
+[{"id":"pets","host":"pets.leuname.com","publicados":42},{"id":"casa","host":"cachik.leuname.com","publicados":54}]
+{"n":30,"erro":null}
+casa:
+/ http=200 final=https://cachik.leuname.com/ bytes=25182
+/carrito.html http=200 final=https://cachik.leuname.com/carrito bytes=16376
+/producto.html http=200 final=https://cachik.leuname.com/producto bytes=15310
+/tema.css http=200 final=https://cachik.leuname.com/tema.css bytes=9354
+/loja.js http=200 final=https://cachik.leuname.com/loja.js bytes=28904
+/produtos.json http=200 final=https://cachik.leuname.com/produtos.json bytes=143541
+/robots.txt http=200 final=https://cachik.leuname.com/robots.txt bytes=104
+/img/favicon.png http=200 final=https://cachik.leuname.com/img/favicon.png bytes=6731
+<title>Cachik — Hogar, jardín y decoración · Envío gratis en Europa
+<title>LeunaPets — Todo para tu perro y tu gato · Envío gratis en Europa
+tt:
+<h1>📱 Post de hoje: Correa de seguridad para perros
+Copiar a legenda
+<pre id="leg">🦮 Protege a tu mascota en coche
+cambio:
+{"eurBrl":5.6113,"usdBrl":5.0132,"fonte":"open.er-api.com","data":"Wed, 14 Oct 2026 00:02:32 +0000","ok":true}
+traduzir-cj:
+{"ok":true,"texto":"Hello Alia, my order number CJ12345 has been on hold for 5 days, when will it be shipped?"}
+{"ok":true,"texto":"Olá, seu pedido CJ12345 será enviado dentro de 2 dias. Desculpe pelo atraso."}
+feed pets.leuname.com:
+59 itens
+1783438407037890560 | Cepillo de baño para mascotas | 14.99 EUR | https://pets.leuname.com/producto.html?id=1783438407037890560 | https://oss-cf.cjdropshipping.com/product/2024/04/25/10/ee2b
+1469581041701359616 | Juguetes de goma para mascotas | 12.99 EUR | https://pets.leuname.com/producto.html?id=1469581041701359616 | https://cf.cjdropshipping.com/89e0ab0d-6604-482f-b066-1d8c20
+2504250801081602700 | Manta para Perros | 14.49 EUR | https://pets.leuname.com/producto.html?id=2504250801081602700 | https://oss-cf.cjdropshipping.com/product/2025/04/25/07/ff0d
+feed cachik.leuname.com:
+54 itens
+BCEAC493-459D-46C5-988E-13419A599CC1 | Cojín de Sofá Moderno | 14.49 EUR | https://cachik.leuname.com/producto.html?id=BCEAC493-459D-46C5-988E-13419A599CC1 | https://cf.cjdropshipping.com/16077024/1090692217110.jpg
+1424923084498014208 | Posavasos de cuero | 14.99 EUR | https://cachik.leuname.com/producto.html?id=1424923084498014208 | https://cf.cjdropshipping.com/3c5888b0-877c-4f2f-a2b2-65c392
+1621795944721297408 | Fundas de cojín de poliéster | 14.49 EUR | https://cachik.leuname.com/producto.html?id=1621795944721297408 | https://cf.cjdropshipping.com/quick/product/362b3911-3c25-41
