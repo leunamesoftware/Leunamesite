@@ -391,6 +391,31 @@ async function publicados(req, env, L) {
   })) });
 }
 
+// ---------- cotação do dia (euro e dólar em reais), guardada 3 h no cache ----------
+async function cambio() {
+  const chave = new Request("https://cache.leuname.interno/cambio-v1");
+  const cache = caches.default;
+  const guardado = await cache.match(chave);
+  if (guardado) return json(await guardado.json());
+  let d = null;
+  try {   // 1ª fonte: open.er-api.com (grátis, sem chave)
+    const r = await fetch("https://open.er-api.com/v6/latest/EUR");
+    const j = await r.json();
+    if (j && j.rates && j.rates.BRL && j.rates.USD) d = { eurBrl: j.rates.BRL, usdBrl: j.rates.BRL / j.rates.USD, fonte: "open.er-api.com", data: j.time_last_update_utc || "" };
+  } catch (e) { /* tenta a outra */ }
+  if (!d) {
+    try {   // 2ª fonte: frankfurter (Banco Central Europeu)
+      const r = await fetch("https://api.frankfurter.app/latest?from=EUR&to=BRL,USD");
+      const j = await r.json();
+      if (j && j.rates && j.rates.BRL && j.rates.USD) d = { eurBrl: j.rates.BRL, usdBrl: j.rates.BRL / j.rates.USD, fonte: "frankfurter.app (BCE)", data: j.date || "" };
+    } catch (e) { /* sem cotação */ }
+  }
+  if (!d) return json({ erro: "cotacao" }, 502);
+  d.eurBrl = Math.round(d.eurBrl * 10000) / 10000; d.usdBrl = Math.round(d.usdBrl * 10000) / 10000; d.ok = true;
+  await cache.put(chave, new Response(JSON.stringify(d), { headers: { "Content-Type": "application/json", "Cache-Control": "max-age=10800" } }));
+  return json(d);
+}
+
 // ---------- pedidos (vendas pagas no Stripe) ----------
 async function pedidos(req, env) {
   if (!env.STRIPE_SECRET_KEY) return json({ erro: "stripe-desligado" }, 503);
@@ -714,6 +739,7 @@ export async function painel(req, env, url) {
     }
     if (rota === "rastreios" && req.method === "POST") { await atualizarRastreios(env); return json({ ok: true }); }
     if (rota === "pedido" && req.method === "POST") return await marcarPedido(req, env);
+    if (rota === "cambio") return await cambio();
     if (rota === "traduzir-cj" && req.method === "POST") {   // conversa com a agente da CJ: pt → en (para enviar) ou en → pt (resposta)
       const c = await req.json().catch(() => ({}));
       const texto = String(c.texto || "").trim().slice(0, 3000);
