@@ -121,8 +121,7 @@ label{display:block;font-size:13px;color:var(--suave);margin-top:8px}
   <main>
     <section class="caixa" id="buscar">
       <form class="busca" id="fBusca"><input id="q" placeholder="Ex.: cat toy, dog bed, leash…" enterkeyhint="search"><button class="bt">Buscar</button></form>
-      <div class="chips" id="armazens"><button type="button" class="chip on" data-arm="DE">🇩🇪 Armazém Alemanha (rápido)</button><button type="button" class="chip" data-arm="PL">🇵🇱 Armazém Polônia (rápido)</button><button type="button" class="chip" data-arm="CN">🇨🇳 China (lento)</button></div>
-      <div class="chips" id="atalhos"></div>
+      <div class="chips" id="atalhosBusca"></div>
       <div id="resultado" class="grade"></div>
       <p class="msg" id="msgBusca">Busque em inglês (a CJ é em inglês). Toque em <b>Ver preço</b> para ver frete, preço sugerido e lucro.</p>
       <button class="bt cinza mais" id="mais" hidden>Carregar mais</button>
@@ -275,20 +274,19 @@ $("#lojas").onclick=function(ev){var b=ev.target.closest("[data-loja]");if(!b||b
   LOJA=b.dataset.loja;try{localStorage.setItem("lp_loja",LOJA)}catch(e){}
   CFG=LOJAS_CFG[LOJA];CATS=CFG.cats;ATALHOS=CFG.atalhos;estado={q:"",pagina:1,cat:CFG.padrao};
   $("#q").value="";$("#resultado").innerHTML="";$("#mais").hidden=true;$("#msgBusca").textContent="Loja "+CFG.nome+": busque produtos para ela.";
-  $("#atalhos").innerHTML=ATALHOS.map(function(a,i){return '<button class="chip" data-i="'+i+'">'+esc(a[0])+'</button>'}).join("");
+  $("#atalhosBusca").innerHTML=ATALHOS.map(function(a,i){return '<button class="chip" data-i="'+i+'">'+esc(a[0])+'</button>'}).join("");
   desenharLojas(window.CONTAGEM);LOJA_ATUAL_MUDOU();toast("Agora você está na loja "+CFG.emoji+" "+CFG.nome)};
 function LOJA_ATUAL_MUDOU(){var aba=document.querySelector(".aba.on").dataset.aba;if(aba==="loja")carregarLoja();if(aba==="ver")$("#verFrame").setAttribute("src","https://"+CFG.host+"/")}
 function contar(){api("lojas").then(function(d){window.CONTAGEM={};d.lojas.forEach(function(l){window.CONTAGEM[l.id]=l.publicados});desenharLojas(window.CONTAGEM)}).catch(function(){})}
 
 // ---- busca ----
-$("#atalhos").innerHTML=ATALHOS.map(function(a,i){return '<button class="chip" data-i="'+i+'">'+esc(a[0])+'</button>'}).join("");
-$("#atalhos").onclick=function(ev){var b=ev.target.closest(".chip");if(!b)return;var a=ATALHOS[b.dataset.i];$("#q").value=a[0];estado.cat=a[1];buscar(true)};
+$("#atalhosBusca").innerHTML=ATALHOS.map(function(a,i){return '<button class="chip" data-i="'+i+'">'+esc(a[0])+'</button>'}).join("");
+$("#atalhosBusca").onclick=function(ev){var b=ev.target.closest(".chip");if(!b)return;var a=ATALHOS[b.dataset.i];$("#q").value=a[0];estado.cat=a[1];buscar(true)};
 $("#fBusca").onsubmit=function(ev){ev.preventDefault();estado.cat=adivinhaCat($("#q").value);buscar(true)};
 $("#mais").onclick=function(){estado.pagina++;buscar(false)};
 function adivinhaCat(q){q=q.toLowerCase();for(var k=0;k<CFG.regras.length;k++)if(CFG.regras[k][0].test(q))return CFG.regras[k][1];return CFG.padrao}
-$("#armazens").onclick=function(ev){var c=ev.target.closest("[data-arm]");if(!c)return;estado.arm=c.dataset.arm;this.querySelectorAll(".chip").forEach(function(x){x.classList.toggle("on",x===c)});if(estado.q)buscar(true)};
 function buscar(novo){
-  estado.arm=estado.arm||"DE";
+  estado.arm=estado.arm||"CN";
   if(novo){estado.q=$("#q").value.trim();estado.pagina=1;$("#resultado").innerHTML=""}
   $("#msgBusca").textContent="Buscando na CJ…";$("#mais").hidden=true;
   api("buscar?q="+encodeURIComponent(estado.q)+"&pagina="+estado.pagina+"&arm="+estado.arm).then(function(d){
