@@ -160,6 +160,7 @@ label{display:block;font-size:13px;color:var(--suave);margin-top:8px}
       <div class="res-topo"><div class="chips" id="resLojas"></div><select class="campo" id="resDias" style="width:auto;margin:0"><option value="7">7 dias</option><option value="30" selected>30 dias</option><option value="90">90 dias</option></select></div>
       <div class="res-cards" id="resCards"></div>
       <div class="res-graf"><canvas id="grafico" height="260"></canvas></div>
+      <div class="ct-cot" id="resIrmao" style="margin:12px 0"></div>
       <div class="res-dois"><div><h4>De onde vieram as vendas</h4><div id="resOrigens"></div></div><div><h4>Mais vendidos</h4><div id="resProdutos"></div></div></div>
       <p class="msg" style="font-size:12.5px">Lucro = venda − custo do produto e frete na CJ − taxas (~7%). Origem: de onde o cliente chegou (use os links do botão <b>Copiar link</b>, que já marcam a rede).</p>
     </section>
@@ -457,6 +458,12 @@ function abrirContas(){
 $("#ctProd").onchange=function(){var p=CT_PROD[+this.value];if(!p)return;$("#ctPreco").value=p.precio;if(p.custoEur)$("#ctCusto").value=p.custoEur;else toast("Esse produto não tem o custo salvo. Digite o custo da CJ.");contas()};
 ["#ctPreco","#ctCusto","#ctTaxa","#ctFixa","#ctIof","#ctCot2","#ctDia","#ctMeta"].forEach(function(id){$(id).oninput=function(){contas();if(id==="#ctCot2")conv("eur")}});
 $("#cvEur").oninput=function(){conv("eur")};$("#cvBrl").oninput=function(){conv("brl")};
+var RES_IRMAO={v:0,l:0};
+function parteIrmao(){var v=50;try{v=+(localStorage.getItem("lp_parte")||50)}catch(e){}return v}
+function desenharIrmao(){var c=COT&&COT.eurBrl,pct=parteIrmao(),l=RES_IRMAO.l,parte=l*pct/100;
+  $("#resIrmao").innerHTML='🤝 <b>Vendas do TikTok (seu irmão)</b>: '+RES_IRMAO.v+' venda(s) · lucro '+eur(l)+'<br>Parte dele (<input id="parteIrmao" type="number" min="0" max="100" value="'+pct+'" style="width:56px">%): <b>'+eur(parte)+'</b>'+(c?' ≈ <b>'+brl(parte*c)+'</b>':'');
+  $("#parteIrmao").onchange=function(){try{localStorage.setItem("lp_parte",String(Math.max(0,Math.min(100,+this.value||0))))}catch(e){}desenharIrmao()};
+  if(!COT)api("cambio").then(function(r){COT=r;desenharIrmao()}).catch(function(){})}
 var TT=null;
 function carregarTiktok(){$("#ttHoje").innerHTML='<p class="msg">Carregando…</p>';$("#ttFila").innerHTML="";$("#ttFeitos").innerHTML="";
   api("tiktok").then(function(d){TT=d;desenharTiktok()}).catch(function(e){$("#ttHoje").innerHTML='<p class="msg">Erro: '+esc(e.message)+'</p>'})}
@@ -544,7 +551,8 @@ function desenharResumo(){
   var org={},prod={};sel.forEach(function(id){var o=RES.lojas[id].origens,p=RES.lojas[id].produtos;Object.keys(o).forEach(function(k){org[k]=(org[k]||0)+o[k]});Object.keys(p).forEach(function(k){prod[k]=(prod[k]||0)+p[k]})});
   function barras(m){var ks=Object.keys(m).sort(function(a,b){return m[b]-m[a]}).slice(0,8),mx=Math.max.apply(null,ks.map(function(k){return m[k]}).concat([1]));
     return ks.length?ks.map(function(k){return '<div class="br"><span>'+esc(k)+'</span><i style="width:'+Math.round(m[k]/mx*100)+'%"></i><b>'+m[k]+'</b></div>'}).join(""):'<p class="msg">Ainda sem vendas.</p>'}
-  $("#resOrigens").innerHTML=barras(org);$("#resProdutos").innerHTML=barras(prod);
+  RES_IRMAO={v:0,l:0};sel.forEach(function(id){var L=RES.lojas[id];RES_IRMAO.v+=(L.origens||{}).tiktok||0;RES_IRMAO.l+=(L.lucroOrigem||{}).tiktok||0});
+  $("#resOrigens").innerHTML=barras(org);desenharIrmao();$("#resProdutos").innerHTML=barras(prod);
 }
 $("#resLojas").onclick=function(ev){var b=ev.target.closest("[data-rl]");if(!b)return;resLoja=b.dataset.rl;desenharResumo()};
 // ---- 🎬 vídeos ----

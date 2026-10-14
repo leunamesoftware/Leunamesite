@@ -672,7 +672,7 @@ async function resumo(req, env, url) {
   const lista = [];
   for (let k = dias - 1; k >= 0; k--) lista.push(dia(Math.floor(Date.now() / 1000) - k * 86400));
   const out = {};
-  const base = () => ({ vendas: lista.map(() => 0), receita: lista.map(() => 0), custo: lista.map(() => 0), lucro: lista.map(() => 0), origens: {}, produtos: {} });
+  const base = () => ({ vendas: lista.map(() => 0), receita: lista.map(() => 0), custo: lista.map(() => 0), lucro: lista.map(() => 0), origens: {}, lucroOrigem: {}, produtos: {} });
   for (const L of LOJAS) out[L.id] = base();
   for (const s of sess) {
     if (s.payment_status !== "paid") continue;
@@ -697,6 +697,7 @@ async function resumo(req, env, url) {
     o.vendas[i] += 1; o.receita[i] += receita; o.custo[i] += custo + taxas; o.lucro[i] += receita - custo - taxas;
     const org = (s.metadata && s.metadata.origem) || "direto";
     o.origens[org] = (o.origens[org] || 0) + 1;
+    o.lucroOrigem[org] = Math.round(((o.lucroOrigem[org] || 0) + receita - custo - taxas) * 100) / 100;
   }
   for (const k of Object.keys(out)) for (const c of ["receita", "custo", "lucro"]) out[k][c] = out[k][c].map((v) => Math.round(v * 100) / 100);
   return json({ dias: lista, lojas: out });
