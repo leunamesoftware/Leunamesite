@@ -59,6 +59,11 @@ jobs:
             curl -s https://cachik.leuname.com/ | grep -o '<title>[^<]*' >> /tmp/e/painel.txt || true
             curl -s https://pets.leuname.com/ | grep -o '<title>[^<]*' >> /tmp/e/painel.txt || true
             curl -s -I https://casa.leuname.com/ | grep -i 'content-security\|x-frame' >> /tmp/e/painel.txt || true
+            for h in pets.leuname.com cachik.leuname.com; do
+              echo "feed $h:" >> /tmp/e/painel.txt
+              curl -s https://$h/google-shopping.xml > /tmp/e/feed.xml
+              python3 -c "import xml.etree.ElementTree as E,sys;r=E.parse(sys.argv[1]).getroot();it=r.findall('./channel/item');g='{http://base.google.com/ns/1.0}';print(len(it),'itens');[print(i.find(g+'id').text,'|',i.find('title').text,'|',i.find(g+'price').text,'|',i.find('link').text,'|',i.find(g+'image_link').text[:60]) for i in it[:3]]" /tmp/e/feed.xml >> /tmp/e/painel.txt 2>&1 || true
+            done
             curl -s -X POST https://pets.leuname.com/api/painel/sair -H "Authorization: Bearer $tk" > /dev/null
           else
             jq -nc --arg s "$S3" '{senha:$s}' | curl -s -X POST https://pets.leuname.com/api/painel/login -H 'Content-Type: application/json' -d @- > /tmp/e/painel.txt
