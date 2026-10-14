@@ -59,6 +59,7 @@ jobs:
             curl -s https://cachik.leuname.com/ | grep -o '<title>[^<]*' >> /tmp/e/painel.txt || true
             curl -s https://pets.leuname.com/ | grep -o '<title>[^<]*' >> /tmp/e/painel.txt || true
             curl -s -I https://casa.leuname.com/ | grep -i 'content-security\|x-frame' >> /tmp/e/painel.txt || true
+            echo "tt:" >> /tmp/e/painel.txt; curl -s "https://pets.leuname.com/tt?id=A995FD34-2FA4-49AB-9CA9-FEF3E692F5A8" | grep -o "<h1>[^<]*\|Copiar a legenda\|<pre id=\"leg\">[^<]*" >> /tmp/e/painel.txt || true
             echo "cambio:" >> /tmp/e/painel.txt; curl -s "https://pets.leuname.com/api/painel/cambio?loja=pets" -H "Authorization: Bearer $tk" >> /tmp/e/painel.txt; echo >> /tmp/e/painel.txt
             echo "traduzir-cj:" >> /tmp/e/painel.txt
             curl -s -X POST "https://pets.leuname.com/api/painel/traduzir-cj?loja=pets" -H "Authorization: Bearer $tk" -H 'Content-Type: application/json' -d '{"texto":"Olá Alia, o pedido nº CJ12345 está parado há 5 dias. Quando vai sair?","para":"en"}' >> /tmp/e/painel.txt; echo >> /tmp/e/painel.txt
