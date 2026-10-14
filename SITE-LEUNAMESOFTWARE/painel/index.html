@@ -87,6 +87,9 @@ label{display:block;font-size:13px;color:var(--suave);margin-top:8px}
 #contas label{display:block;font-size:12.5px;color:var(--suave)}#contas label .campo{margin-top:3px;width:100%;box-sizing:border-box}.ct-full{margin-bottom:8px}
 .ct-grade{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}
 .ct-res{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin-top:10px}.ct-res .rc b{font-size:17px}.ct-res .rc.bom{background:#eefaf3}.ct-res .rc.ruim{background:#fdecec}
+.tt-topo{background:#eefaf3;border:1px solid #bfe6cf;border-radius:12px;padding:10px 12px}.tt-topo .tt-t{display:block;font-size:16px;font-weight:800}.tt-topo small{display:block;color:var(--suave);font-size:13px;margin-top:4px}
+.tt-whats{display:flex;gap:6px;margin-top:8px}.tt-whats .campo{margin:0;flex:1}
+.tt{display:flex;gap:10px;background:#fff;border:1px solid var(--borda);border-radius:12px;padding:10px;margin-bottom:10px}.tt img{width:84px;height:84px;object-fit:cover;border-radius:10px;flex:none}.tt .tx{flex:1;min-width:0}.tt .tx>b{display:block;font-size:14px}.tt .fr{font-size:13px;margin:4px 0;color:#14653f}.tt pre{white-space:pre-wrap;font-family:inherit;font-size:12.5px;line-height:1.35;background:var(--fundo);border-radius:8px;padding:6px 8px;margin:4px 0;max-height:120px;overflow:auto}.tt .ac{display:flex;gap:6px;flex-wrap:wrap}.tt .ac .bt{padding:7px 10px;font-size:13px}.tt.feito{opacity:.6}
 .res-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin:12px 0}.rc{background:var(--fundo);border-radius:10px;padding:10px}.rc small{display:block;color:var(--suave);font-size:12px}.rc b{font-size:18px}
 .res-graf{position:relative;height:300px;background:#fff;border:1px solid var(--borda);border-radius:12px;padding:8px}
 .res-dois{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}.res-dois h4{margin:0 0 6px}
@@ -117,7 +120,7 @@ label{display:block;font-size:13px;color:var(--suave);margin-top:8px}
 <div id="app" hidden>
   <div class="topo"><b>Painel das lojas</b><button id="zMenos" title="Diminuir">A−</button><button id="zMais" title="Aumentar">A+</button><button id="modoBt" title="Tela larga (computador) ou celular">🖥️</button><a class="topo-cj" href="https://cjdropshipping.com/" target="_blank">🛒 CJ</a><button id="aliaBt" class="topo-cj" title="Falar com a Alia Lin, sua agente da CJ">💬 Alia</button><a class="baixar" href="app.apk">📲 App</a><button id="sair">Sair</button></div>
   <div class="lojas" id="lojas"></div>
-  <div class="abas"><button class="aba on" data-aba="buscar">Buscar na CJ</button><button class="aba" data-aba="loja">Na loja</button><button class="aba" data-aba="ver">Ver loja</button><button class="aba" data-aba="pedidos">💰 Pedidos <b id="nPed" class="nped" hidden></b></button><button class="aba" data-aba="resultados">📊 Resultados</button><button class="aba" data-aba="contas">💱 Contas</button><button class="aba" data-aba="videos">🎬 Vídeos</button><button class="aba" data-aba="atalhos">🔗 Atalhos</button></div>
+  <div class="abas"><button class="aba on" data-aba="buscar">Buscar na CJ</button><button class="aba" data-aba="loja">Na loja</button><button class="aba" data-aba="ver">Ver loja</button><button class="aba" data-aba="pedidos">💰 Pedidos <b id="nPed" class="nped" hidden></b></button><button class="aba" data-aba="resultados">📊 Resultados</button><button class="aba" data-aba="contas">💱 Contas</button><button class="aba" data-aba="tiktok">📱 TikTok</button><button class="aba" data-aba="videos">🎬 Vídeos</button><button class="aba" data-aba="atalhos">🔗 Atalhos</button></div>
   <main>
     <section class="caixa" id="buscar">
       <form class="busca" id="fBusca"><input id="q" placeholder="Ex.: cat toy, dog bed, leash…" enterkeyhint="search"><button class="bt">Buscar</button></form>
@@ -182,6 +185,13 @@ label{display:block;font-size:13px;color:var(--suave);margin-top:8px}
       </div>
       <div class="ct-res" id="ctMes"></div>
       <p class="msg" style="font-size:12.5px">Contas aproximadas. A Stripe converte o euro para real com a cotação dela (um pouco abaixo da do mercado) e o banco cobra IOF quando você paga a CJ com cartão brasileiro. Mude os números se souber os valores exatos.</p>
+    </section>
+    <section class="caixa" id="tiktok" hidden>
+      <div class="tt-topo"><span class="tt-t">📱 Postagens prontas para o TikTok</span><small>Todo dia toque em <b>📲 Mandar pro irmão</b> nos <b>2 de hoje</b>. Abre o WhatsApp dele com a frase, a legenda e o link do vídeo. É só tocar em <b>Enviar</b>. Ele toca no link, baixa o vídeo e posta.</small><small id="ttLink"></small>
+        <div class="tt-whats"><input class="campo" id="ttWhats" type="tel" inputmode="tel" placeholder="WhatsApp do irmão com país, ex.: 34 612 345 678"><button class="bt" id="ttSalvar">Salvar</button></div></div>
+      <h4 class="ct-h">📅 Hoje</h4><div id="ttHoje"></div>
+      <h4 class="ct-h">Próximos</h4><div id="ttFila"></div>
+      <details class="como"><summary>Já mandados (voltam para a fila depois de 30 dias)</summary><div id="ttFeitos"></div></details>
     </section>
     <section class="caixa" id="videos" hidden>
       <div class="vid-topo"><input class="campo" id="novaPasta" placeholder="Nome da nova pasta (ex.: TikTok semana 1)"><button class="bt" id="criarPasta">+ Pasta</button></div>
@@ -257,10 +267,11 @@ $("#fLogin").onsubmit=function(ev){ev.preventDefault();$("#erroLogin").textConte
 $("#sair").onclick=sair;
 document.querySelectorAll(".aba").forEach(function(b){b.onclick=function(){
   document.querySelectorAll(".aba").forEach(function(x){x.classList.toggle("on",x===b)});
-  ["buscar","loja","ver","pedidos","resultados","contas","videos","atalhos"].forEach(function(a){$("#"+a).hidden=b.dataset.aba!==a});
+  ["buscar","loja","ver","pedidos","resultados","contas","tiktok","videos","atalhos"].forEach(function(a){$("#"+a).hidden=b.dataset.aba!==a});
   if(b.dataset.aba==="resultados")carregarResumo();
   if(b.dataset.aba==="videos")carregarVideos();
   if(b.dataset.aba==="contas")abrirContas();
+  if(b.dataset.aba==="tiktok")carregarTiktok();
   if(b.dataset.aba==="pedidos")carregarPedidos();
   if(b.dataset.aba==="loja")carregarLoja();
   if(b.dataset.aba==="ver"){var f=$("#verFrame"),u="https://"+CFG.host+"/";if(f.getAttribute("src")!==u)f.setAttribute("src",u)}}});
@@ -446,6 +457,27 @@ function abrirContas(){
 $("#ctProd").onchange=function(){var p=CT_PROD[+this.value];if(!p)return;$("#ctPreco").value=p.precio;if(p.custoEur)$("#ctCusto").value=p.custoEur;else toast("Esse produto não tem o custo salvo. Digite o custo da CJ.");contas()};
 ["#ctPreco","#ctCusto","#ctTaxa","#ctFixa","#ctIof","#ctCot2","#ctDia","#ctMeta"].forEach(function(id){$(id).oninput=function(){contas();if(id==="#ctCot2")conv("eur")}});
 $("#cvEur").oninput=function(){conv("eur")};$("#cvBrl").oninput=function(){conv("brl")};
+var TT=null;
+function carregarTiktok(){$("#ttHoje").innerHTML='<p class="msg">Carregando…</p>';$("#ttFila").innerHTML="";$("#ttFeitos").innerHTML="";
+  api("tiktok").then(function(d){TT=d;desenharTiktok()}).catch(function(e){$("#ttHoje").innerHTML='<p class="msg">Erro: '+esc(e.message)+'</p>'})}
+function cartaoTt(p){return '<div class="tt'+(p.naFila?'':' feito')+'"><img src="'+esc(p.img)+'" alt=""><div class="tx"><b>'+esc(p.nome)+' · '+eur(p.precio)+'</b>'+
+  '<div class="fr">Frase na tela: <b>'+esc(p.frase)+'</b></div><pre>'+esc(p.legenda)+'</pre>'+
+  '<div class="ac"><button class="bt verde" data-ttw="'+esc(p.id)+'">📲 Mandar pro irmão</button><button class="bt cinza" data-ttv="'+esc(p.id)+'">🎬 Só o vídeo</button>'+
+  (p.naFila?'<button class="bt cinza" data-ttok="'+esc(p.id)+'">✓ Já mandei</button>':'<button class="bt cinza" data-ttdes="'+esc(p.id)+'">↩ Mandado em '+new Date(p.enviado.replace(" ","T")+"Z").toLocaleDateString("pt-BR")+'</button>')+'</div></div></div>'}
+function textoTt(p){return "Mano, post de hoje 👇\n1) Toque no link do vídeo e baixe\n2) TikTok → + → Carregar → escolha o vídeo\n3) Aa Texto → cole a FRASE\n4) Avançar → cole a LEGENDA → Publicar ✅\n\n🎬 VÍDEO (toque para baixar):\nhttps://"+TT.host+p.video+"?baixar="+encodeURIComponent(p.nome)+"\n\n📝 FRASE NA TELA:\n"+p.frase+"\n\n📋 LEGENDA (colar na descrição):\n"+p.legenda}
+$("#ttSalvar").onclick=function(){var n=$("#ttWhats").value.replace(/\D/g,"");if(n.length<8){toast("Digite o número com o código do país (Espanha = 34)");return}
+  api("tiktok-whats",{numero:n}).then(function(r){TT.whats=r.numero;toast("WhatsApp salvo ✓")})};
+function desenharTiktok(){if(TT.whats&&!$("#ttWhats").value)$("#ttWhats").value=TT.whats;var fila=TT.itens.filter(function(p){return p.naFila}),feitos=TT.itens.filter(function(p){return !p.naFila});
+  $("#ttLink").innerHTML='Link do perfil: <b>'+esc(TT.link)+'</b>'+(TT.semVideo?' · '+TT.semVideo+' produtos ainda sem vídeo (não aparecem aqui)':'');
+  $("#ttHoje").innerHTML=fila.slice(0,2).map(cartaoTt).join("")||'<p class="msg">Nenhum vídeo na fila. 🎉</p>';
+  $("#ttFila").innerHTML=fila.slice(2).map(cartaoTt).join("")||'<p class="msg">—</p>';
+  $("#ttFeitos").innerHTML=feitos.map(cartaoTt).join("")||'<p class="msg">Nenhum ainda.</p>'}
+$("#tiktok").onclick=function(ev){var g=function(a){var b=ev.target.closest("["+a+"]");return b&&TT.itens.find(function(x){return x.id===b.getAttribute(a)})};
+  var p=g("data-ttv");if(p){postarVideo({url:p.video,titulo:p.nome});return}
+  p=g("data-ttw");if(p){if(!TT.whats){toast("Primeiro salve o WhatsApp do seu irmão, lá em cima");$("#ttWhats").focus();return}
+    abrirFora("https://wa.me/"+TT.whats+"?text="+encodeURIComponent(textoTt(p)));if(p.naFila)api("tiktok-enviado",{id:p.id}).then(function(){setTimeout(carregarTiktok,1500)});return}
+  p=g("data-ttok");if(p){api("tiktok-enviado",{id:p.id}).then(carregarTiktok);return}
+  p=g("data-ttdes");if(p&&confirm("Voltar este para a fila?")){api("tiktok-enviado",{id:p.id,desfazer:true}).then(carregarTiktok)}};
 var CHAT_ALIA="https://chat.cjdropshipping.com/?touser=Alia%20Lin";
 function abrirFora(u){if(window.LeuNativo&&window.LeuNativo.abrir)window.LeuNativo.abrir(u);else window.open(u,"_blank")}
 $("#aliaBt").onclick=function(){var b=document.querySelector('[data-aba="pedidos"]');if(b)b.click();var d=$("#cjChat");d.open=true;setTimeout(function(){d.scrollIntoView({behavior:"smooth"});$("#cjPt").focus()},250)};

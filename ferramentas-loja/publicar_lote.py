@@ -54,6 +54,16 @@ BARATOS = {
         ('dish towel', 'textil'), ('pillow cover', 'textil'), ('placemat', 'textil'), ('cushion cover', 'textil'),
     ],
 }
+# modo "video": mais produtos baratos, SÓ os que têm vídeo (para postar no TikTok)
+COM_VIDEO = {
+    'pets': [('interactive cat toy', 'juguetes'), ('electric cat toy', 'juguetes'), ('cat laser toy', 'juguetes'), ('dog puzzle toy', 'juguetes'),
+             ('dog squeaky ball', 'juguetes'), ('cat spring toy', 'juguetes'), ('rotating cat toy', 'juguetes'), ('dog tug toy', 'juguetes'),
+             ('pet hair brush', 'higiene'), ('pet paw cleaner', 'higiene'), ('dog bath brush', 'higiene'), ('cat grooming brush', 'higiene'),
+             ('pet water dispenser', 'comer'), ('pet feeder', 'comer'), ('dog lick mat', 'comer'), ('portable dog water bottle', 'paseo'),
+             ('retractable dog leash', 'paseo'), ('led dog collar', 'paseo'), ('cat window perch', 'camas'), ('cat scratching post', 'rascadores'),
+             ('cat wall toy', 'juguetes'), ('snuffle mat', 'comer')],
+    'casa': [('kitchen gadget', 'hogar'), ('led light', 'luz'), ('storage', 'orden'), ('organizer', 'orden'), ('decor', 'deco')],
+}
 BARATO_CUSTO_USD, BARATO_PRECO_MAX, BARATO_CUSTO_TOTAL_EUR = 5.0, 14.99, 8.4
 
 
@@ -109,12 +119,13 @@ def reprecificar(tk):
     return rel
 
 
-def baratos(tk):
+def baratos(tk, so_video=False):
     """Publica 1 produto bem barato por busca: entre os populares, fica com o de menor custo total."""
     rel, feitos = [], set()
-    for busca, cat in BARATOS[LOJA]:
+    for busca, cat in (COM_VIDEO if so_video else BARATOS)[LOJA]:
         r = api('buscar?q=' + urllib.parse.quote(busca), token=tk)
-        itens = [i for i in r.get('itens', []) if not i.get('publicado') and i['pid'] not in feitos and i['custoUsd'] <= BARATO_CUSTO_USD]
+        itens = [i for i in r.get('itens', []) if not i.get('publicado') and i['pid'] not in feitos and i['custoUsd'] <= BARATO_CUSTO_USD
+                 and (i.get('video') or not so_video)]
         itens.sort(key=lambda i: (i.get('video', False), i['popularidade']), reverse=True)
         melhores, vistos = [], []
         for it in itens[:6]:
@@ -159,8 +170,8 @@ def main():
     tk = api('login', {'senha': senha}).get('token')
     if not tk:
         sys.exit('login falhou')
-    if len(sys.argv) > 2 and sys.argv[2] in ('barato', 'tirar-caros'):
-        rel = baratos(tk) if sys.argv[2] == 'barato' else tirar_caros(tk)
+    if len(sys.argv) > 2 and sys.argv[2] in ('barato', 'video', 'tirar-caros'):
+        rel = tirar_caros(tk) if sys.argv[2] == 'tirar-caros' else baratos(tk, so_video=sys.argv[2] == 'video')
         print(rel)
         json.dump(rel, open('lote.json', 'w'), ensure_ascii=False, indent=1)
         api('sair', {}, token=tk)

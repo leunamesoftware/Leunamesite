@@ -22,7 +22,7 @@ jobs:
         run: |
           cd ferramentas-loja
           case "${{ github.event.inputs.publicar }}" in
-            reprecificar|barato|tirar-caros) python3 publicar_lote.py "${{ github.event.inputs.loja }}" "${{ github.event.inputs.publicar }}" ;;
+            reprecificar|barato|video|tirar-caros) python3 publicar_lote.py "${{ github.event.inputs.loja }}" "${{ github.event.inputs.publicar }}" ;;
             *) python3 publicar_lote.py "${{ github.event.inputs.loja }}" ;;
           esac
           cp lote.json /tmp/

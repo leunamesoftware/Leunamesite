@@ -406,6 +406,40 @@ async function publicados(req, env, L) {
   })) });
 }
 
+// ---------- TikTok: postagens prontas (vídeo + frase + legenda em espanhol), 2 por dia ----------
+const TAGS = {
+  pets: { perro: "#perros #perrosdetiktok #mascotas #perro #españa", gato: "#gatos #gatosdetiktok #mascotas #gato #españa", ambos: "#mascotas #perros #gatos #petlovers #españa" },
+  casa: "#hogar #decoracion #casa #ideasparacasa #españa",
+};
+const EMOJI = { juguetes: "🎾", paseo: "🦮", higiene: "🛁", comer: "🍽️", camas: "🛏️", rascadores: "🐾", luz: "💡", jardin: "🌿", deco: "✨", textil: "🧺", orden: "📦", hogar: "🏠", muebles: "🪑" };
+function legendaTikTok(p, L) {
+  const es = p.es || {}, nome = es.nombre || "", gancho = (es.gancho || "").trim();
+  const preco = Number(p.precio).toFixed(2).replace(".", ",");
+  const tags = L.id === "pets" ? TAGS.pets[p.animal] || TAGS.pets.ambos : TAGS.casa;
+  const frase = (gancho && gancho.length <= 48 ? gancho : nome).replace(/\.$/, "");
+  const legenda = `${EMOJI[p.categoria] || "⭐"} ${gancho || nome}\n✨ ${nome}\n💶 Solo ${preco} € · 🚚 Envío GRATIS a toda España\n👉 Link en mi perfil\n${tags}`;
+  return { frase, legenda };
+}
+async function tiktokPosts(env, req, L) {
+  await env.DB.prepare("CREATE TABLE IF NOT EXISTS tiktok_envios (loja TEXT NOT NULL, id TEXT NOT NULL, enviado TEXT, PRIMARY KEY (loja, id))").run();
+  const envios = Object.fromEntries((await env.DB.prepare("SELECT id, enviado FROM tiktok_envios WHERE loja=?").bind(L.id).all()).results.map((r) => [r.id, r.enviado]));
+  const limite = Date.now() - 30 * 86400000;   // mandou há mais de 30 dias: volta para a fila
+  const itens = [];
+  let semVideo = 0;
+  for (const p of await catalogo(env, req, L.id)) {
+    if (!p || !p.id || !(p.precio > 0)) continue;
+    if (!/^\/v\//.test(p.video || "")) { semVideo++; continue; }
+    const enviado = envios[p.id] || null;
+    const t = enviado ? Date.parse(enviado.replace(" ", "T") + "Z") : 0;
+    itens.push({ id: p.id, nome: (p.es && p.es.nombre) || p.id, precio: p.precio, img: fotoAbs((p.imagenes || [])[0]), video: p.video,
+      destaque: !!p.destaque, enviado, naFila: !enviado || t < limite, ...legendaTikTok(p, L) });
+  }
+  itens.sort((a, b) => (b.naFila - a.naFila) || (b.destaque - a.destaque) || (a.precio - b.precio));
+  await tabelas(env);
+  const w = await env.DB.prepare("SELECT valor FROM config WHERE chave='tiktok_whats'").first();
+  return json({ itens, semVideo, link: "https://" + L.host + "/?o=tiktok", host: L.host, whats: (w && w.valor) || "" });
+}
+
 // ---------- cotação do dia (euro e dólar em reais), guardada 3 h no cache ----------
 async function cambio() {
   const chave = new Request("https://cache.leuname.interno/cambio-v1");
@@ -771,6 +805,21 @@ export async function painel(req, env, url) {
     if (rota === "rastreios" && req.method === "POST") { await atualizarRastreios(env); return json({ ok: true }); }
     if (rota === "pedido" && req.method === "POST") return await marcarPedido(req, env);
     if (rota === "cambio") return await cambio();
+    if (rota === "tiktok") return await tiktokPosts(env, req, L);
+    if (rota === "tiktok-whats" && req.method === "POST") {   // WhatsApp de quem posta no TikTok (o irmão)
+      const c = await req.json().catch(() => ({}));
+      const n = String(c.numero || "").replace(/\D/g, "").slice(0, 16);
+      await tabelas(env);
+      await env.DB.prepare("INSERT OR REPLACE INTO config (chave, valor) VALUES ('tiktok_whats', ?)").bind(n).run();
+      return json({ ok: true, numero: n });
+    }
+    if (rota === "tiktok-enviado" && req.method === "POST") {
+      const c = await req.json().catch(() => ({}));
+      await env.DB.prepare("CREATE TABLE IF NOT EXISTS tiktok_envios (loja TEXT NOT NULL, id TEXT NOT NULL, enviado TEXT, PRIMARY KEY (loja, id))").run();
+      if (c.desfazer) await env.DB.prepare("DELETE FROM tiktok_envios WHERE loja=? AND id=?").bind(L.id, String(c.id || "")).run();
+      else await env.DB.prepare("INSERT OR REPLACE INTO tiktok_envios (loja, id, enviado) VALUES (?,?,datetime('now'))").bind(L.id, String(c.id || "")).run();
+      return json({ ok: true });
+    }
     if (rota === "traduzir-cj" && req.method === "POST") {   // conversa com a agente da CJ: pt → en (para enviar) ou en → pt (resposta)
       const c = await req.json().catch(() => ({}));
       const texto = String(c.texto || "").trim().slice(0, 3000);
