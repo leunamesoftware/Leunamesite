@@ -205,7 +205,7 @@
       if (!lista.length || $("#vistoTT")) return;
       var sec = document.createElement("section");
       sec.className = "wrap destaque-sec"; sec.id = "vistoTT";
-      sec.innerHTML = '<div class="sec-cab"><h2>🔥 ' + T("Visto en TikTok", "Visto no TikTok", "Seen on TikTok") + '</h2><p class="sec-sub">' + T("Los productos de nuestros vídeos", "Os produtos dos nossos vídeos", "The products from our videos") + '</p></div><div class="grade" data-grade="sugeridos">' + lista.map(cartao).join("") + "</div>";
+      sec.innerHTML = '<div class="sec-cab"><h2>🔥 ' + T("Visto en TikTok", "Visto no TikTok", "Seen on TikTok") + '</h2><p class="sec-sub">' + T("Los productos de nuestros vídeos", "Os produtos dos nossos vídeos", "The products from our videos") + '</p></div><div class="grade" data-grade="tiktok">' + lista.map(cartao).join("") + "</div>";
       hero.parentNode.insertBefore(sec, hero.nextSibling);
       trilhos();
     }).catch(function () {});

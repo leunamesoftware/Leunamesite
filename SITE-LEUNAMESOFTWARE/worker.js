@@ -198,7 +198,7 @@ export default {
     if (url.pathname.startsWith("/api/painel/")) return painel(req, env, url);
     if (url.pathname === "/api/tiktok-recentes") {   // produtos dos últimos vídeos mandados para o TikTok (seção "Visto en TikTok")
       let ids = [];
-      try { ids = (await env.DB.prepare("SELECT id FROM tiktok_envios WHERE loja=? ORDER BY enviado DESC LIMIT 8").bind(L.id).all()).results.map((r) => r.id); } catch (e) { ids = []; }
+      try { ids = (await env.DB.prepare("SELECT id FROM tiktok_envios WHERE loja=? ORDER BY enviado DESC LIMIT 60").bind(L.id).all()).results.map((r) => r.id); } catch (e) { ids = []; }
       return new Response(JSON.stringify({ ids }), { headers: { "Content-Type": "application/json", "Cache-Control": "public, max-age=300" } });
     }
     if (url.pathname === "/api/config") return json({ stripe: !!env.STRIPE_SECRET_KEY, paypal: env.PAYPAL_CLIENT_ID && env.PAYPAL_SECRET ? env.PAYPAL_CLIENT_ID : "" });
