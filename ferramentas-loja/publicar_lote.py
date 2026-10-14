@@ -54,7 +54,16 @@ IOF = 0.035   # o dono paga a CJ com cartão brasileiro: IOF em cima do custo
 def preco_rapido(custo_eur):
     # preço baixo para vender rápido: sobra ~5 € depois do custo (produto+frete+IVA+IOF) e das taxas da Stripe (7% + 0,35)
     import math
-    return math.ceil((custo_eur * (1 + IOF) + 5.0 + 0.35) / 0.93) - 0.01
+    preco = math.ceil((custo_eur * (1 + IOF) + 5.0 + 0.35) / 0.93) - 0.01
+    return sem13(preco, custo_eur)
+
+
+def sem13(preco, custo_eur):
+    """O dono não quer o número 13 em preço: 13,xx vira 12,99 (se ainda sobra ~4,5 €) ou 14,49."""
+    if 13 <= preco < 14:
+        sobra = 12.99 - custo_eur * (1 + IOF) - (12.99 * 0.07 + 0.35)
+        return 12.99 if sobra >= 4.5 else 14.49
+    return preco
 
 
 def api(rota, corpo=None, token=None, tentativas=3):

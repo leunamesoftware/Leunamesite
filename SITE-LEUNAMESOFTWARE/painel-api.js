@@ -37,7 +37,9 @@ function escolherFrete(ops, prazoMax) {
   const rapido = lista.filter((o) => o.usd <= barato.usd + 1).sort((a, b) => a.dias - b.dias || a.usd - b.usd)[0];
   return rapido || barato;
 }
-export const precoVenda = (custoEur) => Math.ceil(Math.max(custoEur * 2, custoEur + 8)) - 0.01;
+// o dono não quer o número 13 em preço nenhum: 13,xx vira 12,99 ou 14,49
+export const sem13 = (v) => (v >= 13 && v < 14 ? (v < 13.5 ? 12.99 : 14.49) : v);
+export const precoVenda = (custoEur) => sem13(Math.ceil(Math.max(custoEur * 2, custoEur + 8)) - 0.01);
 export const lucro = (preco, custoEur) => Math.round((preco - custoEur - (preco * 0.07 + 0.35)) * 100) / 100;
 
 async function sha(txt) {
@@ -329,12 +331,12 @@ export function variacoes(d, precio) {
   const base = d.custoProdutoUsd;
   return lista.map((v) => {
     const extra = Math.max(0, v.custoUsd - base) * USD_EUR * 2;   // variação mais cara: preço sobe na mesma margem
-    return { vid: v.vid, nombre: rotulo(v), img: v.img || "", precio: extra > 0.01 ? Math.ceil(precio + extra) - 0.01 : precio };
+    return { vid: v.vid, nombre: rotulo(v), img: v.img || "", precio: extra > 0.01 ? sem13(Math.ceil(precio + extra) - 0.01) : precio };
   });
 }
 
 function montar(pid, d, campos, textos, L) {
-  const preco = Math.round((num(campos.precio) || d.sugerido) * 100) / 100;
+  const preco = sem13(Math.round((num(campos.precio) || d.sugerido) * 100) / 100);
   return {
     id: pid, es: textos.es, pt: textos.es, en: textos.en,
     categoria: catsDe(L).includes(campos.categoria) ? campos.categoria : catsDe(L)[0],
@@ -374,9 +376,9 @@ async function editar(req, env, L) {
   if (c.precio != null) {
     const v = num(c.precio);
     if (v > 0 && v < 1000) {
-      const novo = Math.round(v * 100) / 100, dif = novo - p.precio;
+      const novo = sem13(Math.round(v * 100) / 100), dif = novo - p.precio;
       p.precio = novo;
-      if (Array.isArray(p.variantes)) p.variantes = p.variantes.map((x) => ({ ...x, precio: Math.round((x.precio + dif) * 100) / 100 }));
+      if (Array.isArray(p.variantes)) p.variantes = p.variantes.map((x) => ({ ...x, precio: sem13(Math.round((x.precio + dif) * 100) / 100) }));
     }
   }
   if (catsDe(L).includes(c.categoria)) p.categoria = c.categoria;
