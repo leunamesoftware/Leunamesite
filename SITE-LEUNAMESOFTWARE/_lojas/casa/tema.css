@@ -124,3 +124,4 @@ h1,h2,h3{letter-spacing:-.01em}
 .cel-link:hover img{transform:scale(1.04)}
 .cel-preco{position:absolute;left:10px;bottom:10px;background:var(--verde);color:#fff;font:700 14px/1 Inter,sans-serif;font-style:normal;padding:7px 10px;border-radius:999px;box-shadow:0 6px 14px -6px rgba(0,0,0,.5)}
 .cb-colagem .cel3{display:none}
+.hero-cachik .preco-selo{display:none!important}
