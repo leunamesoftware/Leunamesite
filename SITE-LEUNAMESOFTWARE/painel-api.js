@@ -393,6 +393,8 @@ async function pedidos(req, env) {
   const d = await r.json().catch(() => ({}));
   if (!r.ok) return json({ erro: "stripe", detalhe: d.error && d.error.message }, 502);
   const st = Object.fromEntries((await env.DB.prepare("SELECT id, feito, rastreio FROM pedidos_status").all()).results.map((x) => [x.id, x]));
+  await tabelaCJ(env);
+  const cjs = Object.fromEntries((await env.DB.prepare("SELECT id, cj_pedido, pago, msg, rastreio FROM pedidos_cj").all()).results.map((x) => [x.id, x]));
   const cats = {};
   const out = [];
   for (const s of d.data || []) {
@@ -412,7 +414,8 @@ async function pedidos(req, env) {
     out.push({ id: s.id, loja: lojaId, data: s.created * 1000, total: s.amount_total / 100, moeda: s.currency,
       nome: ship.name || cli.name || "", email: cli.email || "", telefone: cli.phone || "",
       endereco: { linha1: a.line1 || "", linha2: a.line2 || "", cep: a.postal_code || "", cidade: a.city || "", estado: a.state || "", pais: a.country || "" },
-      itens, feito: !!(st[s.id] && st[s.id].feito), rastreio: (st[s.id] && st[s.id].rastreio) || "" });
+      itens, feito: !!(st[s.id] && st[s.id].feito), rastreio: (st[s.id] && st[s.id].rastreio) || (cjs[s.id] && cjs[s.id].rastreio) || "",
+      cj: cjs[s.id] ? { pedido: cjs[s.id].cj_pedido, pago: !!cjs[s.id].pago, msg: cjs[s.id].msg } : null });
   }
   return json({ pedidos: out });
 }
@@ -437,6 +440,111 @@ async function marcarPedido(req, env) {
   await env.DB.prepare("INSERT OR REPLACE INTO pedidos_status (id, feito, rastreio, atualizado) VALUES (?,?,?,datetime('now'))")
     .bind(id, c.feito ? 1 : 0, String(c.rastreio || "").slice(0, 60)).run();
   return json({ ok: true });
+}
+
+// ---------- pedido automático na CJ (cria, escolhe o frete mais barato e paga com o saldo da CJ Wallet) ----------
+const NOMES_PAIS = { DE: "Germany", FR: "France", ES: "Spain", IT: "Italy", NL: "Netherlands", BE: "Belgium", AT: "Austria", PT: "Portugal", IE: "Ireland" };
+async function tabelaCJ(env) {
+  await env.DB.prepare("CREATE TABLE IF NOT EXISTS pedidos_cj (id TEXT PRIMARY KEY, cj_pedido TEXT, pago INTEGER NOT NULL DEFAULT 0, msg TEXT, rastreio TEXT, criado TEXT NOT NULL DEFAULT (datetime('now')))").run();
+}
+async function sessaoStripe(env, id) {
+  const r = await fetch("https://api.stripe.com/v1/checkout/sessions/" + encodeURIComponent(id), { headers: { Authorization: "Bearer " + env.STRIPE_SECRET_KEY } });
+  return r.ok ? r.json() : null;
+}
+async function vidPadrao(env, pid) {
+  const d = (await cj(env, "GET", "/product/query", { params: { pid } })).data;
+  return d && d.variants && d.variants[0] ? d.variants[0].vid : "";
+}
+async function freteMaisBarato(env, pais, produtos) {
+  const f = await cj(env, "POST", "/logistic/freightCalculate", { corpo: { startCountryCode: "CN", endCountryCode: pais, products: produtos.map((p) => ({ quantity: p.quantity, vid: p.vid })) } });
+  const ops = (f.data || []).filter((o) => num(o.logisticPrice) != null && o.logisticName).map((o) => ({
+    nome: o.logisticName, usd: num(o.totalPostageFee) || num(o.logisticPrice),
+    dias: Math.max(0, ...(String(o.logisticAging || "").match(/\d+/g) || [99]).map(Number)) }));
+  if (!ops.length) return null;
+  const bons = ops.filter((o) => o.dias <= 20);
+  return (bons.length ? bons : ops).sort((a, b) => a.usd - b.usd)[0].nome;
+}
+export async function comprarCJ(env, req, sessaoId, forcar = false) {
+  await tabelaCJ(env);
+  const ja = await env.DB.prepare("SELECT cj_pedido, pago, msg FROM pedidos_cj WHERE id=?").bind(sessaoId).first();
+  if (ja && ja.cj_pedido && !forcar) return { ok: true, cj_pedido: ja.cj_pedido, pago: !!ja.pago, msg: ja.msg, repetido: true };
+  if (!ja) {   // trava contra pedido duplicado (o robô e o botão ao mesmo tempo)
+    const ins = await env.DB.prepare("INSERT OR IGNORE INTO pedidos_cj (id, msg) VALUES (?, 'criando')").bind(sessaoId).run();
+    if (!ins.meta || ins.meta.changes !== 1) return { ok: false, msg: "já está sendo criado" };
+  } else if (ja.msg === "criando" && !forcar) return { ok: false, msg: "já está sendo criado" };
+  const s = await sessaoStripe(env, sessaoId);
+  if (!s || s.payment_status !== "paid") { await env.DB.prepare("UPDATE pedidos_cj SET msg=? WHERE id=?").bind("venda não paga", sessaoId).run(); return { ok: false, msg: "venda não paga" }; }
+  const ship = (s.collected_information && s.collected_information.shipping_details) || s.shipping_details || {};
+  const a = ship.address || {}, cli = s.customer_details || {};
+  const lojaId = (s.metadata && s.metadata.loja) || "pets";
+  const cat = Object.fromEntries((await catalogo(env, req, lojaId)).map((p) => [p.id, p]));
+  const produtos = [];
+  for (const x of String((s.metadata && s.metadata.itens) || "").split(",").map((y) => y.trim()).filter(Boolean)) {
+    const m = /^(\d+)x\s+([^:]+)(?::(.+))?$/.exec(x);
+    if (!m) continue;
+    const p = cat[m[2]] || {};
+    const vid = m[3] || (p.cj && p.cj.vid) || (await vidPadrao(env, m[2]));
+    if (vid) produtos.push({ vid, quantity: +m[1] || 1 });
+  }
+  const falha = async (msg) => { await env.DB.prepare("UPDATE pedidos_cj SET msg=? WHERE id=?").bind(String(msg).slice(0, 300), sessaoId).run(); return { ok: false, msg }; };
+  if (!produtos.length) return falha("produto sem código da CJ");
+  const pais = a.country || "";
+  const logistica = await freteMaisBarato(env, pais, produtos);
+  if (!logistica) return falha("a CJ não tem frete para " + pais);
+  const corpo = {
+    orderNumber: "LN" + s.created + sessaoId.slice(-10), shippingCountryCode: pais, shippingCountry: NOMES_PAIS[pais] || pais,
+    shippingProvince: a.state || a.city || "-", shippingCity: a.city || "-", shippingZip: a.postal_code || "", shippingAddress: a.line1 || "",
+    shippingAddress2: a.line2 || "", shippingCustomerName: (ship.name || cli.name || "").slice(0, 50), shippingPhone: (cli.phone || "").slice(0, 20),
+    email: (cli.email || "").slice(0, 50), remark: "", logisticName: logistica, fromCountryCode: "CN", iossType: 3, products: produtos, payType: 2,
+  };
+  let r = await cj(env, "POST", "/shopping/order/createOrderV2", { corpo });
+  let pago = true;
+  if (!(r.data && r.data.orderId)) {
+    // sem saldo (ou pagamento recusado): cria o pedido sem pagar, para o dono pagar na CJ
+    const msg1 = r.message || "erro";
+    corpo.payType = 3;
+    r = await cj(env, "POST", "/shopping/order/createOrderV2", { corpo });
+    if (!(r.data && r.data.orderId)) return falha("CJ: " + msg1 + (r.message && r.message !== msg1 ? " / " + r.message : ""));
+    pago = false;
+  } else if (!(r.result || r.code === 200) || (r.data.orderStatus && /UNPAID|CREATED|IN_CART/.test(r.data.orderStatus))) pago = false;
+  const msg = pago ? `Comprado e pago na CJ (${logistica}, US$ ${r.data.orderAmount || r.data.actualPayment || "?"})` : "Pedido criado na CJ — FALTA PAGAR (saldo insuficiente na CJ Wallet)";
+  await env.DB.prepare("UPDATE pedidos_cj SET cj_pedido=?, pago=?, msg=? WHERE id=?").bind(String(r.data.orderId), pago ? 1 : 0, msg, sessaoId).run();
+  await env.DB.prepare("CREATE TABLE IF NOT EXISTS pedidos_status (id TEXT PRIMARY KEY, feito INTEGER NOT NULL DEFAULT 0, rastreio TEXT, atualizado TEXT)").run();
+  if (pago) await env.DB.prepare("INSERT OR REPLACE INTO pedidos_status (id, feito, rastreio, atualizado) VALUES (?,1,COALESCE((SELECT rastreio FROM pedidos_status WHERE id=?),''),datetime('now'))").bind(sessaoId, sessaoId).run();
+  return { ok: true, cj_pedido: String(r.data.orderId), pago, msg };
+}
+async function atualizarRastreios(env) {
+  await tabelaCJ(env);
+  const { results } = await env.DB.prepare("SELECT id, cj_pedido FROM pedidos_cj WHERE cj_pedido IS NOT NULL AND (rastreio IS NULL OR rastreio='') ORDER BY criado DESC LIMIT 10").all();
+  for (const x of results) {
+    const d = (await cj(env, "GET", "/shopping/order/getOrderDetail", { params: { orderId: x.cj_pedido } })).data;
+    if (!d) continue;
+    const pago = !/UNPAID|CREATED|IN_CART/.test(d.orderStatus || "");
+    if (d.trackNumber) {
+      await env.DB.prepare("UPDATE pedidos_cj SET rastreio=?, pago=1 WHERE id=?").bind(d.trackNumber, x.id).run();
+      await env.DB.prepare("INSERT OR REPLACE INTO pedidos_status (id, feito, rastreio, atualizado) VALUES (?,1,?,datetime('now'))").bind(x.id, d.trackNumber).run();
+    } else if (pago) {
+      await env.DB.prepare("UPDATE pedidos_cj SET pago=1, msg=? WHERE id=? AND pago=0").bind("Pago na CJ — aguardando envio", x.id).run();
+    }
+  }
+}
+// robô de 5 em 5 minutos (cron do Worker): vendas novas viram pedido na CJ sozinhas
+export async function roboPedidos(env) {
+  if (!env.DB || !env.STRIPE_SECRET_KEY || !env.CJ_API_KEY) return;
+  await tabelas(env); await tabelaCJ(env);
+  const auto = await env.DB.prepare("SELECT valor FROM config WHERE chave='auto_cj'").first();
+  if (auto && auto.valor === "0") { await atualizarRastreios(env); return; }
+  const r = await fetch("https://api.stripe.com/v1/checkout/sessions?status=complete&limit=20", { headers: { Authorization: "Bearer " + env.STRIPE_SECRET_KEY } });
+  const d = await r.json().catch(() => ({}));
+  const req = new Request("https://pets.leuname.com/");
+  for (const s of d.data || []) {
+    if (s.payment_status !== "paid" || Date.now() / 1000 - s.created > 3 * 86400) continue;
+    const ja = await env.DB.prepare("SELECT id FROM pedidos_cj WHERE id=?").bind(s.id).first();
+    const feito = await env.DB.prepare("SELECT feito FROM pedidos_status WHERE id=?").bind(s.id).first().catch(() => null);
+    if (ja || (feito && feito.feito)) continue;   // já criado, ou o dono comprou à mão
+    try { await comprarCJ(env, req, s.id); } catch (e) { /* tenta de novo no próximo ciclo pelo botão */ }
+  }
+  await atualizarRastreios(env);
 }
 
 export async function painel(req, env, url) {
@@ -473,6 +581,19 @@ export async function painel(req, env, url) {
     if (rota === "publicados") return await publicados(req, env, L);
     if (rota === "pedidos") return await pedidos(req, env);
     if (rota === "ultimo") return await ultimo(env);
+    if (rota === "comprar-cj" && req.method === "POST") {
+      const c = await req.json().catch(() => ({}));
+      return json(await comprarCJ(env, req, String(c.id || "").slice(0, 100), !!c.forcar));
+    }
+    if (rota === "auto-cj") {
+      if (req.method === "POST") {
+        const c = await req.json().catch(() => ({}));
+        await env.DB.prepare("INSERT OR REPLACE INTO config (chave, valor) VALUES ('auto_cj', ?)").bind(c.ligado ? "1" : "0").run();
+      }
+      const v = await env.DB.prepare("SELECT valor FROM config WHERE chave='auto_cj'").first();
+      return json({ ligado: !v || v.valor !== "0" });
+    }
+    if (rota === "rastreios" && req.method === "POST") { await atualizarRastreios(env); return json({ ok: true }); }
     if (rota === "pedido" && req.method === "POST") return await marcarPedido(req, env);
     if (rota === "sair" && req.method === "POST") {
       const m = /^Bearer (\w+)$/.exec(req.headers.get("Authorization") || "");

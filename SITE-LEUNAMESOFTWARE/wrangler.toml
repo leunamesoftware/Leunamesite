@@ -63,3 +63,7 @@ custom_domain = true
 [[routes]]
 pattern = "cachik.leuname.com"
 custom_domain = true
+
+# Robô de pedidos: de 5 em 5 minutos cria na CJ os pedidos das vendas novas e busca rastreios
+[triggers]
+crons = ["*/5 * * * *"]

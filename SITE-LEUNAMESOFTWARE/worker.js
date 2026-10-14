@@ -3,7 +3,7 @@
 // loja.js, loja.css, painel...). Os produtos de cada loja ficam separados (coluna "loja" no D1).
 // A chave fica no segredo STRIPE_SECRET_KEY do Worker (vem do segredo do GitHub, nunca do código).
 // O preço é SEMPRE o de produtos.json (o navegador só manda id e quantidade).
-import { painel, catalogo, servirVideo, lojaPorHost } from "./painel-api.js";
+import { painel, catalogo, servirVideo, lojaPorHost, roboPedidos } from "./painel-api.js";
 
 const PAISES = ["DE", "FR", "ES", "IT", "NL", "BE", "AT", "PT", "IE"];
 const HOST_LOJA = "pets.leuname.com";
@@ -137,6 +137,10 @@ async function paypalCapturar(req, env) {
 }
 
 export default {
+  // de 5 em 5 minutos: vendas pagas viram pedido na CJ (pago com o saldo da CJ Wallet) e busca rastreios
+  async scheduled(evento, env, ctx) {
+    ctx.waitUntil(roboPedidos(env));
+  },
   async fetch(req, env) {
     const url = new URL(req.url);
     // leunamesoftware.com = site dos softwares (em espanhol, futuro). Por enquanto: página "próximamente".

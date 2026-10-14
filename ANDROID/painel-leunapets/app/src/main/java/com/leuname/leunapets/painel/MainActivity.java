@@ -53,6 +53,7 @@ public class MainActivity extends Activity {
                 Uri u = r.getUrl();
                 String host = u.getHost() == null ? "" : u.getHost();
                 if (host.equals("pets.leuname.com") && u.getPath() != null && u.getPath().startsWith("/painel")) return false;
+                if (host.endsWith("cjdropshipping.com") || host.endsWith("cjdropshipping.cn")) return false;   // CJ abre dentro do app (fica logada)
                 try { startActivity(new Intent(Intent.ACTION_VIEW, u)); } catch (Exception e) { /* sem app para abrir */ }
                 return true;                       // loja, CJ e outros links abrem no navegador
             }
