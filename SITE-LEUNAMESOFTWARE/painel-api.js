@@ -714,6 +714,21 @@ export async function painel(req, env, url) {
     }
     if (rota === "rastreios" && req.method === "POST") { await atualizarRastreios(env); return json({ ok: true }); }
     if (rota === "pedido" && req.method === "POST") return await marcarPedido(req, env);
+    if (rota === "traduzir-cj" && req.method === "POST") {   // conversa com a agente da CJ: pt → en (para enviar) ou en → pt (resposta)
+      const c = await req.json().catch(() => ({}));
+      const texto = String(c.texto || "").trim().slice(0, 3000);
+      if (!texto) return json({ erro: "texto" }, 400);
+      if (!env.AI) return json({ erro: "ia" }, 500);
+      const paraIngles = c.para !== "pt";
+      const instr = paraIngles
+        ? "Translate the following Portuguese message into clear, polite, simple English for a CJdropshipping support agent. Keep every order number, product ID, tracking number and name exactly as written. Write as the store owner (first person). Return ONLY the translated message, no quotes, no notes."
+        : "Traduza a mensagem abaixo (de uma agente de suporte da CJdropshipping) para português do Brasil simples e claro. Mantenha números de pedido, códigos e valores exatamente iguais. Responda SOMENTE com a tradução, sem aspas e sem comentários.";
+      try {
+        const r = await env.AI.run(MODELO, { messages: [{ role: "system", content: instr }, { role: "user", content: texto }], max_tokens: 900, temperature: 0.2 });
+        const out = String(typeof r.response === "string" ? r.response : "").trim();
+        return out ? json({ ok: true, texto: out }) : json({ erro: "vazio" }, 502);
+      } catch (e) { return json({ erro: "ia", detalhe: String(e).slice(0, 200) }, 502); }
+    }
     if (rota === "sair" && req.method === "POST") {
       const m = /^Bearer (\w+)$/.exec(req.headers.get("Authorization") || "");
       if (m) await env.DB.prepare("DELETE FROM sessoes WHERE token=?").bind(await sha(m[1])).run();

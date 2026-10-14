@@ -69,6 +69,7 @@ label{display:block;font-size:13px;color:var(--suave);margin-top:8px}
 .cj-st{margin-top:8px;border-radius:10px;padding:8px 10px;font-size:13.5px;font-weight:600}.cj-st.ok{background:#e3f6ec;color:#14653f}.cj-st.falta{background:#fff4e0;color:#8a5a00}.cj-st.erro{background:#fde8e8;color:#a02020}.cj-st .bt{padding:5px 10px;font-size:12px;margin-left:6px;text-decoration:none;display:inline-block}
 .ped-topo a.bt{text-decoration:none}
 .ped-topo{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}.ped-topo .bt{padding:8px 12px;font-size:13px}
+.cjchat textarea{width:100%;margin:6px 0;box-sizing:border-box;font:inherit}.cjchat .dica{margin:8px 0 2px;color:var(--suave);font-size:13px}.cj-out{white-space:pre-wrap;background:#fff;border:1px solid var(--borda);border-radius:8px;padding:8px 10px;margin-top:8px;font-size:14px}
 .como{background:#f4f6ff;border:1px solid var(--borda);border-radius:10px;padding:10px 12px;margin-bottom:12px;font-size:14px}.como summary{font-weight:700;cursor:pointer}.como ol{margin:8px 0 0 18px;padding:0}.como li{margin:5px 0}
 .ped{background:#fff;border:2px solid #E62E73;border-radius:14px;padding:12px;margin-top:12px}.ped.feito{border-color:var(--borda);opacity:.85}
 .ped-cab{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:13px;color:var(--suave)}.ped-cab .tot{color:var(--tx);font-size:17px;margin-left:auto}
@@ -123,6 +124,16 @@ label{display:block;font-size:13px;color:var(--suave);margin-top:8px}
     <section class="caixa" id="pedidos" hidden>
       <div class="auto-cj"><div><b>🤖 Pedido automático na CJ</b><small>Venda paga → em até 5 min o pedido é criado na CJ com o endereço do cliente e pago com o saldo da sua <b>CJ Wallet</b>.</small></div><button class="bt" id="autoBt">…</button></div>
       <div class="ped-topo"><a class="bt cinza" href="https://cjdropshipping.com/" id="abrirCJ">🛒 Abrir a CJ</a><button class="bt cinza" id="somBt">🔔 Ativar som de venda</button><button class="bt cinza" id="testeSom">▶ Testar som</button><button class="bt cinza" id="atuPed">↻ Atualizar</button></div>
+      <details class="como cjchat" id="cjChat"><summary>💬 Falar com a Alia Lin (sua agente da CJ)</summary>
+        <p class="dica">Escreva em português. O painel traduz para inglês, copia e abre o chat dela. Lá é só <b>colar e enviar</b>.</p>
+        <textarea class="campo" id="cjPt" rows="3" placeholder="Ex.: O pedido nº CJ123 está parado há 5 dias, quando vai sair?"></textarea>
+        <button class="bt verde" id="cjEnviar">🌐 Traduzir, copiar e abrir o chat</button>
+        <div id="cjEn" class="cj-out" hidden></div>
+        <p class="dica" style="margin-top:12px">Ela respondeu em inglês? Cole aqui:</p>
+        <textarea class="campo" id="cjResp" rows="3" placeholder="Cole a resposta da Alia"></textarea>
+        <button class="bt cinza" id="cjTraduzir">🇧🇷 Traduzir para português</button>
+        <div id="cjPtOut" class="cj-out" hidden></div>
+      </details>
       <details class="como"><summary>📘 Como atender um pedido (passo a passo)</summary>
         <ol>
           <li>Toque em <b>Abrir na CJ</b> (entre na sua conta CJ se pedir).</li>
@@ -380,12 +391,24 @@ function desenharPedidos(){
       '<div class="ped-end"><div class="ped-end-t">Endereço do cliente <button class="bt cinza" data-copia="'+esc(end)+'">Copiar tudo</button></div>'+
         campo("Nome",p.nome)+campo("Endereço",a.linha1)+campo("Complemento",a.linha2)+campo("CEP / Código postal",a.cep)+campo("Cidade",a.cidade)+campo("Província",a.estado)+campo("País",a.pais)+campo("Telefone",p.telefone)+campo("E-mail",p.email)+'</div>'+
       '<div class="ped-acoes">'+(!p.cj||!p.cj.pedido?'<button class="bt verde" data-auto="'+i+'">🤖 Comprar na CJ agora (automático)</button>':'')+(p.feito?'':'<button class="bt cinza" data-feito="'+i+'">✓ Já comprei na CJ à mão</button>')+
-        '<input class="campo" placeholder="Número de rastreio (da CJ)" value="'+esc(p.rastreio)+'" data-ras="'+i+'"><button class="bt" data-enviar="'+i+'">✉ Enviar rastreio ao cliente</button></div></div>'}).join("");
+        '<input class="campo" placeholder="Número de rastreio (da CJ)" value="'+esc(p.rastreio)+'" data-ras="'+i+'"><button class="bt" data-enviar="'+i+'">✉ Enviar rastreio ao cliente</button>'+(p.cj&&p.cj.pedido?'<button class="bt cinza" data-alia="'+esc(p.cj.pedido)+'">💬 Perguntar à CJ sobre este pedido</button>':'')+'</div></div>'}).join("");
 }
+var CHAT_ALIA="https://chat.cjdropshipping.com/?touser=Alia%20Lin";
+function abrirFora(u){if(window.LeuNativo&&window.LeuNativo.abrir)window.LeuNativo.abrir(u);else window.open(u,"_blank")}
+$("#cjEnviar").onclick=function(){var t=$("#cjPt").value.trim(),b=this;if(!t){toast("Escreva a mensagem primeiro");return}
+  b.disabled=true;b.textContent="Traduzindo…";
+  api("traduzir-cj",{texto:t,para:"en"}).then(function(r){var o=$("#cjEn");o.hidden=false;o.textContent=r.texto;
+    copiarTxt(r.texto,"Copiado em inglês. No chat, segure o dedo e toque em Colar.");setTimeout(function(){abrirFora(CHAT_ALIA)},900)})
+  .catch(function(e){toast("Não traduziu: "+e.message)}).then(function(){b.disabled=false;b.textContent="🌐 Traduzir, copiar e abrir o chat"})};
+$("#cjTraduzir").onclick=function(){var t=$("#cjResp").value.trim(),b=this;if(!t){toast("Cole a resposta primeiro");return}
+  b.disabled=true;b.textContent="Traduzindo…";
+  api("traduzir-cj",{texto:t,para:"pt"}).then(function(r){var o=$("#cjPtOut");o.hidden=false;o.textContent=r.texto})
+  .catch(function(e){toast("Não traduziu: "+e.message)}).then(function(){b.disabled=false;b.textContent="🇧🇷 Traduzir para português"})};
 function textoRastreio(p,cod){var loja=p.loja==="casa"?"Cachik":"LeunaPets",site=p.loja==="casa"?"cachik.leuname.com":"pets.leuname.com";
   return "Hola "+(p.nome||"").split(" ")[0]+",\n\n¡Gracias por tu compra en "+loja+"! Tu pedido ya está en camino.\n\nNúmero de seguimiento: "+cod+"\nPuedes seguirlo aquí: https://t.17track.net/es#nums="+encodeURIComponent(cod)+"\n\nEl plazo habitual de entrega es de 7 a 15 días laborables. Si tienes cualquier duda, responde a este correo.\n\nUn saludo,\nEquipo "+loja+"\nhttps://"+site}
 $("#listaPed").onclick=function(ev){
   var c=ev.target.closest("[data-copia]");if(c){copiarTxt(c.dataset.copia);return}
+  var al=ev.target.closest("[data-alia]");if(al){var d=$("#cjChat");d.open=true;$("#cjPt").value="Sobre o pedido nº CJ "+al.dataset.alia+": ";d.scrollIntoView({behavior:"smooth"});$("#cjPt").focus();return}
   var au=ev.target.closest("[data-auto]");if(au){var pa=PED[+au.dataset.auto];au.disabled=true;au.textContent="Comprando na CJ…";
     api("comprar-cj",{id:pa.id,forcar:!!(pa.cj&&pa.cj.msg&&!pa.cj.pedido)}).then(function(r){toast(r.ok?("🤖 "+r.msg):("Não deu: "+r.msg));carregarPedidos()}).catch(function(e){toast("Erro: "+e.message);au.disabled=false});return}
   var f=ev.target.closest("[data-feito]");if(f){var p=PED[+f.dataset.feito];api("pedido",{id:p.id,feito:true,rastreio:p.rastreio}).then(function(){p.feito=true;desenharPedidos();verificarPedidos(true);toast("Marcado como comprado")});return}
