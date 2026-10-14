@@ -15,10 +15,10 @@
 button,input,select,textarea{font:inherit}
 .topo{background:var(--azul);color:#fff;padding:12px 16px;display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:5}
 .topo b{flex:1;font-size:17px}.topo a,.topo button{color:#fff;background:none;border:1px solid #ffffff55;border-radius:8px;padding:6px 10px;text-decoration:none;cursor:pointer;font-size:13px}
-.abas{display:flex;gap:6px;padding:10px 16px 0;max-width:1100px;margin:auto}
-.aba{flex:1;padding:10px;border:0;border-radius:10px 10px 0 0;background:#dfe2ee;cursor:pointer;font-weight:600;color:var(--suave)}
+.abas{display:flex;gap:6px;padding:10px 16px 0;max-width:var(--larg,1100px);margin:auto;overflow-x:auto;scrollbar-width:none}.abas::-webkit-scrollbar{display:none}
+.aba{flex:1 0 auto;white-space:nowrap;padding:10px 14px;border:0;border-radius:10px 10px 0 0;background:#dfe2ee;cursor:pointer;font-weight:600;color:var(--suave)}
 .aba.on{background:var(--card);color:var(--azul)}
-main{max-width:1100px;margin:auto;padding:0 16px 40px}
+main{max-width:var(--larg,1100px);margin:auto;padding:0 16px 40px}
 .caixa{background:var(--card);border-radius:0 0 14px 14px;padding:14px}
 .busca{display:flex;gap:8px}.busca input{flex:1;padding:11px 12px;border:1px solid var(--borda);border-radius:10px;min-width:0}
 .bt{background:var(--rosa);color:#fff;border:0;border-radius:10px;padding:10px 16px;font-weight:700;cursor:pointer}
@@ -57,7 +57,7 @@ label{display:block;font-size:13px;color:var(--suave);margin-top:8px}
 .mini{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap}.mini .bt{padding:6px 10px;font-size:12px;text-decoration:none;font-weight:600}
 #login{max-width:360px;margin:60px auto;background:#fff;border-radius:16px;padding:22px;text-align:center}
 #login img{width:190px}
-.lojas{display:flex;gap:8px;padding:10px 16px 0;max-width:1100px;margin:auto;overflow-x:auto}
+.lojas{display:flex;gap:8px;padding:10px 16px 0;max-width:var(--larg,1100px);margin:auto;overflow-x:auto}
 .lj{flex:none;border:2px solid var(--borda);background:#fff;border-radius:99px;padding:8px 14px;font-weight:700;cursor:pointer;color:var(--tx)}
 .lj small{background:#eef0f7;border-radius:99px;padding:1px 7px;margin-left:4px;font-size:12px;color:var(--suave)}
 .lj.on{background:var(--c);border-color:var(--c);color:#fff}.lj.on small{background:#ffffff33;color:#fff}
@@ -75,6 +75,23 @@ label{display:block;font-size:13px;color:var(--suave);margin-top:8px}
 .ped-end{background:var(--fundo);border-radius:10px;padding:8px 10px;margin-top:10px}.ped-end-t{display:flex;justify-content:space-between;align-items:center;font-weight:700;font-size:14px;margin-bottom:4px}
 .cp{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:5px 0;border-top:1px solid var(--borda);font-size:14px}.cp small{display:block;color:var(--suave);font-size:11px}.cp .bt,.ped-end-t .bt{padding:5px 10px;font-size:12px;flex:none}
 .ped-acoes{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}.ped-acoes .campo{flex:1;min-width:160px;margin:0}
+.topo #zMenos,.topo #zMais,.topo #modoBt{padding:6px 8px;min-width:34px}
+.chips{display:flex;gap:6px;flex-wrap:wrap}.chip.on{background:var(--azul);color:#fff;border-color:var(--azul)}.chip small{opacity:.7;margin-left:3px}
+.selo{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;vertical-align:middle}
+.res-topo{display:flex;gap:8px;justify-content:space-between;align-items:center;flex-wrap:wrap}
+.res-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin:12px 0}.rc{background:var(--fundo);border-radius:10px;padding:10px}.rc small{display:block;color:var(--suave);font-size:12px}.rc b{font-size:18px}
+.res-graf{position:relative;height:300px;background:#fff;border:1px solid var(--borda);border-radius:12px;padding:8px}
+.res-dois{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}.res-dois h4{margin:0 0 6px}
+@media(max-width:700px){.res-dois{grid-template-columns:1fr}}
+.br{display:grid;grid-template-columns:110px 1fr 30px;gap:6px;align-items:center;font-size:13px;margin:4px 0}.br span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.br i{height:10px;border-radius:5px;background:var(--azul);display:block}
+.vid-topo{display:flex;gap:8px;margin-bottom:10px}.vid-topo .bt{white-space:nowrap}.vid-topo .campo{margin:0}
+.vid-acoes{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}.vid-acoes .bt{padding:8px 12px;font-size:13px}
+.vid-grade{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px}
+.vid{background:#fff;border:1px solid var(--borda);border-radius:12px;overflow:hidden}.vid video{width:100%;aspect-ratio:9/12;object-fit:cover;background:#000;display:block}.vid-t{padding:6px 8px;font-size:13px;font-weight:600}.vid .mini{padding:0 8px 8px}
+.vid .mini .bt,.vid .mini a.bt{padding:5px 8px;font-size:12px;text-decoration:none}
+.vp{display:grid;grid-template-columns:1fr 1fr;gap:8px;max-height:55vh;overflow:auto}.vp-i{display:flex;gap:6px;align-items:center;border:1px solid var(--borda);border-radius:10px;padding:6px;font-size:12.5px;margin:0;color:var(--tx)}.vp-i img{width:44px;height:44px;border-radius:8px;object-fit:cover}
+.atalhos{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px}.atalhos a{display:flex;flex-direction:column;align-items:center;gap:4px;padding:16px 10px;border:1px solid var(--borda);border-radius:14px;background:#fff;color:var(--tx);text-decoration:none;font-weight:700}.atalhos b{font-size:28px}.atalhos small{color:var(--suave);font-weight:500}
+.redes{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--azul);color:#fff;padding:10px 16px;border-radius:10px;display:none;z-index:20;max-width:90%}
 </style>
 </head>
@@ -89,9 +106,9 @@ label{display:block;font-size:13px;color:var(--suave);margin-top:8px}
 </div>
 
 <div id="app" hidden>
-  <div class="topo"><b>Painel das lojas</b><a class="baixar" href="app.apk">📲 App</a><button id="sair">Sair</button></div>
+  <div class="topo"><b>Painel das lojas</b><button id="zMenos" title="Diminuir">A−</button><button id="zMais" title="Aumentar">A+</button><button id="modoBt" title="Tela larga (computador) ou celular">🖥️</button><a class="baixar" href="app.apk">📲 App</a><button id="sair">Sair</button></div>
   <div class="lojas" id="lojas"></div>
-  <div class="abas"><button class="aba on" data-aba="buscar">Buscar na CJ</button><button class="aba" data-aba="loja">Na loja</button><button class="aba" data-aba="ver">Ver loja</button><button class="aba" data-aba="pedidos">💰 Pedidos <b id="nPed" class="nped" hidden></b></button></div>
+  <div class="abas"><button class="aba on" data-aba="buscar">Buscar na CJ</button><button class="aba" data-aba="loja">Na loja</button><button class="aba" data-aba="ver">Ver loja</button><button class="aba" data-aba="pedidos">💰 Pedidos <b id="nPed" class="nped" hidden></b></button><button class="aba" data-aba="resultados">📊 Resultados</button><button class="aba" data-aba="videos">🎬 Vídeos</button><button class="aba" data-aba="atalhos">🔗 Atalhos</button></div>
   <main>
     <section class="caixa" id="buscar">
       <form class="busca" id="fBusca"><input id="q" placeholder="Ex.: cat toy, dog bed, leash…" enterkeyhint="search"><button class="bt">Buscar</button></form>
@@ -116,6 +133,35 @@ label{display:block;font-size:13px;color:var(--suave);margin-top:8px}
         </ol>
       </details>
       <div id="listaPed"><p class="msg">Carregando…</p></div>
+    </section>
+    <section class="caixa" id="resultados" hidden>
+      <div class="res-topo"><div class="chips" id="resLojas"></div><select class="campo" id="resDias" style="width:auto;margin:0"><option value="7">7 dias</option><option value="30" selected>30 dias</option><option value="90">90 dias</option></select></div>
+      <div class="res-cards" id="resCards"></div>
+      <div class="res-graf"><canvas id="grafico" height="260"></canvas></div>
+      <div class="res-dois"><div><h4>De onde vieram as vendas</h4><div id="resOrigens"></div></div><div><h4>Mais vendidos</h4><div id="resProdutos"></div></div></div>
+      <p class="msg" style="font-size:12.5px">Lucro = venda − custo do produto e frete na CJ − taxas (~7%). Origem: de onde o cliente chegou (use os links do botão <b>Copiar link</b>, que já marcam a rede).</p>
+    </section>
+    <section class="caixa" id="videos" hidden>
+      <div class="vid-topo"><input class="campo" id="novaPasta" placeholder="Nome da nova pasta (ex.: TikTok semana 1)"><button class="bt" id="criarPasta">+ Pasta</button></div>
+      <div class="chips" id="pastas"></div>
+      <div id="pastaAcoes" class="vid-acoes" hidden><label class="bt verde" style="cursor:pointer">⬆ Subir vídeo<input type="file" id="subir" accept="video/*" multiple hidden></label><button class="bt cinza" id="addProd">+ Vídeos dos produtos</button><button class="bt cinza" id="renPasta">✏️ Renomear pasta</button><button class="bt cinza" id="apagarPasta">🗑 Apagar pasta</button></div>
+      <div id="progresso" class="msg" hidden></div>
+      <div id="vidLista" class="vid-grade"><p class="msg">Crie uma pasta para começar.</p></div>
+    </section>
+    <section class="caixa" id="atalhos" hidden>
+      <p class="msg" style="text-align:left">Tudo num toque. No celular, abre o app da rede; no computador, abre em outra aba.</p>
+      <div class="atalhos">
+        <a href="https://www.tiktok.com/tiktokstudio/upload" target="_blank"><b>🎵</b>TikTok<small>postar vídeo</small></a>
+        <a href="https://www.instagram.com/" target="_blank"><b>📸</b>Instagram<small>Reels e stories</small></a>
+        <a href="https://business.facebook.com/latest/home" target="_blank"><b>📘</b>Facebook<small>Meta Business</small></a>
+        <a href="https://www.pinterest.com/pin-creation-tool/" target="_blank"><b>📌</b>Pinterest<small>criar pin</small></a>
+        <a href="https://studio.youtube.com/" target="_blank"><b>▶️</b>YouTube<small>Shorts</small></a>
+        <a href="https://merchants.google.com/" target="_blank"><b>🛍️</b>Google<small>Shopping grátis</small></a>
+        <a href="https://dashboard.stripe.com/" target="_blank"><b>💳</b>Stripe<small>vendas e repasses</small></a>
+        <a href="https://cjdropshipping.com/" target="_blank"><b>🛒</b>CJ<small>pedidos e saldo</small></a>
+        <a href="https://pets.leuname.com/" target="_blank"><b>🐾</b>LeunaPets<small>ver loja</small></a>
+        <a href="https://cachik.leuname.com/" target="_blank"><b>🏡</b>Cachik<small>ver loja</small></a>
+      </div>
     </section>
     <section class="caixa" id="ver" hidden>
       <div class="ver-barra"><span id="verHost"></span><a id="verAbrir" target="_blank">Abrir em tela cheia ↗</a></div>
@@ -169,7 +215,9 @@ $("#fLogin").onsubmit=function(ev){ev.preventDefault();$("#erroLogin").textConte
 $("#sair").onclick=sair;
 document.querySelectorAll(".aba").forEach(function(b){b.onclick=function(){
   document.querySelectorAll(".aba").forEach(function(x){x.classList.toggle("on",x===b)});
-  ["buscar","loja","ver","pedidos"].forEach(function(a){$("#"+a).hidden=b.dataset.aba!==a});
+  ["buscar","loja","ver","pedidos","resultados","videos","atalhos"].forEach(function(a){$("#"+a).hidden=b.dataset.aba!==a});
+  if(b.dataset.aba==="resultados")carregarResumo();
+  if(b.dataset.aba==="videos")carregarVideos();
   if(b.dataset.aba==="pedidos")carregarPedidos();
   if(b.dataset.aba==="loja")carregarLoja();
   if(b.dataset.aba==="ver"){var f=$("#verFrame"),u="https://"+CFG.host+"/";if(f.getAttribute("src")!==u)f.setAttribute("src",u)}}});
@@ -257,7 +305,7 @@ function desenhar(){var f=$("#filtro").value.toLowerCase();
     '<button class="bt cinza" data-link="'+esc(p.id)+'">🔗 Copiar link</button></div></div><button class="bt cinza" data-id="'+esc(p.id)+'">Editar</button></div>'}).join("")}
 function copiar(t){(navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(function(){toast("Link copiado. Cole na bio ou no post.")}).catch(function(){prompt("Copie o link:",t)})}
 $("#lista").onclick=function(ev){
-  var l=ev.target.closest("[data-link]");if(l){copiar("https://"+CFG.host+"/producto.html?id="+encodeURIComponent(l.dataset.link));return}
+  var l=ev.target.closest("[data-link]");if(l){escolherRede(function(rede){copiar("https://"+CFG.host+"/producto.html?id="+encodeURIComponent(l.dataset.link)+(rede?"&o="+rede:""))});return}
   var v=ev.target.closest("[data-vid]");if(v){v.disabled=true;v.textContent="Buscando vídeo…";api("video",{id:v.dataset.vid}).then(function(){toast("Vídeo pronto (já está na loja também)");carregarLoja()}).catch(function(e){v.disabled=false;v.textContent="🎬 Pegar vídeo";toast(e.message)});return}
   var b=ev.target.closest("[data-id]");if(!b)return;var p=LOJA.find(function(x){return x.id===b.dataset.id});if(p)editar(p)};
 function editar(p){var es=p.es||{};
@@ -345,6 +393,90 @@ $("#listaPed").onclick=function(ev){
 window.addEventListener("hashchange",function(){if(location.hash==="#pedidos"){var b=document.querySelector('[data-aba="pedidos"]');if(b)b.click()}});
 if(window.LeuNativo)$("#somBt").insertAdjacentHTML("afterend",'<p class="msg" style="width:100%;text-align:left;padding:4px 0">📱 No app: o aviso com som de caixa funciona até com o app fechado e a tela bloqueada.</p>');
 setInterval(function(){if(token&&!$("#app").hidden)verificarPedidos(false).then(function(){if(!$("#pedidos").hidden)desenharPedidos()}).catch(function(){})},30000);
+// ---- tamanho da tela e modo computador ----
+var zoom=1,largo=false;try{zoom=+localStorage.getItem("lp_zoom")||1;largo=localStorage.getItem("lp_largo")==="1"}catch(e){}
+function aplicarTela(){document.body.style.zoom=zoom;document.documentElement.style.setProperty("--larg",largo?"1600px":"1100px");$("#modoBt").textContent=largo?"📱":"🖥️";
+  try{localStorage.setItem("lp_zoom",String(zoom));localStorage.setItem("lp_largo",largo?"1":"0")}catch(e){}}
+$("#zMais").onclick=function(){zoom=Math.min(1.6,Math.round((zoom+0.1)*10)/10);aplicarTela()};
+$("#zMenos").onclick=function(){zoom=Math.max(0.7,Math.round((zoom-0.1)*10)/10);aplicarTela()};
+$("#modoBt").onclick=function(){largo=!largo;aplicarTela();toast(largo?"Modo computador (tela larga)":"Modo celular")};
+aplicarTela();
+// ---- escolher a rede do link (para o gráfico saber de onde veio a venda) ----
+function escolherRede(cb){
+  $("#janela").innerHTML='<h3 style="margin:0 0 8px">Onde você vai postar?</h3><p class="msg" style="text-align:left;padding:0 0 8px">O link sai marcado, e o gráfico mostra de onde veio cada venda.</p><div class="redes">'+
+    [["tiktok","🎵 TikTok"],["instagram","📸 Instagram"],["facebook","📘 Facebook"],["pinterest","📌 Pinterest"],["youtube","▶️ YouTube"],["whatsapp","💬 WhatsApp"],["","🔗 Outro"]].map(function(x){return '<button class="bt cinza" data-rede="'+x[0]+'">'+x[1]+'</button>'}).join("")+'</div>';
+  $("#fundo").classList.add("on");
+  $("#janela").onclick=function(ev){var b=ev.target.closest("[data-rede]");if(!b)return;fechar();$("#janela").onclick=null;cb(b.dataset.rede)};
+}
+// ---- 📊 resultados ----
+var CORES={pets:"#E62E73",casa:"#16382A"},resLoja="todas",RES=null,grafico=null;
+function carregarResumo(){$("#resCards").innerHTML='<p class="msg">Carregando…</p>';
+  api("resumo?dias="+$("#resDias").value).then(function(d){RES=d;desenharResumo()}).catch(function(e){$("#resCards").innerHTML='<p class="msg">Erro: '+esc(e.message)+'</p>'})}
+$("#resDias").onchange=carregarResumo;
+function soma(a){return a.reduce(function(x,y){return x+y},0)}
+function desenharResumo(){
+  var ids=Object.keys(RES.lojas);
+  $("#resLojas").innerHTML=['<button class="chip'+(resLoja==="todas"?" on":"")+'" data-rl="todas">Todas</button>'].concat(ids.map(function(id){var c=LOJAS_CFG[id]||{nome:id,emoji:""};
+    return '<button class="chip'+(resLoja===id?" on":"")+'" data-rl="'+id+'"><i class="selo" style="background:'+(CORES[id]||"#888")+'"></i>'+c.emoji+" "+esc(c.nome)+'</button>'})).join("");
+  var sel=resLoja==="todas"?ids:[resLoja];
+  var tot={vendas:0,receita:0,custo:0,lucro:0};sel.forEach(function(id){["vendas","receita","custo","lucro"].forEach(function(k){tot[k]+=soma(RES.lojas[id][k])})});
+  var hoje=RES.dias.length-1,hj=0,lh=0;sel.forEach(function(id){hj+=RES.lojas[id].receita[hoje];lh+=RES.lojas[id].lucro[hoje]});
+  $("#resCards").innerHTML=[["Vendas",tot.vendas],["Entrou",eur(tot.receita)],["Saiu (CJ + taxas)",eur(tot.custo)],["Lucro",eur(tot.lucro)],["Hoje",eur(hj)+" · lucro "+eur(lh)]].map(function(x){return '<div class="rc"><small>'+x[0]+'</small><b>'+x[1]+'</b></div>'}).join("");
+  var ds=sel.map(function(id){var c=LOJAS_CFG[id]||{nome:id};return {label:(c.emoji||"")+" "+c.nome+" · lucro",data:RES.lojas[id].lucro,backgroundColor:CORES[id]||"#888",borderRadius:6}});
+  if(sel.length===1)ds.push({label:"Entrou",data:RES.lojas[sel[0]].receita,type:"line",borderColor:"#E9A04A",backgroundColor:"#E9A04A",tension:.3,pointRadius:2});
+  function plot(){if(grafico)grafico.destroy();grafico=new Chart($("#grafico"),{type:"bar",data:{labels:RES.dias.map(function(d){return d.slice(8,10)+"/"+d.slice(5,7)}),datasets:ds},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:"bottom"}},scales:{x:{stacked:sel.length>1},y:{stacked:sel.length>1,ticks:{callback:function(v){return v+" €"}}}}}})}
+  if(window.Chart)plot();else{var sc=document.createElement("script");sc.src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js";sc.onload=plot;document.head.appendChild(sc)}
+  var org={},prod={};sel.forEach(function(id){var o=RES.lojas[id].origens,p=RES.lojas[id].produtos;Object.keys(o).forEach(function(k){org[k]=(org[k]||0)+o[k]});Object.keys(p).forEach(function(k){prod[k]=(prod[k]||0)+p[k]})});
+  function barras(m){var ks=Object.keys(m).sort(function(a,b){return m[b]-m[a]}).slice(0,8),mx=Math.max.apply(null,ks.map(function(k){return m[k]}).concat([1]));
+    return ks.length?ks.map(function(k){return '<div class="br"><span>'+esc(k)+'</span><i style="width:'+Math.round(m[k]/mx*100)+'%"></i><b>'+m[k]+'</b></div>'}).join(""):'<p class="msg">Ainda sem vendas.</p>'}
+  $("#resOrigens").innerHTML=barras(org);$("#resProdutos").innerHTML=barras(prod);
+}
+$("#resLojas").onclick=function(ev){var b=ev.target.closest("[data-rl]");if(!b)return;resLoja=b.dataset.rl;desenharResumo()};
+// ---- 🎬 vídeos ----
+var VID={pastas:[],itens:[]},pastaSel=null;
+try{pastaSel=+localStorage.getItem("lp_pasta")||null}catch(e){}
+function carregarVideos(){api("videos").then(function(d){VID=d;desenharVideos()}).catch(function(e){$("#vidLista").innerHTML='<p class="msg">Erro: '+esc(e.message)+'</p>'})}
+function acaoVid(rota,corpo){return api(rota,corpo).then(function(d){VID=d;desenharVideos();return d})}
+function desenharVideos(){
+  if(pastaSel&&!VID.pastas.some(function(p){return p.id===pastaSel}))pastaSel=null;
+  if(!pastaSel&&VID.pastas.length)pastaSel=VID.pastas[0].id;
+  $("#pastas").innerHTML=VID.pastas.map(function(p){var n=VID.itens.filter(function(v){return v.pasta===p.id}).length;return '<button class="chip'+(p.id===pastaSel?" on":"")+'" data-pasta="'+p.id+'">📁 '+esc(p.nome)+' <small>'+n+'</small></button>'}).join("");
+  $("#pastaAcoes").hidden=!pastaSel;
+  var l=VID.itens.filter(function(v){return v.pasta===pastaSel});
+  $("#vidLista").innerHTML=!VID.pastas.length?'<p class="msg">Crie uma pasta para começar (ex.: "TikTok", "Instagram", "Prontos para postar").</p>':
+    !l.length?'<p class="msg">Pasta vazia. Toque em <b>⬆ Subir vídeo</b> ou <b>+ Vídeos dos produtos</b>.</p>':
+    l.map(function(v){return '<div class="vid"><video src="'+esc(v.url)+'" preload="metadata" controls playsinline></video><div class="vid-t">'+esc(v.titulo)+'</div><div class="mini">'+
+      '<a class="bt cinza" href="'+esc(v.url)+'?baixar='+encodeURIComponent(v.titulo||"video")+'">⬇ Baixar</a><button class="bt cinza" data-vlink="'+esc(v.url)+'">🔗 Link</button><button class="bt cinza" data-vren="'+v.id+'">✏️</button><button class="bt cinza" data-vmov="'+v.id+'">📁</button><button class="bt cinza" data-vdel="'+v.id+'">🗑</button></div></div>'}).join("");
+}
+$("#criarPasta").onclick=function(){var n=$("#novaPasta").value.trim();if(!n){toast("Escreva o nome da pasta");return}acaoVid("pasta",{nome:n}).then(function(d){$("#novaPasta").value="";pastaSel=d.pastas[d.pastas.length-1].id;try{localStorage.setItem("lp_pasta",pastaSel)}catch(e){}desenharVideos()})};
+$("#pastas").onclick=function(ev){var b=ev.target.closest("[data-pasta]");if(!b)return;pastaSel=+b.dataset.pasta;try{localStorage.setItem("lp_pasta",pastaSel)}catch(e){}desenharVideos()};
+$("#renPasta").onclick=function(){var p=VID.pastas.find(function(x){return x.id===pastaSel});var n=prompt("Novo nome da pasta:",p&&p.nome);if(n)acaoVid("pasta-renomear",{id:pastaSel,nome:n})};
+$("#apagarPasta").onclick=function(){if(confirm("Apagar a pasta e os vídeos que você subiu nela?"))acaoVid("pasta-apagar",{id:pastaSel}).then(function(){pastaSel=null;desenharVideos()})};
+$("#vidLista").onclick=function(ev){
+  var a=ev.target.closest("[data-vlink]");if(a){copiarTxt(location.origin+a.dataset.vlink,"Link do vídeo copiado");return}
+  var rn=ev.target.closest("[data-vren]");if(rn){var v=VID.itens.find(function(x){return x.id===+rn.dataset.vren});var n=prompt("Nome do vídeo:",v&&v.titulo);if(n)acaoVid("video-renomear",{id:v.id,titulo:n});return}
+  var mv=ev.target.closest("[data-vmov]");if(mv){var lista=VID.pastas.map(function(p,i){return (i+1)+" - "+p.nome}).join("\n");var k=parseInt(prompt("Mover para qual pasta? (número)\n"+lista),10);if(k&&VID.pastas[k-1])acaoVid("video-mover",{id:+mv.dataset.vmov,pasta:VID.pastas[k-1].id});return}
+  var dl=ev.target.closest("[data-vdel]");if(dl&&confirm("Tirar este vídeo da pasta?"))acaoVid("video-apagar",{id:+dl.dataset.vdel});
+};
+$("#subir").onchange=function(){var fs=[].slice.call(this.files);this.value="";if(!fs.length)return;var feitos=0;
+  (function prox(){if(!fs.length){$("#progresso").hidden=true;carregarVideos();toast(feitos+" vídeo(s) na pasta");return}
+    var f=fs.shift();if(f.size>95e6){toast(f.name+": grande demais (máx. 95 MB)");prox();return}
+    var x=new XMLHttpRequest();x.open("POST","/api/painel/video-upload?loja="+LOJA+"&pasta="+pastaSel+"&nome="+encodeURIComponent(f.name));
+    x.setRequestHeader("Authorization","Bearer "+token);x.setRequestHeader("Content-Type",f.type||"video/mp4");
+    $("#progresso").hidden=false;x.upload.onprogress=function(e){if(e.lengthComputable)$("#progresso").textContent="Subindo "+f.name+": "+Math.round(e.loaded/e.total*100)+"%"};
+    x.onload=function(){if(x.status===200)feitos++;else toast("Erro ao subir "+f.name);prox()};x.onerror=function(){toast("Sem internet");prox()};x.send(f)})();
+};
+$("#addProd").onclick=function(){$("#janela").innerHTML='<p class="msg">Carregando vídeos dos produtos…</p>';$("#fundo").classList.add("on");
+  api("videos-produtos").then(function(d){
+    if(!d.itens.length){$("#janela").innerHTML='<p class="msg">Nenhum produto com vídeo ainda (em "Na loja", use 🎬 Pegar vídeo).</p><button class="bt cinza" onclick="document.getElementById(\'fundo\').classList.remove(\'on\')">Fechar</button>';return}
+    $("#janela").innerHTML='<h3 style="margin:0 0 8px">Escolha os vídeos para a pasta</h3><div class="vp">'+d.itens.map(function(v,i){return '<label class="vp-i"><input type="checkbox" value="'+i+'"><img src="'+esc(v.img)+'" alt=""><span>'+(v.loja==="casa"?"🏡 ":"🐾 ")+esc(v.nome)+'</span></label>'}).join("")+
+      '</div><div class="acoes"><button class="bt cinza" id="vpF">Fechar</button><button class="bt verde" id="vpOk">Adicionar</button></div>';
+    $("#vpF").onclick=fechar;
+    $("#vpOk").onclick=function(){var sel=[].slice.call(document.querySelectorAll(".vp input:checked")).map(function(c){return d.itens[+c.value]});
+      var p=Promise.resolve();sel.forEach(function(v){p=p.then(function(){return api("video-add",{pasta:pastaSel,titulo:v.nome,url:v.url})})});
+      p.then(function(){fechar();carregarVideos();toast(sel.length+" vídeo(s) adicionados")})};
+  })};
 if(token)entrar();
 })();
 </script>

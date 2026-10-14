@@ -39,6 +39,21 @@
     clearTimeout(avisoT); avisoT = setTimeout(function () { a.classList.remove("on"); }, 2600);
   }
 
+  /* ---------- de onde veio o cliente (TikTok, Instagram…): vai junto com a venda para o gráfico do painel ---------- */
+  (function () {
+    try {
+      var q = new URLSearchParams(location.search), o = q.get("o") || q.get("utm_source") || "";
+      if (!o && document.referrer) {
+        var h = new URL(document.referrer).hostname;
+        if (h !== location.hostname) {
+          o = /tiktok/.test(h) ? "tiktok" : /instagram/.test(h) ? "instagram" : /facebook|fb\./.test(h) ? "facebook" : /google/.test(h) ? "google" :
+            /pinterest/.test(h) ? "pinterest" : /youtube|youtu\.be/.test(h) ? "youtube" : /whatsapp|wa\.me/.test(h) ? "whatsapp" : h.replace(/^www\./, "");
+        }
+      }
+      if (o) guardar("origem", o.toLowerCase().slice(0, 30));
+    } catch (e) {}
+  })();
+
   /* ---------- carrinho ---------- */
   var carrinho = {};
   try { carrinho = JSON.parse(ler("carrito") || "{}") || {}; } catch (e) { carrinho = {}; }
@@ -349,7 +364,7 @@
     if (!aceitou()) return;
     var b = this; b.disabled = true;
     fetch("/api/pagar", { method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ lang: lang(), itens: itensCarrinho().map(function (it) { return { id: it.p.id, v: it.v ? it.v.vid : undefined, q: it.q }; }) }) })
+      body: JSON.stringify({ lang: lang(), origem: ler("origem") || "", itens: itensCarrinho().map(function (it) { return { id: it.p.id, v: it.v ? it.v.vid : undefined, q: it.q }; }) }) })
       .then(function (r) { return r.json(); })
       .then(function (j) { if (j && j.url) location.href = j.url; else throw new Error(j && j.erro); })
       .catch(function () { b.disabled = false; aviso(T("No se pudo abrir el pago. Inténtalo de nuevo.", "Não foi possível abrir o pagamento. Tente novamente.", "Could not open checkout. Please try again.")); });

@@ -216,13 +216,17 @@ async function guardarVideo(env, pid) {
   return "";
 }
 export async function servirVideo(req, env, nome) {
-  if (!env.DOWNLOADS || !/^[A-Za-z0-9-]+\.mp4$/.test(nome)) return new Response("404", { status: 404 });
-  const chave = "leunapets/videos/" + nome;
+  let chave;
+  if (nome.startsWith("m/") && /^m\/[A-Za-z0-9-]+\.(mp4|mov|webm)$/.test(nome)) chave = "leunapets/meus/" + nome.slice(2);   // vídeos que o dono subiu
+  else if (/^[A-Za-z0-9-]+\.mp4$/.test(nome)) chave = "leunapets/videos/" + nome;
+  if (!env.DOWNLOADS || !chave) return new Response("404", { status: 404 });
   const range = req.headers.get("Range");
   const o = await env.DOWNLOADS.get(chave, range ? { range: req.headers } : undefined);
   if (!o) return new Response("404", { status: 404 });
-  const h = new Headers({ "Content-Type": "video/mp4", "Accept-Ranges": "bytes", "Cache-Control": "public, max-age=86400" });
-  if (new URL(req.url).searchParams.has("baixar")) h.set("Content-Disposition", `attachment; filename="leunapets-${nome}"`);
+  const tipo = /\.mov$/.test(chave) ? "video/quicktime" : /\.webm$/.test(chave) ? "video/webm" : "video/mp4";
+  const h = new Headers({ "Content-Type": tipo, "Accept-Ranges": "bytes", "Cache-Control": "public, max-age=86400" });
+  const pedido = new URL(req.url).searchParams.get("baixar");
+  if (pedido !== null) h.set("Content-Disposition", `attachment; filename="${(pedido || "video").replace(/[^\w\-]/g, "_").slice(0, 60) || "video"}.${chave.split(".").pop()}"`);
   if (range && o.range) {
     const ini = o.range.offset || 0, fim = ini + (o.range.length || o.size - ini) - 1;
     h.set("Content-Range", `bytes ${ini}-${fim}/${o.size}`); h.set("Content-Length", String(fim - ini + 1));
@@ -549,6 +553,111 @@ export async function roboPedidos(env) {
   await atualizarRastreios(env);
 }
 
+// ---------- resultados (gráfico): vendas, custo, lucro e origem por loja e por dia ----------
+async function custosRobo(env, req) {
+  try {
+    const r = await env.ASSETS.fetch(new Request(new URL("/catalogo-cj.json", req.url)));
+    const c = r.ok ? await r.json() : {};
+    return Object.fromEntries((c.itens || []).map((x) => [x.id, x.custoTotalEur]));
+  } catch { return {}; }
+}
+async function resumo(req, env, url) {
+  if (!env.STRIPE_SECRET_KEY) return json({ erro: "stripe-desligado" }, 503);
+  const dias = Math.max(7, Math.min(90, parseInt(url.searchParams.get("dias"), 10) || 30));
+  const desde = Math.floor(Date.now() / 1000) - dias * 86400;
+  const sess = [];
+  let depois = "";
+  for (let pag = 0; pag < 5; pag++) {
+    const r = await fetch(`https://api.stripe.com/v1/checkout/sessions?status=complete&limit=100&created[gte]=${desde}${depois ? "&starting_after=" + depois : ""}`,
+      { headers: { Authorization: "Bearer " + env.STRIPE_SECRET_KEY } });
+    const d = await r.json().catch(() => ({}));
+    if (!r.ok) return json({ erro: "stripe", detalhe: d.error && d.error.message }, 502);
+    sess.push(...(d.data || []));
+    if (!d.has_more || !d.data.length) break;
+    depois = d.data[d.data.length - 1].id;
+  }
+  const robo = await custosRobo(env, req);
+  const cats = {};
+  const dia = (t) => new Date((t - 3 * 3600) * 1000).toISOString().slice(0, 10);   // horário de Brasília
+  const lista = [];
+  for (let k = dias - 1; k >= 0; k--) lista.push(dia(Math.floor(Date.now() / 1000) - k * 86400));
+  const out = {};
+  const base = () => ({ vendas: lista.map(() => 0), receita: lista.map(() => 0), custo: lista.map(() => 0), lucro: lista.map(() => 0), origens: {}, produtos: {} });
+  for (const L of LOJAS) out[L.id] = base();
+  for (const s of sess) {
+    if (s.payment_status !== "paid") continue;
+    const lojaId = (s.metadata && s.metadata.loja) || "pets";
+    if (!out[lojaId]) out[lojaId] = base();
+    const i = lista.indexOf(dia(s.created));
+    if (i < 0) continue;
+    if (!cats[lojaId]) cats[lojaId] = Object.fromEntries((await catalogo(env, req, lojaId)).map((p) => [p.id, p]));
+    const receita = s.amount_total / 100;
+    let custo = 0;
+    for (const x of String((s.metadata && s.metadata.itens) || "").split(",").map((y) => y.trim()).filter(Boolean)) {
+      const m = /^(\d+)x\s+([^:]+)/.exec(x);
+      if (!m) continue;
+      const p = cats[lojaId][m[2]] || {};
+      const c = (p.cj && p.cj.custoEur) || robo[m[2]] || receita * 0.5;
+      custo += c * (+m[1] || 1);
+      const nome = (p.es && p.es.nombre) || m[2];
+      out[lojaId].produtos[nome] = (out[lojaId].produtos[nome] || 0) + (+m[1] || 1);
+    }
+    const taxas = receita * 0.07 + 0.35;
+    const o = out[lojaId];
+    o.vendas[i] += 1; o.receita[i] += receita; o.custo[i] += custo + taxas; o.lucro[i] += receita - custo - taxas;
+    const org = (s.metadata && s.metadata.origem) || "direto";
+    o.origens[org] = (o.origens[org] || 0) + 1;
+  }
+  for (const k of Object.keys(out)) for (const c of ["receita", "custo", "lucro"]) out[k][c] = out[k][c].map((v) => Math.round(v * 100) / 100);
+  return json({ dias: lista, lojas: out });
+}
+
+// ---------- pastas de vídeos (organizador do dono) ----------
+async function tabelasVideo(env) {
+  await env.DB.batch([
+    env.DB.prepare("CREATE TABLE IF NOT EXISTS vpastas (id INTEGER PRIMARY KEY AUTOINCREMENT, nome TEXT NOT NULL, criado TEXT NOT NULL DEFAULT (datetime('now')))"),
+    env.DB.prepare("CREATE TABLE IF NOT EXISTS vitens (id INTEGER PRIMARY KEY AUTOINCREMENT, pasta INTEGER NOT NULL, titulo TEXT, url TEXT NOT NULL, chave TEXT, criado TEXT NOT NULL DEFAULT (datetime('now')))"),
+  ]);
+}
+async function videos(req, env, rota, url) {
+  await tabelasVideo(env);
+  const c = req.method === "POST" && rota !== "video-upload" ? await req.json().catch(() => ({})) : {};
+  const nome = (v) => String(v || "").trim().slice(0, 60);
+  if (rota === "pasta" ) { if (!nome(c.nome)) return json({ erro: "nome" }, 400); await env.DB.prepare("INSERT INTO vpastas (nome) VALUES (?)").bind(nome(c.nome)).run(); }
+  if (rota === "pasta-renomear") await env.DB.prepare("UPDATE vpastas SET nome=? WHERE id=?").bind(nome(c.nome), +c.id).run();
+  if (rota === "pasta-apagar") {
+    const { results } = await env.DB.prepare("SELECT chave FROM vitens WHERE pasta=? AND chave IS NOT NULL").bind(+c.id).all();
+    for (const x of results) await env.DOWNLOADS.delete(x.chave).catch(() => {});
+    await env.DB.batch([env.DB.prepare("DELETE FROM vitens WHERE pasta=?").bind(+c.id), env.DB.prepare("DELETE FROM vpastas WHERE id=?").bind(+c.id)]);
+  }
+  if (rota === "video-add") {
+    const u = String(c.url || "");
+    if (!/^\/v\/[A-Za-z0-9\-\/]+\.(mp4|mov|webm)$/.test(u)) return json({ erro: "video" }, 400);
+    await env.DB.prepare("INSERT INTO vitens (pasta, titulo, url) VALUES (?,?,?)").bind(+c.pasta, nome(c.titulo) || "Vídeo", u).run();
+  }
+  if (rota === "video-renomear") await env.DB.prepare("UPDATE vitens SET titulo=? WHERE id=?").bind(nome(c.titulo), +c.id).run();
+  if (rota === "video-mover") await env.DB.prepare("UPDATE vitens SET pasta=? WHERE id=?").bind(+c.pasta, +c.id).run();
+  if (rota === "video-apagar") {
+    const x = await env.DB.prepare("SELECT chave FROM vitens WHERE id=?").bind(+c.id).first();
+    if (x && x.chave) await env.DOWNLOADS.delete(x.chave).catch(() => {});
+    await env.DB.prepare("DELETE FROM vitens WHERE id=?").bind(+c.id).run();
+  }
+  if (rota === "video-upload") {   // o dono sobe um vídeo pronto (até ~95 MB)
+    const pasta = +url.searchParams.get("pasta");
+    const tit = nome(url.searchParams.get("nome")) || "Vídeo";
+    const ext = (/\.(mov|webm)$/i.exec(tit) || [, "mp4"])[1].toLowerCase();
+    const tam = parseInt(req.headers.get("content-length") || "0", 10);
+    if (!pasta || !tam || tam > 99e6) return json({ erro: "arquivo grande demais (máx. 95 MB)" }, 400);
+    const id = [...crypto.getRandomValues(new Uint8Array(10))].map((b) => b.toString(16).padStart(2, "0")).join("");
+    const chave = `leunapets/meus/${id}.${ext}`;
+    await env.DOWNLOADS.put(chave, req.body, { httpMetadata: { contentType: ext === "mov" ? "video/quicktime" : ext === "webm" ? "video/webm" : "video/mp4" } });
+    await env.DB.prepare("INSERT INTO vitens (pasta, titulo, url, chave) VALUES (?,?,?,?)").bind(pasta, tit.replace(/\.(mp4|mov|webm)$/i, ""), `/v/m/${id}.${ext}`, chave).run();
+  }
+  const pastas = (await env.DB.prepare("SELECT id, nome FROM vpastas ORDER BY id").all()).results;
+  const itens = (await env.DB.prepare("SELECT id, pasta, titulo, url FROM vitens ORDER BY id DESC").all()).results;
+  return json({ pastas, itens });
+}
+
 export async function painel(req, env, url) {
   if (!env.DB) return json({ erro: "sem-banco" }, 503);
   await tabelas(env);
@@ -583,6 +692,13 @@ export async function painel(req, env, url) {
     if (rota === "publicados") return await publicados(req, env, L);
     if (rota === "pedidos") return await pedidos(req, env);
     if (rota === "ultimo") return await ultimo(env);
+    if (rota === "resumo") return await resumo(req, env, url);
+    if (["videos", "pasta", "pasta-renomear", "pasta-apagar", "video-add", "video-renomear", "video-mover", "video-apagar", "video-upload"].includes(rota)) return await videos(req, env, rota, url);
+    if (rota === "videos-produtos") {   // vídeos dos produtos das lojas, para pôr nas pastas
+      const out = [];
+      for (const Lx of LOJAS) for (const p of await catalogo(env, req, Lx.id)) if (/^\/v\//.test(p.video || "")) out.push({ loja: Lx.id, nome: (p.es && p.es.nombre) || p.id, url: p.video, img: fotoAbs((p.imagenes || [])[0]) });
+      return json({ itens: out });
+    }
     if (rota === "comprar-cj" && req.method === "POST") {
       const c = await req.json().catch(() => ({}));
       return json(await comprarCJ(env, req, String(c.id || "").slice(0, 100), !!c.forcar));

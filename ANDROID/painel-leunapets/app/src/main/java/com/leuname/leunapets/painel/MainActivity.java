@@ -8,6 +8,8 @@ import android.os.Bundle;
 import android.view.View;
 import android.webkit.CookieManager;
 import android.webkit.JavascriptInterface;
+import android.webkit.ValueCallback;
+import android.webkit.WebChromeClient;
 import android.os.Build;
 import android.os.PowerManager;
 import android.provider.Settings;
@@ -25,6 +27,7 @@ public class MainActivity extends Activity {
     private static final String PAINEL = "https://pets.leuname.com/painel/";
     private WebView web;
     private ProgressBar carregando;
+    private ValueCallback<Uri[]> escolha;   // "Subir vídeo" do painel (seletor de arquivos)
 
     @Override
     protected void onCreate(Bundle salvo) {
@@ -44,7 +47,17 @@ public class MainActivity extends Activity {
         s.setCacheMode(WebSettings.LOAD_DEFAULT);
         s.setMediaPlaybackRequiresUserGesture(false);
         CookieManager.getInstance().setAcceptCookie(true);
-        web.addJavascriptInterface(new Ponte(), "LeuNativo");   // o painel passa o login para o vigia de vendas
+        web.addJavascriptInterface(new Ponte(), "LeuNativo");
+        web.setWebChromeClient(new WebChromeClient() {
+            @Override
+            public boolean onShowFileChooser(WebView v, ValueCallback<Uri[]> cb, FileChooserParams params) {
+                if (escolha != null) escolha.onReceiveValue(null);
+                escolha = cb;
+                try { startActivityForResult(params.createIntent(), 42); }
+                catch (Exception e) { escolha = null; return false; }
+                return true;
+            }
+        });   // o painel passa o login para o vigia de vendas
 
         web.setWebViewClient(new WebViewClient() {
             @Override
@@ -77,6 +90,22 @@ public class MainActivity extends Activity {
         if (salvo != null) web.restoreState(salvo); else web.loadUrl(PAINEL + ("pedidos".equals(aba) ? "#pedidos" : ""));
         pedirPermissoes();
         VendasService.iniciar(this);
+    }
+
+    @Override
+    protected void onActivityResult(int req, int res, Intent dados) {
+        if (req == 42 && escolha != null) {
+            Uri[] r = WebChromeClient.FileChooserParams.parseResult(res, dados);
+            if (r == null && dados != null && dados.getClipData() != null) {   // vários vídeos de uma vez
+                int n = dados.getClipData().getItemCount();
+                r = new Uri[n];
+                for (int k = 0; k < n; k++) r[k] = dados.getClipData().getItemAt(k).getUri();
+            }
+            escolha.onReceiveValue(r);
+            escolha = null;
+            return;
+        }
+        super.onActivityResult(req, res, dados);
     }
 
     @Override

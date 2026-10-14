@@ -59,6 +59,8 @@ async function pagar(req, env, L) {
   }
   f.set("metadata[itens]", resumo.join(", ").slice(0, 490));
   f.set("metadata[loja]", L.id);
+  const origem = String(corpo.origem || "").toLowerCase().replace(/[^a-z0-9.\-]/g, "").slice(0, 30);
+  if (origem) f.set("metadata[origem]", origem);
   const r = await fetch("https://api.stripe.com/v1/checkout/sessions", {
     method: "POST",
     headers: { Authorization: `Bearer ${env.STRIPE_SECRET_KEY}`, "Content-Type": "application/x-www-form-urlencoded" },
