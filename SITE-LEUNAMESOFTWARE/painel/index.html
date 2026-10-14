@@ -115,7 +115,7 @@ label{display:block;font-size:13px;color:var(--suave);margin-top:8px}
 </div>
 
 <div id="app" hidden>
-  <div class="topo"><b>Painel das lojas</b><button id="zMenos" title="Diminuir">A−</button><button id="zMais" title="Aumentar">A+</button><button id="modoBt" title="Tela larga (computador) ou celular">🖥️</button><a class="topo-cj" href="https://cjdropshipping.com/" target="_blank">🛒 CJ</a><a class="baixar" href="app.apk">📲 App</a><button id="sair">Sair</button></div>
+  <div class="topo"><b>Painel das lojas</b><button id="zMenos" title="Diminuir">A−</button><button id="zMais" title="Aumentar">A+</button><button id="modoBt" title="Tela larga (computador) ou celular">🖥️</button><a class="topo-cj" href="https://cjdropshipping.com/" target="_blank">🛒 CJ</a><button id="aliaBt" class="topo-cj" title="Falar com a Alia Lin, sua agente da CJ">💬 Alia</button><a class="baixar" href="app.apk">📲 App</a><button id="sair">Sair</button></div>
   <div class="lojas" id="lojas"></div>
   <div class="abas"><button class="aba on" data-aba="buscar">Buscar na CJ</button><button class="aba" data-aba="loja">Na loja</button><button class="aba" data-aba="ver">Ver loja</button><button class="aba" data-aba="pedidos">💰 Pedidos <b id="nPed" class="nped" hidden></b></button><button class="aba" data-aba="resultados">📊 Resultados</button><button class="aba" data-aba="contas">💱 Contas</button><button class="aba" data-aba="videos">🎬 Vídeos</button><button class="aba" data-aba="atalhos">🔗 Atalhos</button></div>
   <main>
@@ -129,7 +129,7 @@ label{display:block;font-size:13px;color:var(--suave);margin-top:8px}
     <section class="caixa" id="pedidos" hidden>
       <div class="auto-cj"><div><b>🤖 Pedido automático na CJ</b><small>Venda paga → em até 5 min o pedido é criado na CJ com o endereço do cliente e pago com o saldo da sua <b>CJ Wallet</b>.</small></div><button class="bt" id="autoBt">…</button></div>
       <div class="ped-topo"><a class="bt cinza" href="https://cjdropshipping.com/" id="abrirCJ">🛒 Abrir a CJ</a><button class="bt cinza" id="somBt">🔔 Ativar som de venda</button><button class="bt cinza" id="testeSom">▶ Testar som</button><button class="bt cinza" id="atuPed">↻ Atualizar</button></div>
-      <details class="como cjchat" id="cjChat"><summary>💬 Falar com a Alia Lin (sua agente da CJ)</summary>
+      <details class="como cjchat" id="cjChat" style="background:#eefaf3;border-color:#bfe6cf"><summary>💬 Falar com a Alia Lin (sua agente da CJ)</summary>
         <p class="dica">Escreva em português. O painel traduz para inglês, copia e abre o chat dela. Lá é só <b>colar e enviar</b>.</p>
         <textarea class="campo" id="cjPt" rows="3" placeholder="Ex.: O pedido nº CJ123 está parado há 5 dias, quando vai sair?"></textarea>
         <button class="bt verde" id="cjEnviar">🌐 Traduzir, copiar e abrir o chat</button>
@@ -447,6 +447,7 @@ $("#ctProd").onchange=function(){var p=CT_PROD[+this.value];if(!p)return;$("#ctP
 $("#cvEur").oninput=function(){conv("eur")};$("#cvBrl").oninput=function(){conv("brl")};
 var CHAT_ALIA="https://chat.cjdropshipping.com/?touser=Alia%20Lin";
 function abrirFora(u){if(window.LeuNativo&&window.LeuNativo.abrir)window.LeuNativo.abrir(u);else window.open(u,"_blank")}
+$("#aliaBt").onclick=function(){var b=document.querySelector('[data-aba="pedidos"]');if(b)b.click();var d=$("#cjChat");d.open=true;setTimeout(function(){d.scrollIntoView({behavior:"smooth"});$("#cjPt").focus()},250)};
 $("#cjEnviar").onclick=function(){var t=$("#cjPt").value.trim(),b=this;if(!t){toast("Escreva a mensagem primeiro");return}
   b.disabled=true;b.textContent="Traduzindo…";
   api("traduzir-cj",{texto:t,para:"en"}).then(function(r){var o=$("#cjEn");o.hidden=false;o.textContent=r.texto;
