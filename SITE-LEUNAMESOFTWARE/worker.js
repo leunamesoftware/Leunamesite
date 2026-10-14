@@ -160,6 +160,10 @@ export default {
     if (url.pathname === "/produtos.json") {
       return new Response(JSON.stringify(await catalogo(env, req, L.id)), { headers: { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-cache" } });
     }
+    if (url.pathname === "/painel/app-versao.json" && env.DOWNLOADS) {
+      const o = await env.DOWNLOADS.get("leunapets-painel-versao.json");
+      return new Response(o ? o.body : '{"versao":0}', { headers: { "Content-Type": "application/json", "Cache-Control": "no-store" } });
+    }
     if (url.pathname === "/painel/app.apk" && env.DOWNLOADS) {
       const o = await env.DOWNLOADS.get("leunapets-painel.apk");
       if (!o) return new Response("O app ainda está sendo gerado. Tente em alguns minutos.", { status: 404, headers: { "Content-Type": "text/plain; charset=utf-8" } });

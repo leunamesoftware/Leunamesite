@@ -90,6 +90,7 @@ public class MainActivity extends Activity {
         if (salvo != null) web.restoreState(salvo); else web.loadUrl(PAINEL + ("pedidos".equals(aba) ? "#pedidos" : ""));
         pedirPermissoes();
         VendasService.iniciar(this);
+        verificarAtualizacao();
     }
 
     @Override
@@ -112,6 +113,28 @@ public class MainActivity extends Activity {
     protected void onNewIntent(Intent i) {
         super.onNewIntent(i);
         if ("pedidos".equals(i.getStringExtra("aba"))) web.loadUrl(PAINEL + "#pedidos");
+    }
+
+    /** Versão nova do app? Pergunta e baixa por cima (não precisa desinstalar). */
+    private void verificarAtualizacao() {
+        new Thread(() -> {
+            try {
+                java.net.HttpURLConnection c = (java.net.HttpURLConnection) new java.net.URL("https://pets.leuname.com/painel/app-versao.json").openConnection();
+                c.setConnectTimeout(10000); c.setReadTimeout(10000);
+                java.io.BufferedReader r = new java.io.BufferedReader(new java.io.InputStreamReader(c.getInputStream()));
+                StringBuilder sb = new StringBuilder(); String l; while ((l = r.readLine()) != null) sb.append(l); r.close();
+                long nova = new org.json.JSONObject(sb.toString()).optLong("versao", 0);
+                long atual = Build.VERSION.SDK_INT >= 28 ? getPackageManager().getPackageInfo(getPackageName(), 0).getLongVersionCode()
+                                                          : getPackageManager().getPackageInfo(getPackageName(), 0).versionCode;
+                if (nova > atual) runOnUiThread(() -> new android.app.AlertDialog.Builder(this)
+                        .setTitle("Atualização do painel")
+                        .setMessage("Tem uma versão nova do app. Toque em Atualizar, baixe e instale POR CIMA (não precisa desinstalar).")
+                        .setPositiveButton("Atualizar", (d, w) -> {
+                            try { startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://pets.leuname.com/painel/app.apk"))); } catch (Exception e) { /* nada */ }
+                        })
+                        .setNegativeButton("Depois", null).show());
+            } catch (Exception e) { /* sem internet: confere na próxima vez */ }
+        }).start();
     }
 
     private void pedirPermissoes() {

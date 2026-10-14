@@ -77,6 +77,7 @@ jobs:
           APK=app/build/outputs/apk/release/app-release.apk
           "$ANDROID_HOME/build-tools/34.0.0/apksigner" verify "$APK"
           cp "$APK" ../PainelLeunaPets.apk
+          printf '{"versao":%s}' "$VERSAO_CODIGO" > ../painel-versao.json
 
       - name: Guardar o erro do build (para o Claude ler)
         if: failure()
@@ -89,4 +90,6 @@ jobs:
         run: |
           npx --yes wrangler@4 r2 object put leuname-downloads/leunapets-painel.apk --file ../PainelLeunaPets.apk \
             --content-type application/vnd.android.package-archive --remote
+          npx --yes wrangler@4 r2 object put leuname-downloads/leunapets-painel-versao.json --file ../painel-versao.json \
+            --content-type application/json --remote
           echo "APK: https://pets.leuname.com/painel/app.apk" >> "$GITHUB_STEP_SUMMARY"
