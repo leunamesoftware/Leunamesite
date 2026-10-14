@@ -6,7 +6,7 @@ on:
         description: 'Loja (pets ou casa)'
         default: 'casa'
       publicar:
-        description: 'sim = publicar lote; barato = produtos bem baratos; tirar-caros = tira acima de 20 €; reprecificar; nao = só fotos'
+        description: 'sim = publicar lote; barato = produtos bem baratos; tirar-caros = tira acima de 14,99 €; reprecificar; nao = só fotos'
         default: 'sim'
 jobs:
   lote:

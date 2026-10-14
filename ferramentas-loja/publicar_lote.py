@@ -34,15 +34,24 @@ LUCRO_MIN, PRECO_MAX, CUSTO_MAX_USD = 4.0, 39.99, 10
 BARATOS = {
     'pets': [
         ('cat toy ball', 'juguetes'), ('cat feather toy', 'juguetes'), ('dog rope toy', 'juguetes'), ('squeaky dog toy', 'juguetes'),
-        ('cat catnip toy', 'juguetes'), ('pet collar', 'paseo'), ('dog poop bag dispenser', 'paseo'), ('pet bandana', 'paseo'),
+        ('cat catnip toy', 'juguetes'), ('cat tunnel', 'juguetes'), ('dog chew toy', 'juguetes'), ('cat teaser wand', 'juguetes'),
+        ('mouse toy cat', 'juguetes'), ('dog ball launcher', 'juguetes'),
+        ('pet collar', 'paseo'), ('dog poop bag dispenser', 'paseo'), ('pet bandana', 'paseo'), ('dog leash', 'paseo'),
+        ('cat collar bell', 'paseo'), ('pet id tag', 'paseo'),
         ('pet comb', 'higiene'), ('pet nail clipper', 'higiene'), ('lint roller pet hair', 'higiene'), ('pet towel', 'higiene'),
-        ('cat bowl', 'comer'), ('pet food scoop', 'comer'), ('pet food clip', 'comer'),
+        ('pet grooming glove', 'higiene'), ('pet hair remover', 'higiene'), ('pet toothbrush', 'higiene'),
+        ('cat bowl', 'comer'), ('pet food scoop', 'comer'), ('pet food clip', 'comer'), ('pet feeding mat', 'comer'),
+        ('slow feeder', 'comer'), ('pet blanket', 'camas'), ('cat scratcher', 'rascadores'), ('cat scratching board', 'rascadores'),
     ],
     'casa': [
-        ('kitchen gadget', 'hogar'), ('silicone lid', 'hogar'), ('drawer organizer', 'orden'), ('cable organizer', 'orden'),
-        ('hook wall', 'orden'), ('led night light', 'luz'), ('mini lamp', 'luz'), ('plant hanger', 'jardin'),
-        ('seed starter', 'jardin'), ('wall sticker', 'deco'), ('artificial succulent', 'deco'), ('coaster', 'deco'),
-        ('dish towel', 'textil'), ('pillow cover', 'textil'), ('door stopper', 'hogar'),
+        ('kitchen gadget', 'hogar'), ('silicone lid', 'hogar'), ('door stopper', 'hogar'), ('vegetable peeler', 'hogar'),
+        ('bottle opener', 'hogar'), ('garlic press', 'hogar'), ('sink strainer', 'hogar'),
+        ('drawer organizer', 'orden'), ('cable organizer', 'orden'), ('hook wall', 'orden'), ('storage basket', 'orden'),
+        ('hanger', 'orden'), ('makeup organizer', 'orden'),
+        ('led night light', 'luz'), ('mini lamp', 'luz'), ('led candle', 'luz'), ('sensor light', 'luz'),
+        ('plant hanger', 'jardin'), ('seed starter', 'jardin'), ('plant pot', 'jardin'), ('garden gloves', 'jardin'),
+        ('wall sticker', 'deco'), ('artificial succulent', 'deco'), ('coaster', 'deco'), ('vase', 'deco'), ('photo frame', 'deco'),
+        ('dish towel', 'textil'), ('pillow cover', 'textil'), ('placemat', 'textil'), ('cushion cover', 'textil'),
     ],
 }
 BARATO_CUSTO_USD, BARATO_PRECO_MAX, BARATO_CUSTO_TOTAL_EUR = 4.0, 14.99, 6.0
@@ -127,8 +136,8 @@ def baratos(tk):
     return rel
 
 
-def tirar_caros(tk, limite=20.0):
-    """Tira da loja (desativa — dá para voltar no painel) os produtos acima do limite de preço."""
+def tirar_caros(tk, limite=15.0):
+    """Tira da loja (desativa — dá para voltar no painel) os produtos acima de 14,99 €: a loja fica só com preço baixo."""
     rel = []
     for p in api('publicados', token=tk).get('itens', []):
         if p.get('ativo') and p.get('precio', 0) > limite:
