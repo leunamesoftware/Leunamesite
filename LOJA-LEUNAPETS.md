@@ -39,6 +39,13 @@ O dono fala português do Brasil, quer respostas curtas e diretas. Ele está sem
 - Código: `SITE-LEUNAMESOFTWARE/painel-api.js` (API `/api/painel/*`) e `painel/index.html`. O workflow passa STRIPE_SECRET_KEY, CJ_API_KEY e LOJA_ADMIN_SENHA para o Worker.
 - Teste no ar: workflow `estado.yml` grava `painel.txt` no branch `dados-estado`.
 
+## Pedidos e avisos de venda
+- Aba **💰 Pedidos** do painel: lê as Checkout Sessions pagas do Stripe (`/api/painel/pedidos`; metadata `itens` = "1x PID:VID", `loja`), endereço campo a campo, link da CJ, rastreio → e-mail pronto em espanhol. Status em D1 `pedidos_status`.
+- Som de caixa: no navegador (WebAudio, a cada 30 s com o painel aberto) e no **app Android** mesmo fechado: `VendasService` (foreground service specialUse, consulta `/api/painel/ultimo` a cada 60 s, canal "vendas_caixa" com `res/raw/caixa.wav`). O painel passa o token ao app por `window.LeuNativo.salvarToken`.
+- Pagamento da CJ: cartão virtual do Mercado Pago (o dono não tem cartão de crédito). Pedido na CJ ainda é manual (próximo passo: automático pela API createOrderV2).
+- PayPal: código pronto (`/api/paypal/criar|capturar`), desligado até ter conta Empresas (exige CNPJ/MEI). Segredos PAYPAL_CLIENT_ID e PAYPAL_SECRET.
+- Lotes: workflow `publicar-lote.yml` (loja, sim|reprecificar|nao) → `ferramentas-loja/publicar_lote.py`; preço rápido = ~5 € de lucro.
+
 ## Segredos (GitHub → Settings → Secrets → Actions). Nunca pedir ao dono para colar chave na conversa.
 - `CJ_API_KEY` — **já está** (loja "LeunaPets" criada na CJ: Authorization → API → Chave de API).
 - `STRIPE_SECRET_KEY` — o dono disse que colocou; o workflow passa para o Worker com `wrangler secret put`. Conferir com `/api/config` (`{"stripe":true}`).
