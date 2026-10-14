@@ -10,6 +10,8 @@ import LOJAS from "./lojas.json";
 export const lojaPorId = (id) => LOJAS.find((l) => l.id === id) || LOJAS[0];
 export const lojaPorHost = (host) => LOJAS.find((l) => l.host === host) || LOJAS[0];
 const catsDe = (L) => L.cats.map((c) => c[0]);
+// fotos dos produtos do robô são "img/p/…" (relativas à loja); no painel (/painel/) precisam começar com "/"
+const fotoAbs = (u) => (!u || /^(https?:)?\/\//.test(u) || u.startsWith("/") ? u || "" : "/" + u);
 const DESC_LOJA = {
   pets: "a pet shop for dogs and cats in Spain",
   casa: "Cachik, a home, garden, décor, lighting and furniture shop in Spain",
@@ -379,7 +381,7 @@ async function publicados(req, env, L) {
   const { results } = await env.DB.prepare("SELECT id, dados FROM produtos_v2 WHERE loja=? AND ativo=0").bind(L.id).all();
   const fora = results.map((r) => ({ ...JSON.parse(r.dados), _fora: true }));
   return json({ itens: [...loja, ...fora].map((p) => ({
-    id: p.id, nome: (p.es && p.es.nombre) || p.id, img: (p.imagenes || [])[0] || "", precio: p.precio,
+    id: p.id, nome: (p.es && p.es.nombre) || p.id, img: fotoAbs((p.imagenes || [])[0]), precio: p.precio,
     categoria: p.categoria, animal: p.animal, destaque: !!p.destaque, nuevo: !!p.nuevo, es: p.es,
     video: /^\/v\//.test(p.video || "") ? p.video : "", custoEur: p.cj && p.cj.custoEur, ativo: !p._fora, painel: !!(p.cj && p.cj.painel),
   })) });
@@ -409,7 +411,7 @@ async function pedidos(req, env) {
       const p = cats[lojaId][m[2]] || {};
       const v = (p.variantes || []).find((y) => y.vid === m[3]);
       return { q: +m[1] || 1, pid: m[2], vid: m[3] || (p.cj && p.cj.vid) || "", nome: (p.es && p.es.nombre) || m[2], variacao: v ? v.nombre : "",
-        img: (v && v.img) || (p.imagenes || [])[0] || "", linkCJ: m[2] ? "https://cjdropshipping.com/product/-p-" + m[2] + ".html" : "" };
+        img: fotoAbs((v && v.img) || (p.imagenes || [])[0]), linkCJ: m[2] ? "https://cjdropshipping.com/product/-p-" + m[2] + ".html" : "" };
     });
     out.push({ id: s.id, loja: lojaId, data: s.created * 1000, total: s.amount_total / 100, moeda: s.currency,
       nome: ship.name || cli.name || "", email: cli.email || "", telefone: cli.phone || "",
