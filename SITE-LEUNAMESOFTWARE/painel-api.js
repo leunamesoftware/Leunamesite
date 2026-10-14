@@ -5,6 +5,8 @@
 const CJ = "https://developers.cjdropshipping.com/api2.0/v1";
 const USD_EUR = 0.93;
 const FRETE_TESTE = ["DE", "FR", "ES", "IT"];
+const FRETE_TESTE_UE = ["ES", "PT"];   // produto de armazém na Europa: o que importa é chegar na Espanha e em Portugal
+const ARMAZENS_UE = ["DE", "PL"];
 const PRAZO_MAX = 18;
 import LOJAS from "./lojas.json";
 export const lojaPorId = (id) => LOJAS.find((l) => l.id === id) || LOJAS[0];
@@ -126,6 +128,8 @@ async function buscar(env, url, L) {
   const cat = url.searchParams.get("cat");
   if (cat && /^\d{10,25}$/.test(cat)) params.categoryId = cat;
   if (!q && !params.categoryId) params.keyWord = "pet";
+  const arm = String(url.searchParams.get("arm") || "").toUpperCase();
+  if (ARMAZENS_UE.includes(arm)) params.countryCode = arm;
   const d = await cj(env, "GET", "/product/listV2", { params });
   if (!d.result && d.code !== 200) return json({ erro: "cj", detalhe: d.message || "sem resposta" }, 502);
   const publicados = new Set((await env.DB.prepare("SELECT id FROM produtos_v2 WHERE loja=? AND ativo=1").bind(L.id).all()).results.map((r) => r.id));
@@ -137,7 +141,7 @@ async function buscar(env, url, L) {
       itens.push({
         pid: p.id, nome: p.nameEn || p.productNameEn || "", img: p.bigImage || "", custoUsd: custo,
         popularidade: parseInt(p.listedNum, 10) || 0, video: !!(p.videoList && p.videoList.length),
-        categoria: p.threeCategoryName || p.categoryName || "", publicado: publicados.has(p.id),
+        categoria: p.threeCategoryName || p.categoryName || "", publicado: publicados.has(p.id), armazem: params.countryCode || "CN",
       });
     }
   }
@@ -149,7 +153,9 @@ function lista(v) {
   return Array.isArray(v) ? v : [];
 }
 
-async function detalhe(env, pid) {
+async function detalhe(env, pid, origem = "CN") {
+  origem = ARMAZENS_UE.includes(origem) ? origem : "CN";
+  const testar = origem === "CN" ? FRETE_TESTE : FRETE_TESTE_UE;
   const d = (await cj(env, "GET", "/product/query", { params: { pid, features: "enable_video" } })).data;
   if (!d) return null;
   const variantes = d.variants || [];
@@ -158,10 +164,10 @@ async function detalhe(env, pid) {
   const custo = num(variantes[0].variantSellPrice) ?? num(d.sellPrice);
   if (!custo) return null;
   const fretes = {};
-  for (const destino of FRETE_TESTE) {
+  for (const destino of testar) {
     await dormir(1100);
     const f = await cj(env, "POST", "/logistic/freightCalculate", {
-      corpo: { startCountryCode: "CN", endCountryCode: destino, products: [{ quantity: 1, vid }] },
+      corpo: { startCountryCode: origem, endCountryCode: destino, products: [{ quantity: 1, vid }] },
     });
     const ops = (f.data || []).filter((o) => num(o.logisticPrice) != null).map((o) => {
       const tot = num(o.totalPostageFee);
@@ -184,7 +190,7 @@ async function detalhe(env, pid) {
     pid: d.pid || pid, sku: d.productSku || "", vid, nomeEn: d.productNameEn || "",
     descricaoEn: String(d.description || "").replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim().slice(0, 2500),
     categoriaCJ: d.categoryName || "", popularidade: d.listedNum || 0,
-    custoProdutoUsd: custo, freteUsd, fretes, entregaTodos: validos.length === FRETE_TESTE.length,
+    custoProdutoUsd: custo, freteUsd, fretes, entregaTodos: validos.length === testar.length, origem,
     custoEur, sugerido, lucro: sugerido == null ? null : lucro(sugerido, custoEur),
     plazo: nums.length ? `${Math.min(...nums)}-${Math.max(...nums)}` : "",
     imagens, temVideo: videos.length > 0,
@@ -328,7 +334,7 @@ function montar(pid, d, campos, textos, L) {
     animal: L.id === "pets" && ANIMAIS.includes(campos.animal) ? campos.animal : "ambos",
     nuevo: campos.nuevo !== false, destaque: !!campos.destaque,
     precio: preco, imagenes: d.imagens.slice(0, 6), video: "", plazo: d.plazo,
-    cj: { vid: d.vid, sku: d.sku, custoEur: d.custoEur, painel: true },
+    cj: { vid: d.vid, sku: d.sku, custoEur: d.custoEur, painel: true, origem: d.origem || "CN" },
     variantes: variacoes(d, preco),
   };
 }
@@ -337,7 +343,7 @@ async function publicar(req, env, L) {
   const c = await req.json().catch(() => ({}));
   const pid = String(c.pid || "").slice(0, 64);
   if (!pid) return json({ erro: "pid" }, 400);
-  const d = await detalhe(env, pid);
+  const d = await detalhe(env, pid, String(c.armazem || "CN").toUpperCase());
   if (!d) return json({ erro: "produto-nao-encontrado" }, 404);
   if (!d.entregaTodos) return json({ erro: "nao-entrega", detalhe: "A CJ não entrega em todos os países testados." }, 400);
   if (!d.imagens.length) return json({ erro: "sem-fotos" }, 400);
@@ -486,8 +492,8 @@ async function vidPadrao(env, pid) {
   const d = (await cj(env, "GET", "/product/query", { params: { pid } })).data;
   return d && d.variants && d.variants[0] ? d.variants[0].vid : "";
 }
-async function freteMaisBarato(env, pais, produtos) {
-  const f = await cj(env, "POST", "/logistic/freightCalculate", { corpo: { startCountryCode: "CN", endCountryCode: pais, products: produtos.map((p) => ({ quantity: p.quantity, vid: p.vid })) } });
+async function freteMaisBarato(env, pais, produtos, origem = "CN") {
+  const f = await cj(env, "POST", "/logistic/freightCalculate", { corpo: { startCountryCode: origem, endCountryCode: pais, products: produtos.map((p) => ({ quantity: p.quantity, vid: p.vid })) } });
   const ops = (f.data || []).filter((o) => num(o.logisticPrice) != null && o.logisticName).map((o) => ({
     nome: o.logisticName, usd: num(o.totalPostageFee) || num(o.logisticPrice),
     dias: Math.max(0, ...(String(o.logisticAging || "").match(/\d+/g) || [99]).map(Number)) }));
@@ -515,18 +521,36 @@ export async function comprarCJ(env, req, sessaoId, forcar = false) {
     if (!m) continue;
     const p = cat[m[2]] || {};
     const vid = m[3] || (p.cj && p.cj.vid) || (await vidPadrao(env, m[2]));
-    if (vid) produtos.push({ vid, quantity: +m[1] || 1 });
+    if (vid) produtos.push({ vid, quantity: +m[1] || 1, origem: (p.cj && p.cj.origem) || "CN" });
   }
   const falha = async (msg) => { await env.DB.prepare("UPDATE pedidos_cj SET msg=? WHERE id=?").bind(String(msg).slice(0, 300), sessaoId).run(); return { ok: false, msg }; };
   if (!produtos.length) return falha("produto sem código da CJ");
   const pais = a.country || "";
-  const logistica = await freteMaisBarato(env, pais, produtos);
-  if (!logistica) return falha("a CJ não tem frete para " + pais);
+  // um pedido na CJ por armazém (China, Alemanha, Polônia): cada um sai de um lugar
+  const grupos = {};
+  for (const x of produtos) (grupos[x.origem] = grupos[x.origem] || []).push({ vid: x.vid, quantity: x.quantity });
+  const ids = [], msgs = [];
+  let todosPagos = true, n = 0;
+  for (const [origem, itensCJ] of Object.entries(grupos)) {
+    n++;
+    const r1 = await pedidoCJ(env, s, sessaoId, ship, cli, a, pais, origem, itensCJ, Object.keys(grupos).length > 1 ? "-" + n : "");
+    if (!r1.ok) { if (!ids.length) return falha(r1.msg); msgs.push(r1.msg); todosPagos = false; continue; }
+    ids.push(r1.id); msgs.push(r1.msg); if (!r1.pago) todosPagos = false;
+  }
+  const pago = todosPagos, msg = msgs.join(" · ");
+  await env.DB.prepare("UPDATE pedidos_cj SET cj_pedido=?, pago=?, msg=? WHERE id=?").bind(ids.join(","), pago ? 1 : 0, msg, sessaoId).run();
+  await env.DB.prepare("CREATE TABLE IF NOT EXISTS pedidos_status (id TEXT PRIMARY KEY, feito INTEGER NOT NULL DEFAULT 0, rastreio TEXT, atualizado TEXT)").run();
+  if (pago) await env.DB.prepare("INSERT OR REPLACE INTO pedidos_status (id, feito, rastreio, atualizado) VALUES (?,1,COALESCE((SELECT rastreio FROM pedidos_status WHERE id=?),''),datetime('now'))").bind(sessaoId, sessaoId).run();
+  return { ok: true, cj_pedido: ids.join(","), pago, msg };
+}
+async function pedidoCJ(env, s, sessaoId, ship, cli, a, pais, origem, produtos, sufixo) {
+  const logistica = await freteMaisBarato(env, pais, produtos, origem);
+  if (!logistica) return { ok: false, msg: "a CJ não tem frete de " + origem + " para " + pais };
   const corpo = {
-    orderNumber: "LN" + s.created + sessaoId.slice(-10), shippingCountryCode: pais, shippingCountry: NOMES_PAIS[pais] || pais,
+    orderNumber: "LN" + s.created + sessaoId.slice(-10) + sufixo, shippingCountryCode: pais, shippingCountry: NOMES_PAIS[pais] || pais,
     shippingProvince: a.state || a.city || "-", shippingCity: a.city || "-", shippingZip: a.postal_code || "", shippingAddress: a.line1 || "",
     shippingAddress2: a.line2 || "", shippingCustomerName: (ship.name || cli.name || "").slice(0, 50), shippingPhone: (cli.phone || "").slice(0, 20),
-    email: (cli.email || "").slice(0, 50), remark: "", logisticName: logistica, fromCountryCode: "CN", iossType: 3, products: produtos, payType: 2,
+    email: (cli.email || "").slice(0, 50), remark: "", logisticName: logistica, fromCountryCode: origem, iossType: 3, products: produtos, payType: 2,
   };
   let r = await cj(env, "POST", "/shopping/order/createOrderV2", { corpo });
   let pago = true;
@@ -535,19 +559,18 @@ export async function comprarCJ(env, req, sessaoId, forcar = false) {
     const msg1 = r.message || "erro";
     corpo.payType = 3;
     r = await cj(env, "POST", "/shopping/order/createOrderV2", { corpo });
-    if (!(r.data && r.data.orderId)) return falha("CJ: " + msg1 + (r.message && r.message !== msg1 ? " / " + r.message : ""));
+    if (!(r.data && r.data.orderId)) return { ok: false, msg: "CJ: " + msg1 + (r.message && r.message !== msg1 ? " / " + r.message : "") };
     pago = false;
   } else if (!(r.result || r.code === 200) || (r.data.orderStatus && /UNPAID|CREATED|IN_CART/.test(r.data.orderStatus))) pago = false;
-  const msg = pago ? `Comprado e pago na CJ (${logistica}, US$ ${r.data.orderAmount || r.data.actualPayment || "?"})` : "Pedido criado na CJ — FALTA PAGAR (saldo insuficiente na CJ Wallet)";
-  await env.DB.prepare("UPDATE pedidos_cj SET cj_pedido=?, pago=?, msg=? WHERE id=?").bind(String(r.data.orderId), pago ? 1 : 0, msg, sessaoId).run();
-  await env.DB.prepare("CREATE TABLE IF NOT EXISTS pedidos_status (id TEXT PRIMARY KEY, feito INTEGER NOT NULL DEFAULT 0, rastreio TEXT, atualizado TEXT)").run();
-  if (pago) await env.DB.prepare("INSERT OR REPLACE INTO pedidos_status (id, feito, rastreio, atualizado) VALUES (?,1,COALESCE((SELECT rastreio FROM pedidos_status WHERE id=?),''),datetime('now'))").bind(sessaoId, sessaoId).run();
-  return { ok: true, cj_pedido: String(r.data.orderId), pago, msg };
+  const de = { CN: "China", DE: "Alemanha", PL: "Polônia" }[origem] || origem;
+  const msg = pago ? `Comprado e pago na CJ (sai da ${de}, ${logistica}, US$ ${r.data.orderAmount || r.data.actualPayment || "?"})` : `Pedido criado na CJ (sai da ${de}) — FALTA PAGAR: pague no app da CJ em Waiting for Payment`;
+  return { ok: true, id: String(r.data.orderId), pago, msg };
 }
 async function atualizarRastreios(env) {
   await tabelaCJ(env);
   const { results } = await env.DB.prepare("SELECT id, cj_pedido FROM pedidos_cj WHERE cj_pedido IS NOT NULL AND (rastreio IS NULL OR rastreio='') ORDER BY criado DESC LIMIT 10").all();
-  for (const x of results) {
+  for (const x0 of results) {
+    const x = { ...x0, cj_pedido: String(x0.cj_pedido).split(",")[0] };   // vários armazéns: o 1º já basta para o cliente acompanhar
     const d = (await cj(env, "GET", "/shopping/order/getOrderDetail", { params: { orderId: x.cj_pedido } })).data;
     if (!d) continue;
     const pago = !/UNPAID|CREATED|IN_CART/.test(d.orderStatus || "");
@@ -699,7 +722,7 @@ export async function painel(req, env, url) {
     if (rota === "estado") return json({ ok: true, cj: !!env.CJ_API_KEY, ia: !!env.AI, stripe: !!env.STRIPE_SECRET_KEY });
     if (rota === "buscar") return await buscar(env, url, L);
     if (rota === "detalhe") {
-      const d = await detalhe(env, String(url.searchParams.get("pid") || "").slice(0, 64));
+      const d = await detalhe(env, String(url.searchParams.get("pid") || "").slice(0, 64), String(url.searchParams.get("arm") || "CN").toUpperCase());
       return d ? json(d) : json({ erro: "produto-nao-encontrado" }, 404);
     }
     if (rota === "publicar" && req.method === "POST") return await publicar(req, env, L);

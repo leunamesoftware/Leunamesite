@@ -121,6 +121,7 @@ label{display:block;font-size:13px;color:var(--suave);margin-top:8px}
   <main>
     <section class="caixa" id="buscar">
       <form class="busca" id="fBusca"><input id="q" placeholder="Ex.: cat toy, dog bed, leash…" enterkeyhint="search"><button class="bt">Buscar</button></form>
+      <div class="chips" id="armazens"><button type="button" class="chip on" data-arm="DE">🇩🇪 Armazém Alemanha (rápido)</button><button type="button" class="chip" data-arm="PL">🇵🇱 Armazém Polônia (rápido)</button><button type="button" class="chip" data-arm="CN">🇨🇳 China (lento)</button></div>
       <div class="chips" id="atalhos"></div>
       <div id="resultado" class="grade"></div>
       <p class="msg" id="msgBusca">Busque em inglês (a CJ é em inglês). Toque em <b>Ver preço</b> para ver frete, preço sugerido e lucro.</p>
@@ -285,35 +286,37 @@ $("#atalhos").onclick=function(ev){var b=ev.target.closest(".chip");if(!b)return
 $("#fBusca").onsubmit=function(ev){ev.preventDefault();estado.cat=adivinhaCat($("#q").value);buscar(true)};
 $("#mais").onclick=function(){estado.pagina++;buscar(false)};
 function adivinhaCat(q){q=q.toLowerCase();for(var k=0;k<CFG.regras.length;k++)if(CFG.regras[k][0].test(q))return CFG.regras[k][1];return CFG.padrao}
+$("#armazens").onclick=function(ev){var c=ev.target.closest("[data-arm]");if(!c)return;estado.arm=c.dataset.arm;this.querySelectorAll(".chip").forEach(function(x){x.classList.toggle("on",x===c)});if(estado.q)buscar(true)};
 function buscar(novo){
+  estado.arm=estado.arm||"DE";
   if(novo){estado.q=$("#q").value.trim();estado.pagina=1;$("#resultado").innerHTML=""}
   $("#msgBusca").textContent="Buscando na CJ…";$("#mais").hidden=true;
-  api("buscar?q="+encodeURIComponent(estado.q)+"&pagina="+estado.pagina).then(function(d){
+  api("buscar?q="+encodeURIComponent(estado.q)+"&pagina="+estado.pagina+"&arm="+estado.arm).then(function(d){
     if(!d.itens.length){$("#msgBusca").textContent=novo?"Nada encontrado. Tente outra palavra em inglês.":"Fim da lista.";return}
     $("#msgBusca").textContent="";
     d.itens.sort(function(a,b){return b.popularidade-a.popularidade});
     $("#resultado").insertAdjacentHTML("beforeend",d.itens.map(function(p){
       return '<div class="item"><img loading="lazy" src="'+esc(p.img)+'" alt=""><div class="tx"><div class="nm">'+esc(p.nome)+'</div>'+
       '<div class="tags"><span class="tag">custo $'+p.custoUsd.toFixed(2)+'</span>'+(p.popularidade>=50?'<span class="tag pop">🔥 '+p.popularidade+' lojas</span>':'<span class="tag">'+p.popularidade+' lojas</span>')+
-      (p.video?'<span class="tag vid">vídeo</span>':'')+(p.publicado?'<span class="tag ok">na loja</span>':'')+'</div>'+
-      '<button class="bt" data-pid="'+esc(p.pid)+'">Ver preço</button></div></div>'}).join(""));
+      (p.video?'<span class="tag vid">vídeo</span>':'')+(p.armazem&&p.armazem!=="CN"?'<span class="tag ok">'+(p.armazem==="DE"?"🇩🇪":"🇵🇱")+' Europa</span>':'')+(p.publicado?'<span class="tag ok">na loja</span>':'')+'</div>'+
+      '<button class="bt" data-pid="'+esc(p.pid)+'" data-arm="'+esc(p.armazem||"CN")+'">Ver preço</button></div></div>'}).join(""));
     $("#mais").hidden=d.itens.length<20;
   }).catch(function(e){$("#msgBusca").textContent="Erro: "+e.message});
 }
-$("#resultado").onclick=function(ev){var b=ev.target.closest("[data-pid]");if(b)abrir(b.dataset.pid)};
+$("#resultado").onclick=function(ev){var b=ev.target.closest("[data-pid]");if(b)abrir(b.dataset.pid,b.dataset.arm)};
 
 // ---- detalhe e publicar ----
 function fechar(){$("#fundo").classList.remove("on")}
 $("#fundo").onclick=function(ev){if(ev.target===this)fechar()};
 function opcoes(obj,sel){return Object.keys(obj).map(function(k){return '<option value="'+k+'"'+(k===sel?" selected":"")+'>'+obj[k]+'</option>'}).join("")}
-function abrir(pid){
-  $("#janela").innerHTML='<p class="msg">Calculando frete para Alemanha, França, Espanha e Itália… (uns 6 segundos)</p>';$("#fundo").classList.add("on");
-  api("detalhe?pid="+encodeURIComponent(pid)).then(function(d){
+function abrir(pid,arm){arm=arm||"CN";
+  $("#janela").innerHTML='<p class="msg">'+(arm==="CN"?'Calculando frete da China para Alemanha, França, Espanha e Itália… (uns 6 segundos)':'Calculando frete do armazém da '+(arm==="DE"?"Alemanha":"Polônia")+' para Espanha e Portugal…')+'</p>';$("#fundo").classList.add("on");
+  api("detalhe?pid="+encodeURIComponent(pid)+"&arm="+arm).then(function(d){
     var animal=!CFG.animal?"ambos":/cat|kitten|kitty/i.test(d.nomeEn)&&!/dog|puppy/i.test(d.nomeEn)?"gato":/dog|puppy/i.test(d.nomeEn)&&!/cat/i.test(d.nomeEn)?"perro":"ambos";
     var preco=d.sugerido;
     $("#janela").innerHTML='<div class="fotos">'+d.imagens.map(function(s){return '<img src="'+esc(s)+'" alt="">'}).join("")+'</div>'+
       '<h3 style="margin:10px 0 2px">'+esc(d.nomeEn)+(d.temVideo?' <span class="tag vid">🎬 vídeo vai junto</span>':'')+'</h3><small style="color:#6b7190">'+esc(d.categoriaCJ)+' · '+d.popularidade+' lojas vendem · prazo '+esc(d.plazo||"?")+' dias · <a href="'+esc(d.linkCJ)+'" target="_blank">ver na CJ</a></small>'+
-      (d.entregaTodos?'':'<div class="aviso">A CJ não entrega em todos os países testados. Melhor escolher outro.</div>')+
+      (d.origem&&d.origem!=="CN"?'<div class="aviso" style="background:#e3f6ec;border-color:#9fdcbc;color:#14653f">🚚 Sai do armazém da '+(d.origem==="DE"?"Alemanha":"Polônia")+': chega na Espanha/Portugal em '+esc(d.plazo||"poucos")+' dias.</div>':'')+(d.entregaTodos?'':'<div class="aviso">A CJ não entrega em todos os países testados. Melhor escolher outro.</div>')+
       '<div class="contas"><div class="conta"><small>Produto (CJ)</small><b>$'+d.custoProdutoUsd.toFixed(2)+'</b></div><div class="conta"><small>Frete + IVA (pior país)</small><b>$'+(d.freteUsd==null?"—":d.freteUsd.toFixed(2))+'</b></div>'+
       '<div class="conta"><small>Custo total</small><b>'+eur(d.custoEur)+'</b></div><div class="conta lucro" id="cLucro"><small>Seu lucro por venda</small><b>—</b></div></div>'+
       '<div class="linha"><div><label>Preço na loja (€)</label><input class="campo" id="dPreco" type="number" step="0.01" min="1" value="'+(preco||"")+'"></div>'+
@@ -326,7 +329,7 @@ function abrir(pid){
     function conta(){var p=parseFloat($("#dPreco").value)||0;var l=lucro(p,d.custoEur||0);var c=$("#cLucro");c.querySelector("b").textContent=eur(l);c.className="conta "+(l>=5?"lucro":"ruim")}
     $("#dPreco").oninput=conta;conta();$("#dFechar").onclick=fechar;
     $("#dPub").onclick=function(){var b=this;b.disabled=true;b.textContent="Publicando e traduzindo…";
-      api("publicar",{pid:d.pid,precio:parseFloat($("#dPreco").value),categoria:$("#dCat").value,animal:$("#dAnimal").value,destaque:$("#dDest").checked,nuevo:true})
+      api("publicar",{pid:d.pid,armazem:d.origem||"CN",precio:parseFloat($("#dPreco").value),categoria:$("#dCat").value,animal:$("#dAnimal").value,destaque:$("#dDest").checked,nuevo:true})
       .then(function(r){fechar();contar();toast("Publicado em "+CFG.nome+": "+r.produto.es.nombre+(r.ia?"":" (tradução falhou: edite o nome em Na loja)"));
         var bt=document.querySelector('[data-pid="'+CSS.escape(d.pid)+'"]');if(bt)bt.parentNode.querySelector(".tags").insertAdjacentHTML("beforeend",'<span class="tag ok">na loja</span>')})
       .catch(function(e){b.disabled=false;b.textContent="Publicar na loja";toast("Erro: "+e.message)})};
