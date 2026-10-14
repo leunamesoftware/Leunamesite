@@ -1,0 +1,24 @@
+name: Conferir contas (Stripe e CJ)
+on: workflow_dispatch
+jobs:
+  conta:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Conferir (sem mostrar chaves nem números completos)
+        env:
+          SK: ${{ secrets.STRIPE_SECRET_KEY }}
+          CJ: ${{ secrets.CJ_API_KEY }}
+        run: |
+          mkdir -p /tmp/c
+          curl -s https://api.stripe.com/v1/account -u "$SK:" | jq -c '{erro:.error.message, nome:.business_profile.name, email, pais:.country, moeda:.default_currency, repasses_ok:.payouts_enabled, cobrancas_ok:.charges_enabled, conta_banco:[.external_accounts.data[]?|{banco:.bank_name, final:.last4, moeda:.currency, status:.status}], pendencias:.requirements.currently_due}' > /tmp/c/stripe.json || true
+          curl -s "https://api.stripe.com/v1/accounts" -u "$SK:" > /dev/null
+          curl -s "https://api.stripe.com/v1/balance" -u "$SK:" | jq -c '{erro:.error.message, disponivel:.available, pendente:.pending}' > /tmp/c/saldo.json || true
+          T=$(curl -s -X POST https://developers.cjdropshipping.com/api2.0/v1/authentication/getAccessToken -H 'Content-Type: application/json' -d "{\"apiKey\":\"$CJ\"}" | jq -r '.data.accessToken // empty')
+          for e in /shopping/pay/getBalance /setting/get /setting/getAccountInfo; do
+            echo "$e $(curl -s "https://developers.cjdropshipping.com/api2.0/v1$e" -H "CJ-Access-Token: $T" | jq -c '{code,message,data}' | head -c 600)" >> /tmp/c/cj.txt
+          done
+          cat /tmp/c/*
+          cd /tmp/c && git init -q && git checkout -q -b dados-conta && git config user.name robo && git config user.email robo@users.noreply.github.com
+          git add . && git commit -qm conta && git push -qf "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" dados-conta
