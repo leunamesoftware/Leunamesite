@@ -45,13 +45,16 @@ BARATOS = {
         ('dish towel', 'textil'), ('pillow cover', 'textil'), ('door stopper', 'hogar'),
     ],
 }
-BARATO_CUSTO_USD, BARATO_PRECO_MAX = 4.0, 15.99
+BARATO_CUSTO_USD, BARATO_PRECO_MAX, BARATO_CUSTO_TOTAL_EUR = 4.0, 14.99, 6.0
+
+
+IOF = 0.035   # o dono paga a CJ com cartão brasileiro: IOF em cima do custo
 
 
 def preco_rapido(custo_eur):
-    # preço baixo para vender rápido: sobra ~5 € depois do custo (produto+frete+IVA) e das taxas (7% + 0,35)
+    # preço baixo para vender rápido: sobra ~5 € depois do custo (produto+frete+IVA+IOF) e das taxas da Stripe (7% + 0,35)
     import math
-    return math.ceil((custo_eur + 5.0 + 0.35) / 0.93) - 0.01
+    return math.ceil((custo_eur * (1 + IOF) + 5.0 + 0.35) / 0.93) - 0.01
 
 
 def api(rota, corpo=None, token=None, tentativas=3):
@@ -101,7 +104,7 @@ def baratos(tk):
             if d.get('erro') or not d.get('entregaTodos') or not d.get('custoEur') or len(d.get('imagens', [])) < 2:
                 continue
             preco = preco_rapido(d['custoEur'])
-            if preco <= BARATO_PRECO_MAX:
+            if preco <= BARATO_PRECO_MAX and d['custoEur'] <= BARATO_CUSTO_TOTAL_EUR:
                 melhores.append((preco, -it['popularidade'], d))
         if not melhores:
             rel.append({'busca': busca, 'ok': False})
