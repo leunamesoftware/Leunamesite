@@ -188,7 +188,7 @@ label{display:block;font-size:13px;color:var(--suave);margin-top:8px}
       <p class="msg" style="font-size:12.5px">Contas aproximadas. A Stripe converte o euro para real com a cotação dela (um pouco abaixo da do mercado) e o banco cobra IOF quando você paga a CJ com cartão brasileiro. Mude os números se souber os valores exatos.</p>
     </section>
     <section class="caixa" id="tiktok" hidden>
-      <div class="tt-topo"><span class="tt-t">📱 Postagens prontas para o TikTok</span><small>Todo dia toque em <b>📲 Mandar pro irmão</b> nos <b>2 de hoje</b>. Abre o WhatsApp dele com a frase, a legenda e o link do vídeo. É só tocar em <b>Enviar</b>. Ele toca no link, baixa o vídeo e posta.</small><small id="ttLink"></small>
+      <div class="tt-topo"><span class="tt-t">📱 Postagens prontas para o TikTok</span><small>Nos <b>2 de hoje</b>, toque em ordem: <b>1️⃣ Vídeo</b> (escolha WhatsApp → irmão), <b>2️⃣ Frase</b> e <b>3️⃣ Legenda</b>. Cada um chega como uma mensagem separada no WhatsApp dele. <b>ℹ️ Como postar</b> manda o passo a passo (só precisa mandar no começo).</small><small id="ttLink"></small>
         <div class="tt-whats"><input class="campo" id="ttWhats" type="tel" inputmode="tel" placeholder="WhatsApp do irmão com país, ex.: 34 612 345 678"><button class="bt" id="ttSalvar">Salvar</button></div></div>
       <h4 class="ct-h">📅 Hoje</h4><div id="ttHoje"></div>
       <h4 class="ct-h">Próximos</h4><div id="ttFila"></div>
@@ -469,7 +469,7 @@ function carregarTiktok(){$("#ttHoje").innerHTML='<p class="msg">Carregando…</
   api("tiktok").then(function(d){TT=d;desenharTiktok()}).catch(function(e){$("#ttHoje").innerHTML='<p class="msg">Erro: '+esc(e.message)+'</p>'})}
 function cartaoTt(p){return '<div class="tt'+(p.naFila?'':' feito')+'"><img src="'+esc(p.img)+'" alt=""><div class="tx"><b>'+esc(p.nome)+' · '+eur(p.precio)+'</b>'+
   '<div class="fr">Frase na tela: <b>'+esc(p.frase)+'</b></div><pre>'+esc(p.legenda)+'</pre>'+
-  '<div class="ac"><button class="bt verde" data-ttw="'+esc(p.id)+'">📲 Mandar pro irmão</button><button class="bt cinza" data-ttv="'+esc(p.id)+'">🎬 Só o vídeo</button>'+
+  '<div class="ac"><button class="bt verde" data-ttv="'+esc(p.id)+'">1️⃣ 🎬 Vídeo</button><button class="bt" data-ttf="'+esc(p.id)+'">2️⃣ Frase</button><button class="bt" data-ttl="'+esc(p.id)+'">3️⃣ Legenda</button><button class="bt cinza" data-ttp="'+esc(p.id)+'">ℹ️ Como postar</button>'+
   (p.naFila?'<button class="bt cinza" data-ttok="'+esc(p.id)+'">✓ Já mandei</button>':'<button class="bt cinza" data-ttdes="'+esc(p.id)+'">↩ Mandado em '+new Date(p.enviado.replace(" ","T")+"Z").toLocaleDateString("pt-BR")+'</button>')+'</div></div></div>'}
 function textoTt(p){return "Mano, post de hoje 👇\nAbra o link, toque em 1️⃣ Baixar o vídeo e 2️⃣ Copiar a legenda, e poste no TikTok:\nhttps://"+TT.host+"/tt?id="+encodeURIComponent(p.id)}
 $("#ttSalvar").onclick=function(){var n=$("#ttWhats").value.replace(/\D/g,"");if(n.length<8){toast("Digite o número com o código do país (Espanha = 34)");return}
@@ -481,8 +481,10 @@ function desenharTiktok(){if(TT.whats&&!$("#ttWhats").value)$("#ttWhats").value=
   $("#ttFeitos").innerHTML=feitos.map(cartaoTt).join("")||'<p class="msg">Nenhum ainda.</p>'}
 $("#tiktok").onclick=function(ev){var g=function(a){var b=ev.target.closest("["+a+"]");return b&&TT.itens.find(function(x){return x.id===b.getAttribute(a)})};
   var p=g("data-ttv");if(p){postarVideo({url:p.video,titulo:p.nome});return}
-  p=g("data-ttw");if(p){if(!TT.whats){toast("Primeiro salve o WhatsApp do seu irmão, lá em cima");$("#ttWhats").focus();return}
-    abrirFora("https://wa.me/"+TT.whats+"?text="+encodeURIComponent(textoTt(p)));if(p.naFila)api("tiktok-enviado",{id:p.id}).then(function(){setTimeout(carregarTiktok,1500)});return}
+  var zap=function(t){if(!TT.whats){toast("Primeiro salve o WhatsApp do seu irmão, lá em cima");$("#ttWhats").focus();return false}abrirFora("https://wa.me/"+TT.whats+"?text="+encodeURIComponent(t));return true};
+  p=g("data-ttf");if(p){zap(p.frase);return}
+  p=g("data-ttl");if(p){if(zap(p.legenda)&&p.naFila)api("tiktok-enviado",{id:p.id}).then(function(){setTimeout(carregarTiktok,1500)});return}
+  p=g("data-ttp");if(p){zap("Mano, como postar no TikTok 👇\n1) Salve o vídeo que eu mandar (segure → Salvar)\n2) TikTok → + → Carregar → escolha o vídeo → Avançar\n3) Toque em Aa Texto e cole a FRASE (a mensagem curta)\n4) Avançar → na descrição cole a LEGENDA (a mensagem grande)\n5) Publicar ✅");return}
   p=g("data-ttok");if(p){api("tiktok-enviado",{id:p.id}).then(carregarTiktok);return}
   p=g("data-ttdes");if(p&&confirm("Voltar este para a fila?")){api("tiktok-enviado",{id:p.id,desfazer:true}).then(carregarTiktok)}};
 var CHAT_ALIA="https://chat.cjdropshipping.com/?touser=Alia%20Lin";
