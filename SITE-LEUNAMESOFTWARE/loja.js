@@ -354,49 +354,49 @@
       .then(function (j) { if (j && j.url) location.href = j.url; else throw new Error(j && j.erro); })
       .catch(function () { b.disabled = false; aviso(T("No se pudo abrir el pago. Inténtalo de nuevo.", "Não foi possível abrir o pagamento. Tente novamente.", "Could not open checkout. Please try again.")); });
   });
+  var ppId = "";
   function iniciarPagamento() {
     if (!$("#paypal") || !itensCarrinho().length) return;
     fetch("/api/config").then(function (r) { return r.ok ? r.json() : {}; }).catch(function () { return {}; }).then(function (cfg) {
       temStripe = !!cfg.stripe;
+      ppId = cfg.paypal || "";            // Client ID do PayPal vem do servidor (só aparece se o servidor estiver pronto)
       $("#btStripe").hidden = !temStripe;
-      $("#ouPP").hidden = !(temStripe && C.paypalClientId);
-      $("#semPP").hidden = temStripe || !!C.paypalClientId;
+      $("#ouPP").hidden = !(temStripe && ppId);
+      $("#semPP").hidden = temStripe || !!ppId;
       iniciarPayPal();
     });
   }
+  function postar(url, corpo) {
+    return fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(corpo) })
+      .then(function (r) { return r.json().then(function (j) { if (!r.ok) throw new Error(j && j.erro || "erro"); return j; }); });
+  }
   function iniciarPayPal() {
-    if (ppCarregado || !C.paypalClientId) return;
+    if (ppCarregado || !ppId) return;
     ppCarregado = true;
     var s = document.createElement("script");
-    s.src = "https://www.paypal.com/sdk/js?client-id=" + encodeURIComponent(C.paypalClientId) + "&currency=EUR&intent=capture&locale=" + ({ pt: "pt_PT", es: "es_ES", en: "en_GB" }[lang()]);
+    s.src = "https://www.paypal.com/sdk/js?client-id=" + encodeURIComponent(ppId) + "&currency=EUR&intent=capture&components=buttons&locale=" + ({ pt: "pt_PT", es: "es_ES", en: "en_GB" }[lang()]);
     s.onload = function () {
       window.paypal.Buttons({
         style: { layout: "vertical", shape: "pill", label: "pay" },
         onClick: function (d, actions) {
           return aceitou() ? actions.resolve() : actions.reject();
         },
-        createOrder: function (d, actions) {
-          var itens = itensCarrinho();
-          var tot = total().toFixed(2);
-          return actions.order.create({
-            purchase_units: [{
-              description: C.marca || "LeunaPets",
-              amount: { currency_code: "EUR", value: tot, breakdown: { item_total: { currency_code: "EUR", value: tot } } },
-              items: itens.map(function (it) {
-                return { name: it.nome.slice(0, 120), sku: it.k.slice(0, 120), quantity: String(it.q), unit_amount: { currency_code: "EUR", value: it.preco.toFixed(2) }, category: "PHYSICAL_GOODS" };
-              })
-            }],
-            application_context: { shipping_preference: "GET_FROM_FILE", brand_name: C.marca || "LeunaPets" }
-          });
+        // o pedido é criado no servidor, com o preço da loja (o navegador só manda id, variação e quantidade)
+        createOrder: function () {
+          return postar("/api/paypal/criar", { lang: lang(), itens: itensCarrinho().map(function (it) { return { id: it.p.id, v: it.v ? it.v.vid : undefined, q: it.q }; }) })
+            .then(function (j) { return j.id; });
         },
         onShippingAddressChange: function (d, actions) {
           var pais = d && d.shippingAddress && d.shippingAddress.countryCode;
           if (PAISES.indexOf(pais) < 0) return actions.reject(d.errors && d.errors.COUNTRY_ERROR);
         },
-        onApprove: function (d, actions) {
-          return actions.order.capture().then(function (r) {
+        onApprove: function (d) {
+          return postar("/api/paypal/capturar", { id: d.orderID }).then(function (r) {
             carrinho = {}; salvar();
-            location.href = "gracias.html?pedido=" + encodeURIComponent((r && r.id) || d.orderID || "");
+            location.href = "gracias.html?ok=1&pedido=" + encodeURIComponent(r.id || d.orderID || "");
+          }).catch(function (e) {
+            aviso(e.message === "pais" ? T("Lo sentimos: aún no enviamos a ese país.", "Ainda não enviamos para esse país.", "Sorry, we don't ship to that country yet.")
+              : T("No se pudo completar el pago. Inténtalo de nuevo.", "Não foi possível concluir o pagamento. Tente novamente.", "Payment could not be completed. Please try again."));
           });
         },
         onError: function () { aviso(T("No se pudo completar el pago. Inténtalo de nuevo.", "Não foi possível concluir o pagamento. Tente novamente.", "Payment could not be completed. Please try again.")); }

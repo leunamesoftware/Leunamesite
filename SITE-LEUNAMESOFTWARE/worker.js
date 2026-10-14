@@ -69,6 +69,73 @@ async function pagar(req, env, L) {
   return json({ url: s.url });
 }
 
+// ---------- PayPal (pedido criado e capturado no servidor; preço sempre o da loja) ----------
+const PP = "https://api-m.paypal.com";
+async function tokenPayPal(env) {
+  const r = await fetch(PP + "/v1/oauth2/token", {
+    method: "POST",
+    headers: { Authorization: "Basic " + btoa(env.PAYPAL_CLIENT_ID + ":" + env.PAYPAL_SECRET), "Content-Type": "application/x-www-form-urlencoded" },
+    body: "grant_type=client_credentials",
+  });
+  const d = await r.json().catch(() => ({}));
+  if (!d.access_token) throw new Error("paypal-token");
+  return d.access_token;
+}
+async function paypalCriar(req, env, L) {
+  if (!env.PAYPAL_CLIENT_ID || !env.PAYPAL_SECRET) return json({ erro: "paypal-desligado" }, 503);
+  const corpo = await req.json().catch(() => null);
+  if (!corpo || !Array.isArray(corpo.itens) || !corpo.itens.length || corpo.itens.length > 30) return json({ erro: "carrinho" }, 400);
+  const lang = ["es", "pt", "en"].includes(corpo.lang) ? corpo.lang : "es";
+  const cat = await produtos(env, req, L);
+  const itens = [];
+  let total = 0;
+  for (const it of corpo.itens) {
+    const p = cat[it && it.id];
+    if (!p) return json({ erro: "produto" }, 400);
+    let v = null;
+    if (Array.isArray(p.variantes) && p.variantes.length > 1) {
+      v = p.variantes.find((x) => x.vid === (it && it.v));
+      if (!v) return json({ erro: "variacao" }, 400);
+    }
+    const q = Math.max(1, Math.min(9, parseInt(it && it.q, 10) || 0));
+    const preco = Math.round((v ? v.precio : p.precio) * 100);
+    total += preco * q;
+    const info = p[lang] || p.es || {};
+    itens.push({ name: (String(info.nombre || p.id) + (v ? " — " + v.nombre : "")).slice(0, 120), sku: (p.id + (v ? ":" + v.vid : "")).slice(0, 120),
+      quantity: String(q), unit_amount: { currency_code: "EUR", value: (preco / 100).toFixed(2) }, category: "PHYSICAL_GOODS" });
+  }
+  const valor = (total / 100).toFixed(2);
+  const r = await fetch(PP + "/v2/checkout/orders", {
+    method: "POST",
+    headers: { Authorization: "Bearer " + (await tokenPayPal(env)), "Content-Type": "application/json" },
+    body: JSON.stringify({
+      intent: "CAPTURE",
+      purchase_units: [{ custom_id: L.id, description: L.marca, items: itens,
+        amount: { currency_code: "EUR", value: valor, breakdown: { item_total: { currency_code: "EUR", value: valor } } } }],
+      application_context: { brand_name: L.marca, shipping_preference: "GET_FROM_FILE", user_action: "PAY_NOW",
+        locale: lang === "en" ? "en-GB" : lang === "pt" ? "pt-PT" : "es-ES" },
+    }),
+  });
+  const d = await r.json().catch(() => ({}));
+  if (!r.ok || !d.id) return json({ erro: "paypal", detalhe: d.message }, 502);
+  return json({ id: d.id });
+}
+async function paypalCapturar(req, env) {
+  if (!env.PAYPAL_CLIENT_ID || !env.PAYPAL_SECRET) return json({ erro: "paypal-desligado" }, 503);
+  const corpo = await req.json().catch(() => ({}));
+  const id = String(corpo.id || "").replace(/[^A-Z0-9]/gi, "").slice(0, 40);
+  if (!id) return json({ erro: "id" }, 400);
+  const tk = await tokenPayPal(env);
+  const h = { Authorization: "Bearer " + tk, "Content-Type": "application/json" };
+  const o = await (await fetch(PP + "/v2/checkout/orders/" + id, { headers: h })).json().catch(() => ({}));
+  const pais = o.purchase_units && o.purchase_units[0] && o.purchase_units[0].shipping && o.purchase_units[0].shipping.address && o.purchase_units[0].shipping.address.country_code;
+  if (pais && !PAISES.includes(pais)) return json({ erro: "pais" }, 400);   // não cobra fora dos 9 países
+  const r = await fetch(PP + "/v2/checkout/orders/" + id + "/capture", { method: "POST", headers: h });
+  const d = await r.json().catch(() => ({}));
+  if (!r.ok || d.status !== "COMPLETED") return json({ erro: "captura", detalhe: d.message }, 502);
+  return json({ ok: true, id: d.id });
+}
+
 export default {
   async fetch(req, env) {
     const url = new URL(req.url);
@@ -94,7 +161,9 @@ export default {
     }
     if (url.pathname.startsWith("/v/")) return servirVideo(req, env, url.pathname.slice(3));
     if (url.pathname.startsWith("/api/painel/")) return painel(req, env, url);
-    if (url.pathname === "/api/config") return json({ stripe: !!env.STRIPE_SECRET_KEY });
+    if (url.pathname === "/api/config") return json({ stripe: !!env.STRIPE_SECRET_KEY, paypal: env.PAYPAL_CLIENT_ID && env.PAYPAL_SECRET ? env.PAYPAL_CLIENT_ID : "" });
+    if (url.pathname === "/api/paypal/criar" && req.method === "POST") return paypalCriar(req, env, L);
+    if (url.pathname === "/api/paypal/capturar" && req.method === "POST") return paypalCapturar(req, env);
     if (url.pathname === "/api/pagar" && req.method === "POST") return pagar(req, env, L);
     if (url.pathname.startsWith("/api/")) return json({ erro: "404" }, 404);
     // loja com pasta própria: tenta _lojas/<id>/<caminho>; se não existir, usa o arquivo comum da raiz

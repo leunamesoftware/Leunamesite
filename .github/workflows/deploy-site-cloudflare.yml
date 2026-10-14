@@ -74,8 +74,10 @@ jobs:
           STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
           CJ_API_KEY: ${{ secrets.CJ_API_KEY }}
           LOJA_ADMIN_SENHA: ${{ secrets.LOJA_ADMIN_SENHA }}
+          PAYPAL_CLIENT_ID: ${{ secrets.PAYPAL_CLIENT_ID }}
+          PAYPAL_SECRET: ${{ secrets.PAYPAL_SECRET }}
         run: |
-          for nome in STRIPE_SECRET_KEY CJ_API_KEY LOJA_ADMIN_SENHA; do
+          for nome in STRIPE_SECRET_KEY CJ_API_KEY LOJA_ADMIN_SENHA PAYPAL_CLIENT_ID PAYPAL_SECRET; do
             valor="${!nome}"
             if [ -n "$valor" ]; then
               printf '%s' "$valor" | npx wrangler@latest secret put "$nome"
