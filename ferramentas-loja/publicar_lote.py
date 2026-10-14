@@ -54,7 +54,7 @@ BARATOS = {
         ('dish towel', 'textil'), ('pillow cover', 'textil'), ('placemat', 'textil'), ('cushion cover', 'textil'),
     ],
 }
-BARATO_CUSTO_USD, BARATO_PRECO_MAX, BARATO_CUSTO_TOTAL_EUR = 4.0, 14.99, 6.0
+BARATO_CUSTO_USD, BARATO_PRECO_MAX, BARATO_CUSTO_TOTAL_EUR = 5.0, 14.99, 8.4
 
 
 IOF = 0.035   # o dono paga a CJ com cartão brasileiro: IOF em cima do custo
@@ -116,16 +116,18 @@ def baratos(tk):
         r = api('buscar?q=' + urllib.parse.quote(busca), token=tk)
         itens = [i for i in r.get('itens', []) if not i.get('publicado') and i['pid'] not in feitos and i['custoUsd'] <= BARATO_CUSTO_USD]
         itens.sort(key=lambda i: (i.get('video', False), i['popularidade']), reverse=True)
-        melhores = []
-        for it in itens[:5]:
+        melhores, vistos = [], []
+        for it in itens[:6]:
             d = api('detalhe?pid=' + urllib.parse.quote(it['pid']), token=tk)
+            vistos.append(d.get('erro') or (d.get('custoEur'), d.get('entregaTodos')))
             if d.get('erro') or not d.get('entregaTodos') or not d.get('custoEur') or len(d.get('imagens', [])) < 2:
                 continue
             preco = preco_rapido(d['custoEur'])
             if preco <= BARATO_PRECO_MAX and d['custoEur'] <= BARATO_CUSTO_TOTAL_EUR:
                 melhores.append((preco, -it['popularidade'], d))
         if not melhores:
-            rel.append({'busca': busca, 'ok': False})
+            rel.append({'busca': busca, 'ok': False, 'candidatos': len(itens), 'vistos': vistos})
+            print(rel[-1], flush=True)
             continue
         preco, _, d = min(melhores, key=lambda x: (x[0], x[1]))
         p = api('publicar', {'pid': d['pid'], 'categoria': cat, 'precio': preco, 'destaque': False, 'nuevo': True}, token=tk)
