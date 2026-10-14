@@ -18,13 +18,14 @@ LOTES = {
         ('pet grooming glove', 'higiene', True), ('pet hair remover', 'higiene', False), ('cat litter mat', 'higiene', False),
         ('pet bowl', 'comer', False), ('slow feeder bowl', 'comer', False), ('pet blanket', 'camas', False),
     ],
-    'casa': [  # (busca na CJ, categoria, destaque)
-        ('table lamp', 'luz', True), ('led night light', 'luz', False),
-        ('solar garden light', 'jardin', True), ('plant pot', 'jardin', False),
-        ('artificial plants', 'deco', True), ('vase', 'deco', False),
-        ('cushion cover', 'textil', True), ('throw blanket', 'textil', False),
-        ('storage box', 'orden', True), ('drawer organizer', 'orden', False),
-        ('aroma diffuser', 'hogar', True), ('wall shelf', 'muebles', False),
+    'casa': [  # (busca na CJ, categoria, destaque) — 2º lote: completa ~30 produtos na Cachik
+        ('led strip lights', 'luz', True), ('motion sensor light', 'luz', False), ('fairy lights', 'luz', False),
+        ('solar lantern', 'jardin', False), ('garden hose nozzle', 'jardin', False), ('bird feeder', 'jardin', False),
+        ('wall clock', 'deco', True), ('photo frame', 'deco', False), ('artificial flowers', 'deco', False),
+        ('bath mat', 'textil', False), ('table runner', 'textil', False), ('pillow case', 'textil', False),
+        ('spice rack', 'orden', False), ('shoe rack', 'orden', True), ('closet organizer', 'orden', False),
+        ('kitchen gadgets', 'hogar', True), ('silicone kitchen utensils', 'hogar', False), ('soap dispenser', 'hogar', False),
+        ('folding stool', 'muebles', False), ('bedside table organizer', 'muebles', False),
     ],
 }
 LUCRO_MIN, PRECO_MAX, CUSTO_MAX_USD = 4.0, 39.99, 10

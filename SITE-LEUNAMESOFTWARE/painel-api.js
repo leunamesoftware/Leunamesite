@@ -29,6 +29,14 @@ const num = (v) => {
   const n = parseFloat(v);
   return Number.isFinite(n) ? n : null;
 };
+// frete: o mais barato até o prazo máximo; se um mais rápido custar até US$ 1 a mais, fica com o mais rápido
+function escolherFrete(ops, prazoMax) {
+  const boas = ops.filter((o) => o.dias <= prazoMax);
+  const lista = (boas.length ? boas : ops).slice().sort((a, b) => a.usd - b.usd);
+  const barato = lista[0];
+  const rapido = lista.filter((o) => o.usd <= barato.usd + 1).sort((a, b) => a.dias - b.dias || a.usd - b.usd)[0];
+  return rapido || barato;
+}
 export const precoVenda = (custoEur) => Math.ceil(Math.max(custoEur * 2, custoEur + 8)) - 0.01;
 export const lucro = (preco, custoEur) => Math.round((preco - custoEur - (preco * 0.07 + 0.35)) * 100) / 100;
 
@@ -176,8 +184,7 @@ async function detalhe(env, pid, origem = "CN") {
       return { usd, dias, prazo: o.logisticAging || "", nome: o.logisticName || "" };
     });
     if (!ops.length) { fretes[destino] = null; continue; }
-    const boas = ops.filter((o) => o.dias <= PRAZO_MAX);
-    fretes[destino] = (boas.length ? boas : ops).sort((a, b) => a.usd - b.usd)[0];
+    fretes[destino] = escolherFrete(ops, PRAZO_MAX);
   }
   const validos = Object.values(fretes).filter(Boolean);
   const freteUsd = validos.length ? Math.max(...validos.map((f) => f.usd)) : null;
@@ -498,8 +505,7 @@ async function freteMaisBarato(env, pais, produtos, origem = "CN") {
     nome: o.logisticName, usd: num(o.totalPostageFee) || num(o.logisticPrice),
     dias: Math.max(0, ...(String(o.logisticAging || "").match(/\d+/g) || [99]).map(Number)) }));
   if (!ops.length) return null;
-  const bons = ops.filter((o) => o.dias <= 20);
-  return (bons.length ? bons : ops).sort((a, b) => a.usd - b.usd)[0].nome;
+  return escolherFrete(ops, 20).nome;
 }
 export async function comprarCJ(env, req, sessaoId, forcar = false) {
   await tabelaCJ(env);
