@@ -160,6 +160,31 @@ export default {
     if (url.pathname === "/produtos.json") {
       return new Response(JSON.stringify(await catalogo(env, req, L.id)), { headers: { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-cache" } });
     }
+    // Google Shopping (listagens grátis): feed com os produtos ativos desta loja
+    if (url.pathname === "/google-shopping.xml") {
+      const x = (s) => String(s == null ? "" : s).replace(/[<>&'"]/g, (c) => ({ "<": "&lt;", ">": "&gt;", "&": "&amp;", "'": "&apos;", '"': "&quot;" }[c]));
+      const base = "https://" + L.host;
+      const itens = (await catalogo(env, req, L.id)).filter((p) => p && p.id && p.precio > 0 && p.es && p.es.nombre && (p.imagenes || []).length);
+      const xml = itens.map((p) => {
+        const img = p.imagenes.map((i) => (/^https?:/.test(i) ? i : base + "/" + String(i).replace(/^\//, "")));
+        const desc = [p.es.descripcion, ...(p.es.puntos || [])].filter(Boolean).join(" · ").slice(0, 4900);
+        return "<item>" +
+          "<g:id>" + x(p.id) + "</g:id><title>" + x(p.es.nombre.slice(0, 150)) + "</title>" +
+          "<description>" + x(desc || p.es.nombre) + "</description>" +
+          "<link>" + x(base + "/producto.html?id=" + encodeURIComponent(p.id)) + "</link>" +
+          "<g:image_link>" + x(img[0]) + "</g:image_link>" +
+          img.slice(1, 10).map((i) => "<g:additional_image_link>" + x(i) + "</g:additional_image_link>").join("") +
+          "<g:availability>in_stock</g:availability><g:condition>new</g:condition>" +
+          "<g:price>" + Number(p.precio).toFixed(2) + " EUR</g:price>" +
+          "<g:brand>" + x(L.marca) + "</g:brand><g:identifier_exists>no</g:identifier_exists>" +
+          "<g:product_type>" + x(p.categoria || "") + "</g:product_type>" +
+          "<g:shipping><g:country>ES</g:country><g:service>Envío gratis</g:service><g:price>0.00 EUR</g:price></g:shipping>" +
+          "</item>";
+      }).join("\n");
+      const doc = '<?xml version="1.0" encoding="UTF-8"?>\n<rss version="2.0" xmlns:g="http://base.google.com/ns/1.0"><channel>' +
+        "<title>" + x(L.marca) + "</title><link>" + base + "</link><description>" + x(L.marca) + " – envío gratis</description>\n" + xml + "\n</channel></rss>";
+      return new Response(doc, { headers: { "Content-Type": "application/xml; charset=utf-8", "Cache-Control": "public, max-age=3600" } });
+    }
     if (url.pathname === "/painel/app-versao.json" && env.DOWNLOADS) {
       const o = await env.DOWNLOADS.get("leunapets-painel-versao.json");
       return new Response(o ? o.body : '{"versao":0}', { headers: { "Content-Type": "application/json", "Cache-Control": "no-store" } });
