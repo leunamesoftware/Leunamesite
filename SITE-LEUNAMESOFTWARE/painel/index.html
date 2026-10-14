@@ -75,6 +75,7 @@ label{display:block;font-size:13px;color:var(--suave);margin-top:8px}
 .ped-end{background:var(--fundo);border-radius:10px;padding:8px 10px;margin-top:10px}.ped-end-t{display:flex;justify-content:space-between;align-items:center;font-weight:700;font-size:14px;margin-bottom:4px}
 .cp{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:5px 0;border-top:1px solid var(--borda);font-size:14px}.cp small{display:block;color:var(--suave);font-size:11px}.cp .bt,.ped-end-t .bt{padding:5px 10px;font-size:12px;flex:none}
 .ped-acoes{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}.ped-acoes .campo{flex:1;min-width:160px;margin:0}
+.topo .topo-cj{color:#fff;border:1px solid #ffffff55;border-radius:8px;padding:6px 10px;text-decoration:none;font-size:13px}
 .topo #zMenos,.topo #zMais,.topo #modoBt{padding:6px 8px;min-width:34px}
 .chips{display:flex;gap:6px;flex-wrap:wrap}.chip.on{background:var(--azul);color:#fff;border-color:var(--azul)}.chip small{opacity:.7;margin-left:3px}
 .selo{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;vertical-align:middle}
@@ -92,6 +93,7 @@ label{display:block;font-size:13px;color:var(--suave);margin-top:8px}
 .vp{display:grid;grid-template-columns:1fr 1fr;gap:8px;max-height:55vh;overflow:auto}.vp-i{display:flex;gap:6px;align-items:center;border:1px solid var(--borda);border-radius:10px;padding:6px;font-size:12.5px;margin:0;color:var(--tx)}.vp-i img{width:44px;height:44px;border-radius:8px;object-fit:cover}
 .atalhos{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px}.atalhos a{display:flex;flex-direction:column;align-items:center;gap:4px;padding:16px 10px;border:1px solid var(--borda);border-radius:14px;background:#fff;color:var(--tx);text-decoration:none;font-weight:700}.atalhos b{font-size:28px}.atalhos small{color:var(--suave);font-weight:500}
 .redes{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+[hidden]{display:none!important}
 .toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--azul);color:#fff;padding:10px 16px;border-radius:10px;display:none;z-index:20;max-width:90%}
 </style>
 </head>
@@ -106,7 +108,7 @@ label{display:block;font-size:13px;color:var(--suave);margin-top:8px}
 </div>
 
 <div id="app" hidden>
-  <div class="topo"><b>Painel das lojas</b><button id="zMenos" title="Diminuir">A−</button><button id="zMais" title="Aumentar">A+</button><button id="modoBt" title="Tela larga (computador) ou celular">🖥️</button><a class="baixar" href="app.apk">📲 App</a><button id="sair">Sair</button></div>
+  <div class="topo"><b>Painel das lojas</b><button id="zMenos" title="Diminuir">A−</button><button id="zMais" title="Aumentar">A+</button><button id="modoBt" title="Tela larga (computador) ou celular">🖥️</button><a class="topo-cj" href="https://cjdropshipping.com/" target="_blank">🛒 CJ</a><a class="baixar" href="app.apk">📲 App</a><button id="sair">Sair</button></div>
   <div class="lojas" id="lojas"></div>
   <div class="abas"><button class="aba on" data-aba="buscar">Buscar na CJ</button><button class="aba" data-aba="loja">Na loja</button><button class="aba" data-aba="ver">Ver loja</button><button class="aba" data-aba="pedidos">💰 Pedidos <b id="nPed" class="nped" hidden></b></button><button class="aba" data-aba="resultados">📊 Resultados</button><button class="aba" data-aba="videos">🎬 Vídeos</button><button class="aba" data-aba="atalhos">🔗 Atalhos</button></div>
   <main>
@@ -436,7 +438,9 @@ $("#resLojas").onclick=function(ev){var b=ev.target.closest("[data-rl]");if(!b)r
 // ---- 🎬 vídeos ----
 var VID={pastas:[],itens:[]},pastaSel=null;
 try{pastaSel=+localStorage.getItem("lp_pasta")||null}catch(e){}
-function carregarVideos(){api("videos").then(function(d){VID=d;desenharVideos()}).catch(function(e){$("#vidLista").innerHTML='<p class="msg">Erro: '+esc(e.message)+'</p>'})}
+function carregarVideos(){api("videos").then(function(d){
+    if(!d.pastas.length)return api("pasta",{nome:"Prontos para postar"}).then(function(d2){VID=d2;desenharVideos()});
+    VID=d;desenharVideos()}).catch(function(e){$("#vidLista").innerHTML='<p class="msg">Erro: '+esc(e.message)+'</p>'})}
 function acaoVid(rota,corpo){return api(rota,corpo).then(function(d){VID=d;desenharVideos();return d})}
 function desenharVideos(){
   if(pastaSel&&!VID.pastas.some(function(p){return p.id===pastaSel}))pastaSel=null;
@@ -447,13 +451,21 @@ function desenharVideos(){
   $("#vidLista").innerHTML=!VID.pastas.length?'<p class="msg">Crie uma pasta para começar (ex.: "TikTok", "Instagram", "Prontos para postar").</p>':
     !l.length?'<p class="msg">Pasta vazia. Toque em <b>⬆ Subir vídeo</b> ou <b>+ Vídeos dos produtos</b>.</p>':
     l.map(function(v){return '<div class="vid"><video src="'+esc(v.url)+'" preload="metadata" controls playsinline></video><div class="vid-t">'+esc(v.titulo)+'</div><div class="mini">'+
-      '<a class="bt cinza" href="'+esc(v.url)+'?baixar='+encodeURIComponent(v.titulo||"video")+'">⬇ Baixar</a><button class="bt cinza" data-vlink="'+esc(v.url)+'">🔗 Link</button><button class="bt cinza" data-vren="'+v.id+'">✏️</button><button class="bt cinza" data-vmov="'+v.id+'">📁</button><button class="bt cinza" data-vdel="'+v.id+'">🗑</button></div></div>'}).join("");
+      '<button class="bt verde" data-vpost="'+v.id+'">📤 Postar</button><a class="bt cinza" href="'+esc(v.url)+'?baixar='+encodeURIComponent(v.titulo||"video")+'" data-vbaixar="'+v.id+'">⬇ Baixar</a><button class="bt cinza" data-vlink="'+esc(v.url)+'">🔗 Link</button><button class="bt cinza" data-vren="'+v.id+'">✏️</button><button class="bt cinza" data-vmov="'+v.id+'">📁</button><button class="bt cinza" data-vdel="'+v.id+'">🗑</button></div></div>'}).join("");
 }
-$("#criarPasta").onclick=function(){var n=$("#novaPasta").value.trim();if(!n){toast("Escreva o nome da pasta");return}acaoVid("pasta",{nome:n}).then(function(d){$("#novaPasta").value="";pastaSel=d.pastas[d.pastas.length-1].id;try{localStorage.setItem("lp_pasta",pastaSel)}catch(e){}desenharVideos()})};
+$("#criarPasta").onclick=function(){var n=$("#novaPasta").value.trim()||("Nova pasta "+(VID.pastas.length+1));acaoVid("pasta",{nome:n}).then(function(d){$("#novaPasta").value="";pastaSel=d.pastas[d.pastas.length-1].id;try{localStorage.setItem("lp_pasta",pastaSel)}catch(e){}desenharVideos()})};
 $("#pastas").onclick=function(ev){var b=ev.target.closest("[data-pasta]");if(!b)return;pastaSel=+b.dataset.pasta;try{localStorage.setItem("lp_pasta",pastaSel)}catch(e){}desenharVideos()};
 $("#renPasta").onclick=function(){var p=VID.pastas.find(function(x){return x.id===pastaSel});var n=prompt("Novo nome da pasta:",p&&p.nome);if(n)acaoVid("pasta-renomear",{id:pastaSel,nome:n})};
 $("#apagarPasta").onclick=function(){if(confirm("Apagar a pasta e os vídeos que você subiu nela?"))acaoVid("pasta-apagar",{id:pastaSel}).then(function(){pastaSel=null;desenharVideos()})};
+function postarVideo(v){var u=location.origin+v.url;
+  if(window.LeuNativo&&window.LeuNativo.video){nativo2("video",u,v.titulo,true);return}
+  fetch(u).then(function(r){return r.blob()}).then(function(b){var f=new File([b],(v.titulo||"video")+".mp4",{type:b.type||"video/mp4"});
+    if(navigator.canShare&&navigator.canShare({files:[f]}))return navigator.share({files:[f],title:v.titulo});
+    var a=document.createElement("a");a.href=URL.createObjectURL(b);a.download=f.name;a.click();toast("Vídeo baixado. Agora suba no TikTok/Instagram.")}).catch(function(){toast("Não consegui preparar o vídeo")})}
+function nativo2(f,a,b,c){try{window.LeuNativo[f](a,b,c)}catch(e){}}
 $("#vidLista").onclick=function(ev){
+  var po=ev.target.closest("[data-vpost]");if(po){postarVideo(VID.itens.find(function(x){return x.id===+po.dataset.vpost}));return}
+  var bx=ev.target.closest("[data-vbaixar]");if(bx&&window.LeuNativo&&window.LeuNativo.video){ev.preventDefault();var vb=VID.itens.find(function(x){return x.id===+bx.dataset.vbaixar});nativo2("video",location.origin+vb.url,vb.titulo,false);return}
   var a=ev.target.closest("[data-vlink]");if(a){copiarTxt(location.origin+a.dataset.vlink,"Link do vídeo copiado");return}
   var rn=ev.target.closest("[data-vren]");if(rn){var v=VID.itens.find(function(x){return x.id===+rn.dataset.vren});var n=prompt("Nome do vídeo:",v&&v.titulo);if(n)acaoVid("video-renomear",{id:v.id,titulo:n});return}
   var mv=ev.target.closest("[data-vmov]");if(mv){var lista=VID.pastas.map(function(p,i){return (i+1)+" - "+p.nome}).join("\n");var k=parseInt(prompt("Mover para qual pasta? (número)\n"+lista),10);if(k&&VID.pastas[k-1])acaoVid("video-mover",{id:+mv.dataset.vmov,pasta:VID.pastas[k-1].id});return}
@@ -465,7 +477,7 @@ $("#subir").onchange=function(){var fs=[].slice.call(this.files);this.value="";i
     var x=new XMLHttpRequest();x.open("POST","/api/painel/video-upload?loja="+LOJA+"&pasta="+pastaSel+"&nome="+encodeURIComponent(f.name));
     x.setRequestHeader("Authorization","Bearer "+token);x.setRequestHeader("Content-Type",f.type||"video/mp4");
     $("#progresso").hidden=false;x.upload.onprogress=function(e){if(e.lengthComputable)$("#progresso").textContent="Subindo "+f.name+": "+Math.round(e.loaded/e.total*100)+"%"};
-    x.onload=function(){if(x.status===200)feitos++;else toast("Erro ao subir "+f.name);prox()};x.onerror=function(){toast("Sem internet");prox()};x.send(f)})();
+    x.onload=function(){if(x.status===200)feitos++;else{var m="";try{m=JSON.parse(x.responseText).erro}catch(e){}toast("Erro ao subir "+f.name+(m?": "+m:""))}prox()};x.onerror=function(){toast("Sem internet");prox()};x.send(f)})();
 };
 $("#addProd").onclick=function(){$("#janela").innerHTML='<p class="msg">Carregando vídeos dos produtos…</p>';$("#fundo").classList.add("on");
   api("videos-produtos").then(function(d){
@@ -477,6 +489,16 @@ $("#addProd").onclick=function(){$("#janela").innerHTML='<p class="msg">Carregan
       var p=Promise.resolve();sel.forEach(function(v){p=p.then(function(){return api("video-add",{pasta:pastaSel,titulo:v.nome,url:v.url})})});
       p.then(function(){fechar();carregarVideos();toast(sel.length+" vídeo(s) adicionados")})};
   })};
+// no app: links externos (atalhos, CJ, TikTok…) saem pelo Android
+document.addEventListener("click",function(ev){
+  if(!window.LeuNativo)return;
+  var a=ev.target.closest("a[href]");if(!a||(a.hasAttribute("data-vbaixar")&&window.LeuNativo.video))return;
+  var u=new URL(a.getAttribute("href"),location.href);
+  if(u.href.indexOf("mailto:")===0)return;
+  if(u.origin===location.origin&&u.pathname.indexOf("/painel")===0&&a.target!=="_blank")return;
+  ev.preventDefault();
+  if(window.LeuNativo.abrir)window.LeuNativo.abrir(u.href);else location.href=u.href;   // app antigo: navega e o Android decide (CJ fica dentro do app)
+},true);
 if(token)entrar();
 })();
 </script>

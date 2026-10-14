@@ -128,12 +128,40 @@ public class MainActivity extends Activity {
         }
     }
 
+    private void toast(final String t) { runOnUiThread(() -> android.widget.Toast.makeText(this, t, android.widget.Toast.LENGTH_SHORT).show()); }
+
     /** Chamado pelo JavaScript do painel. */
     class Ponte {
         @JavascriptInterface
         public void salvarToken(String tk) {
             getSharedPreferences(VendasService.PREFS, MODE_PRIVATE).edit().putString("token", tk == null ? "" : tk).apply();
             VendasService.iniciar(MainActivity.this);
+        }
+        /** Abre um link: CJ dentro do app; TikTok, Instagram, Facebook… no app deles (ou no navegador). */
+        @JavascriptInterface
+        public void abrir(final String url) {
+            runOnUiThread(() -> {
+                Uri u = Uri.parse(url);
+                String h = u.getHost() == null ? "" : u.getHost();
+                if (h.endsWith("cjdropshipping.com") || (h.equals("pets.leuname.com") && u.getPath() != null && u.getPath().startsWith("/painel"))) { web.loadUrl(url); return; }
+                try { startActivity(new Intent(Intent.ACTION_VIEW, u)); } catch (Exception e) { toast("Não consegui abrir"); }
+            });
+        }
+        /** Salva o vídeo na galeria (Filmes/LeunaPets) e, se pedir, abre "Compartilhar" para mandar ao TikTok/Instagram/Facebook. */
+        @JavascriptInterface
+        public void video(final String url, final String titulo, final boolean compartilhar) {
+            toast(compartilhar ? "Preparando o vídeo…" : "Baixando o vídeo…");
+            new Thread(() -> {
+                try {
+                    Uri salvo = Midia.salvarVideo(MainActivity.this, url, titulo);
+                    runOnUiThread(() -> {
+                        if (!compartilhar) { toast("Vídeo salvo na galeria (Filmes/LeunaPets)"); return; }
+                        Intent s = new Intent(Intent.ACTION_SEND).setType("video/mp4").putExtra(Intent.EXTRA_STREAM, salvo)
+                            .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                        startActivity(Intent.createChooser(s, "Postar o vídeo em…"));
+                    });
+                } catch (Exception e) { runOnUiThread(() -> toast("Não consegui baixar o vídeo")); }
+            }).start();
         }
         @JavascriptInterface
         public void testarSom() {
