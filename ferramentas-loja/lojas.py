@@ -23,6 +23,7 @@ def lojas(t, ico):
         'id': 'pets', 'marca': 'LeunaPets', 'host': 'pets.leuname.com', 'dir': SITE,
         'cor': '#0F1E44', 'favicon': 'img/favicon.png', 'apple': 'img/emblema-192.png', 'css_extra': '',
         'icone': 'pata',
+        'google': 'Z-12cq3542sKXefbSB4nmb7nmExbdqWO0Q38DHT_TaA',  # Google Merchant Center (verificação do site)
         'cats': [
             ('camas', 'cama', 'Camas', 'Camas', 'Beds'),
             ('comer', 'tigela', 'Comer y beber', 'Comer e beber', 'Food & water'),
