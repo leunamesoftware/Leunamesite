@@ -9,6 +9,9 @@
 /
   Cache-Control: no-cache
 
+/painel/
+  Cache-Control: no-cache
+
 /*.css
   Cache-Control: no-cache
 
