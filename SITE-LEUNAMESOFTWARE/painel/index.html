@@ -471,7 +471,7 @@ function cartaoTt(p){return '<div class="tt'+(p.naFila?'':' feito')+'"><img src=
   '<div class="fr">Frase na tela: <b>'+esc(p.frase)+'</b></div><pre>'+esc(p.legenda)+'</pre>'+
   '<div class="ac"><button class="bt verde" data-ttw="'+esc(p.id)+'">📲 Mandar pro irmão</button><button class="bt cinza" data-ttv="'+esc(p.id)+'">🎬 Só o vídeo</button>'+
   (p.naFila?'<button class="bt cinza" data-ttok="'+esc(p.id)+'">✓ Já mandei</button>':'<button class="bt cinza" data-ttdes="'+esc(p.id)+'">↩ Mandado em '+new Date(p.enviado.replace(" ","T")+"Z").toLocaleDateString("pt-BR")+'</button>')+'</div></div></div>'}
-function textoTt(p){return "Mano, post de hoje 👇\n1) Toque no link do vídeo e baixe\n2) TikTok → + → Carregar → escolha o vídeo\n3) Aa Texto → cole a FRASE\n4) Avançar → cole a LEGENDA → Publicar ✅\n\n🎬 VÍDEO (toque para baixar):\nhttps://"+TT.host+p.video+"?baixar="+encodeURIComponent(p.nome)+"\n\n📝 FRASE NA TELA:\n"+p.frase+"\n\n📋 LEGENDA (colar na descrição):\n"+p.legenda}
+function textoTt(p){return "Mano, post de hoje 👇\nAbra o link, toque em 1️⃣ Baixar o vídeo e 2️⃣ Copiar a legenda, e poste no TikTok:\nhttps://"+TT.host+"/tt?id="+encodeURIComponent(p.id)}
 $("#ttSalvar").onclick=function(){var n=$("#ttWhats").value.replace(/\D/g,"");if(n.length<8){toast("Digite o número com o código do país (Espanha = 34)");return}
   api("tiktok-whats",{numero:n}).then(function(r){TT.whats=r.numero;toast("WhatsApp salvo ✓")})};
 function desenharTiktok(){if(TT.whats&&!$("#ttWhats").value)$("#ttWhats").value=TT.whats;var fila=TT.itens.filter(function(p){return p.naFila}),feitos=TT.itens.filter(function(p){return !p.naFila});

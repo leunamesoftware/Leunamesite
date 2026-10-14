@@ -412,7 +412,7 @@ const TAGS = {
   casa: "#hogar #decoracion #casa #ideasparacasa #españa",
 };
 const EMOJI = { juguetes: "🎾", paseo: "🦮", higiene: "🛁", comer: "🍽️", camas: "🛏️", rascadores: "🐾", luz: "💡", jardin: "🌿", deco: "✨", textil: "🧺", orden: "📦", hogar: "🏠", muebles: "🪑" };
-function legendaTikTok(p, L) {
+export function legendaTikTok(p, L) {
   const es = p.es || {}, nome = es.nombre || "", gancho = (es.gancho || "").trim();
   const preco = Number(p.precio).toFixed(2).replace(".", ",");
   const tags = L.id === "pets" ? TAGS.pets[p.animal] || TAGS.pets.ambos : TAGS.casa;

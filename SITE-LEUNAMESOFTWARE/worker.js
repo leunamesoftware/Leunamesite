@@ -3,7 +3,7 @@
 // loja.js, loja.css, painel...). Os produtos de cada loja ficam separados (coluna "loja" no D1).
 // A chave fica no segredo STRIPE_SECRET_KEY do Worker (vem do segredo do GitHub, nunca do código).
 // O preço é SEMPRE o de produtos.json (o navegador só manda id e quantidade).
-import { painel, catalogo, servirVideo, lojaPorHost, roboPedidos } from "./painel-api.js";
+import { painel, catalogo, servirVideo, lojaPorHost, roboPedidos, legendaTikTok } from "./painel-api.js";
 
 const PAISES = ["DE", "FR", "ES", "IT", "NL", "BE", "AT", "PT", "IE"];
 const HOST_LOJA = "pets.leuname.com";
@@ -196,6 +196,31 @@ export default {
     }
     if (url.pathname.startsWith("/v/")) return servirVideo(req, env, url.pathname.slice(3));
     if (url.pathname.startsWith("/api/painel/")) return painel(req, env, url);
+    if (url.pathname === "/tt") {   // página simples para quem posta no TikTok: baixar vídeo + copiar legenda
+      const id = String(url.searchParams.get("id") || "").slice(0, 64);
+      const p = (await catalogo(env, req, L.id)).find((x) => x && x.id === id);
+      const x = (t) => String(t == null ? "" : t).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+      if (!p || !/^\/v\//.test(p.video || "")) return new Response("Produto não encontrado.", { status: 404, headers: { "Content-Type": "text/plain; charset=utf-8" } });
+      const { legenda } = legendaTikTok(p, L);
+      const nome = (p.es && p.es.nombre) || p.id;
+      const html = `<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>Post do TikTok</title>
+<style>body{margin:0;font:17px/1.45 system-ui,sans-serif;background:#F4F6FB;color:#1B2140}main{max-width:520px;margin:0 auto;padding:16px}
+h1{font-size:21px;margin:4px 0 12px}video{width:100%;max-height:52vh;background:#000;border-radius:14px}
+.bt{display:block;width:100%;box-sizing:border-box;text-align:center;border:0;border-radius:14px;padding:16px;font-size:19px;font-weight:800;margin:12px 0 4px;text-decoration:none;cursor:pointer}
+.b1{background:#0F1E44;color:#fff}.b2{background:#FF6B4A;color:#fff}.ok{background:#39B26B!important}
+pre{white-space:pre-wrap;font:15px/1.4 system-ui,sans-serif;background:#fff;border-radius:12px;padding:10px 12px;margin:6px 0}
+ol{background:#fff;border-radius:14px;padding:14px 14px 14px 36px}li{margin:6px 0}small{color:#5b6280}</style></head><body><main>
+<h1>📱 Post de hoje: ${x(nome)}</h1>
+<video src="${x(p.video)}" controls playsinline preload="metadata"></video>
+<a class="bt b1" href="${x(p.video)}?baixar=${encodeURIComponent(nome)}">1️⃣ ⬇️ Baixar o vídeo</a><small>Se abrir o vídeo em vez de baixar: segure o dedo no vídeo → Baixar.</small>
+<button class="bt b2" id="cop">2️⃣ 📋 Copiar a legenda</button>
+<pre id="leg">${x(legenda)}</pre>
+<ol><li>Abra o <b>TikTok</b> → toque no <b>＋</b> (meio, embaixo).</li><li><b>Carregar</b> → escolha o vídeo que baixou → <b>Avançar</b>.</li><li>Na descrição: segure o dedo → <b>Colar</b>.</li><li>Toque em <b>Publicar</b> ✅</li></ol>
+</main><script>document.getElementById("cop").onclick=function(){var b=this,t=document.getElementById("leg").textContent;
+function ok(){b.textContent="✅ Legenda copiada! Agora vá ao TikTok";b.classList.add("ok")}
+(navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(ok).catch(function(){var r=document.createRange();r.selectNodeContents(document.getElementById("leg"));var s=getSelection();s.removeAllRanges();s.addRange(r);try{document.execCommand("copy");ok()}catch(e){alert("Segure o dedo no texto e copie")}})}</script></body></html>`;
+      return new Response(html, { headers: { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-cache" } });
+    }
     if (url.pathname === "/api/tiktok-recentes") {   // produtos dos últimos vídeos mandados para o TikTok (seção "Visto en TikTok")
       let ids = [];
       try { ids = (await env.DB.prepare("SELECT id FROM tiktok_envios WHERE loja=? ORDER BY enviado DESC LIMIT 60").bind(L.id).all()).results.map((r) => r.id); } catch (e) { ids = []; }
