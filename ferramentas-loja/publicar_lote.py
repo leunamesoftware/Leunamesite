@@ -127,7 +127,7 @@ def baratos(tk):
     return rel
 
 
-def tirar_caros(tk, limite=25.0):
+def tirar_caros(tk, limite=20.0):
     """Tira da loja (desativa — dá para voltar no painel) os produtos acima do limite de preço."""
     rel = []
     for p in api('publicados', token=tk).get('itens', []):
