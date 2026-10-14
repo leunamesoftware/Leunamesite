@@ -136,13 +136,19 @@ def baratos(tk):
     return rel
 
 
-def tirar_caros(tk, limite=15.0):
-    """Tira da loja (desativa — dá para voltar no painel) os produtos acima de 14,99 €: a loja fica só com preço baixo."""
-    rel = []
-    for p in api('publicados', token=tk).get('itens', []):
-        if p.get('ativo') and p.get('precio', 0) > limite:
-            r = api('editar', {'id': p['id'], 'ativo': False}, token=tk)
-            rel.append({'nome': p['nome'], 'preco': p['precio'], 'tirado': bool(r.get('ok'))})
+def tirar_caros(tk, limite=15.0, manter=6):
+    """A loja fica quase toda barata: dos produtos acima de 14,99 € fica só uns poucos (destaques primeiro,
+    depois os mais em conta, nada acima de 30 €). Os outros são desativados — dá para voltar no painel."""
+    caros = [p for p in api('publicados', token=tk).get('itens', []) if p.get('ativo') and p.get('precio', 0) > limite]
+    caros.sort(key=lambda p: (not p.get('destaque'), p['precio']))
+    fica = [p for p in caros if p['precio'] <= 30][:manter]
+    ids = {p['id'] for p in fica}
+    rel = [{'nome': p['nome'], 'preco': p['precio'], 'fica': True} for p in fica]
+    for p in caros:
+        if p['id'] in ids:
+            continue
+        r = api('editar', {'id': p['id'], 'ativo': False}, token=tk)
+        rel.append({'nome': p['nome'], 'preco': p['precio'], 'tirado': bool(r.get('ok'))})
     return rel
 
 
