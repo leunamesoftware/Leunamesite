@@ -139,7 +139,7 @@ def gerar(L):
     <section class="garantias">
       <div class="wrap gar-in">
         <div>{ico('camiao', 'gi')}<span><b>{t('Envío gratis', 'Envio grátis', 'Free shipping')}</b>{t('Con seguimiento, sin costes extra al recibir', 'Com seguimento, sem custos extra na entrega', 'Tracked, no extra fees on delivery')}</span></div>
-        <div>{ico('escudo', 'gi')}<span><b>{t('Pago seguro', 'Pagamento seguro', 'Secure payment')}</b>{t('Tarjeta, Apple Pay o PayPal', 'Cartão, Apple Pay ou PayPal', 'Card, Apple Pay or PayPal')}</span></div>
+        <div>{ico('escudo', 'gi')}<span><b>{t('Pago seguro', 'Pagamento seguro', 'Secure payment')}</b>{t('Tarjeta, Apple Pay o Google Pay', 'Cartão, Apple Pay ou Google Pay', 'Card, Apple Pay or Google Pay')}</span></div>
         <div>{ico('volta', 'gi')}<span><b>{t('Devoluciones fáciles', 'Devoluções fáceis', 'Easy returns')}</b>{t('14 días para cambiar de opinión', '14 dias para mudar de ideias', '14 days to change your mind')}</span></div>
         <div>{ico('apoio', 'gi')}<span><b>{t('Atención al cliente', 'Apoio ao cliente', 'Customer care')}</b>{t('Respuesta en menos de 24 h', 'Resposta em menos de 24 h', 'Reply within 24 h')}</span></div>
       </div>
@@ -152,10 +152,10 @@ def gerar(L):
         <div><h4>{t('Ayuda', 'Ajuda', 'Help')}</h4><a href="envios.html">{t('Envíos y devoluciones', 'Envios e devoluções', 'Shipping & returns')}</a><a href="#" data-mail>{t('Contacto', 'Contacto', 'Contact')}</a><a href="carrito.html">{t('Mi carrito', 'O meu carrinho', 'My cart')}</a></div>
         <div><h4>Legal</h4><a href="aviso-legal.html">{t('Aviso legal', 'Aviso legal', 'Legal notice')}</a><a href="envios.html#desistimiento">{t('Derecho de desistimiento', 'Direito de livre resolução', 'Right of withdrawal')}</a><a href="privacidad.html">{t('Privacidad', 'Privacidade', 'Privacy')}</a><a href="cookies.html">Cookies</a></div>
       </div>
-      <div class="wrap pie-bajo"><span>© <span data-ano>2026</span> {MARCA} · {HOST}</span><span class="ssl"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="10" width="14" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>{t('Sitio seguro · Conexión cifrada SSL', 'Site seguro · Ligação cifrada SSL', 'Secure site · SSL encrypted')}</span><span class="pagos" aria-label="Formas de pago"><i class="pg pg-paypal"><b>Pay</b>Pal</i><i class="pg pg-stripe">stripe</i><i class="pg pg-visa">VISA</i><i class="pg pg-mc"><span></span><span></span></i><i class="pg pg-apple"><svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path fill="currentColor" d="M16.4 12.6c0-2.4 2-3.5 2.1-3.6-1.1-1.7-2.9-1.9-3.5-1.9-1.5-.2-2.9.9-3.7.9s-1.9-.9-3.2-.8c-1.6 0-3.1 1-4 2.4-1.7 3-.4 7.3 1.2 9.7.8 1.2 1.8 2.5 3 2.4 1.2 0 1.7-.8 3.1-.8s1.9.8 3.2.8c1.3 0 2.1-1.2 2.9-2.4.9-1.4 1.3-2.7 1.3-2.8 0 0-2.4-1-2.4-3.9zM14 5.5c.7-.8 1.1-1.9 1-3-1 0-2.1.7-2.8 1.5-.6.7-1.2 1.8-1 2.9 1.1.1 2.1-.6 2.8-1.4z"/></svg>Pay</i><i class="pg pg-gpay"><b>G</b> Pay</i></span></div>
+      <div class="wrap pie-bajo"><span>© <span data-ano>2026</span> {MARCA} · {HOST}</span><span class="ssl"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="10" width="14" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>{t('Sitio seguro · Conexión cifrada SSL', 'Site seguro · Ligação cifrada SSL', 'Secure site · SSL encrypted')}</span><span class="pagos" aria-label="Formas de pago"><i class="pg pg-stripe">stripe</i><i class="pg pg-visa">VISA</i><i class="pg pg-mc"><span></span><span></span></i><i class="pg pg-apple"><svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path fill="currentColor" d="M16.4 12.6c0-2.4 2-3.5 2.1-3.6-1.1-1.7-2.9-1.9-3.5-1.9-1.5-.2-2.9.9-3.7.9s-1.9-.9-3.2-.8c-1.6 0-3.1 1-4 2.4-1.7 3-.4 7.3 1.2 9.7.8 1.2 1.8 2.5 3 2.4 1.2 0 1.7-.8 3.1-.8s1.9.8 3.2.8c1.3 0 2.1-1.2 2.9-2.4.9-1.4 1.3-2.7 1.3-2.8 0 0-2.4-1-2.4-3.9zM14 5.5c.7-.8 1.1-1.9 1-3-1 0-2.1.7-2.8 1.5-.6.7-1.2 1.8-1 2.9 1.1.1 2.1-.6 2.8-1.4z"/></svg>Pay</i><i class="pg pg-gpay"><b>G</b> Pay</i></span></div>
     </footer>
     <div class="cookies" id="cookies" hidden>
-      <p>{t('Solo usamos lo necesario para que la tienda funcione (carrito e idioma). Al pagar, Stripe o PayPal usan sus propias cookies.', 'Só usamos o necessário para a loja funcionar (carrinho e idioma). No pagamento, a Stripe ou o PayPal usam os seus próprios cookies.', 'We only store what the shop needs to work (cart and language). At checkout, Stripe or PayPal use their own cookies.')} <a href="cookies.html">{t('Más información', 'Saber mais', 'Learn more')}</a></p>
+      <p>{t('Solo usamos lo necesario para que la tienda funcione (carrito e idioma). Al pagar, Stripe usan sus propias cookies.', 'Só usamos o necessário para a loja funcionar (carrinho e idioma). No pagamento, a Stripe usam os seus próprios cookies.', 'We only store what the shop needs to work (cart and language). At checkout, Stripe use their own cookies.')} <a href="cookies.html">{t('Más información', 'Saber mais', 'Learn more')}</a></p>
       <button type="button" id="cookiesOk">OK</button>
     </div>
     <div class="aviso" id="aviso" role="status"></div>
@@ -254,7 +254,7 @@ def gerar(L):
           <p class="ou" id="ouPP" hidden>{t('o', 'ou', 'or')}</p>
           <div id="paypal" class="paypal"></div>
           <p class="sem-pp" id="semPP" hidden>{t('El pago se activa en breve. Escríbenos para reservar tu pedido:', 'O pagamento fica ativo em breve. Escreva-nos para reservar a sua encomenda:', 'Checkout opens very soon. Email us to reserve your order:')} <a href="#" data-mail data-pedido>email</a></p>
-          <p class="seguro"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="10" width="14" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg> {t('Pago procesado por Stripe o PayPal. Nunca vemos los datos de tu tarjeta.', 'Pagamento processado pela Stripe ou pelo PayPal. Nunca vemos os dados do seu cartão.', 'Payments processed by Stripe or PayPal. We never see your card details.')}</p>
+          <p class="seguro"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="10" width="14" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg> {t('Pago procesado por Stripe. Nunca vemos los datos de tu tarjeta.', 'Pagamento processado pela Stripe. Nunca vemos os dados do seu cartão.', 'Payments processed by Stripe. We never see your card details.')}</p>
         </aside>
       </div>
     </main>
@@ -310,31 +310,31 @@ def gerar(L):
     legal('aviso-legal.html', ('Aviso legal', 'Aviso legal', 'Legal notice'), (f'''
     <h2>Titular de la tienda</h2><p data-titular>Titular: Emanuel da Silva Antunes Coletto (marca {MARCA}) · Correo: <a href="#" data-mail>contacto por email</a> · Web: {HOST}</p>
     <h2>Objeto</h2><p>Venta a distancia de {L["objeto"][0]} a consumidores de la Unión Europea. Los pedidos se envían a través de nuestro socio logístico internacional, con seguimiento.</p>
-    <h2>Precios y pago</h2><p>Precios en euros con IVA incluido. Pago con tarjeta, Apple Pay o Google Pay (procesado por Stripe) o con PayPal. El contrato se perfecciona al recibir la confirmación del pago.</p>
+    <h2>Precios y pago</h2><p>Precios en euros con IVA incluido. Pago con tarjeta, Apple Pay o Google Pay (procesado por Stripe). El contrato se perfecciona al recibir la confirmación del pago.</p>
     <h2>Resolución de litigios</h2><p>Si tienes cualquier problema, escríbenos primero: lo solucionamos. También puedes acudir a los organismos de consumo de tu país.</p>''', f'''
     <h2>Titular da loja</h2><p data-titular>Titular: Emanuel da Silva Antunes Coletto (marca {MARCA}) · Email: <a href="#" data-mail>contacto por email</a> · Site: {HOST}</p>
     <h2>Objeto</h2><p>Venda à distância de {L["objeto"][1]} a consumidores da União Europeia. As encomendas são enviadas através do nosso parceiro logístico internacional, com seguimento.</p>
-    <h2>Preços e pagamento</h2><p>Preços em euros com IVA incluído. Pagamento com cartão, Apple Pay ou Google Pay (processado pela Stripe) ou com PayPal. O contrato fica concluído com a confirmação do pagamento.</p>
+    <h2>Preços e pagamento</h2><p>Preços em euros com IVA incluído. Pagamento com cartão, Apple Pay ou Google Pay (processado pela Stripe). O contrato fica concluído com a confirmação do pagamento.</p>
     <h2>Resolução de litígios</h2><p>Se tiver algum problema, escreva-nos primeiro: resolvemos. Em Portugal pode também usar o Livro de Reclamações Eletrónico (livroreclamacoes.pt) e as entidades de resolução alternativa de litígios de consumo.</p>''', f'''
     <h2>Shop owner</h2><p data-titular>Owner: Emanuel da Silva Antunes Coletto ({MARCA} brand) · Email: <a href="#" data-mail>contact by email</a> · Website: {HOST}</p>
     <h2>Purpose</h2><p>Distance selling of {L["objeto"][2]} to consumers in the European Union. Orders ship through our international logistics partner, with tracking.</p>
-    <h2>Prices and payment</h2><p>Prices in euros including VAT. Payment by card, Apple Pay or Google Pay (processed by Stripe) or by PayPal. The contract is concluded when you receive payment confirmation.</p>
+    <h2>Prices and payment</h2><p>Prices in euros including VAT. Payment by card, Apple Pay or Google Pay (processed by Stripe). The contract is concluded when you receive payment confirmation.</p>
     <h2>Disputes</h2><p>If you have any problem, please contact us first and we will sort it out. You can also contact the consumer authorities in your country.</p>'''),
           f'Shop owner details and terms of {MARCA}.')
 
     legal('privacidad.html', ('Política de privacidad', 'Política de privacidade', 'Privacy policy'), ('''
     <h2>Responsable</h2><p>Emanuel da Silva Antunes Coletto (<a href="#" data-mail>email</a>).</p>
-    <h2>Qué datos usamos</h2><p>Solo los necesarios para entregarte el pedido: nombre, dirección de envío, email y teléfono si lo das, que nos facilita Stripe o PayPal al pagar. No guardamos datos de tarjetas.</p>
+    <h2>Qué datos usamos</h2><p>Solo los necesarios para entregarte el pedido: nombre, dirección de envío, email y teléfono si lo das, que nos facilita Stripe al pagar. No guardamos datos de tarjetas.</p>
     <h2>Para qué</h2><p>Para preparar y enviar el pedido (los datos se comunican al almacén y a la empresa de transporte) y para atenderte. Base legal: ejecución del contrato. Los conservamos el tiempo exigido por la ley fiscal.</p>
     <h2>Tus derechos</h2><p>Puedes pedir acceso, rectificación, supresión, oposición, limitación y portabilidad escribiéndonos por email, y reclamar ante la autoridad de protección de datos de tu país.</p>
     <h2>Sin publicidad</h2><p>No vendemos tus datos ni te enviamos publicidad sin tu permiso.</p>''', '''
     <h2>Responsável</h2><p>Emanuel da Silva Antunes Coletto (<a href="#" data-mail>email</a>).</p>
-    <h2>Que dados usamos</h2><p>Só os necessários para entregar a encomenda: nome, morada, email e telefone se o indicar, fornecidos pela Stripe ou pelo PayPal no pagamento. Não guardamos dados de cartões.</p>
+    <h2>Que dados usamos</h2><p>Só os necessários para entregar a encomenda: nome, morada, email e telefone se o indicar, fornecidos pela Stripe no pagamento. Não guardamos dados de cartões.</p>
     <h2>Para quê</h2><p>Para preparar e enviar a encomenda (os dados são comunicados ao armazém e à transportadora) e para lhe dar apoio. Base legal: execução do contrato. Conservamos os dados pelo tempo exigido pela lei fiscal.</p>
     <h2>Os seus direitos</h2><p>Pode pedir acesso, retificação, apagamento, oposição, limitação e portabilidade por email, e apresentar queixa à autoridade de proteção de dados do seu país.</p>
     <h2>Sem publicidade</h2><p>Não vendemos os seus dados nem enviamos publicidade sem autorização.</p>''', '''
     <h2>Controller</h2><p>Emanuel da Silva Antunes Coletto (<a href="#" data-mail>email</a>).</p>
-    <h2>What data we use</h2><p>Only what we need to deliver your order: name, shipping address, email and phone if provided, passed to us by Stripe or PayPal at checkout. We never store card details.</p>
+    <h2>What data we use</h2><p>Only what we need to deliver your order: name, shipping address, email and phone if provided, passed to us by Stripe at checkout. We never store card details.</p>
     <h2>Why</h2><p>To prepare and ship your order (data is shared with the warehouse and the carrier) and to support you. Legal basis: performance of the contract. We keep it for the period required by tax law.</p>
     <h2>Your rights</h2><p>You can request access, rectification, erasure, objection, restriction and portability by email, and complain to your country's data protection authority.</p>
     <h2>No marketing</h2><p>We never sell your data or send you marketing without your consent.</p>'''),
@@ -342,11 +342,11 @@ def gerar(L):
 
     legal('cookies.html', ('Política de cookies', 'Política de cookies', 'Cookie policy'), ('''
     <p>Esta tienda no usa cookies de publicidad ni de análisis. Solo guarda en tu navegador el carrito, el idioma y si has cerrado el aviso de cookies (almacenamiento técnico y necesario).</p>
-    <p>Al pagar, Stripe o PayPal pueden usar cookies necesarias para el pago y la prevención del fraude, según sus políticas.</p>''', '''
+    <p>Al pagar, Stripe pueden usar cookies necesarias para el pago y la prevención del fraude, según sus políticas.</p>''', '''
     <p>Esta loja não usa cookies de publicidade nem de análise. Só guarda no seu navegador o carrinho, o idioma e se fechou o aviso de cookies (armazenamento técnico e necessário).</p>
-    <p>No pagamento, a Stripe ou o PayPal podem usar cookies necessários ao pagamento e à prevenção de fraude, segundo as suas políticas.</p>''', '''
+    <p>No pagamento, a Stripe podem usar cookies necessários ao pagamento e à prevenção de fraude, segundo as suas políticas.</p>''', '''
     <p>This shop uses no advertising or analytics cookies. It only stores your cart, language and whether you closed the cookie notice in your browser (strictly necessary storage).</p>
-    <p>At checkout, Stripe or PayPal may use cookies needed for payment and fraud prevention, under their own policies.</p>'''),
+    <p>At checkout, Stripe may use cookies needed for payment and fraud prevention, under their own policies.</p>'''),
           'Strictly necessary storage only.')
 
 

@@ -14,7 +14,7 @@ PAISES_LD = '["DE","FR","ES","IT","NL","BE","AT","PT","IE"]'
 
 def jsonld(marca, host, desc, logo):
     return ('{"@context":"https://schema.org","@type":"OnlineStore","name":"%s","url":"https://%s/","logo":"https://%s/%s",'
-            '"description":"%s","areaServed":%s,"currenciesAccepted":"EUR","paymentAccepted":"Tarjeta, PayPal, Apple Pay, Google Pay"}'
+            '"description":"%s","areaServed":%s,"currenciesAccepted":"EUR","paymentAccepted":"Tarjeta, Apple Pay, Google Pay"}'
             % (marca, host, host, logo, desc, PAISES_LD))
 
 
@@ -57,7 +57,7 @@ def lojas(t, ico):
     <p>{t('Somos una tienda especializada solo en perros y gatos. Probamos y elegimos cada producto pensando en su bienestar y en tu casa.', 'Somos uma loja especializada só em cães e gatos. Escolhemos cada produto a pensar no bem-estar deles e na sua casa.', 'We are a shop specialised only in dogs and cats. Every product is chosen with their wellbeing and your home in mind.')}</p>
     <ul><li>{ico('camiao')}{t('Envío gratis con seguimiento a toda Europa', 'Envio grátis com seguimento para toda a Europa', 'Free tracked shipping across Europe')}</li>
     <li>{ico('volta')}{t('14 días para devolver', '14 dias para devolver', '14-day returns')}</li>
-    <li>{ico('escudo')}{t('Pago seguro con tarjeta o PayPal', 'Pagamento seguro com cartão ou PayPal', 'Secure payment by card or PayPal')}</li></ul>
+    <li>{ico('escudo')}{t('Pago seguro con tarjeta, Apple Pay o Google Pay', 'Pagamento seguro com cartão, Apple Pay ou Google Pay', 'Secure payment by card, Apple Pay or Google Pay')}</li></ul>
   </div>
 </section>''',
     }
