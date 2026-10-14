@@ -1,0 +1,2027 @@
+{
+ "resumo": {
+  "pets|pet|DE": 43,
+  "pets|pet|PL": 0,
+  "pets|dog|DE": 27,
+  "pets|dog|PL": 0,
+  "pets|cat|DE": 36,
+  "pets|cat|PL": 0,
+  "pets|dog toy|DE": 107,
+  "pets|dog toy|PL": 0,
+  "pets|cat toy|DE": 117,
+  "pets|cat toy|PL": 0,
+  "pets|pet bed|DE": 1637,
+  "pets|pet bed|PL": 1,
+  "pets|dog leash|DE": 63,
+  "pets|dog leash|PL": 0,
+  "pets|cat litter|DE": 74,
+  "pets|cat litter|PL": 0,
+  "pets|pet bowl|DE": 180,
+  "pets|pet bowl|PL": 0,
+  "pets|pet grooming|DE": 163,
+  "pets|pet grooming|PL": 0,
+  "pets|cat scratcher|DE": 71,
+  "pets|cat scratcher|PL": 0,
+  "pets|dog harness|DE": 28,
+  "pets|dog harness|PL": 0,
+  "pets|pet hair|DE": 202,
+  "pets|pet hair|PL": 0,
+  "pets|dog collar|DE": 27,
+  "pets|dog collar|PL": 0,
+  "pets|pet water|DE": 225,
+  "pets|pet water|PL": 0,
+  "casa|home|DE": 658,
+  "casa|home|PL": 0,
+  "casa|kitchen|DE": 628,
+  "casa|kitchen|PL": 1,
+  "casa|storage|DE": 2432,
+  "casa|storage|PL": 0,
+  "casa|lamp|DE": 29,
+  "casa|lamp|PL": 0,
+  "casa|light|DE": 65,
+  "casa|light|PL": 0,
+  "casa|garden|DE": 1015,
+  "casa|garden|PL": 0,
+  "casa|decor|DE": 362,
+  "casa|decor|PL": 0,
+  "casa|organizer|DE": 241,
+  "casa|organizer|PL": 0,
+  "casa|bathroom|DE": 324,
+  "casa|bathroom|PL": 0,
+  "casa|cushion|DE": 154,
+  "casa|cushion|PL": 0,
+  "casa|blanket|DE": 13,
+  "casa|blanket|PL": 0,
+  "casa|shelf|DE": 311,
+  "casa|shelf|PL": 0,
+  "casa|vase|DE": 25,
+  "casa|vase|PL": 0,
+  "casa|solar|DE": 14,
+  "casa|solar|PL": 0,
+  "casa|towel|DE": 60,
+  "casa|towel|PL": 0
+ },
+ "detalhados": [
+  {
+   "loja": "pets",
+   "busca": "dog leash",
+   "armazem": "DE",
+   "pid": "1990691848111837185",
+   "nome": "Dog Poop Bags 750 pcs. Black 30x20 cm PE",
+   "custoUsd": 11.44,
+   "popularidade": 100,
+   "tipo": "5",
+   "img": "https://cf.cjdropshipping.com/17634240/ac4f5c43-d326-41a4-8eb7-2535fcad3abc.jpg",
+   "vid": "1990691848350912514",
+   "variantes": 1,
+   "custoVarUsd": 11.44,
+   "estoque": null,
+   "fretes": {
+    "ES": null,
+    "PT": null,
+    "FR": null,
+    "IT": null,
+    "DE": {
+     "nome": "DPD DE to DE",
+     "usd": 0.0,
+     "prazo": "4-5",
+     "dias": 5
+    }
+   }
+  },
+  {
+   "loja": "casa",
+   "busca": "kitchen",
+   "armazem": "DE",
+   "pid": "2074708281658298370",
+   "nome": "Kitchen Organizer: 2-Tier Under-Sink Shelf With Hooks And Cups, Spice Rack, Sink Cabinet Organizer, Kitchen Shelf, Cabinet Organizer For Bathroom And Kitchen, Black",
+   "custoUsd": 9.05,
+   "popularidade": 57,
+   "tipo": "5",
+   "img": "https://cf.cjdropshipping.com/17834688/86dedfda-2bc6-490a-abfa-6c98e01b836d.jpg",
+   "vid": "2074708281951899650",
+   "variantes": 1,
+   "custoVarUsd": 9.05,
+   "estoque": null,
+   "fretes": {
+    "ES": null,
+    "PT": null,
+    "FR": null,
+    "IT": null,
+    "DE": {
+     "nome": "DHL DE to DE",
+     "usd": 7.6,
+     "prazo": "5-7",
+     "dias": 7
+    }
+   }
+  },
+  {
+   "loja": "casa",
+   "busca": "kitchen",
+   "armazem": "DE",
+   "pid": "2062384877865525250",
+   "nome": "Kitchen Sink Rack Sponge Holder Soap Dish Drain Storage Organizer Dishcloth Brush Holder",
+   "custoUsd": 10.5,
+   "popularidade": 54,
+   "tipo": "5",
+   "img": "https://cf.cjdropshipping.com/764f08c3-b777-4bdc-8dc0-beeddc638fb7.jpg",
+   "vid": "2062384877982965762",
+   "variantes": 1,
+   "custoVarUsd": 10.5,
+   "estoque": null,
+   "fretes": {
+    "ES": null,
+    "PT": null,
+    "FR": null,
+    "IT": null,
+    "DE": {
+     "nome": "DE post DE to DE #2",
+     "usd": 0.0,
+     "prazo": "3-7",
+     "dias": 7
+    }
+   }
+  },
+  {
+   "loja": "pets",
+   "busca": "cat toy",
+   "armazem": "DE",
+   "pid": "2074707679498850305",
+   "nome": "Cat Toy With 3 Replacement Feather Tufts, Interactive Toy For Exercise And Hunting Games—Party Accessory Set",
+   "custoUsd": 10.22,
+   "popularidade": 41,
+   "tipo": "5",
+   "img": "https://cf.cjdropshipping.com/17834688/da786975-769c-401b-8430-d5608714dcc7.jpg",
+   "vid": "2074707679809228802",
+   "variantes": 1,
+   "custoVarUsd": 10.22,
+   "estoque": null,
+   "fretes": {
+    "ES": null,
+    "PT": null,
+    "FR": null,
+    "IT": null,
+    "DE": {
+     "nome": "DHL DE to DE",
+     "usd": 7.0,
+     "prazo": "5-7",
+     "dias": 7
+    }
+   }
+  },
+  {
+   "loja": "pets",
+   "busca": "pet grooming",
+   "armazem": "DE",
+   "pid": "2069683938090061825",
+   "nome": "Pet Tear Stain Cleaning Pads",
+   "custoUsd": 10.0,
+   "popularidade": 40,
+   "tipo": "5",
+   "img": "https://cf.cjdropshipping.com/6de23568-bfb7-4407-965c-dddb0529f3ee.jpg",
+   "vid": "2069683938228473858",
+   "variantes": 1,
+   "custoVarUsd": 10.0,
+   "estoque": null,
+   "fretes": {
+    "ES": {
+     "nome": "DHL DE to Multi-Region",
+     "usd": 6.0,
+     "prazo": "7-14",
+     "dias": 14
+    },
+    "PT": {
+     "nome": "DHL DE to Multi-Region",
+     "usd": 6.5,
+     "prazo": "7-14",
+     "dias": 14
+    },
+    "FR": {
+     "nome": "DHL DE to Multi-Region",
+     "usd": 5.5,
+     "prazo": "7-14",
+     "dias": 14
+    },
+    "IT": {
+     "nome": "DHL DE to Multi-Region",
+     "usd": 6.84,
+     "prazo": "7-14",
+     "dias": 14
+    },
+    "DE": {
+     "nome": "DHL DE to DE",
+     "usd": 0.0,
+     "prazo": "3-14",
+     "dias": 14
+    }
+   }
+  },
+  {
+   "loja": "casa",
+   "busca": "kitchen",
+   "armazem": "DE",
+   "pid": "2061715108074381314",
+   "nome": "Kitchen Cutlery Knife Holder Spoon Fork Storage Rack Organizer Utensils Chopstick Box",
+   "custoUsd": 10.5,
+   "popularidade": 36,
+   "tipo": "5",
+   "img": "https://cf.cjdropshipping.com/4f5ffdde-4466-4393-a2d2-fc32b2fae4d2.jpg",
+   "vid": "2061715108170850306",
+   "variantes": 1,
+   "custoVarUsd": 10.5,
+   "estoque": null,
+   "fretes": {
+    "ES": null,
+    "PT": null,
+    "FR": null,
+    "IT": null,
+    "DE": {
+     "nome": "DE post DE to DE #2",
+     "usd": 0.0,
+     "prazo": "3-7",
+     "dias": 7
+    }
+   }
+  },
+  {
+   "loja": "casa",
+   "busca": "lamp",
+   "armazem": "DE",
+   "pid": "2039607930468220929",
+   "nome": "Support Pan European：30W Ceiling Fan With Remote Control Ceiling Lamp Lighting Lamp LED - E27",
+   "custoUsd": 12.35,
+   "popularidade": 26,
+   "tipo": "5",
+   "img": "https://cf.cjdropshipping.com/17750880/b2f7ea2f-4bed-4d9c-beae-0115f83b9842.jpg",
+   "vid": "2039607930577272833",
+   "variantes": 1,
+   "custoVarUsd": 12.35,
+   "estoque": null,
+   "fretes": {
+    "ES": {
+     "nome": "DHL DE to ES",
+     "usd": 5.5,
+     "prazo": "3-7",
+     "dias": 7
+    },
+    "PT": null,
+    "FR": {
+     "nome": "DHL DE to FR",
+     "usd": 5.5,
+     "prazo": "3-7",
+     "dias": 7
+    },
+    "IT": {
+     "nome": "DHL DE to IT",
+     "usd": 5.5,
+     "prazo": "3-7",
+     "dias": 7
+    },
+    "DE": {
+     "nome": "DHL DE to DE",
+     "usd": 0.0,
+     "prazo": "5-7",
+     "dias": 7
+    }
+   }
+  },
+  {
+   "loja": "pets",
+   "busca": "dog toy",
+   "armazem": "DE",
+   "pid": "2082404942337933314",
+   "nome": "Dog Toys Soccer Ball With Straps, Interactive Toys For Tug Of War, Puppy Birthday Toy, Dog Balls For Medium Large Dog, Diameter",
+   "custoUsd": 10.18,
+   "popularidade": 25,
+   "tipo": "5",
+   "img": "https://cf.cjdropshipping.com/17852832/4d804f8b-0b3f-4de0-804e-6c67b49d2e46.jpg",
+   "vid": "2082404942484733954",
+   "variantes": 1,
+   "custoVarUsd": 10.18,
+   "estoque": null,
+   "fretes": {
+    "ES": null,
+    "PT": null,
+    "FR": null,
+    "IT": null,
+    "DE": {
+     "nome": "DHL DE to DE #3",
+     "usd": 0.0,
+     "prazo": "3-5",
+     "dias": 5
+    }
+   }
+  },
+  {
+   "loja": "pets",
+   "busca": "pet water",
+   "armazem": "DE",
+   "pid": "2032010035622998017",
+   "nome": "8Pcs Stainless Steel Pet Water Fountain Filters | Pet Water Fountain Filters 8-Pack Replacement Filters With 4 Sponge Filters For Stainless Steel Cat Dog",
+   "custoUsd": 11.94,
+   "popularidade": 22,
+   "tipo": "5",
+   "img": "https://cf.cjdropshipping.com/17732736/555ab9f1-619e-4e9c-8a4b-3afab4edc33c.jpg",
+   "vid": "2032010035732049922",
+   "variantes": 1,
+   "custoVarUsd": 11.94,
+   "estoque": null,
+   "fretes": {
+    "ES": null,
+    "PT": null,
+    "FR": null,
+    "IT": null,
+    "DE": {
+     "nome": "DHL DE to DE #3",
+     "usd": 0.0,
+     "prazo": "3-5",
+     "dias": 5
+    }
+   }
+  },
+  {
+   "loja": "casa",
+   "busca": "light",
+   "armazem": "DE",
+   "pid": "2027232943026753537",
+   "nome": "LED Telescopic Flashlight Military Torch USB Rechargeable Pen Light Work Light For Camping",
+   "custoUsd": 8.0,
+   "popularidade": 21,
+   "tipo": "5",
+   "img": "https://cf.cjdropshipping.com/1b832dee-07e2-4117-9969-cefbb74d67ee.jpg",
+   "vid": "2027232943186137089",
+   "variantes": 1,
+   "custoVarUsd": 8.0,
+   "estoque": null,
+   "fretes": {
+    "ES": null,
+    "PT": null,
+    "FR": null,
+    "IT": null,
+    "DE": {
+     "nome": "DE post DE to DE #2",
+     "usd": 0.0,
+     "prazo": "3-7",
+     "dias": 7
+    }
+   }
+  },
+  {
+   "loja": "pets",
+   "busca": "pet",
+   "armazem": "DE",
+   "pid": "2036717826038083586",
+   "nome": "Support pan European transportation - Stainless steel pet water dispenser filter, pet water dispenser filter set of 8 replacement filters, with 4 sponge filters",
+   "custoUsd": 15.0,
+   "popularidade": 20,
+   "tipo": "5",
+   "img": "https://cf.cjdropshipping.com/17743968/9b9b3224-47d8-4351-8ed4-13bcabde29f4.jpg",
+   "vid": "2036717826159718402",
+   "variantes": 1,
+   "custoVarUsd": 15.0,
+   "estoque": null,
+   "fretes": {
+    "ES": {
+     "nome": "DHL DE to ES",
+     "usd": 5.5,
+     "prazo": "3-7",
+     "dias": 7
+    },
+    "PT": null,
+    "FR": {
+     "nome": "DHL DE to FR",
+     "usd": 5.5,
+     "prazo": "3-7",
+     "dias": 7
+    },
+    "IT": {
+     "nome": "DHL DE to IT",
+     "usd": 5.5,
+     "prazo": "3-7",
+     "dias": 7
+    },
+    "DE": {
+     "nome": "DHL DE to DE",
+     "usd": 0.0,
+     "prazo": "5-7",
+     "dias": 7
+    }
+   }
+  },
+  {
+   "loja": "pets",
+   "busca": "pet grooming",
+   "armazem": "DE",
+   "pid": "2069706798081683458",
+   "nome": "Pet Plant Protection Spray",
+   "custoUsd": 8.5,
+   "popularidade": 19,
+   "tipo": "5",
+   "img": "https://cf.cjdropshipping.com/785c3279-91bf-45bc-bfce-52b08e21a856.jpg",
+   "vid": "2069706798249455617",
+   "variantes": 1,
+   "custoVarUsd": 8.5,
+   "estoque": null,
+   "fretes": {
+    "ES": {
+     "nome": "DHL DE to Multi-Region",
+     "usd": 6.0,
+     "prazo": "7-14",
+     "dias": 14
+    },
+    "PT": {
+     "nome": "DHL DE to Multi-Region",
+     "usd": 6.5,
+     "prazo": "7-14",
+     "dias": 14
+    },
+    "FR": {
+     "nome": "DHL DE to Multi-Region",
+     "usd": 5.5,
+     "prazo": "7-14",
+     "dias": 14
+    },
+    "IT": {
+     "nome": "DHL DE to Multi-Region",
+     "usd": 6.84,
+     "prazo": "7-14",
+     "dias": 14
+    },
+    "DE": {
+     "nome": "DHL DE to DE",
+     "usd": 0.0,
+     "prazo": "3-14",
+     "dias": 14
+    }
+   }
+  },
+  {
+   "loja": "casa",
+   "busca": "home",
+   "armazem": "DE",
+   "pid": "2084093342181015553",
+   "nome": "Wall Mount For Perforated Panels Without Drilling – Sturdy Plastic Storage Panel With Accessories, Residue-Free Adhesive Installation, Organization For Home Office And Kitchen",
+   "custoUsd": 10.42,
+   "popularidade": 18,
+   "tipo": "5",
+   "img": "https://cf.cjdropshipping.com/17857152/11c4760a-a711-4789-bfc1-fa165f740cce.jpg",
+   "vid": "2084093342311038977",
+   "variantes": 1,
+   "custoVarUsd": 10.42,
+   "estoque": null,
+   "fretes": {
+    "ES": null,
+    "PT": null,
+    "FR": null,
+    "IT": null,
+    "DE": {
+     "nome": "DHL DE to DE",
+     "usd": 7.0,
+     "prazo": "5-7",
+     "dias": 7
+    }
+   }
+  },
+  {
+   "loja": "casa",
+   "busca": "light",
+   "armazem": "DE",
+   "pid": "2005929533955919874",
+   "nome": "Flashlight Torch USB Rechargeable COB Spotlight Camping Light Work Light",
+   "custoUsd": 11.0,
+   "popularidade": 18,
+   "tipo": "5",
+   "img": "https://cf.cjdropshipping.com/6efe617a-bc08-4d12-b1d5-6f0a055065c8.jpg",
+   "vid": "2005929534136274946",
+   "variantes": 1,
+   "custoVarUsd": 11.0,
+   "estoque": null,
+   "fretes": {
+    "ES": null,
+    "PT": null,
+    "FR": null,
+    "IT": null,
+    "DE": {
+     "nome": "DE post DE to DE #2",
+     "usd": 0.0,
+     "prazo": "3-7",
+     "dias": 7
+    }
+   }
+  },
+  {
+   "loja": "casa",
+   "busca": "decor",
+   "armazem": "DE",
+   "pid": "2080135547733696514",
+   "nome": "Spider Web Halloween Decor With 30 Spiders And 1 Spider Web; Fireplace Cover; Halloween Decor For Doors, Carnival, Halloween Parties, And Spooky Decor",
+   "custoUsd": 4.97,
+   "popularidade": 17,
+   "tipo": "5",
+   "img": "https://cf.cjdropshipping.com/17847648/851d33a0-654c-43e3-8086-dcd687c3562a.jpg",
+   "vid": "2080135547918245890",
+   "variantes": 1,
+   "custoVarUsd": 4.97,
+   "estoque": null,
+   "fretes": {
+    "ES": null,
+    "PT": null,
+    "FR": null,
+    "IT": null,
+    "DE": {
+     "nome": "DHL DE to DE",
+     "usd": 7.0,
+     "prazo": "5-7",
+     "dias": 7
+    }
+   }
+  },
+  {
+   "loja": "casa",
+   "busca": "organizer",
+   "armazem": "DE",
+   "pid": "2071556973288386562",
+   "nome": "Makeup Pinsel Halterung, Make Up Organizer, Kosmetik Organizer, Ideal Für Die Organisation Ihres Schminktisches Mit Sinnvoll Platzierten Schminkutensilien",
+   "custoUsd": 3.38,
+   "popularidade": 12,
+   "tipo": "5",
+   "img": "https://cf.cjdropshipping.com/17826912/9c316db1-58d2-4f16-9952-67f8f66596fe.jpg",
+   "vid": "2071556973439381505",
+   "variantes": 1,
+   "custoVarUsd": 3.38,
+   "estoque": null,
+   "fretes": {
+    "ES": null,
+    "PT": null,
+    "FR": null,
+    "IT": null,
+    "DE": {
+     "nome": "DHL DE to DE",
+     "usd": 7.0,
+     "prazo": "5-7",
+     "dias": 7
+    }
+   }
+  },
+  {
+   "loja": "pets",
+   "busca": "pet hair",
+   "armazem": "DE",
+   "pid": "2087014402079318018",
+   "nome": "Multi-piece Party Gift Sets – 6-Piece Set Of Matte Hair Clips For Women, 4.3 Inches, Non-Slip Hairpins, Strong Hold Hair Claw Clips, Large Hair Clips For Women With Thick And Thin Hair",
+   "custoUsd": 4.63,
+   "popularidade": 12,
+   "tipo": "5",
+   "img": "https://cf.cjdropshipping.com/17864064/05c810e5-78a6-414e-a9c0-d87a28983b76.jpg",
+   "vid": "2087014402284838914",
+   "variantes": 1,
+   "custoVarUsd": 4.63,
+   "estoque": null,
+   "fretes": {
+    "ES": null,
+    "PT": null,
+    "FR": null,
+    "IT": null,
+    "DE": {
+     "nome": "DHL DE to DE",
+     "usd": 7.0,
+     "prazo": "5-7",
+     "dias": 7
+    }
+   }
+  },
+  {
+   "loja": "casa",
+   "busca": "blanket",
+   "armazem": "DE",
+   "pid": "1990466829003431938",
+   "nome": "Luxury Christmas Tree Blanket with Sock 122 cm",
+   "custoUsd": 11.19,
+   "popularidade": 12,
+   "tipo": "5",
+   "img": "https://cf.cjdropshipping.com/17633376/2446e9ba-acfe-4504-89b2-ffe2848972b9.jpg",
+   "vid": "1990466829364142082",
+   "variantes": 1,
+   "custoVarUsd": 11.19,
+   "estoque": null,
+   "fretes": {
+    "ES": null,
+    "PT": null,
+    "FR": null,
+    "IT": null,
+    "DE": {
+     "nome": "DPD DE to DE",
+     "usd": 0.0,
+     "prazo": "4-5",
+     "dias": 5
+    }
+   }
+  },
+  {
+   "loja": "casa",
+   "busca": "kitchen",
+   "armazem": "DE",
+   "pid": "2090340784188710913",
+   "nome": "Kitchen Vegetable Cutter Safe Manual Multi-function Salad Chopper Potato Slicer Cheese Graters Kitchen Tools French Fries Cutter",
+   "custoUsd": 13.0,
+   "popularidade": 12,
+   "tipo": "5",
+   "img": "https://cf.cjdropshipping.com/9d5d6f1e-ffb3-4812-ba79-7496078575d3.jpg",
+   "vid": "2090340784452952065",
+   "variantes": 1,
+   "custoVarUsd": 13.0,
+   "estoque": null,
+   "fretes": {
+    "ES": null,
+    "PT": null,
+    "FR": null,
+    "IT": null,
+    "DE": {
+     "nome": "DHL DE to DE",
+     "usd": 0.0,
+     "prazo": "2-3",
+     "dias": 3
+    }
+   }
+  },
+  {
+   "loja": "pets",
+   "busca": "pet grooming",
+   "armazem": "DE",
+   "pid": "2087399378646073345",
+   "nome": "2-in-1 Shaver With Replacement Head And Cleaning Brush For A Precise Grooming Party Accessory Set",
+   "custoUsd": 8.22,
+   "popularidade": 11,
+   "tipo": "5",
+   "img": "https://cf.cjdropshipping.com/17864928/a040eea6-430e-4652-a266-8f51d1f8e31c.jpg",
+   "vid": "2087399378776096770",
+   "variantes": 1,
+   "custoVarUsd": 8.22,
+   "estoque": null,
+   "fretes": {
+    "ES": null,
+    "PT": null,
+    "FR": null,
+    "IT": null,
+    "DE": {
+     "nome": "DHL DE to DE",
+     "usd": 7.0,
+     "prazo": "5-7",
+     "dias": 7
+    }
+   }
+  },
+  {
+   "loja": "casa",
+   "busca": "home",
+   "armazem": "DE",
+   "pid": "2084829055413817345",
+   "nome": "Wall Mount For Perforated Panels Without Drilling – Sturdy Plastic Storage Panel With Accessories, Residue-Free Adhesive Installation, Organization For Home Office And Kitchen",
+   "custoUsd": 10.42,
+   "popularidade": 10,
+   "tipo": "5",
+   "img": "https://cf.cjdropshipping.com/17858880/56826095-5076-4a31-b466-9466b968a58a.jpg",
+   "vid": "2084829055543840770",
+   "variantes": 1,
+   "custoVarUsd": 10.42,
+   "estoque": null,
+   "fretes": {
+    "ES": null,
+    "PT": null,
+    "FR": null,
+    "IT": null,
+    "DE": {
+     "nome": "DHL DE to DE",
+     "usd": 7.0,
+     "prazo": "5-7",
+     "dias": 7
+    }
+   }
+  },
+  {
+   "loja": "casa",
+   "busca": "light",
+   "armazem": "DE",
+   "pid": "1990486946332450818",
+   "nome": "Recessed Floor Light Round 10.5x10.5 cm Die-cast Aluminum   Recessed Floor Light",
+   "custoUsd": 13.61,
+   "popularidade": 10,
+   "tipo": "5",
+   "img": "https://cf.cjdropshipping.com/17633376/a1dca383-1d6d-4256-a584-248b98b94d14.jpg",
+   "vid": "1990486946521194497",
+   "variantes": 1,
+   "custoVarUsd": 13.61,
+   "estoque": null,
+   "fretes": {
+    "ES": null,
+    "PT": null,
+    "FR": null,
+    "IT": null,
+    "DE": {
+     "nome": "DPD DE to DE",
+     "usd": 0.0,
+     "prazo": "4-5",
+     "dias": 5
+    }
+   }
+  },
+  {
+   "loja": "casa",
+   "busca": "towel",
+   "armazem": "DE",
+   "pid": "2085556628778639362",
+   "nome": "2-Pack Microfiber Cooling Towel, Fitness Towel, Sports Towel, Cooling Towel For Camping, Hiking, Travel, Yoga, Golf, Indoor And Outdoor Use (Blue + Green)",
+   "custoUsd": 3.6,
+   "popularidade": 9,
+   "tipo": "5",
+   "img": "https://cf.cjdropshipping.com/17860608/dc61d3f7-74c8-4d59-b3f7-8903890b632c.jpg",
+   "vid": "2085556629021908993",
+   "variantes": 1,
+   "custoVarUsd": 3.6,
+   "estoque": null,
+   "fretes": {
+    "ES": null,
+    "PT": null,
+    "FR": null,
+    "IT": null,
+    "DE": {
+     "nome": "DHL DE to DE",
+     "usd": 7.0,
+     "prazo": "5-7",
+     "dias": 7
+    }
+   }
+  },
+  {
+   "loja": "casa",
+   "busca": "decor",
+   "armazem": "DE",
+   "pid": "2090275430678683650",
+   "nome": "Eucalyptus Decor, 24 Pieces With Leaves & Berries, Artificial Eucalyptus Branches For Vases, Home Decor, Natural Table Decor, Green Plant Party Decor",
+   "custoUsd": 8.99,
+   "popularidade": 9,
+   "tipo": "5",
+   "img": "https://cf.cjdropshipping.com/17871840/e34307f7-5090-4cfa-b261-f7dad68b332f.jpg",
+   "vid": "2090275431270080514",
+   "variantes": 1,
+   "custoVarUsd": 8.99,
+   "estoque": null,
+   "fretes": {
+    "ES": null,
+    "PT": null,
+    "FR": null,
+    "IT": null,
+    "DE": {
+     "nome": "DHL DE to DE",
+     "usd": 7.0,
+     "prazo": "5-7",
+     "dias": 7
+    }
+   }
+  },
+  {
+   "loja": "pets",
+   "busca": "dog toy",
+   "armazem": "DE",
+   "pid": "2087739392043282434",
+   "nome": "Interactive Cat Toy In Yellow With Feathers,  Indoor Cat Toy, Engaging Toy For Indoor Cats Party Accessory Set",
+   "custoUsd": 10.29,
+   "popularidade": 9,
+   "tipo": "5",
+   "img": "https://cf.cjdropshipping.com/17865792/0ca15ce6-0026-4e3a-bc31-5642500cd731.jpg",
+   "vid": "2087739392202665986",
+   "variantes": 1,
+   "custoVarUsd": 10.29,
+   "estoque": null,
+   "fretes": {
+    "ES": null,
+    "PT": null,
+    "FR": null,
+    "IT": null,
+    "DE": {
+     "nome": "DHL DE to DE",
+     "usd": 7.0,
+     "prazo": "5-7",
+     "dias": 7
+    }
+   }
+  },
+  {
+   "loja": "casa",
+   "busca": "vase",
+   "armazem": "DE",
+   "pid": "2087011103611408385",
+   "nome": "150-Piece Pampas Grass Decorative Bouquet, 6 Types Of Dried Grasses, Natural Vase Filler For Home Party Decor Set",
+   "custoUsd": 6.03,
+   "popularidade": 8,
+   "tipo": "5",
+   "img": "https://cf.cjdropshipping.com/17864064/7d2090a1-b8d1-4d10-8a28-72064375ce40.jpg",
+   "vid": "2087011103846289410",
+   "variantes": 1,
+   "custoVarUsd": 6.03,
+   "estoque": null,
+   "fretes": {
+    "ES": null,
+    "PT": null,
+    "FR": null,
+    "IT": null,
+    "DE": {
+     "nome": "DHL DE to DE",
+     "usd": 7.0,
+     "prazo": "5-7",
+     "dias": 7
+    }
+   }
+  },
+  {
+   "loja": "casa",
+   "busca": "vase",
+   "armazem": "DE",
+   "pid": "2085556377984425986",
+   "nome": "Decorative Glass Vase Set With 2 Heart-shaped Vases And A Wooden Stand, For Flowers And Decorative Party Accessories",
+   "custoUsd": 6.43,
+   "popularidade": 8,
+   "tipo": "5",
+   "img": "https://cf.cjdropshipping.com/17860608/a479c94b-18ed-4b0d-ae65-405b37a9e2dd.jpg",
+   "vid": "2085556379297243137",
+   "variantes": 1,
+   "custoVarUsd": 6.43,
+   "estoque": null,
+   "fretes": {
+    "ES": null,
+    "PT": null,
+    "FR": null,
+    "IT": null,
+    "DE": {
+     "nome": "DHL DE to DE",
+     "usd": 7.0,
+     "prazo": "5-7",
+     "dias": 7
+    }
+   }
+  },
+  {
+   "loja": "pets",
+   "busca": "pet hair",
+   "armazem": "DE",
+   "pid": "2084472657755615234",
+   "nome": "14-Piece Hair Accessory Set - Headbands With Clips And Hair Ties In Various Colors For Women's Party Accessories Set",
+   "custoUsd": 3.73,
+   "popularidade": 7,
+   "tipo": "5",
+   "img": "https://cf.cjdropshipping.com/17858016/7fe1e8cc-ddc8-4a66-aa9b-141529323e29.jpg",
+   "vid": "2084472657894027266",
+   "variantes": 1,
+   "custoVarUsd": 3.73,
+   "estoque": null,
+   "fretes": {
+    "ES": null,
+    "PT": null,
+    "FR": null,
+    "IT": null,
+    "DE": {
+     "nome": "DHL DE to DE",
+     "usd": 7.0,
+     "prazo": "5-7",
+     "dias": 7
+    }
+   }
+  },
+  {
+   "loja": "casa",
+   "busca": "vase",
+   "armazem": "DE",
+   "pid": "2085183831049670657",
+   "nome": "Seasonal Decor—Artificial Hydrangea Flower And Small Ceramic Vase; Artificial Eucalyptus Leaf And Berry Plant; Flower Arrangement For Living Room Decor (White)",
+   "custoUsd": 6.15,
+   "popularidade": 7,
+   "tipo": "5",
+   "img": "https://cf.cjdropshipping.com/17859744/3af9f62b-bc3a-47d4-8517-c15c6c794a70.jpg",
+   "vid": "2085183831221637121",
+   "variantes": 1,
+   "custoVarUsd": 6.15,
+   "estoque": null,
+   "fretes": {
+    "ES": null,
+    "PT": null,
+    "FR": null,
+    "IT": null,
+    "DE": {
+     "nome": "DHL DE to DE",
+     "usd": 7.0,
+     "prazo": "5-7",
+     "dias": 7
+    }
+   }
+  },
+  {
+   "loja": "casa",
+   "busca": "vase",
+   "armazem": "DE",
+   "pid": "2079401552615964674",
+   "nome": "Glass Plant Vase Set, 1 Piece, Dark Brown Wooden Stand For Home And Office—Party Accessory Set",
+   "custoUsd": 7.31,
+   "popularidade": 7,
+   "tipo": "5",
+   "img": "https://cf.cjdropshipping.com/17845920/9f1a6efc-7ce3-4a81-9a62-852a89fd1e85.jpg",
+   "vid": "2079401552741793794",
+   "variantes": 1,
+   "custoVarUsd": 7.31,
+   "estoque": null,
+   "fretes": {
+    "ES": null,
+    "PT": null,
+    "FR": null,
+    "IT": null,
+    "DE": {
+     "nome": "DHL DE to DE",
+     "usd": 7.0,
+     "prazo": "5-7",
+     "dias": 7
+    }
+   }
+  },
+  {
+   "loja": "casa",
+   "busca": "solar",
+   "armazem": "DE",
+   "pid": "1990696818966056961",
+   "nome": "Pavilion LED String Lights with Solar Panel",
+   "custoUsd": 14.46,
+   "popularidade": 7,
+   "tipo": "5",
+   "img": "https://cf.cjdropshipping.com/17634240/69a7bd9c-9e93-48ac-aaae-943191292429.jpg",
+   "vid": "1990696819301601282",
+   "variantes": 1,
+   "custoVarUsd": 14.46,
+   "estoque": null,
+   "fretes": {
+    "ES": null,
+    "PT": null,
+    "FR": null,
+    "IT": null,
+    "DE": {
+     "nome": "DPD DE to DE",
+     "usd": 0.0,
+     "prazo": "4-5",
+     "dias": 5
+    }
+   }
+  },
+  {
+   "loja": "casa",
+   "busca": "decor",
+   "armazem": "DE",
+   "pid": "2084466112077279234",
+   "nome": "18th Birthday Napkins, Pink, 40 Count, Party Table Decor, Celebration Decor, Party Supplies Set",
+   "custoUsd": 3.73,
+   "popularidade": 6,
+   "tipo": "5",
+   "img": "https://cf.cjdropshipping.com/17858016/115c417d-9ce8-4f2f-9d9d-caca7eb93b3a.jpg",
+   "vid": "2084466112219885569",
+   "variantes": 1,
+   "custoVarUsd": 3.73,
+   "estoque": null,
+   "fretes": {
+    "ES": null,
+    "PT": null,
+    "FR": null,
+    "IT": null,
+    "DE": {
+     "nome": "DHL DE to DE",
+     "usd": 7.0,
+     "prazo": "5-7",
+     "dias": 7
+    }
+   }
+  },
+  {
+   "loja": "casa",
+   "busca": "decor",
+   "armazem": "DE",
+   "pid": "2090276044420186114",
+   "nome": "Pampas Grass & Rabbit's Tail Decor Set, 150 Pieces, Natural Dried Flowers For Vases, Fluffy Grasses For The Living Room, Stylish Table Decor & Party Decor",
+   "custoUsd": 6.03,
+   "popularidade": 6,
+   "tipo": "5",
+   "img": "https://cf.cjdropshipping.com/17871840/ec023b9d-cdc1-4d2a-bab0-29422bd4786b.jpg",
+   "vid": "2090276044894142466",
+   "variantes": 1,
+   "custoVarUsd": 6.03,
+   "estoque": null,
+   "fretes": {
+    "ES": null,
+    "PT": null,
+    "FR": null,
+    "IT": null,
+    "DE": {
+     "nome": "DHL DE to DE",
+     "usd": 7.0,
+     "prazo": "5-7",
+     "dias": 7
+    }
+   }
+  },
+  {
+   "loja": "casa",
+   "busca": "decor",
+   "armazem": "DE",
+   "pid": "2079399512892375041",
+   "nome": "Fall Decor, Hedgehog Decor, Halloween Decor, Indoor Window Decor, Fall Night Light, Fall Decor Figurines, Autumn Aesthetic Decor, Fall Decor For Garden, Windows, Outdoor, And Indoor Decor",
+   "custoUsd": 7.43,
+   "popularidade": 6,
+   "tipo": "5",
+   "img": "https://cf.cjdropshipping.com/17845920/6ad3a651-0e3b-4dc2-918d-31e9c05b8319.jpg",
+   "vid": "2079399513026592769",
+   "variantes": 1,
+   "custoVarUsd": 7.43,
+   "estoque": null,
+   "fretes": {
+    "ES": null,
+    "PT": null,
+    "FR": null,
+    "IT": null,
+    "DE": {
+     "nome": "DHL DE to DE",
+     "usd": 7.0,
+     "prazo": "5-7",
+     "dias": 7
+    }
+   }
+  },
+  {
+   "loja": "casa",
+   "busca": "decor",
+   "armazem": "DE",
+   "pid": "2084466627603378178",
+   "nome": "Blue Pampas Grass Mixed Decor, Combined Decor Set For Wedding Decorations And Table Settings",
+   "custoUsd": 8.72,
+   "popularidade": 6,
+   "tipo": "5",
+   "img": "https://cf.cjdropshipping.com/17858016/2df6d942-ed7d-4928-aa6e-bc71bf9266cc.jpg",
+   "vid": "2084466627725012993",
+   "variantes": 1,
+   "custoVarUsd": 8.72,
+   "estoque": null,
+   "fretes": {
+    "ES": null,
+    "PT": null,
+    "FR": null,
+    "IT": null,
+    "DE": {
+     "nome": "DHL DE to DE",
+     "usd": 7.0,
+     "prazo": "5-7",
+     "dias": 7
+    }
+   }
+  },
+  {
+   "loja": "pets",
+   "busca": "dog toy",
+   "armazem": "DE",
+   "pid": "2087399474944557058",
+   "nome": "Cat Toy With 3 Replacement Feather Tufts, Interactive Toy For Exercise And Hunting Games—Party Accessory Set",
+   "custoUsd": 10.22,
+   "popularidade": 6,
+   "tipo": "5",
+   "img": "https://cf.cjdropshipping.com/17864928/f7376305-f0ff-4851-a276-6c961685ebd8.jpg",
+   "vid": "2087399475091357698",
+   "variantes": 1,
+   "custoVarUsd": 10.22,
+   "estoque": null,
+   "fretes": {
+    "ES": null,
+    "PT": null,
+    "FR": null,
+    "IT": null,
+    "DE": {
+     "nome": "DHL DE to DE",
+     "usd": 7.0,
+     "prazo": "5-7",
+     "dias": 7
+    }
+   }
+  },
+  {
+   "loja": "casa",
+   "busca": "garden",
+   "armazem": "DE",
+   "pid": "1990432899038752770",
+   "nome": "garden cart liner   garden cart liner 81x   garden cart liner 81x",
+   "custoUsd": 13.26,
+   "popularidade": 6,
+   "tipo": "5",
+   "img": "https://cf.cjdropshipping.com/17633376/9ed6668d-6662-4ef8-b588-4600986c6f61.jpg",
+   "vid": "1990432899252662274",
+   "variantes": 1,
+   "custoVarUsd": 13.26,
+   "estoque": null,
+   "fretes": {
+    "ES": null,
+    "PT": null,
+    "FR": null,
+    "IT": null,
+    "DE": {
+     "nome": "DPD DE to DE",
+     "usd": 0.0,
+     "prazo": "4-5",
+     "dias": 5
+    }
+   }
+  },
+  {
+   "loja": "pets",
+   "busca": "pet hair",
+   "armazem": "DE",
+   "pid": "2077973107818389505",
+   "nome": "Professional Dog Clipper For Dogs And Cats, Quiet Hair Trimmer, Rechargeable Cordless Pet Clipper MRW250803B",
+   "custoUsd": 13.49,
+   "popularidade": 6,
+   "tipo": "5",
+   "img": "https://cf.cjdropshipping.com/17842464/3cab1239-f316-43e9-9533-8f4bbf549734.jpg",
+   "vid": "2077973107952607233",
+   "variantes": 1,
+   "custoVarUsd": 13.49,
+   "estoque": null,
+   "fretes": {
+    "ES": null,
+    "PT": null,
+    "FR": null,
+    "IT": null,
+    "DE": {
+     "nome": "DHL DE to DE #4",
+     "usd": 7.0,
+     "prazo": "5-7",
+     "dias": 7
+    }
+   }
+  },
+  {
+   "loja": "casa",
+   "busca": "decor",
+   "armazem": "DE",
+   "pid": "2080139639596015617",
+   "nome": "Skull Door Curtain – Atmospheric Decor For Themed Parties & Spooky Room Decor",
+   "custoUsd": 3.91,
+   "popularidade": 5,
+   "tipo": "5",
+   "img": "https://cf.cjdropshipping.com/17847648/f7ac516e-9d11-4d9c-bef1-0712732bb98d.jpg",
+   "vid": "2080139639730233345",
+   "variantes": 1,
+   "custoVarUsd": 3.91,
+   "estoque": null,
+   "fretes": {
+    "ES": null,
+    "PT": null,
+    "FR": null,
+    "IT": null,
+    "DE": {
+     "nome": "DHL DE to DE",
+     "usd": 7.0,
+     "prazo": "5-7",
+     "dias": 7
+    }
+   }
+  },
+  {
+   "loja": "casa",
+   "busca": "kitchen",
+   "armazem": "DE",
+   "pid": "2087734935486361602",
+   "nome": "Kitchen Roll Holder, Freestanding Wooden Kitchen Roll Holder For Standard And Large Rolls, Wooden Freestanding Paper Roll Holder For The Kitchen And Dining Table, Home Decor, Countertop",
+   "custoUsd": 7.66,
+   "popularidade": 5,
+   "tipo": "5",
+   "img": "https://cf.cjdropshipping.com/17865792/05177c6f-3669-416c-bf81-7b9af6f68ccc.jpg",
+   "vid": "2087734935675105281",
+   "variantes": 1,
+   "custoVarUsd": 7.66,
+   "estoque": null,
+   "fretes": {
+    "ES": null,
+    "PT": null,
+    "FR": null,
+    "IT": null,
+    "DE": {
+     "nome": "DHL DE to DE",
+     "usd": 7.0,
+     "prazo": "5-7",
+     "dias": 7
+    }
+   }
+  },
+  {
+   "loja": "casa",
+   "busca": "kitchen",
+   "armazem": "DE",
+   "pid": "2076865057344491521",
+   "nome": "Kitchen Roll Holder, Freestanding Wooden Kitchen Roll Holder For Standard And Large Rolls, Wooden Freestanding Paper Roll Holder For The Kitchen And Dining Table, Home Decor, Countertop",
+   "custoUsd": 7.66,
+   "popularidade": 5,
+   "tipo": "5",
+   "img": "https://cf.cjdropshipping.com/17839872/ee8c2175-f503-4b56-95fe-915d2ebc42d2.jpg",
+   "vid": "2076865058405650433",
+   "variantes": 1,
+   "custoVarUsd": 7.66,
+   "estoque": null,
+   "fretes": {
+    "ES": null,
+    "PT": null,
+    "FR": null,
+    "IT": null,
+    "DE": {
+     "nome": "DHL DE to DE #4",
+     "usd": 7.0,
+     "prazo": "5-7",
+     "dias": 7
+    }
+   }
+  },
+  {
+   "loja": "pets",
+   "busca": "pet grooming",
+   "armazem": "DE",
+   "pid": "2106279496371990530",
+   "nome": "Pet Flying Disc Cat Disc Launcher USB Rechargeable Interactive Cat Fetch Launcher With 10 Flying Pet Toys Pet Chase Toys",
+   "custoUsd": 10.5,
+   "popularidade": 5,
+   "tipo": "5",
+   "img": "https://cf.cjdropshipping.com/8798d9b6-26d1-4ac6-9808-b92b14a70077.png",
+   "vid": "2106279496489431042",
+   "variantes": 1,
+   "custoVarUsd": 10.5,
+   "estoque": null,
+   "fretes": {
+    "ES": null,
+    "PT": null,
+    "FR": null,
+    "IT": null,
+    "DE": {
+     "nome": "DE post DE to DE #2",
+     "usd": 0.0,
+     "prazo": "3-7",
+     "dias": 7
+    }
+   }
+  },
+  {
+   "loja": "casa",
+   "busca": "home",
+   "armazem": "DE",
+   "pid": "2084827021465784322",
+   "nome": "9-Compartment Metal Storage Cabinet, Set Of 2, Black Metal Storage Cabinet With Compartments, Organization System For Parties And Home—Party Accessories Set",
+   "custoUsd": 10.69,
+   "popularidade": 5,
+   "tipo": "5",
+   "img": "https://cf.cjdropshipping.com/17858880/83d12c69-5bf1-4daa-8d03-51c573e19096.jpg",
+   "vid": "2084827021604196353",
+   "variantes": 1,
+   "custoVarUsd": 10.69,
+   "estoque": null,
+   "fretes": {
+    "ES": null,
+    "PT": null,
+    "FR": null,
+    "IT": null,
+    "DE": {
+     "nome": "DHL DE to DE",
+     "usd": 7.0,
+     "prazo": "5-7",
+     "dias": 7
+    }
+   }
+  },
+  {
+   "loja": "casa",
+   "busca": "kitchen",
+   "armazem": "DE",
+   "pid": "2088110515196375041",
+   "nome": "120L Black Kitchen Trash Can – Large Trash Can With Lid For The Kitchen",
+   "custoUsd": 14.96,
+   "popularidade": 5,
+   "tipo": "5",
+   "img": "https://cf.cjdropshipping.com/17866656/2e198f1f-b79e-4b21-af8a-d1397e775fbd.jpg",
+   "vid": "2088110515427061761",
+   "variantes": 1,
+   "custoVarUsd": 14.96,
+   "estoque": null,
+   "fretes": {
+    "ES": null,
+    "PT": null,
+    "FR": null,
+    "IT": null,
+    "DE": {
+     "nome": "DHL DE to DE",
+     "usd": 7.6,
+     "prazo": "5-7",
+     "dias": 7
+    }
+   }
+  },
+  {
+   "loja": "pets",
+   "busca": "pet bed",
+   "armazem": "DE",
+   "pid": "2074743346664554498",
+   "nome": "Pet Hammock, Rodent Tent, Hamster Bed, Small Animal Bed, Rat Sleeping Bag, Ferret Bed, Guinea Pig Bed, Small Animal Beds, Cages, Decorations, Accessories",
+   "custoUsd": 4.16,
+   "popularidade": 4,
+   "tipo": "5",
+   "img": "https://cf.cjdropshipping.com/17834688/a92dc6af-3af6-4f12-a9e0-adf57f6cea8c.jpg",
+   "vid": "2074743346836520961",
+   "variantes": 1,
+   "custoVarUsd": 4.16,
+   "estoque": null,
+   "fretes": {
+    "ES": null,
+    "PT": null,
+    "FR": null,
+    "IT": null,
+    "DE": {
+     "nome": "DHL DE to DE",
+     "usd": 7.0,
+     "prazo": "5-7",
+     "dias": 7
+    }
+   }
+  },
+  {
+   "loja": "pets",
+   "busca": "pet bowl",
+   "armazem": "DE",
+   "pid": "2080868034346926081",
+   "nome": "2-in-1 Activity Bowl For Dogs In Yellow With Decorative Design, Interactive Feeding Toy For Pets—Party Accessory Set",
+   "custoUsd": 5.71,
+   "popularidade": 3,
+   "tipo": "5",
+   "img": "https://cf.cjdropshipping.com/17849376/5fedc2a5-6cc5-46cf-a3da-f1380fc650f4.jpg",
+   "vid": "2080868034472755201",
+   "variantes": 1,
+   "custoVarUsd": 5.71,
+   "estoque": null,
+   "fretes": {
+    "ES": null,
+    "PT": null,
+    "FR": null,
+    "IT": null,
+    "DE": {
+     "nome": "DHL DE to DE #4",
+     "usd": 7.0,
+     "prazo": "5-7",
+     "dias": 7
+    }
+   }
+  },
+  {
+   "loja": "casa",
+   "busca": "vase",
+   "armazem": "DE",
+   "pid": "2085557870401675265",
+   "nome": "Props, Desk Flower Vase For Home, Office, Decoration, White",
+   "custoUsd": 6.64,
+   "popularidade": 3,
+   "tipo": "5",
+   "img": "https://cf.cjdropshipping.com/17860608/b284eeb0-7e9f-41b9-a865-11696ccff0c4.jpg",
+   "vid": "2085557871202787329",
+   "variantes": 1,
+   "custoVarUsd": 6.64,
+   "estoque": null,
+   "fretes": {
+    "ES": null,
+    "PT": null,
+    "FR": null,
+    "IT": null,
+    "DE": {
+     "nome": "DHL DE to DE",
+     "usd": 7.0,
+     "prazo": "5-7",
+     "dias": 7
+    }
+   }
+  },
+  {
+   "loja": "casa",
+   "busca": "storage",
+   "armazem": "DE",
+   "pid": "2078305715055071234",
+   "nome": "2-Piece Laundry Detergent Storage Set, 1.5L Laundry Detergent Storage Box For Powder, Durable PET Laundry Detergent Container, Liquid Laundry Detergent Dispenser",
+   "custoUsd": 7.35,
+   "popularidade": 3,
+   "tipo": "5",
+   "img": "https://cf.cjdropshipping.com/17843328/3633b1cc-7335-4d8e-a1aa-2682dfd74250.jpg",
+   "vid": "2078305715201871873",
+   "variantes": 1,
+   "custoVarUsd": 7.35,
+   "estoque": null,
+   "fretes": {
+    "ES": null,
+    "PT": null,
+    "FR": null,
+    "IT": null,
+    "DE": {
+     "nome": "DHL DE to DE #4",
+     "usd": 7.0,
+     "prazo": "5-7",
+     "dias": 7
+    }
+   }
+  },
+  {
+   "loja": "casa",
+   "busca": "blanket",
+   "armazem": "DE",
+   "pid": "2086666836790628354",
+   "nome": "Valentine's Day Gifts For Her And Him, Anniversary Gifts For Her, “I Love You” Gifts For Women And Men, Personalized Penguin Blanket, Valentine's Day, Gifts For Partners (Women And Men), 62x52 Inches",
+   "custoUsd": 8.26,
+   "popularidade": 3,
+   "tipo": "5",
+   "img": "https://cf.cjdropshipping.com/17863200/476b1089-eaab-48c9-bd2b-524071322faa.jpg",
+   "vid": "2086666836933234689",
+   "variantes": 1,
+   "custoVarUsd": 8.26,
+   "estoque": null,
+   "fretes": {
+    "ES": null,
+    "PT": null,
+    "FR": null,
+    "IT": null,
+    "DE": {
+     "nome": "DHL DE to DE",
+     "usd": 7.0,
+     "prazo": "5-7",
+     "dias": 7
+    }
+   }
+  },
+  {
+   "loja": "casa",
+   "busca": "blanket",
+   "armazem": "DE",
+   "pid": "2074033392427368450",
+   "nome": "Mom’s Cozy Blanket, Fluffy Blanket For Moms, Soft For Relaxation, Cozy Warm Sofa Blanket For Mothers, Gift For Mom For Christmas Or Birthday, Cozy Bedspread For Living Room Or Bedroom",
+   "custoUsd": 8.87,
+   "popularidade": 3,
+   "tipo": "5",
+   "img": "https://cf.cjdropshipping.com/17832960/1de0f1d8-d367-4d69-b053-b3bdfcb5722d.jpg",
+   "vid": "2074033392553197569",
+   "variantes": 1,
+   "custoVarUsd": 8.87,
+   "estoque": null,
+   "fretes": {
+    "ES": null,
+    "PT": null,
+    "FR": null,
+    "IT": null,
+    "DE": {
+     "nome": "DHL DE to DE",
+     "usd": 7.0,
+     "prazo": "5-7",
+     "dias": 7
+    }
+   }
+  },
+  {
+   "loja": "casa",
+   "busca": "kitchen",
+   "armazem": "DE",
+   "pid": "2084094418340130818",
+   "nome": "120L Black Kitchen Trash Can—Large Trash Can With Lid For The Kitchen",
+   "custoUsd": 14.96,
+   "popularidade": 3,
+   "tipo": "5",
+   "img": "https://cf.cjdropshipping.com/17857152/6c9bb099-eaef-42ec-8c93-9e9c4f9e9c18.jpg",
+   "vid": "2084094418650509313",
+   "variantes": 1,
+   "custoVarUsd": 14.96,
+   "estoque": null,
+   "fretes": {
+    "ES": null,
+    "PT": null,
+    "FR": null,
+    "IT": null,
+    "DE": {
+     "nome": "DHL DE to DE",
+     "usd": 7.6,
+     "prazo": "5-7",
+     "dias": 7
+    }
+   }
+  },
+  {
+   "loja": "pets",
+   "busca": "pet water",
+   "armazem": "DE",
+   "pid": "2074709314914152450",
+   "nome": "Flow Restrictor, Water Saver, Shower Flow Reducer, Shower Hose, Water-Saving Showerhead, Water-Saving Insert, Shower Water Saver—Up To 70% Water Savings, 4 L/min",
+   "custoUsd": 3.27,
+   "popularidade": 2,
+   "tipo": "5",
+   "img": "https://cf.cjdropshipping.com/17834688/8f42490d-5fde-4a0d-9778-b9a5c35ac678.jpg",
+   "vid": "2074709315044175873",
+   "variantes": 1,
+   "custoVarUsd": 3.27,
+   "estoque": null,
+   "fretes": {
+    "ES": null,
+    "PT": null,
+    "FR": null,
+    "IT": null,
+    "DE": {
+     "nome": "DHL DE to DE",
+     "usd": 7.0,
+     "prazo": "5-7",
+     "dias": 7
+    }
+   }
+  },
+  {
+   "loja": "pets",
+   "busca": "pet bowl",
+   "armazem": "DE",
+   "pid": "2077675979414749186",
+   "nome": "12 DIY Paper Bowl Crafts With Stickers, Handmade Disposable Paper Bowls, Creative Paper Bowls, Used For Party Decorations And Educational Fun",
+   "custoUsd": 3.75,
+   "popularidade": 2,
+   "tipo": "5",
+   "img": "https://cf.cjdropshipping.com/17841600/b822ba18-0013-47dc-b321-c2c86bd19e7f.jpg",
+   "vid": "2077675979993563138",
+   "variantes": 1,
+   "custoVarUsd": 3.75,
+   "estoque": null,
+   "fretes": {
+    "ES": null,
+    "PT": null,
+    "FR": null,
+    "IT": null,
+    "DE": {
+     "nome": "DHL DE to DE",
+     "usd": 7.0,
+     "prazo": "5-7",
+     "dias": 7
+    }
+   }
+  },
+  {
+   "loja": "casa",
+   "busca": "storage",
+   "armazem": "DE",
+   "pid": "2087736818888241153",
+   "nome": "Party Packages - Underwear Storage Rack, Double-Sided Storage For Underwear And Socks, Mesh Bag, Storage Bag, Sock Organizer, Tie Holder, Jewelry Organizer, Small Items",
+   "custoUsd": 4.23,
+   "popularidade": 2,
+   "tipo": "5",
+   "img": "https://cf.cjdropshipping.com/17865792/2d3f445a-294f-40cf-8434-139c6bd217f7.jpg",
+   "vid": "2087736819035041793",
+   "variantes": 1,
+   "custoVarUsd": 4.23,
+   "estoque": null,
+   "fretes": {
+    "ES": null,
+    "PT": null,
+    "FR": null,
+    "IT": null,
+    "DE": {
+     "nome": "DHL DE to DE",
+     "usd": 7.0,
+     "prazo": "5-7",
+     "dias": 7
+    }
+   }
+  },
+  {
+   "loja": "pets",
+   "busca": "pet hair",
+   "armazem": "DE",
+   "pid": "2076518074811838465",
+   "nome": "Multi-piece Party Gift Sets – 6-Piece Set Of Matte Hair Clips For Women, 4.3 Inches, Non-Slip Hairpins, Strong Hold Hair Claw Clips, Large Hair Clips For Women With Thick And Thin Hair",
+   "custoUsd": 4.63,
+   "popularidade": 2,
+   "tipo": "5",
+   "img": "https://cf.cjdropshipping.com/17839008/7c9ea915-187d-4c93-925f-8b40e5211dd1.jpg",
+   "vid": "2076518074971222017",
+   "variantes": 1,
+   "custoVarUsd": 4.63,
+   "estoque": null,
+   "fretes": {
+    "ES": null,
+    "PT": null,
+    "FR": null,
+    "IT": null,
+    "DE": {
+     "nome": "DHL DE to DE #4",
+     "usd": 7.0,
+     "prazo": "5-7",
+     "dias": 7
+    }
+   }
+  },
+  {
+   "loja": "pets",
+   "busca": "pet hair",
+   "armazem": "DE",
+   "pid": "2077972779562799106",
+   "nome": "Set Of 13 Retro Hair Clips—Vintage Accessories For Women And Girls—Party Accessory Set",
+   "custoUsd": 4.66,
+   "popularidade": 2,
+   "tipo": "5",
+   "img": "https://cf.cjdropshipping.com/17842464/96474056-bcf3-4c6e-8e57-86fc9162cd04.jpg",
+   "vid": "2077972779692822530",
+   "variantes": 1,
+   "custoVarUsd": 4.66,
+   "estoque": null,
+   "fretes": {
+    "ES": null,
+    "PT": null,
+    "FR": null,
+    "IT": null,
+    "DE": {
+     "nome": "DHL DE to DE #4",
+     "usd": 7.0,
+     "prazo": "5-7",
+     "dias": 7
+    }
+   }
+  },
+  {
+   "loja": "casa",
+   "busca": "vase",
+   "armazem": "DE",
+   "pid": "2090275482632691714",
+   "nome": "Golden, Fist-shaped Artificial Human Hand Flower Picks, Sculptural Flower Holder For Table Decorations, Unique Vase For Living Room Party Decorations",
+   "custoUsd": 5.22,
+   "popularidade": 2,
+   "tipo": "5",
+   "img": "https://cf.cjdropshipping.com/17871840/79028aca-a791-4d66-b9d0-e0601844aaa9.jpg",
+   "vid": "2090275482888544258",
+   "variantes": 1,
+   "custoVarUsd": 5.22,
+   "estoque": null,
+   "fretes": {
+    "ES": null,
+    "PT": null,
+    "FR": null,
+    "IT": null,
+    "DE": {
+     "nome": "DHL DE to DE",
+     "usd": 7.0,
+     "prazo": "5-7",
+     "dias": 7
+    }
+   }
+  },
+  {
+   "loja": "casa",
+   "busca": "home",
+   "armazem": "DE",
+   "pid": "2084093570067312642",
+   "nome": "8-piece Set Of Foldable Table Privacy Screens – Portable And Adjustable Plastic Dividers For The Office, School, And Home Office",
+   "custoUsd": 7.65,
+   "popularidade": 2,
+   "tipo": "5",
+   "img": "https://cf.cjdropshipping.com/17857152/b4d278ca-83c5-4db3-9f08-66236768395b.jpg",
+   "vid": "2084093570264444929",
+   "variantes": 1,
+   "custoVarUsd": 7.65,
+   "estoque": null,
+   "fretes": {
+    "ES": null,
+    "PT": null,
+    "FR": null,
+    "IT": null,
+    "DE": {
+     "nome": "DHL DE to DE",
+     "usd": 7.0,
+     "prazo": "5-7",
+     "dias": 7
+    }
+   }
+  },
+  {
+   "loja": "casa",
+   "busca": "blanket",
+   "armazem": "DE",
+   "pid": "2074028795608326146",
+   "nome": "Grandpa’s Cozy Blanket, Fluffy Blanket, Sloth “Grandpa’s Snoring Corner,” Fleece Blanket, Flannel Sofa Blanket, Grandfather’s Birthday, Thanksgiving, Christmas, 130x150 Cm",
+   "custoUsd": 8.66,
+   "popularidade": 2,
+   "tipo": "5",
+   "img": "https://cf.cjdropshipping.com/17832960/e494737b-4133-47c1-9bd9-f76b3e136454.jpg",
+   "vid": "2074028795893538818",
+   "variantes": 1,
+   "custoVarUsd": 8.66,
+   "estoque": null,
+   "fretes": {
+    "ES": null,
+    "PT": null,
+    "FR": null,
+    "IT": null,
+    "DE": {
+     "nome": "DHL DE to DE",
+     "usd": 7.0,
+     "prazo": "5-7",
+     "dias": 7
+    }
+   }
+  },
+  {
+   "loja": "pets",
+   "busca": "dog toy",
+   "armazem": "DE",
+   "pid": "2077973016645361665",
+   "nome": "Interactive Cat Toy In Blue With Feathers, Fun Indoor Cat Toy, Engaging Toy For Indoor Cats—Party Accessory Set",
+   "custoUsd": 10.14,
+   "popularidade": 2,
+   "tipo": "5",
+   "img": "https://cf.cjdropshipping.com/17842464/fa2b1c4f-b812-46a6-ae59-038d62337ce8.jpg",
+   "vid": "2077973016766996482",
+   "variantes": 1,
+   "custoVarUsd": 10.14,
+   "estoque": null,
+   "fretes": {
+    "ES": null,
+    "PT": null,
+    "FR": null,
+    "IT": null,
+    "DE": {
+     "nome": "DHL DE to DE #4",
+     "usd": 7.0,
+     "prazo": "5-7",
+     "dias": 7
+    }
+   }
+  },
+  {
+   "loja": "pets",
+   "busca": "dog toy",
+   "armazem": "DE",
+   "pid": "2076518310389121026",
+   "nome": "Cat Toy With 3 Replacement Feather Tassels, Interactive Toy For Exercise And Hunting Games—Party Accessory Set",
+   "custoUsd": 10.14,
+   "popularidade": 2,
+   "tipo": "5",
+   "img": "https://cf.cjdropshipping.com/17839008/31db9e34-5cdd-429f-b630-45e22296b67b.jpg",
+   "vid": "2076518310514950146",
+   "variantes": 1,
+   "custoVarUsd": 10.14,
+   "estoque": null,
+   "fretes": {
+    "ES": null,
+    "PT": null,
+    "FR": null,
+    "IT": null,
+    "DE": {
+     "nome": "DHL DE to DE #4",
+     "usd": 7.0,
+     "prazo": "5-7",
+     "dias": 7
+    }
+   }
+  },
+  {
+   "loja": "casa",
+   "busca": "storage",
+   "armazem": "DE",
+   "pid": "2084094499281809409",
+   "nome": "20-Piece Accessory Set Including Storage Pouch – For Versatile Uses",
+   "custoUsd": 13.11,
+   "popularidade": 2,
+   "tipo": "5",
+   "img": "https://cf.cjdropshipping.com/17857152/89581cae-7867-4f58-9db3-7817c93269db.jpg",
+   "vid": "2084094499457970178",
+   "variantes": 1,
+   "custoVarUsd": 13.11,
+   "estoque": null,
+   "fretes": {
+    "ES": null,
+    "PT": null,
+    "FR": null,
+    "IT": null,
+    "DE": {
+     "nome": "DHL DE to DE",
+     "usd": 7.6,
+     "prazo": "5-7",
+     "dias": 7
+    }
+   }
+  },
+  {
+   "loja": "pets",
+   "busca": "pet hair",
+   "armazem": "DE",
+   "pid": "2077972833754177537",
+   "nome": "Set Of 8 Hair Clips, Double-Tooth Design In 4 Colors & 2 Styles For Women's Party Accessories Set",
+   "custoUsd": 3.44,
+   "popularidade": 1,
+   "tipo": "5",
+   "img": "https://cf.cjdropshipping.com/17842464/02edfc88-49c0-4d48-aa70-b49b1a0ec6aa.jpg",
+   "vid": "2077972833884200962",
+   "variantes": 1,
+   "custoVarUsd": 3.44,
+   "estoque": null,
+   "fretes": {
+    "ES": null,
+    "PT": null,
+    "FR": null,
+    "IT": null,
+    "DE": {
+     "nome": "DHL DE to DE #4",
+     "usd": 7.0,
+     "prazo": "5-7",
+     "dias": 7
+    }
+   }
+  },
+  {
+   "loja": "pets",
+   "busca": "pet hair",
+   "armazem": "DE",
+   "pid": "2076522959603138562",
+   "nome": "14-Piece Hair Accessory Set - Headbands With Clips And Hair Ties In Various Colors For Women's Party Accessories Set",
+   "custoUsd": 3.69,
+   "popularidade": 1,
+   "tipo": "5",
+   "img": "https://cf.cjdropshipping.com/17839008/447c74cc-1833-4123-a563-91829d4ac4db.jpg",
+   "vid": "2076522959733161986",
+   "variantes": 1,
+   "custoVarUsd": 3.69,
+   "estoque": null,
+   "fretes": {
+    "ES": null,
+    "PT": null,
+    "FR": null,
+    "IT": null,
+    "DE": {
+     "nome": "DHL DE to DE #4",
+     "usd": 7.0,
+     "prazo": "5-7",
+     "dias": 7
+    }
+   }
+  },
+  {
+   "loja": "casa",
+   "busca": "home",
+   "armazem": "DE",
+   "pid": "2079763524832100353",
+   "nome": "Welcome Home Decorative Set: Garland, Welcome Home Banner, Balloons, Welcome Home Banner, Welcome Decorations—for Mom And Dad's Party, Photo Booth Props",
+   "custoUsd": 4.02,
+   "popularidade": 1,
+   "tipo": "5",
+   "img": "https://cf.cjdropshipping.com/17846784/4444c21e-fc18-42d2-90da-bd1a68db44a6.jpg",
+   "vid": "2079763525180227586",
+   "variantes": 1,
+   "custoVarUsd": 4.02,
+   "estoque": null,
+   "fretes": {
+    "ES": null,
+    "PT": null,
+    "FR": null,
+    "IT": null,
+    "DE": {
+     "nome": "DHL DE to DE",
+     "usd": 7.0,
+     "prazo": "5-7",
+     "dias": 7
+    }
+   }
+  },
+  {
+   "loja": "casa",
+   "busca": "storage",
+   "armazem": "DE",
+   "pid": "2078308164234534914",
+   "nome": "Underwear Storage Bag, Double-Sided Storage, Underwear And Sock Organizer, Mesh Travel Bag, For Socks, Ties, Jewelry, And Small Items, Essential Storage Bag For The Home, Ideal For G",
+   "custoUsd": 4.23,
+   "popularidade": 1,
+   "tipo": "5",
+   "img": "https://cf.cjdropshipping.com/17843328/f73b6eff-bfed-4852-a17e-7db2d6e52151.jpg",
+   "vid": "2078308164356169729",
+   "variantes": 1,
+   "custoVarUsd": 4.23,
+   "estoque": null,
+   "fretes": {
+    "ES": null,
+    "PT": null,
+    "FR": null,
+    "IT": null,
+    "DE": {
+     "nome": "DHL DE to DE #4",
+     "usd": 7.0,
+     "prazo": "5-7",
+     "dias": 7
+    }
+   }
+  },
+  {
+   "loja": "pets",
+   "busca": "cat",
+   "armazem": "DE",
+   "pid": "2090273752128192514",
+   "nome": "Cat Costume Set With Black Tulle Skirt, Headband, Tail, And Bow—A Seductive Cat Costume For Carnival, Halloween, And Theme Parties—Multi-Piece Party Gift Set",
+   "custoUsd": 4.55,
+   "popularidade": 1,
+   "tipo": "5",
+   "img": "https://cf.cjdropshipping.com/17871840/f8fa5a77-6e0f-4362-9971-e802a4d8c1da.jpg",
+   "vid": "2090273752337907713",
+   "variantes": 1,
+   "custoVarUsd": 4.55,
+   "estoque": null,
+   "fretes": {
+    "ES": null,
+    "PT": null,
+    "FR": null,
+    "IT": null,
+    "DE": {
+     "nome": "DHL DE to DE",
+     "usd": 7.0,
+     "prazo": "5-7",
+     "dias": 7
+    }
+   }
+  },
+  {
+   "loja": "casa",
+   "busca": "home",
+   "armazem": "DE",
+   "pid": "2075131507141160962",
+   "nome": "“Welcome Home” Banner, ‘Welcome’ Garland, Pre-assembled “Welcome Home” Banner, “Welcome Home” Decor",
+   "custoUsd": 4.73,
+   "popularidade": 1,
+   "tipo": "5",
+   "img": "https://cf.cjdropshipping.com/17835552/96963c83-2cdb-4b11-b7c2-1315f6de502a.jpg",
+   "vid": "2075131507271184385",
+   "variantes": 1,
+   "custoVarUsd": 4.73,
+   "estoque": null,
+   "fretes": {
+    "ES": null,
+    "PT": null,
+    "FR": null,
+    "IT": null,
+    "DE": {
+     "nome": "DHL DE to DE #4",
+     "usd": 7.0,
+     "prazo": "5-7",
+     "dias": 7
+    }
+   }
+  },
+  {
+   "loja": "casa",
+   "busca": "decor",
+   "armazem": "DE",
+   "pid": "2092082092229509122",
+   "nome": "Decorative Banner: Bavarian Decor, Bavaria, Beer Tents, Garden Party Decor, Door, Porch Sign, Beer Festival Decor For Indoor And Outdoor Use, 180 X 30 Cm",
+   "custoUsd": 4.75,
+   "popularidade": 1,
+   "tipo": "5",
+   "img": "https://cf.cjdropshipping.com/17876160/ef8d6ab0-cdd2-4f5f-9fe7-d9597d4303d3.jpg",
+   "vid": "2092082092577636354",
+   "variantes": 1,
+   "custoVarUsd": 4.75,
+   "estoque": null,
+   "fretes": {
+    "ES": null,
+    "PT": null,
+    "FR": null,
+    "IT": null,
+    "DE": {
+     "nome": "DHL DE to DE",
+     "usd": 7.0,
+     "prazo": "5-7",
+     "dias": 7
+    }
+   }
+  },
+  {
+   "loja": "casa",
+   "busca": "home",
+   "armazem": "DE",
+   "pid": "2092082817751826434",
+   "nome": "“Welcome Home” Banner, ‘Welcome’ Garland, Pre-assembled “Welcome Home” Banner, “Welcome Home” Decor",
+   "custoUsd": 4.94,
+   "popularidade": 1,
+   "tipo": "5",
+   "img": "https://cf.cjdropshipping.com/17876160/5193b891-51ed-4a02-8c59-b168ff530679.jpg",
+   "vid": "2092082817894432770",
+   "variantes": 1,
+   "custoVarUsd": 4.94,
+   "estoque": null,
+   "fretes": {
+    "ES": null,
+    "PT": null,
+    "FR": null,
+    "IT": null,
+    "DE": {
+     "nome": "DHL DE to DE",
+     "usd": 7.0,
+     "prazo": "5-7",
+     "dias": 7
+    }
+   }
+  }
+ ],
+ "entregaES_PT": 2
+}
