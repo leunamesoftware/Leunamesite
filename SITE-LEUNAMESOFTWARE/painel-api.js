@@ -385,6 +385,47 @@ async function publicados(req, env, L) {
   })) });
 }
 
+// ---------- pedidos (vendas pagas no Stripe) ----------
+async function pedidos(req, env) {
+  if (!env.STRIPE_SECRET_KEY) return json({ erro: "stripe-desligado" }, 503);
+  await env.DB.prepare("CREATE TABLE IF NOT EXISTS pedidos_status (id TEXT PRIMARY KEY, feito INTEGER NOT NULL DEFAULT 0, rastreio TEXT, atualizado TEXT)").run();
+  const r = await fetch("https://api.stripe.com/v1/checkout/sessions?status=complete&limit=40", { headers: { Authorization: "Bearer " + env.STRIPE_SECRET_KEY } });
+  const d = await r.json().catch(() => ({}));
+  if (!r.ok) return json({ erro: "stripe", detalhe: d.error && d.error.message }, 502);
+  const st = Object.fromEntries((await env.DB.prepare("SELECT id, feito, rastreio FROM pedidos_status").all()).results.map((x) => [x.id, x]));
+  const cats = {};
+  const out = [];
+  for (const s of d.data || []) {
+    if (s.payment_status !== "paid") continue;
+    const lojaId = (s.metadata && s.metadata.loja) || "pets";
+    if (!cats[lojaId]) cats[lojaId] = Object.fromEntries((await catalogo(env, req, lojaId)).map((p) => [p.id, p]));
+    const ship = (s.collected_information && s.collected_information.shipping_details) || s.shipping_details || {};
+    const a = ship.address || {};
+    const cli = s.customer_details || {};
+    const itens = String((s.metadata && s.metadata.itens) || "").split(",").map((x) => x.trim()).filter(Boolean).map((x) => {
+      const m = /^(\d+)x\s+([^:]+)(?::(.+))?$/.exec(x) || [];
+      const p = cats[lojaId][m[2]] || {};
+      const v = (p.variantes || []).find((y) => y.vid === m[3]);
+      return { q: +m[1] || 1, pid: m[2], vid: m[3] || (p.cj && p.cj.vid) || "", nome: (p.es && p.es.nombre) || m[2], variacao: v ? v.nombre : "",
+        img: (v && v.img) || (p.imagenes || [])[0] || "", linkCJ: m[2] ? "https://cjdropshipping.com/product/-p-" + m[2] + ".html" : "" };
+    });
+    out.push({ id: s.id, loja: lojaId, data: s.created * 1000, total: s.amount_total / 100, moeda: s.currency,
+      nome: ship.name || cli.name || "", email: cli.email || "", telefone: cli.phone || "",
+      endereco: { linha1: a.line1 || "", linha2: a.line2 || "", cep: a.postal_code || "", cidade: a.city || "", estado: a.state || "", pais: a.country || "" },
+      itens, feito: !!(st[s.id] && st[s.id].feito), rastreio: (st[s.id] && st[s.id].rastreio) || "" });
+  }
+  return json({ pedidos: out });
+}
+async function marcarPedido(req, env) {
+  const c = await req.json().catch(() => ({}));
+  const id = String(c.id || "").replace(/[^\w]/g, "").slice(0, 80);
+  if (!id) return json({ erro: "id" }, 400);
+  await env.DB.prepare("CREATE TABLE IF NOT EXISTS pedidos_status (id TEXT PRIMARY KEY, feito INTEGER NOT NULL DEFAULT 0, rastreio TEXT, atualizado TEXT)").run();
+  await env.DB.prepare("INSERT OR REPLACE INTO pedidos_status (id, feito, rastreio, atualizado) VALUES (?,?,?,datetime('now'))")
+    .bind(id, c.feito ? 1 : 0, String(c.rastreio || "").slice(0, 60)).run();
+  return json({ ok: true });
+}
+
 export async function painel(req, env, url) {
   if (!env.DB) return json({ erro: "sem-banco" }, 503);
   await tabelas(env);
@@ -417,6 +458,8 @@ export async function painel(req, env, url) {
       return json({ ok: true, video: v });
     }
     if (rota === "publicados") return await publicados(req, env, L);
+    if (rota === "pedidos") return await pedidos(req, env);
+    if (rota === "pedido" && req.method === "POST") return await marcarPedido(req, env);
     if (rota === "sair" && req.method === "POST") {
       const m = /^Bearer (\w+)$/.exec(req.headers.get("Authorization") || "");
       if (m) await env.DB.prepare("DELETE FROM sessoes WHERE token=?").bind(await sha(m[1])).run();

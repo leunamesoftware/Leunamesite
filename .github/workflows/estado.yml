@@ -34,6 +34,8 @@ jobs:
             curl -s -o /dev/null -w 'mp4 http=%{http_code} bytes=%{size_download} tipo=%{content_type}\n' https://pets.leuname.com/v/2090701323421270017.mp4 >> /tmp/e/painel.txt
             curl -s -o /dev/null -w 'range http=%{http_code}\n' -H 'Range: bytes=0-999' https://pets.leuname.com/v/2090701323421270017.mp4 >> /tmp/e/painel.txt
             curl -s -o /dev/null -w 'apk http=%{http_code} bytes=%{size_download}\n' https://pets.leuname.com/painel/app.apk >> /tmp/e/painel.txt
+            echo "pedidos:" >> /tmp/e/painel.txt
+            curl -s "https://pets.leuname.com/api/painel/pedidos" -H "Authorization: Bearer $tk" | jq -c '{n:(.pedidos|length),erro,detalhe,primeiro:(.pedidos[0]|{loja,total,pais:.endereco.pais,itens:[.itens[]|{nome,variacao}]})}' >> /tmp/e/painel.txt || true
             echo "lojas:" >> /tmp/e/painel.txt
             curl -s "https://pets.leuname.com/api/painel/lojas" -H "Authorization: Bearer $tk" | jq -c '[.lojas[]|{id,host,publicados}]' >> /tmp/e/painel.txt
             curl -s "https://pets.leuname.com/api/painel/buscar?q=kitchen%20gadgets&loja=casa" -H "Authorization: Bearer $tk" | jq -c '{n:(.itens|length),erro}' >> /tmp/e/painel.txt

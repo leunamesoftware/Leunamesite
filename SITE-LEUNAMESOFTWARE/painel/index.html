@@ -63,6 +63,15 @@ label{display:block;font-size:13px;color:var(--suave);margin-top:8px}
 .lj.on{background:var(--c);border-color:var(--c);color:#fff}.lj.on small{background:#ffffff33;color:#fff}
 .ver-barra{display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:13px;color:var(--suave);margin-bottom:8px}
 #verFrame{width:100%;height:calc(100vh - 230px);min-height:480px;border:1px solid var(--borda);border-radius:12px;background:#fff}
+.nped{background:#E62E73;color:#fff;border-radius:99px;padding:1px 7px;font-size:12px;margin-left:4px}
+.ped-topo{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}.ped-topo .bt{padding:8px 12px;font-size:13px}
+.como{background:#f4f6ff;border:1px solid var(--borda);border-radius:10px;padding:10px 12px;margin-bottom:12px;font-size:14px}.como summary{font-weight:700;cursor:pointer}.como ol{margin:8px 0 0 18px;padding:0}.como li{margin:5px 0}
+.ped{background:#fff;border:2px solid #E62E73;border-radius:14px;padding:12px;margin-top:12px}.ped.feito{border-color:var(--borda);opacity:.85}
+.ped-cab{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:13px;color:var(--suave)}.ped-cab .tot{color:var(--tx);font-size:17px;margin-left:auto}
+.ped-it{display:flex;gap:10px;align-items:center;margin-top:10px}.ped-it img{width:64px;height:64px;border-radius:10px;object-fit:cover;flex:none}.ped-it .var{font-size:13px;margin:2px 0 6px}.ped-it .bt{padding:7px 12px;font-size:13px;text-decoration:none;display:inline-block}
+.ped-end{background:var(--fundo);border-radius:10px;padding:8px 10px;margin-top:10px}.ped-end-t{display:flex;justify-content:space-between;align-items:center;font-weight:700;font-size:14px;margin-bottom:4px}
+.cp{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:5px 0;border-top:1px solid var(--borda);font-size:14px}.cp small{display:block;color:var(--suave);font-size:11px}.cp .bt,.ped-end-t .bt{padding:5px 10px;font-size:12px;flex:none}
+.ped-acoes{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}.ped-acoes .campo{flex:1;min-width:160px;margin:0}
 .toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--azul);color:#fff;padding:10px 16px;border-radius:10px;display:none;z-index:20;max-width:90%}
 </style>
 </head>
@@ -79,7 +88,7 @@ label{display:block;font-size:13px;color:var(--suave);margin-top:8px}
 <div id="app" hidden>
   <div class="topo"><b>Painel das lojas</b><a class="baixar" href="app.apk">📲 App</a><button id="sair">Sair</button></div>
   <div class="lojas" id="lojas"></div>
-  <div class="abas"><button class="aba on" data-aba="buscar">Buscar na CJ</button><button class="aba" data-aba="loja">Na loja</button><button class="aba" data-aba="ver">Ver loja</button></div>
+  <div class="abas"><button class="aba on" data-aba="buscar">Buscar na CJ</button><button class="aba" data-aba="loja">Na loja</button><button class="aba" data-aba="ver">Ver loja</button><button class="aba" data-aba="pedidos">💰 Pedidos <b id="nPed" class="nped" hidden></b></button></div>
   <main>
     <section class="caixa" id="buscar">
       <form class="busca" id="fBusca"><input id="q" placeholder="Ex.: cat toy, dog bed, leash…" enterkeyhint="search"><button class="bt">Buscar</button></form>
@@ -87,6 +96,22 @@ label{display:block;font-size:13px;color:var(--suave);margin-top:8px}
       <div id="resultado" class="grade"></div>
       <p class="msg" id="msgBusca">Busque em inglês (a CJ é em inglês). Toque em <b>Ver preço</b> para ver frete, preço sugerido e lucro.</p>
       <button class="bt cinza mais" id="mais" hidden>Carregar mais</button>
+    </section>
+    <section class="caixa" id="pedidos" hidden>
+      <div class="ped-topo"><button class="bt cinza" id="somBt">🔔 Ativar som de venda</button><button class="bt cinza" id="testeSom">▶ Testar som</button><button class="bt cinza" id="atuPed">↻ Atualizar</button></div>
+      <details class="como"><summary>📘 Como atender um pedido (passo a passo)</summary>
+        <ol>
+          <li>Toque em <b>Abrir na CJ</b> (entre na sua conta CJ se pedir).</li>
+          <li>Na página do produto, escolha <b>a mesma cor/tamanho</b> mostrada aqui e a quantidade.</li>
+          <li>Toque em <b>Buy Now</b> (Comprar agora).</li>
+          <li>No endereço de entrega toque em <b>Add new address / Novo endereço</b> e cole os dados do cliente (use os botões <b>Copiar</b> de cada campo).</li>
+          <li>Frete: escolha <b>CJPacket</b> (o mais barato que entrega no país).</li>
+          <li>Pague com o <b>cartão virtual do Mercado Pago</b> (ou saldo CJ Wallet).</li>
+          <li>Volte aqui e toque em <b>Já comprei na CJ</b>.</li>
+          <li>Em 1–5 dias a CJ mostra o <b>número de rastreio</b> em <i>My Orders</i>. Cole aqui e toque em <b>Enviar rastreio ao cliente</b>.</li>
+        </ol>
+      </details>
+      <div id="listaPed"><p class="msg">Carregando…</p></div>
     </section>
     <section class="caixa" id="ver" hidden>
       <div class="ver-barra"><span id="verHost"></span><a id="verAbrir" target="_blank">Abrir em tela cheia ↗</a></div>
@@ -131,7 +156,7 @@ function api(rota,corpo){
   return fetch("/api/painel/"+rota,{method:corpo?"POST":"GET",headers:{"Content-Type":"application/json","Authorization":"Bearer "+token},body:corpo?JSON.stringify(corpo):undefined})
   .then(function(r){return r.json().catch(function(){return{}}).then(function(d){if(r.status===401&&rota!=="login"){sair();throw new Error("Entre de novo")}if(!r.ok)throw new Error(d.detalhe||d.erro||("erro "+r.status));return d})});
 }
-function entrar(){$("#login").hidden=true;$("#app").hidden=false;desenharLojas();contar();api("estado").then(function(e){if(!e.cj)toast("Atenção: chave da CJ não chegou no servidor")}).catch(function(){})}
+function entrar(){$("#login").hidden=true;$("#app").hidden=false;desenharLojas();contar();setTimeout(function(){verificarPedidos(true).catch(function(){})},500);api("estado").then(function(e){if(!e.cj)toast("Atenção: chave da CJ não chegou no servidor")}).catch(function(){})}
 function sair(){if(token)fetch("/api/painel/sair",{method:"POST",headers:{Authorization:"Bearer "+token}}).catch(function(){});token="";try{localStorage.removeItem("lp_painel")}catch(e){}$("#app").hidden=true;$("#login").hidden=false}
 $("#fLogin").onsubmit=function(ev){ev.preventDefault();$("#erroLogin").textContent="";
   fetch("/api/painel/login",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({senha:$("#senha").value})}).then(function(r){return r.json().then(function(d){if(!r.ok)throw new Error(d.erro||"erro");return d})}).then(function(d){token=d.token;try{localStorage.setItem("lp_painel",token)}catch(e){}$("#senha").value="";entrar()})
@@ -139,7 +164,8 @@ $("#fLogin").onsubmit=function(ev){ev.preventDefault();$("#erroLogin").textConte
 $("#sair").onclick=sair;
 document.querySelectorAll(".aba").forEach(function(b){b.onclick=function(){
   document.querySelectorAll(".aba").forEach(function(x){x.classList.toggle("on",x===b)});
-  ["buscar","loja","ver"].forEach(function(a){$("#"+a).hidden=b.dataset.aba!==a});
+  ["buscar","loja","ver","pedidos"].forEach(function(a){$("#"+a).hidden=b.dataset.aba!==a});
+  if(b.dataset.aba==="pedidos")carregarPedidos();
   if(b.dataset.aba==="loja")carregarLoja();
   if(b.dataset.aba==="ver"){var f=$("#verFrame"),u="https://"+CFG.host+"/";if(f.getAttribute("src")!==u)f.setAttribute("src",u)}}});
 function desenharLojas(contagem){
@@ -248,6 +274,65 @@ function editar(p){var es=p.es||{};
   $("#eSalvar").onclick=function(){salvar(p.ativo)};$("#eTirar").onclick=function(){salvar(!p.ativo)};
 }
 if(/; wv\)/.test(navigator.userAgent))document.querySelectorAll(".baixar").forEach(function(a){a.style.display="none"});
+// ---- pedidos + som de caixa ----
+var PED=[],somOn=false,actx=null;
+try{somOn=localStorage.getItem("lp_som")==="1"}catch(e){}
+function ctx(){if(!actx){var A=window.AudioContext||window.webkitAudioContext;if(A)actx=new A()}if(actx&&actx.state==="suspended")actx.resume();return actx}
+function caixa(){ // "cha-ching" de caixa registradora
+  var c=ctx();if(!c)return;var t=c.currentTime;
+  function tom(f,ini,dur,vol,tipo){var o=c.createOscillator(),g=c.createGain();o.type=tipo||"triangle";o.frequency.setValueAtTime(f,t+ini);
+    g.gain.setValueAtTime(0.0001,t+ini);g.gain.exponentialRampToValueAtTime(vol,t+ini+0.01);g.gain.exponentialRampToValueAtTime(0.0001,t+ini+dur);
+    o.connect(g);g.connect(c.destination);o.start(t+ini);o.stop(t+ini+dur+0.05)}
+  tom(1046,0,0.09,0.4,"square");tom(1318,0.08,0.09,0.4,"square");
+  [2093,2637,3136,4186].forEach(function(f,k){tom(f,0.22+k*0.012,0.9,0.22,"sine")});
+  if(navigator.vibrate)navigator.vibrate([200,80,200]);
+}
+function desenharSom(){$("#somBt").textContent=somOn?"🔔 Som de venda LIGADO":"🔕 Ativar som de venda";$("#somBt").className="bt "+(somOn?"verde":"cinza")}
+$("#somBt").onclick=function(){somOn=!somOn;try{localStorage.setItem("lp_som",somOn?"1":"0")}catch(e){}ctx();if(somOn)caixa();desenharSom()};
+$("#testeSom").onclick=function(){caixa()};
+$("#atuPed").onclick=function(){carregarPedidos()};
+document.addEventListener("click",function(){ctx()},{once:true});
+desenharSom();
+var LOJA_EMOJI={pets:"🐾 LeunaPets",casa:"🏡 Cachik"};
+function copiarTxt(t,msg){(navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(function(){toast(msg||"Copiado")}).catch(function(){prompt("Copie:",t)})}
+function verificarPedidos(silencioso){
+  return api("pedidos").then(function(d){
+    PED=d.pedidos||[];var ult=0;try{ult=+localStorage.getItem("lp_ult_ped")||0}catch(e){}
+    var maior=PED.reduce(function(m,p){return Math.max(m,p.data)},0);
+    var novos=PED.filter(function(p){return p.data>ult}).length;
+    if(ult&&novos&&!silencioso){if(somOn)caixa();toast("💰 Venda nova! "+novos+" pedido(s)")}
+    if(maior)try{localStorage.setItem("lp_ult_ped",String(maior))}catch(e){}
+    var pend=PED.filter(function(p){return !p.feito}).length;$("#nPed").textContent=pend;$("#nPed").hidden=!pend;
+    return PED;
+  });
+}
+function carregarPedidos(){$("#listaPed").innerHTML='<p class="msg">Carregando…</p>';
+  verificarPedidos(true).then(desenharPedidos).catch(function(e){$("#listaPed").innerHTML='<p class="msg">Erro: '+esc(e.message)+'</p>'})}
+function campo(rot,val){return val?'<div class="cp"><span><small>'+rot+'</small>'+esc(val)+'</span><button class="bt cinza" data-copia="'+esc(val)+'">Copiar</button></div>':''}
+function desenharPedidos(){
+  if(!PED.length){$("#listaPed").innerHTML='<p class="msg">Nenhuma venda ainda. Quando cair, aparece aqui com som de caixa 💰 (deixe o painel aberto e o som ligado).</p>';return}
+  $("#listaPed").innerHTML=PED.map(function(p,i){var a=p.endereco;
+    var end=[p.nome,a.linha1,a.linha2,(a.cep+" "+a.cidade).trim(),a.estado,a.pais,p.telefone].filter(Boolean).join("\n");
+    return '<div class="ped'+(p.feito?' feito':'')+'"><div class="ped-cab"><b>'+(LOJA_EMOJI[p.loja]||p.loja)+'</b><span>'+new Date(p.data).toLocaleString("pt-BR")+'</span><b class="tot">'+eur(p.total)+'</b><span class="tag '+(p.feito?'ok':'pop')+'">'+(p.feito?'Comprado na CJ':'NOVO — comprar na CJ')+'</span></div>'+
+      p.itens.map(function(it){return '<div class="ped-it"><img src="'+esc(it.img)+'" alt=""><div><b>'+it.q+'× '+esc(it.nome)+'</b>'+(it.variacao?'<div class="var">Cor/tamanho: <b>'+esc(it.variacao)+'</b></div>':'')+
+        '<a class="bt" href="'+esc(it.linkCJ)+'" target="_blank">Abrir na CJ ↗</a></div></div>'}).join("")+
+      '<div class="ped-end"><div class="ped-end-t">Endereço do cliente <button class="bt cinza" data-copia="'+esc(end)+'">Copiar tudo</button></div>'+
+        campo("Nome",p.nome)+campo("Endereço",a.linha1)+campo("Complemento",a.linha2)+campo("CEP / Código postal",a.cep)+campo("Cidade",a.cidade)+campo("Província",a.estado)+campo("País",a.pais)+campo("Telefone",p.telefone)+campo("E-mail",p.email)+'</div>'+
+      '<div class="ped-acoes">'+(p.feito?'':'<button class="bt verde" data-feito="'+i+'">✓ Já comprei na CJ</button>')+
+        '<input class="campo" placeholder="Número de rastreio (da CJ)" value="'+esc(p.rastreio)+'" data-ras="'+i+'"><button class="bt" data-enviar="'+i+'">✉ Enviar rastreio ao cliente</button></div></div>'}).join("");
+}
+function textoRastreio(p,cod){var loja=p.loja==="casa"?"Cachik":"LeunaPets",site=p.loja==="casa"?"cachik.leuname.com":"pets.leuname.com";
+  return "Hola "+(p.nome||"").split(" ")[0]+",\n\n¡Gracias por tu compra en "+loja+"! Tu pedido ya está en camino.\n\nNúmero de seguimiento: "+cod+"\nPuedes seguirlo aquí: https://t.17track.net/es#nums="+encodeURIComponent(cod)+"\n\nEl plazo habitual de entrega es de 7 a 15 días laborables. Si tienes cualquier duda, responde a este correo.\n\nUn saludo,\nEquipo "+loja+"\nhttps://"+site}
+$("#listaPed").onclick=function(ev){
+  var c=ev.target.closest("[data-copia]");if(c){copiarTxt(c.dataset.copia);return}
+  var f=ev.target.closest("[data-feito]");if(f){var p=PED[+f.dataset.feito];api("pedido",{id:p.id,feito:true,rastreio:p.rastreio}).then(function(){p.feito=true;desenharPedidos();verificarPedidos(true);toast("Marcado como comprado")});return}
+  var e=ev.target.closest("[data-enviar]");if(e){var k=+e.dataset.enviar,p2=PED[k],cod=(document.querySelector('[data-ras="'+k+'"]').value||"").trim();
+    if(!cod){toast("Cole o número de rastreio primeiro");return}
+    api("pedido",{id:p2.id,feito:true,rastreio:cod}).then(function(){p2.feito=true;p2.rastreio=cod});
+    var corpo=textoRastreio(p2,cod);copiarTxt(corpo,"Texto copiado. Abrindo o e-mail…");
+    location.href="mailto:"+encodeURIComponent(p2.email)+"?subject="+encodeURIComponent("Tu pedido está en camino 📦")+"&body="+encodeURIComponent(corpo);}
+};
+setInterval(function(){if(token&&!$("#app").hidden)verificarPedidos(false).then(function(){if(!$("#pedidos").hidden)desenharPedidos()}).catch(function(){})},30000);
 if(token)entrar();
 })();
 </script>
