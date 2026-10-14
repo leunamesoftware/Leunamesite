@@ -150,7 +150,7 @@ async function buscar(env, url, L) {
       if (!p.id || custo == null) continue;
       itens.push({
         pid: p.id, nome: p.nameEn || p.productNameEn || "", img: p.bigImage || "", custoUsd: custo,
-        popularidade: parseInt(p.listedNum, 10) || 0, video: !!(p.videoList && p.videoList.length),
+        popularidade: parseInt(p.listedNum, 10) || 0, video: !!((p.videoList && p.videoList.length) || String(p.isVedio) === "1"),
         categoria: p.threeCategoryName || p.categoryName || "", publicado: publicados.has(p.id), armazem: params.countryCode || "CN",
       });
     }

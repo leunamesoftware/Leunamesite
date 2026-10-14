@@ -124,7 +124,7 @@ def baratos(tk, so_video=False):
     rel, feitos = [], set()
     for busca, cat in (COM_VIDEO if so_video else BARATOS)[LOJA]:
         r = api('buscar?q=' + urllib.parse.quote(busca), token=tk)
-        itens = [i for i in r.get('itens', []) if not i.get('publicado') and i['pid'] not in feitos and i['custoUsd'] <= BARATO_CUSTO_USD
+        itens = [i for i in r.get('itens', []) if not i.get('publicado') and i['pid'] not in feitos and i['custoUsd'] <= (6.0 if so_video else BARATO_CUSTO_USD)
                  and (i.get('video') or not so_video)]
         itens.sort(key=lambda i: (i.get('video', False), i['popularidade']), reverse=True)
         melhores, vistos = [], []
