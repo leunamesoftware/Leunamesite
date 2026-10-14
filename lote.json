@@ -1,0 +1,248 @@
+[
+ {
+  "busca": "interactive cat toy",
+  "ok": false,
+  "candidatos": 1,
+  "vistos": [
+   [
+    12.72,
+    true
+   ]
+  ]
+ },
+ {
+  "busca": "electric cat toy",
+  "ok": false,
+  "candidatos": 1,
+  "vistos": [
+   [
+    10.96,
+    true
+   ]
+  ]
+ },
+ {
+  "busca": "cat laser toy",
+  "ok": false,
+  "candidatos": 0,
+  "vistos": []
+ },
+ {
+  "busca": "dog puzzle toy",
+  "ok": false,
+  "candidatos": 2,
+  "vistos": [
+   [
+    11.41,
+    true
+   ],
+   [
+    10.3,
+    true
+   ]
+  ]
+ },
+ {
+  "busca": "dog squeaky ball",
+  "ok": false,
+  "candidatos": 0,
+  "vistos": []
+ },
+ {
+  "busca": "cat spring toy",
+  "ok": true,
+  "nome": "Juguete Gato de Pie",
+  "preco": 14.49,
+  "custo": 7.37,
+  "lucro": 5.76,
+  "erro": null
+ },
+ {
+  "busca": "rotating cat toy",
+  "ok": false,
+  "candidatos": 3,
+  "vistos": [
+   [
+    10.38,
+    true
+   ],
+   [
+    12.32,
+    true
+   ],
+   [
+    10.97,
+    true
+   ]
+  ]
+ },
+ {
+  "busca": "dog tug toy",
+  "ok": false,
+  "candidatos": 0,
+  "vistos": []
+ },
+ {
+  "busca": "pet hair brush",
+  "ok": false,
+  "candidatos": 3,
+  "vistos": [
+   [
+    13.77,
+    true
+   ],
+   [
+    8.46,
+    true
+   ],
+   [
+    9.37,
+    true
+   ]
+  ]
+ },
+ {
+  "busca": "pet paw cleaner",
+  "ok": false,
+  "candidatos": 1,
+  "vistos": [
+   [
+    13.24,
+    true
+   ]
+  ]
+ },
+ {
+  "busca": "dog bath brush",
+  "ok": true,
+  "nome": "Cepillo de baño de silicio",
+  "preco": 14.99,
+  "custo": 7.66,
+  "lucro": 5.93,
+  "erro": null
+ },
+ {
+  "busca": "cat grooming brush",
+  "ok": false,
+  "candidatos": 1,
+  "vistos": [
+   [
+    8.67,
+    true
+   ]
+  ]
+ },
+ {
+  "busca": "pet water dispenser",
+  "ok": false,
+  "candidatos": 0,
+  "vistos": []
+ },
+ {
+  "busca": "pet feeder",
+  "ok": false,
+  "candidatos": 0,
+  "vistos": []
+ },
+ {
+  "busca": "dog lick mat",
+  "ok": false,
+  "candidatos": 0,
+  "vistos": []
+ },
+ {
+  "busca": "portable dog water bottle",
+  "ok": false,
+  "candidatos": 4,
+  "vistos": [
+   [
+    10.97,
+    true
+   ],
+   [
+    9.96,
+    true
+   ],
+   [
+    10.91,
+    true
+   ],
+   [
+    10.26,
+    true
+   ]
+  ]
+ },
+ {
+  "busca": "retractable dog leash",
+  "ok": false,
+  "candidatos": 0,
+  "vistos": []
+ },
+ {
+  "busca": "led dog collar",
+  "ok": false,
+  "candidatos": 1,
+  "vistos": [
+   [
+    9.3,
+    true
+   ]
+  ]
+ },
+ {
+  "busca": "cat window perch",
+  "ok": false,
+  "candidatos": 1,
+  "vistos": [
+   [
+    41.78,
+    true
+   ]
+  ]
+ },
+ {
+  "busca": "cat scratching post",
+  "ok": false,
+  "candidatos": 0,
+  "vistos": []
+ },
+ {
+  "busca": "cat wall toy",
+  "ok": false,
+  "candidatos": 3,
+  "vistos": [
+   [
+    14.35,
+    true
+   ],
+   [
+    8.54,
+    true
+   ],
+   [
+    8.63,
+    true
+   ]
+  ]
+ },
+ {
+  "busca": "snuffle mat",
+  "ok": false,
+  "candidatos": 3,
+  "vistos": [
+   [
+    12.76,
+    true
+   ],
+   [
+    12.59,
+    true
+   ],
+   [
+    13.35,
+    true
+   ]
+  ]
+ }
+]
