@@ -7,6 +7,11 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.webkit.CookieManager;
+import android.webkit.JavascriptInterface;
+import android.os.Build;
+import android.os.PowerManager;
+import android.provider.Settings;
+import android.content.SharedPreferences;
 import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
@@ -39,6 +44,7 @@ public class MainActivity extends Activity {
         s.setCacheMode(WebSettings.LOAD_DEFAULT);
         s.setMediaPlaybackRequiresUserGesture(false);
         CookieManager.getInstance().setAcceptCookie(true);
+        web.addJavascriptInterface(new Ponte(), "LeuNativo");   // o painel passa o login para o vigia de vendas
 
         web.setWebViewClient(new WebViewClient() {
             @Override
@@ -66,7 +72,45 @@ public class MainActivity extends Activity {
         web.setDownloadListener((url, ua, disp, tipo, tam) -> {
             try { startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url))); } catch (Exception e) { /* nada */ }
         });
-        if (salvo != null) web.restoreState(salvo); else web.loadUrl(PAINEL);
+        String aba = getIntent() != null ? getIntent().getStringExtra("aba") : null;
+        if (salvo != null) web.restoreState(salvo); else web.loadUrl(PAINEL + ("pedidos".equals(aba) ? "#pedidos" : ""));
+        pedirPermissoes();
+        VendasService.iniciar(this);
+    }
+
+    @Override
+    protected void onNewIntent(Intent i) {
+        super.onNewIntent(i);
+        if ("pedidos".equals(i.getStringExtra("aba"))) web.loadUrl(PAINEL + "#pedidos");
+    }
+
+    private void pedirPermissoes() {
+        if (Build.VERSION.SDK_INT >= 33 && checkSelfPermission("android.permission.POST_NOTIFICATIONS") != android.content.pm.PackageManager.PERMISSION_GRANTED)
+            requestPermissions(new String[]{"android.permission.POST_NOTIFICATIONS"}, 7);
+        SharedPreferences p = getSharedPreferences(VendasService.PREFS, MODE_PRIVATE);
+        if (Build.VERSION.SDK_INT >= 23 && !p.getBoolean("pediuBateria", false)) {
+            PowerManager pm = (PowerManager) getSystemService(POWER_SERVICE);
+            if (pm != null && !pm.isIgnoringBatteryOptimizations(getPackageName())) {
+                p.edit().putBoolean("pediuBateria", true).apply();
+                try { startActivity(new Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS, Uri.parse("package:" + getPackageName()))); }
+                catch (Exception e) { /* aparelho sem essa tela */ }
+            }
+        }
+    }
+
+    /** Chamado pelo JavaScript do painel. */
+    class Ponte {
+        @JavascriptInterface
+        public void salvarToken(String tk) {
+            getSharedPreferences(VendasService.PREFS, MODE_PRIVATE).edit().putString("token", tk == null ? "" : tk).apply();
+            VendasService.iniciar(MainActivity.this);
+        }
+        @JavascriptInterface
+        public void testarSom() {
+            VendasService.criarCanais(MainActivity.this);
+            ((android.app.NotificationManager) getSystemService(NOTIFICATION_SERVICE)).notify(9,
+                VendasService.construir(MainActivity.this, "vendas_caixa", "💰 Teste de venda", "Assim você vai ser avisado quando vender.", true));
+        }
     }
 
     @Override protected void onSaveInstanceState(Bundle b) { super.onSaveInstanceState(b); web.saveState(b); }

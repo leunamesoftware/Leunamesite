@@ -156,8 +156,9 @@ function api(rota,corpo){
   return fetch("/api/painel/"+rota,{method:corpo?"POST":"GET",headers:{"Content-Type":"application/json","Authorization":"Bearer "+token},body:corpo?JSON.stringify(corpo):undefined})
   .then(function(r){return r.json().catch(function(){return{}}).then(function(d){if(r.status===401&&rota!=="login"){sair();throw new Error("Entre de novo")}if(!r.ok)throw new Error(d.detalhe||d.erro||("erro "+r.status));return d})});
 }
-function entrar(){$("#login").hidden=true;$("#app").hidden=false;desenharLojas();contar();setTimeout(function(){verificarPedidos(true).catch(function(){})},500);api("estado").then(function(e){if(!e.cj)toast("Atenção: chave da CJ não chegou no servidor")}).catch(function(){})}
-function sair(){if(token)fetch("/api/painel/sair",{method:"POST",headers:{Authorization:"Bearer "+token}}).catch(function(){});token="";try{localStorage.removeItem("lp_painel")}catch(e){}$("#app").hidden=true;$("#login").hidden=false}
+function nativo(f,a){try{if(window.LeuNativo&&window.LeuNativo[f])window.LeuNativo[f](a)}catch(e){}}
+function entrar(){$("#login").hidden=true;$("#app").hidden=false;nativo("salvarToken",token);if(location.hash==="#pedidos")setTimeout(function(){var b=document.querySelector('[data-aba="pedidos"]');if(b)b.click()},300);desenharLojas();contar();setTimeout(function(){verificarPedidos(true).catch(function(){})},500);api("estado").then(function(e){if(!e.cj)toast("Atenção: chave da CJ não chegou no servidor")}).catch(function(){})}
+function sair(){nativo("salvarToken","");if(token)fetch("/api/painel/sair",{method:"POST",headers:{Authorization:"Bearer "+token}}).catch(function(){});token="";try{localStorage.removeItem("lp_painel")}catch(e){}$("#app").hidden=true;$("#login").hidden=false}
 $("#fLogin").onsubmit=function(ev){ev.preventDefault();$("#erroLogin").textContent="";
   fetch("/api/painel/login",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({senha:$("#senha").value})}).then(function(r){return r.json().then(function(d){if(!r.ok)throw new Error(d.erro||"erro");return d})}).then(function(d){token=d.token;try{localStorage.setItem("lp_painel",token)}catch(e){}$("#senha").value="";entrar()})
   .catch(function(e){$("#erroLogin").textContent=e.message==="senha"?"Senha errada":e.message==="muitas-tentativas"?"Muitas tentativas. Espere 15 minutos.":e.message})};
@@ -289,7 +290,7 @@ function caixa(){ // "cha-ching" de caixa registradora
 }
 function desenharSom(){$("#somBt").textContent=somOn?"🔔 Som de venda LIGADO":"🔕 Ativar som de venda";$("#somBt").className="bt "+(somOn?"verde":"cinza")}
 $("#somBt").onclick=function(){somOn=!somOn;try{localStorage.setItem("lp_som",somOn?"1":"0")}catch(e){}ctx();if(somOn)caixa();desenharSom()};
-$("#testeSom").onclick=function(){caixa()};
+$("#testeSom").onclick=function(){caixa();if(window.LeuNativo)setTimeout(function(){nativo("testarSom")},1600)};
 $("#atuPed").onclick=function(){carregarPedidos()};
 document.addEventListener("click",function(){ctx()},{once:true});
 desenharSom();
@@ -332,6 +333,8 @@ $("#listaPed").onclick=function(ev){
     var corpo=textoRastreio(p2,cod);copiarTxt(corpo,"Texto copiado. Abrindo o e-mail…");
     location.href="mailto:"+encodeURIComponent(p2.email)+"?subject="+encodeURIComponent("Tu pedido está en camino 📦")+"&body="+encodeURIComponent(corpo);}
 };
+window.addEventListener("hashchange",function(){if(location.hash==="#pedidos"){var b=document.querySelector('[data-aba="pedidos"]');if(b)b.click()}});
+if(window.LeuNativo)$("#somBt").insertAdjacentHTML("afterend",'<p class="msg" style="width:100%;text-align:left;padding:4px 0">📱 No app: o aviso com som de caixa funciona até com o app fechado e a tela bloqueada.</p>');
 setInterval(function(){if(token&&!$("#app").hidden)verificarPedidos(false).then(function(){if(!$("#pedidos").hidden)desenharPedidos()}).catch(function(){})},30000);
 if(token)entrar();
 })();

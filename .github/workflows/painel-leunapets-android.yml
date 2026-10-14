@@ -20,6 +20,8 @@ env:
 jobs:
   apk:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     defaults:
       run:
         shell: bash
@@ -70,11 +72,18 @@ jobs:
       - name: Gerar o APK assinado
         run: |
           export VERSAO_CODIGO=$((GITHUB_RUN_NUMBER + 1)) VERSAO_NOME="1.0.${GITHUB_RUN_NUMBER}"
-          gradle assembleRelease --no-daemon
+          gradle assembleRelease --no-daemon 2>&1 | tee /tmp/build.log; test ${PIPESTATUS[0]} -eq 0
           rm -f app/release.keystore
           APK=app/build/outputs/apk/release/app-release.apk
           "$ANDROID_HOME/build-tools/34.0.0/apksigner" verify "$APK"
           cp "$APK" ../PainelLeunaPets.apk
+
+      - name: Guardar o erro do build (para o Claude ler)
+        if: failure()
+        run: |
+          mkdir -p /tmp/l && tail -c 60000 /tmp/build.log > /tmp/l/build.log 2>/dev/null || echo "sem log" > /tmp/l/build.log
+          cd /tmp/l && git init -q && git checkout -q -b dados-apk-log && git config user.name robo && git config user.email robo@users.noreply.github.com
+          git add . && git commit -qm log && git push -qf "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" dados-apk-log
 
       - name: Publicar o download
         run: |

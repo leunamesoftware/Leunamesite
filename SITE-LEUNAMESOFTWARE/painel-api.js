@@ -416,6 +416,19 @@ async function pedidos(req, env) {
   }
   return json({ pedidos: out });
 }
+// para o app Android (vigia em segundo plano): só a venda mais recente, leve
+async function ultimo(env) {
+  if (!env.STRIPE_SECRET_KEY) return json({ ultimo: 0 });
+  const r = await fetch("https://api.stripe.com/v1/checkout/sessions?status=complete&limit=5", { headers: { Authorization: "Bearer " + env.STRIPE_SECRET_KEY } });
+  const d = await r.json().catch(() => ({}));
+  const pagos = (d.data || []).filter((s) => s.payment_status === "paid");
+  if (!pagos.length) return json({ ultimo: 0 });
+  const s = pagos[0];
+  const loja = lojaPorId((s.metadata && s.metadata.loja) || "pets");
+  const nome = ((s.customer_details && s.customer_details.name) || "").split(" ")[0];
+  const pais = (s.customer_details && s.customer_details.address && s.customer_details.address.country) || "";
+  return json({ ultimo: s.created * 1000, texto: `${(s.amount_total / 100).toFixed(2).replace(".", ",")} € — ${loja.marca}${nome ? " · " + nome : ""}${pais ? " (" + pais + ")" : ""}. Toque para atender.` });
+}
 async function marcarPedido(req, env) {
   const c = await req.json().catch(() => ({}));
   const id = String(c.id || "").replace(/[^\w]/g, "").slice(0, 80);
@@ -459,6 +472,7 @@ export async function painel(req, env, url) {
     }
     if (rota === "publicados") return await publicados(req, env, L);
     if (rota === "pedidos") return await pedidos(req, env);
+    if (rota === "ultimo") return await ultimo(env);
     if (rota === "pedido" && req.method === "POST") return await marcarPedido(req, env);
     if (rota === "sair" && req.method === "POST") {
       const m = /^Bearer (\w+)$/.exec(req.headers.get("Authorization") || "");
