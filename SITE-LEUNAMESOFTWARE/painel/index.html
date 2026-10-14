@@ -429,8 +429,8 @@ function nv(id){var v=parseFloat(String($(id).value).replace(",","."));return is
 function rc(t,v,sub,cls){return '<div class="rc'+(cls?' '+cls:'')+'"><small>'+t+'</small><b>'+v+'</b>'+(sub?'<small>'+sub+'</small>':'')+'</div>'}
 function contas(){var c=nv("#ctCot2")||(COT&&COT.eurBrl)||0,p=nv("#ctPreco"),cu=nv("#ctCusto"),tx=nv("#ctTaxa")/100,fx=nv("#ctFixa"),iof=nv("#ctIof")/100;
   var stripe=p*tx+fx,recebe=p-stripe,cjEur=cu*(1+iof),lucroEur=recebe-cjEur,lucroBrl=lucroEur*c,marg=p>0?lucroEur/p*100:0;
-  $("#ctRes").innerHTML=rc("Cliente paga",eu(p),c?brl(p*c):"")+rc("Taxa da Stripe",eu(stripe),c?brl(stripe*c):"")+rc("Você recebe",eu(recebe),c?brl(recebe*c):"")+
-    rc("Você paga na CJ (com IOF)",eu(cjEur),c?brl(cjEur*c):"")+rc("Sobra para você",c?brl(lucroBrl):eu(lucroEur),eu(lucroEur)+" · "+Math.round(marg)+"% da venda",lucroEur>0?"bom":"ruim");
+  $("#ctRes").innerHTML=rc("1. Cliente paga",eu(p),c?brl(p*c):"")+rc("2. Menos a taxa da Stripe",eu(-stripe),c?brl(-stripe*c):"")+rc("3. Stripe te repassa",eu(recebe),(c?brl(recebe*c)+" · ":"")+"ainda NÃO é lucro")+
+    rc("4. Menos o que você paga na CJ",eu(-cjEur),(c?brl(-cjEur*c)+" · ":"")+"produto + frete + IOF")+rc("5. Seu LUCRO na venda",c?brl(lucroBrl):eu(lucroEur),eu(lucroEur)+" · "+Math.round(marg)+"% da venda",lucroEur>0?"bom":"ruim");
   var d=Math.max(0,nv("#ctDia")),mes=d*30,meta=nv("#ctMeta"),porVenda=lucroBrl;
   $("#ctMes").innerHTML=rc("Vendas no mês",String(mes))+rc("Entra no mês",c?brl(mes*p*c):eu(mes*p))+rc("Gasto na CJ no mês",c?brl(mes*cjEur*c):eu(mes*cjEur),"vai pagando a cada venda")+
     rc("Lucro no mês",c?brl(mes*lucroBrl):eu(mes*lucroEur),"",lucroEur>0?"bom":"ruim")+
