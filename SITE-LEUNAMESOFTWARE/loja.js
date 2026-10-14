@@ -195,6 +195,21 @@
       if (p && !box.querySelector("img")) { box.insertAdjacentHTML("beforeend", '<img src="' + esc(p.imagenes[0]) + '" alt="" loading="lazy">'); box.classList.add("tem-foto"); }
     });
   }
+  /* quem chega pelo link do TikTok vê logo no topo os produtos dos últimos vídeos */
+  function vistoTikTok() {
+    var hero = $(".hero, .hero-cachik");
+    if (!hero || ler("origem") !== "tiktok" || $("#vistoTT")) return;
+    fetch("/api/tiktok-recentes").then(function (r) { return r.json(); }).then(function (d) {
+      var mapa = {}; PRODUTOS.forEach(function (p) { mapa[p.id] = p; });
+      var lista = (d.ids || []).map(function (id) { return mapa[id]; }).filter(Boolean);
+      if (!lista.length || $("#vistoTT")) return;
+      var sec = document.createElement("section");
+      sec.className = "wrap destaque-sec"; sec.id = "vistoTT";
+      sec.innerHTML = '<div class="sec-cab"><h2>🔥 ' + T("Visto en TikTok", "Visto no TikTok", "Seen on TikTok") + '</h2><p class="sec-sub">' + T("Los productos de nuestros vídeos", "Os produtos dos nossos vídeos", "The products from our videos") + '</p></div><div class="grade" data-grade="sugeridos">' + lista.map(cartao).join("") + "</div>";
+      hero.parentNode.insertBefore(sec, hero.nextSibling);
+      trilhos();
+    }).catch(function () {});
+  }
   /* fileiras com setas (sem buracos quando há poucos produtos) */
   function trilhos() {
     $$(".grade").forEach(function (g) {
@@ -446,6 +461,6 @@
       PRODUTOS = (Array.isArray(lista) ? lista : []).filter(function (p) { return p && p.id && p.imagenes && p.imagenes.length && p.precio > 0; });
       PRODUTOS.forEach(function (p) { porId[p.id] = p; });
       Object.keys(carrinho).forEach(function (k) { if (!resolver(k)) delete carrinho[k]; });
-      [contador, redesenhar, colagens, iniciarPagamento].forEach(function (f) { try { f(); } catch (e) { if (window.console) console.error(e); } });
+      [contador, redesenhar, colagens, iniciarPagamento, vistoTikTok].forEach(function (f) { try { f(); } catch (e) { if (window.console) console.error(e); } });
     });
 })();
