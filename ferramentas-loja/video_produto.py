@@ -32,6 +32,46 @@ TEXTOS = {
         'puntos': ['Para perros y gatos pequeños', 'Capacidad de 15 a 22 L', 'Tallas S y L'],
         'legenda': 'Mochila para mascotas 🐾 Para perros y gatos pequeños, de 15 a 22 L, en tallas S y L. Perfecta para paseos, viajes y el veterinario.',
         'tags': '#gatos #perros #mascotas #mochilaparamascotas #gatosdeinstagram #viajarconmascotas'},
+    'C2D6A8F9-5B28-4E10-8D1A-D37C4D003C42': {
+        'gancho': '¿Arena de gato por toda la casa?',
+        'puntos': ['Atrapa la arena de las patas', 'Fácil de limpiar', 'Se seca rápido'],
+        'legenda': 'Alfombrilla para arena de gato 🐱 Atrapa la arena de las patas para que no acabe por toda la casa. Fácil de limpiar y de secado rápido.',
+        'tags': '#gatos #arenadegato #gatosdeinstagram #hogar #mascotas #trucosparagatos'},
+    '2091008191094771714': {
+        'gancho': '¿Tu mascota se aburre en casa?',
+        'puntos': ['Juego interactivo', 'Para perros y gatos', 'Más ejercicio cada día'],
+        'legenda': 'Varita de juego interactivo 🐾 Para jugar con tu perro o gato y que haga ejercicio cada día.',
+        'tags': '#gatos #perros #juguetesparagatos #mascotas #gatosjugando #perrosfelices'},
+    '1783438407037890560': {
+        'gancho': 'El baño, sin estrés',
+        'puntos': ['Para perros y gatos', 'Pelaje limpio y sano', 'Tres colores'],
+        'legenda': 'Cepillo de baño para mascotas 🛁 Ayuda a mantener el pelaje limpio y sano de tu perro o gato. En tres colores.',
+        'tags': '#perros #gatos #bañodeperro #cuidadodemascotas #mascotas #peluqueriacanina'},
+    '1417420340908396544': {
+        'gancho': 'Pasear sin agacharte',
+        'puntos': ['Plegable, cabe en el bolso', 'Incluye 60 bolsas', 'Tres colores'],
+        'legenda': 'Recogedor de heces plegable 🐶 Recoge sin agacharte y guárdalo en el bolso. Incluye 60 bolsas.',
+        'tags': '#perros #paseoconperro #perrosdeespaña #mascotas #perrosfelices #tipsparaperros'},
+    'C8049CD1-F0D3-4B8E-8EBD-8B7881656DC9': {
+        'gancho': 'Agua para tu perro en cada paseo',
+        'puntos': ['Portátil y ligera', 'Fácil de usar', 'Material antibacteriano'],
+        'legenda': 'Taza de agua portátil 💧 Ligera y fácil de usar: agua para tu perro en cada paseo y excursión.',
+        'tags': '#perros #paseoconperro #senderismoconperro #mascotas #perrosfelices #verano'},
+    '1714195354230460416': {
+        'gancho': 'Calentito todo el invierno',
+        'puntos': ['Manta suave de fleece', 'Para perros y gatos', 'Varios tamaños y diseños'],
+        'legenda': 'Manta de fleece para mascotas 🧸 Suave y calentita para el invierno. Para perros y gatos, en varios tamaños y diseños.',
+        'tags': '#perros #gatos #invierno #mantaparaperros #mascotas #gatosdeinstagram'},
+    '2407280815131620600': {
+        'gancho': 'Un gatito que alegra tu casa',
+        'puntos': ['Decoración divertida', 'Tamaño compacto', 'Fácil de limpiar'],
+        'legenda': 'Juguete gato de pie 😺 Una decoración divertida para tu casa y tu gato. Compacto y fácil de limpiar.',
+        'tags': '#gatos #gatosdeinstagram #decoracion #amantesdelosgatos #mascotas #regalos'},
+    '1653041912300969984': {
+        'gancho': '¿Tu perro come demasiado rápido?',
+        'puntos': ['Hace que coma más despacio', 'Divertido e interactivo', 'Material seguro'],
+        'legenda': 'Tazón comedor lento 🍽️ Ayuda a que tu mascota coma más despacio, de forma divertida y con material seguro.',
+        'tags': '#perros #gatos #comederolento #saludanimal #mascotas #perrosfelices'},
 }
 
 
