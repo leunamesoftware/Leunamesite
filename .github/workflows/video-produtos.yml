@@ -1,0 +1,26 @@
+name: Vídeos curtos dos produtos (TikTok/Reels)
+on:
+  workflow_dispatch:
+    inputs:
+      ids:
+        description: "IDs dos produtos, separados por espaço"
+        default: "FF10D3C0-679C-4C38-8F48-8961E85AE312 1378250073569366016"
+      host:
+        description: "Loja"
+        default: "https://pets.leuname.com"
+jobs:
+  videos:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          sudo apt-get -qq update && sudo apt-get -qq install -y ffmpeg > /dev/null
+          pip install -q pillow
+          mkdir -p /tmp/v && cd /tmp/v
+          curl -sf "${{ inputs.host }}/produtos.json" > produtos.json
+          python3 "$GITHUB_WORKSPACE/ferramentas-loja/video_produto.py" produtos.json "${{ inputs.host }}" ${{ inputs.ids }}
+          rm -f videos/*/cj.mp4 produtos.json
+          git init -q && git checkout -q -b dados-videos && git config user.name robo && git config user.email robo@users.noreply.github.com
+          git add . && git commit -qm videos && git push -qf "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" dados-videos
