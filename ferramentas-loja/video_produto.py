@@ -158,11 +158,14 @@ class Fotos:
 
 class Video:
     """Vídeo da CJ recortado para o quadro, lido quadro a quadro pelo ffmpeg (repete se for curto)."""
-    def __init__(self, url, pasta):
+    def __init__(self, url, pasta, variante=0):
         arq = pasta / 'cj.mp4'
         arq.write_bytes(baixar(url))
-        filtro = f'scale={W}:{MIDIA_H}:force_original_aspect_ratio=increase,crop={W}:{MIDIA_H},fps={FPS}'
-        self.p = subprocess.Popen([FFMPEG, '-v', 'error', '-stream_loop', '-1', '-i', str(arq), '-t', str(DUR),
+        # variantes do mesmo produto: começa em outro ponto, espelha e aproxima, para não sair vídeo repetido
+        zoom = 1 + 0.12 * (variante % 3)
+        filtro = (f'scale={int(W * zoom)}:{int(MIDIA_H * zoom)}:force_original_aspect_ratio=increase,crop={W}:{MIDIA_H},fps={FPS}'
+                  + (',hflip' if variante % 2 else ''))
+        self.p = subprocess.Popen([FFMPEG, '-v', 'error', '-stream_loop', '-1', '-ss', str(5 * variante), '-i', str(arq), '-t', str(DUR),
                                    '-vf', filtro, '-f', 'rawvideo', '-pix_fmt', 'rgb24', '-'], stdout=subprocess.PIPE)
         self.ultimo = Image.new('RGB', (W, MIDIA_H), AZUL)
 
@@ -235,7 +238,7 @@ def fazer(prod, host, marca, saida, chave=None):
     midia = None
     if video:
         try:
-            midia = Video(video if '://' in video else host + video, pasta)
+            midia = Video(video if '://' in video else host + video, pasta, int(chave.split('@')[1]) - 1 if '@' in chave else 0)
         except Exception as e:
             print('vídeo da CJ falhou, usando fotos:', e)
     if midia is None:
