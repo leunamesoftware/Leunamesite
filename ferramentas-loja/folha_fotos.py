@@ -19,7 +19,10 @@ except OSError:
 for i, p in enumerate(d):
     x, y = (i % cols) * w, (i // cols) * (w + 44)
     try:
-        req = urllib.request.Request(p['imagenes'][0], headers={'User-Agent': 'Mozilla/5.0'})
+        url = p['imagenes'][0]
+        if not url.startswith('http'):
+            url = sys.argv[3].rstrip('/') + '/' + url.lstrip('/')
+        req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
         im = Image.open(io.BytesIO(urllib.request.urlopen(req, timeout=20).read())).convert('RGB')
         im.thumbnail((w - 10, w - 10))
         folha.paste(im, (x + 5, y + 5))

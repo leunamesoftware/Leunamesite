@@ -101,7 +101,7 @@ Disparar o robô: `gh api -X POST repos/leunamesoftware/Leunamesite/actions/work
 - Conta LeunaPets 5874703190. 61 produtos aprovados, 0 cliques até 20/10 (aprovados só em 18-19/10).
 - Causa do zero: a fonte "PRODUCTS SOURCE 1" estava Espanha + idioma **Português** (feed é em espanhol).
   Criada "PRODUCTS SOURCE 2": `https://pets.leuname.com/google-shopping.xml?l=es`, Espanha + **Espanhol**, diária.
-  Quando a SOURCE 2 estiver aprovada, apagar a SOURCE 1.
+  SOURCE 1 apagada em 20/10; ficou só a SOURCE 2 (61 produtos). Vídeos: workflow video-produtos.yml → branch dados-videos.
 - Lucro por venda (preço − custo CJ − Stripe): bolsa de viagem 42,99 € → ~20,75 €; mochila 30,99 € → ~14,86 €;
   os outros 41 → 6–8 €. Anúncio pago só com produto de lucro ≥ 15 € e depois de vender no grátis.
   O dono não pode perder dinheiro: teste pago só pré-pago (Pix) com teto definido antes.

@@ -13,7 +13,7 @@ jobs:
           for h in pets.leuname.com cachik.leuname.com; do
             curl -s "https://$h/produtos.json" > "/tmp/l/$h.json"
             curl -s "https://$h/google-shopping.xml" > "/tmp/l/$h-feed.xml"
-            python3 ferramentas-loja/folha_fotos.py "/tmp/l/$h.json" "/tmp/l/$h-fotos.jpg" || echo "::warning::folha $h falhou"
+            python3 ferramentas-loja/folha_fotos.py "/tmp/l/$h.json" "/tmp/l/$h-fotos.jpg" "https://$h" || echo "::warning::folha $h falhou"
           done
           cd /tmp/l
           git init -q && git checkout -q -b dados-produtos && git config user.name robo && git config user.email robo@users.noreply.github.com
