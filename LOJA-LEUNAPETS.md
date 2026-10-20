@@ -42,7 +42,9 @@ O dono fala português do Brasil, quer respostas curtas e diretas. Ele está sem
 ## Pedidos e avisos de venda
 - Aba **💰 Pedidos** do painel: lê as Checkout Sessions pagas do Stripe (`/api/painel/pedidos`; metadata `itens` = "1x PID:VID", `loja`), endereço campo a campo, link da CJ, rastreio → e-mail pronto em espanhol. Status em D1 `pedidos_status`.
 - Som de caixa: no navegador (WebAudio, a cada 30 s com o painel aberto) e no **app Android** mesmo fechado: `VendasService` (foreground service specialUse, consulta `/api/painel/ultimo` a cada 60 s, canal "vendas_caixa" com `res/raw/caixa.wav`). O painel passa o token ao app por `window.LeuNativo.salvarToken`.
-- Pagamento da CJ: cartão virtual do Mercado Pago (o dono não tem cartão de crédito). Pedido na CJ ainda é manual (próximo passo: automático pela API createOrderV2).
+- Pagamento da CJ (20/10/2026): o dono paga cada pedido com o cartão da conta **Inter Global (USD)**; saldo da CJ Wallet = 0.
+  O robô (cron 5 min, `roboPedidos` no painel-api.js) cria o pedido na CJ sozinho; sem saldo cria "FALTA PAGAR" e o dono paga no app da CJ
+  (Orders → Waiting for Payment). Com saldo na Wallet, já sai pago. Cachik está PARADA por decisão do dono (foco na LeunaPets).
 - PayPal: código pronto (`/api/paypal/criar|capturar`), desligado até ter conta Empresas (exige CNPJ/MEI). Segredos PAYPAL_CLIENT_ID e PAYPAL_SECRET.
 - Lotes: workflow `publicar-lote.yml` (loja, sim|reprecificar|nao) → `ferramentas-loja/publicar_lote.py`; preço rápido = ~5 € de lucro.
 
