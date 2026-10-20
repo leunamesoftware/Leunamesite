@@ -96,3 +96,12 @@ Disparar o robô: `gh api -X POST repos/leunamesoftware/Leunamesite/actions/work
 ## Dinheiro (o dono perguntou)
 - Exemplo: venda 19,99 € − CJ ~9 € − taxas ~1,50 € = ~9,50 € de lucro.
 - PayPal conta nova segura cada venda até 21 dias (libera ~3 dias após a entrega se tiver rastreio), até ~25 vendas/90 dias. Stripe: 1º repasse 7–14 dias (conta BR pode ser mais). Sugestão: pagar a CJ com cartão de crédito.
+
+## Google Merchant Center (20/10/2026)
+- Conta LeunaPets 5874703190. 61 produtos aprovados, 0 cliques até 20/10 (aprovados só em 18-19/10).
+- Causa do zero: a fonte "PRODUCTS SOURCE 1" estava Espanha + idioma **Português** (feed é em espanhol).
+  Criada "PRODUCTS SOURCE 2": `https://pets.leuname.com/google-shopping.xml?l=es`, Espanha + **Espanhol**, diária.
+  Quando a SOURCE 2 estiver aprovada, apagar a SOURCE 1.
+- Lucro por venda (preço − custo CJ − Stripe): bolsa de viagem 42,99 € → ~20,75 €; mochila 30,99 € → ~14,86 €;
+  os outros 41 → 6–8 €. Anúncio pago só com produto de lucro ≥ 15 € e depois de vender no grátis.
+  O dono não pode perder dinheiro: teste pago só pré-pago (Pix) com teto definido antes.
