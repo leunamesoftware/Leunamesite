@@ -149,17 +149,28 @@ def baratos(tk, so_video=False):
     return rel
 
 
-# Trava de ramo: cada loja só vende produtos da categoria certa da CJ (mesma regra do painel-api.js, nichoOk).
+# Trava de ramo: cada loja só vende produto do seu ramo. A CJ às vezes cadastra a categoria errada
+# (coleira como "escritório", relógio de parede como "relógio de pulso"), então vale a categoria OU o nome em inglês,
+# e nunca as palavras proibidas. Mesma regra no painel-api.js (nichoOk). Produto ruim específico: BLOQUEADOS.
 NICHO = {
-    'pets': {'cat': re.compile(r'\bpet', re.I), 'proibido': re.compile(r'\b(car seat cover for kids|baby|makeup|cosmetic|phone|laptop)\b', re.I)},
-    'casa': {'cat': re.compile(r'^(home|furniture|garden)', re.I),
-             'proibido': re.compile(r'\b(makeup|cosmetic|camping|tent|car|auto|phone|laptop|monitor|pet|dog|cat|halloween|blood|travel)\b', re.I)},
+    'pets': {'cat': r'\bpet', 'nome': r'\b(pets?|dogs?|cats?|pupp(y|ies)|kittens?|kitty)\b',
+             'proibido': r'\b(baby|babies|makeup|cosmetic|phone|laptop)\b'},
+    'casa': {'cat': r'^(home|furniture|garden)',
+             'nome': r'\b(home|house|kitchen|garden|wall|clock|lamp|light|lights|candle|storage|organi[sz]er|shelf|rack|hook|pillow|cushion|'
+                     r'vase|plant|pot|flower|bath|towel|rug|mat|curtain|humidifier|diffuser|feeder|hose|decor|decoration|frame)\b',
+             'proibido': r'\b(makeup|cosmetic|camping|camp|tent|travel|monitor|screen|phone|laptop|pets?|dogs?|cats?|halloween|blood|bloody)\b'},
 }
+BLOQUEADOS = {'casa': {'6AEF9586-CAE8-402F-A811-0C55A2BA3FED', '66DEB873-8417-4178-B144-B7AD1B45793D'}}
 
 
-def nicho_ok(d):
+def nicho_ok(d, pid=None):
     n = NICHO[LOJA]
-    return bool(n['cat'].search(d.get('categoriaCJ') or '')) and not n['proibido'].search(d.get('nomeEn') or '')
+    if pid and pid in BLOQUEADOS.get(LOJA, set()):
+        return False
+    nome, cat = d.get('nomeEn') or '', d.get('categoriaCJ') or ''
+    if re.search(n['proibido'], nome, re.I):
+        return False
+    return bool(re.search(n['cat'], cat, re.I) or re.search(n['nome'], nome, re.I))
 
 
 def conferir_nicho(tk, tirar=False):
@@ -170,7 +181,7 @@ def conferir_nicho(tk, tirar=False):
         if not p.get('ativo'):
             continue
         d = api('detalhe?pid=' + urllib.parse.quote(p['id']), token=tk)
-        ok = nicho_ok(d) if not d.get('erro') else None
+        ok = nicho_ok(d, p['id']) if not d.get('erro') else None
         item = {'nome': p.get('nome'), 'id': p['id'], 'catCJ': d.get('categoriaCJ'), 'en': (d.get('nomeEn') or '')[:60], 'ok': ok}
         if tirar and ok is False:
             item['tirado'] = bool(api('editar', {'id': p['id'], 'ativo': False}, token=tk).get('ok'))

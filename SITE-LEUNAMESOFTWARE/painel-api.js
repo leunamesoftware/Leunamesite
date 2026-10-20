@@ -18,6 +18,22 @@ const DESC_LOJA = {
   pets: "a pet shop for dogs and cats in Spain",
   casa: "Cachik, a home, garden, décor, lighting and furniture shop in Spain",
 };
+// Trava de ramo (mesma regra do robô, publicar_lote.py → NICHO): vale a categoria da CJ OU o nome em inglês,
+// e nunca as palavras proibidas (a CJ às vezes cadastra a categoria errada).
+const NICHO = {
+  pets: { cat: /\bpet/i, nome: /\b(pets?|dogs?|cats?|pupp(y|ies)|kittens?|kitty)\b/i, proibido: /\b(baby|babies|makeup|cosmetic|phone|laptop)\b/i },
+  casa: {
+    cat: /^(home|furniture|garden)/i,
+    nome: /\b(home|house|kitchen|garden|wall|clock|lamp|light|lights|candle|storage|organi[sz]er|shelf|rack|hook|pillow|cushion|vase|plant|pot|flower|bath|towel|rug|mat|curtain|humidifier|diffuser|feeder|hose|decor|decoration|frame)\b/i,
+    proibido: /\b(makeup|cosmetic|camping|camp|tent|travel|monitor|screen|phone|laptop|pets?|dogs?|cats?|halloween|blood|bloody)\b/i,
+  },
+};
+const nichoOk = (L, d) => {
+  const n = NICHO[L.id];
+  if (!n) return true;
+  const nome = d.nomeEn || "", cat = d.categoriaCJ || "";
+  return !n.proibido.test(nome) && (n.cat.test(cat) || n.nome.test(nome));
+};
 const ANIMAIS = ["perro", "gato", "ambos"];
 const MODELO = "@cf/meta/llama-3.3-70b-instruct-fp8-fast";
 
@@ -356,6 +372,8 @@ async function publicar(req, env, L) {
   if (!d) return json({ erro: "produto-nao-encontrado" }, 404);
   if (!d.entregaTodos) return json({ erro: "nao-entrega", detalhe: "A CJ não entrega em todos os países testados." }, 400);
   if (!d.imagens.length) return json({ erro: "sem-fotos" }, 400);
+  if (!c.forcar && !nichoOk(L, d))
+    return json({ erro: "fora-do-ramo", detalhe: `Este produto não é do ramo da ${L.marca} (categoria na CJ: ${d.categoriaCJ || "?"}). Não publicado.` }, 400);
   const textos = c.es && c.es.nombre ? { es: c.es, en: c.en || c.es, ia: false } : await traduzir(env, d.nomeEn, d.descricaoEn, c.animal, L);
   const p = montar(pid, d, c, textos, L);
   p.video = await guardarVideo(env, pid);
