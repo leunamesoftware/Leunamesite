@@ -7,6 +7,6 @@
 window.CONFIG = {
   paypalClientId: "",
   email: "leunamesoftware@gmail.com",
-  titular: "Emanuel da Silva Antunes Coletto (marcas LeunaPets y Cachik) · Identificación fiscal: CPF 096.463.317-50 (Brasil) · Domicilio: Estrada de Xerém, Duque de Caxias – RJ, Brasil",
+  titular: "Emanuel da Silva Antunes Coletto (marcas LeunaPets y Cachik) · Domicilio: Rio de Janeiro, Brasil",
   marca: "LeunaPets"
 };
