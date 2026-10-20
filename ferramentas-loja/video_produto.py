@@ -74,6 +74,9 @@ TEXTOS = {
         'tags': '#perros #gatos #comederolento #saludanimal #mascotas #perrosfelices'},
 }
 
+# Vídeo da CJ com marca d'água, legenda em chinês/inglês ou texto queimado: usa as fotos.
+SO_FOTOS = {'C2D6A8F9-5B28-4E10-8D1A-D37C4D003C42', '2091008191094771714', 'C8049CD1-F0D3-4B8E-8EBD-8B7881656DC9'}
+
 
 def fonte(peso, px):
     return ImageFont.truetype(str(AQUI / 'fontes' / f'Poppins-{peso}.ttf'), px)
@@ -207,7 +210,7 @@ def fazer(prod, host, marca, saida):
     preco = f"{prod['precio']:.2f} €".replace('.', ',')
     pasta = saida / pid
     pasta.mkdir(parents=True, exist_ok=True)
-    video = prod.get('video') or ''
+    video = '' if pid in SO_FOTOS else (prod.get('video') or '')
     midia = None
     if video:
         try:
