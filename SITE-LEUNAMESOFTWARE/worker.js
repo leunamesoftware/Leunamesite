@@ -3,7 +3,7 @@
 // loja.js, loja.css, painel...). Os produtos de cada loja ficam separados (coluna "loja" no D1).
 // A chave fica no segredo STRIPE_SECRET_KEY do Worker (vem do segredo do GitHub, nunca do código).
 // O preço é SEMPRE o de produtos.json (o navegador só manda id e quantidade).
-import { painel, catalogo, servirVideo, lojaPorHost, roboPedidos, legendaTikTok } from "./painel-api.js";
+import { painel, catalogo, servirVideo, lojaPorHost, roboPedidos, legendaTikTok, salvarVendaPayPal } from "./painel-api.js";
 
 const PAISES = ["DE", "FR", "ES", "IT", "NL", "BE", "AT", "PT", "IE"];
 const HOST_LOJA = "pets.leuname.com";
@@ -135,6 +135,9 @@ async function paypalCapturar(req, env) {
   const r = await fetch(PP + "/v2/checkout/orders/" + id + "/capture", { method: "POST", headers: h });
   const d = await r.json().catch(() => ({}));
   if (!r.ok || d.status !== "COMPLETED") return json({ erro: "captura", detalhe: d.message }, 502);
+  // guarda a venda: o robô cria o pedido na CJ e ela aparece no painel, como as do Stripe
+  const origem = String(corpo.origem || "").toLowerCase().replace(/[^a-z0-9.\-]/g, "").slice(0, 30);
+  try { await salvarVendaPayPal(env, o, d, origem); } catch (e) { console.log("salvar venda paypal", e); }
   return json({ ok: true, id: d.id });
 }
 

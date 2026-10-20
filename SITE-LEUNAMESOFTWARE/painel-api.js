@@ -483,13 +483,55 @@ async function cambio() {
   return json(d);
 }
 
-// ---------- pedidos (vendas pagas no Stripe) ----------
+// ---------- vendas do PayPal: guardadas no D1 no mesmo formato de uma venda do Stripe (id "PP…") ----------
+async function tabelaPP(env) {
+  await env.DB.prepare("CREATE TABLE IF NOT EXISTS vendas_paypal (id TEXT PRIMARY KEY, criado INTEGER NOT NULL, dados TEXT NOT NULL)").run();
+}
+export async function salvarVendaPayPal(env, ordem, captura, origem) {
+  if (!env.DB) return;
+  const u = (ordem.purchase_units || [])[0] || {};
+  const uc = ((captura && captura.purchase_units) || [])[0] || {};
+  const ship = uc.shipping || u.shipping || {};
+  const a = ship.address || {};
+  const payer = (captura && captura.payer) || ordem.payer || {};
+  const nomePayer = payer.name ? [payer.name.given_name, payer.name.surname].filter(Boolean).join(" ") : "";
+  const endereco = { line1: a.address_line_1 || "", line2: a.address_line_2 || "", postal_code: a.postal_code || "", city: a.admin_area_2 || "", state: a.admin_area_1 || "", country: a.country_code || "" };
+  const tel = payer.phone && payer.phone.phone_number ? payer.phone.phone_number.national_number || "" : "";
+  const itens = (u.items || []).map((i) => `${parseInt(i.quantity, 10) || 1}x ${i.sku}`).join(", ");
+  const venda = {
+    id: "PP" + String(captura.id || ordem.id).replace(/[^A-Z0-9]/gi, ""), created: Math.floor(Date.now() / 1000), payment_status: "paid", currency: "eur",
+    amount_total: Math.round(parseFloat((u.amount && u.amount.value) || "0") * 100), meio: "paypal",
+    metadata: { loja: u.custom_id || "pets", itens, origem: origem || "" },
+    customer_details: { name: nomePayer || (ship.name && ship.name.full_name) || "", email: payer.email_address || "", phone: tel, address: endereco },
+    shipping_details: { name: (ship.name && ship.name.full_name) || nomePayer, address: endereco },
+  };
+  await tabelaPP(env);
+  await env.DB.prepare("INSERT OR IGNORE INTO vendas_paypal (id, criado, dados) VALUES (?,?,?)").bind(venda.id, venda.created, JSON.stringify(venda)).run();
+}
+async function vendasPayPal(env, desde = 0, limite = 100) {
+  if (!env.DB) return [];
+  await tabelaPP(env);
+  const { results } = await env.DB.prepare("SELECT dados FROM vendas_paypal WHERE criado >= ? ORDER BY criado DESC LIMIT ?").bind(desde, limite).all();
+  return results.map((x) => JSON.parse(x.dados));
+}
+// vendas pagas do Stripe (se ligado) + do PayPal, mais novas primeiro
+async function vendasPagas(env, limite, desde = 0) {
+  let st = [];
+  if (env.STRIPE_SECRET_KEY) {
+    const r = await fetch(`https://api.stripe.com/v1/checkout/sessions?status=complete&limit=${Math.min(100, limite)}${desde ? "&created[gte]=" + desde : ""}`, { headers: { Authorization: "Bearer " + env.STRIPE_SECRET_KEY } });
+    const d = await r.json().catch(() => ({}));
+    if (!r.ok) throw new Error((d.error && d.error.message) || "stripe");
+    st = d.data || [];
+  }
+  return [...st, ...(await vendasPayPal(env, desde, limite))].sort((x, y) => y.created - x.created);
+}
+
+// ---------- pedidos (vendas pagas no Stripe e no PayPal) ----------
 async function pedidos(req, env) {
-  if (!env.STRIPE_SECRET_KEY) return json({ erro: "stripe-desligado" }, 503);
+  if (!env.STRIPE_SECRET_KEY && !env.PAYPAL_SECRET) return json({ erro: "stripe-desligado" }, 503);
   await env.DB.prepare("CREATE TABLE IF NOT EXISTS pedidos_status (id TEXT PRIMARY KEY, feito INTEGER NOT NULL DEFAULT 0, rastreio TEXT, atualizado TEXT)").run();
-  const r = await fetch("https://api.stripe.com/v1/checkout/sessions?status=complete&limit=40", { headers: { Authorization: "Bearer " + env.STRIPE_SECRET_KEY } });
-  const d = await r.json().catch(() => ({}));
-  if (!r.ok) return json({ erro: "stripe", detalhe: d.error && d.error.message }, 502);
+  let d;
+  try { d = { data: await vendasPagas(env, 40) }; } catch (e) { return json({ erro: "stripe", detalhe: e.message }, 502); }
   const st = Object.fromEntries((await env.DB.prepare("SELECT id, feito, rastreio FROM pedidos_status").all()).results.map((x) => [x.id, x]));
   await tabelaCJ(env);
   const cjs = Object.fromEntries((await env.DB.prepare("SELECT id, cj_pedido, pago, msg, rastreio FROM pedidos_cj").all()).results.map((x) => [x.id, x]));
@@ -509,7 +551,7 @@ async function pedidos(req, env) {
       return { q: +m[1] || 1, pid: m[2], vid: m[3] || (p.cj && p.cj.vid) || "", nome: (p.es && p.es.nombre) || m[2], variacao: v ? v.nombre : "",
         img: fotoAbs((v && v.img) || (p.imagenes || [])[0]), linkCJ: m[2] ? "https://cjdropshipping.com/product/-p-" + m[2] + ".html" : "" };
     });
-    out.push({ id: s.id, loja: lojaId, data: s.created * 1000, total: s.amount_total / 100, moeda: s.currency,
+    out.push({ id: s.id, loja: lojaId, data: s.created * 1000, total: s.amount_total / 100, moeda: s.currency, meio: s.meio || "stripe",
       nome: ship.name || cli.name || "", email: cli.email || "", telefone: cli.phone || "",
       endereco: { linha1: a.line1 || "", linha2: a.line2 || "", cep: a.postal_code || "", cidade: a.city || "", estado: a.state || "", pais: a.country || "" },
       itens, feito: !!(st[s.id] && st[s.id].feito), rastreio: (st[s.id] && st[s.id].rastreio) || (cjs[s.id] && cjs[s.id].rastreio) || "",
@@ -519,10 +561,7 @@ async function pedidos(req, env) {
 }
 // para o app Android (vigia em segundo plano): só a venda mais recente, leve
 async function ultimo(env) {
-  if (!env.STRIPE_SECRET_KEY) return json({ ultimo: 0 });
-  const r = await fetch("https://api.stripe.com/v1/checkout/sessions?status=complete&limit=5", { headers: { Authorization: "Bearer " + env.STRIPE_SECRET_KEY } });
-  const d = await r.json().catch(() => ({}));
-  const pagos = (d.data || []).filter((s) => s.payment_status === "paid");
+  const pagos = (await vendasPagas(env, 5).catch(() => [])).filter((s) => s.payment_status === "paid");
   if (!pagos.length) return json({ ultimo: 0 });
   const s = pagos[0];
   const loja = lojaPorId((s.metadata && s.metadata.loja) || "pets");
@@ -546,6 +585,12 @@ async function tabelaCJ(env) {
   await env.DB.prepare("CREATE TABLE IF NOT EXISTS pedidos_cj (id TEXT PRIMARY KEY, cj_pedido TEXT, pago INTEGER NOT NULL DEFAULT 0, msg TEXT, rastreio TEXT, criado TEXT NOT NULL DEFAULT (datetime('now')))").run();
 }
 async function sessaoStripe(env, id) {
+  if (id.startsWith("PP")) {
+    await tabelaPP(env);
+    const x = await env.DB.prepare("SELECT dados FROM vendas_paypal WHERE id=?").bind(id).first();
+    return x ? JSON.parse(x.dados) : null;
+  }
+  if (!env.STRIPE_SECRET_KEY) return null;
   const r = await fetch("https://api.stripe.com/v1/checkout/sessions/" + encodeURIComponent(id), { headers: { Authorization: "Bearer " + env.STRIPE_SECRET_KEY } });
   return r.ok ? r.json() : null;
 }
@@ -644,12 +689,11 @@ async function atualizarRastreios(env) {
 }
 // robô de 5 em 5 minutos (cron do Worker): vendas novas viram pedido na CJ sozinhas
 export async function roboPedidos(env) {
-  if (!env.DB || !env.STRIPE_SECRET_KEY || !env.CJ_API_KEY) return;
+  if (!env.DB || !env.CJ_API_KEY) return;
   await tabelas(env); await tabelaCJ(env);
   const auto = await env.DB.prepare("SELECT valor FROM config WHERE chave='auto_cj'").first();
   if (auto && auto.valor === "0") { await atualizarRastreios(env); return; }
-  const r = await fetch("https://api.stripe.com/v1/checkout/sessions?status=complete&limit=20", { headers: { Authorization: "Bearer " + env.STRIPE_SECRET_KEY } });
-  const d = await r.json().catch(() => ({}));
+  const d = { data: await vendasPagas(env, 20).catch(() => []) };
   const req = new Request("https://pets.leuname.com/");
   for (const s of d.data || []) {
     if (s.payment_status !== "paid" || Date.now() / 1000 - s.created > 3 * 86400) continue;
@@ -670,12 +714,12 @@ async function custosRobo(env, req) {
   } catch { return {}; }
 }
 async function resumo(req, env, url) {
-  if (!env.STRIPE_SECRET_KEY) return json({ erro: "stripe-desligado" }, 503);
+  if (!env.STRIPE_SECRET_KEY && !env.PAYPAL_SECRET) return json({ erro: "stripe-desligado" }, 503);
   const dias = Math.max(7, Math.min(90, parseInt(url.searchParams.get("dias"), 10) || 30));
   const desde = Math.floor(Date.now() / 1000) - dias * 86400;
-  const sess = [];
+  const sess = await vendasPayPal(env, desde, 500);
   let depois = "";
-  for (let pag = 0; pag < 5; pag++) {
+  for (let pag = 0; pag < 5 && env.STRIPE_SECRET_KEY; pag++) {
     const r = await fetch(`https://api.stripe.com/v1/checkout/sessions?status=complete&limit=100&created[gte]=${desde}${depois ? "&starting_after=" + depois : ""}`,
       { headers: { Authorization: "Bearer " + env.STRIPE_SECRET_KEY } });
     const d = await r.json().catch(() => ({}));

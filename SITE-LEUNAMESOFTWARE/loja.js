@@ -421,7 +421,7 @@
           if (PAISES.indexOf(pais) < 0) return actions.reject(d.errors && d.errors.COUNTRY_ERROR);
         },
         onApprove: function (d) {
-          return postar("/api/paypal/capturar", { id: d.orderID }).then(function (r) {
+          return postar("/api/paypal/capturar", { id: d.orderID, origem: ler("origem") || "" }).then(function (r) {
             carrinho = {}; salvar();
             location.href = "gracias.html?ok=1&pedido=" + encodeURIComponent(r.id || d.orderID || "");
           }).catch(function (e) {
