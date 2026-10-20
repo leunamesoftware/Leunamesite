@@ -72,6 +72,26 @@ TEXTOS = {
         'puntos': ['Hace que coma más despacio', 'Divertido e interactivo', 'Material seguro'],
         'legenda': 'Tazón comedor lento 🍽️ Ayuda a que tu mascota coma más despacio, de forma divertida y con material seguro.',
         'tags': '#perros #gatos #comederolento #saludanimal #mascotas #perrosfelices'},
+    'FF10D3C0-679C-4C38-8F48-8961E85AE312@2': {
+        'gancho': '¿Tu perro odia el transportín?',
+        'puntos': ['Va a tu espalda, contigo', 'Cabeza fuera, tranquilo', 'Transpirable y cómoda'],
+        'legenda': '¿Tu perro odia el transportín? 🐶 Con esta mochila va pegado a ti, con la cabeza fuera y tranquilo.',
+        'tags': '#perros #perrosdeespaña #viajarconperro #perrospequeños #mascotas #metroconperro'},
+    'FF10D3C0-679C-4C38-8F48-8961E85AE312@3': {
+        'gancho': 'Metro, bus y tren con tu perro',
+        'puntos': ['Manos libres', 'Tu perro seguro y cerca', 'Varios tamaños y colores'],
+        'legenda': 'Metro, bus y tren con tu perro, con las manos libres 🚇🐶 Mochila transpirable en varios tamaños y colores.',
+        'tags': '#perros #perrosdeespaña #viajarconperro #perrospequeños #mascotas #metroconperro'},
+    'FF10D3C0-679C-4C38-8F48-8961E85AE312@4': {
+        'gancho': 'Paseos largos sin cansarle',
+        'puntos': ['Descansa cuando se cansa', 'Ideal para perros pequeños', 'Rutas, ciudad y viajes'],
+        'legenda': 'Para paseos largos: cuando tu perro se cansa, descansa en la mochila 🐾 Ideal para perros pequeños.',
+        'tags': '#perros #perrosdeespaña #viajarconperro #perrospequeños #mascotas #metroconperro'},
+    'FF10D3C0-679C-4C38-8F48-8961E85AE312@5': {
+        'gancho': 'Llévalo a todas partes',
+        'puntos': ['Compras, terrazas y viajes', 'Cómoda para los dos', 'Envío gratis a España'],
+        'legenda': 'Llévalo a todas partes: compras, terrazas, viajes 🐶❤️ Mochila cómoda para ti y para él.',
+        'tags': '#perros #perrosdeespaña #viajarconperro #perrospequeños #mascotas #metroconperro'},
 }
 
 # Vídeo da CJ com marca d'água, legenda em chinês/inglês ou texto queimado: usa as fotos.
@@ -202,13 +222,14 @@ def cena_em(t):
     return atual
 
 
-def fazer(prod, host, marca, saida):
+def fazer(prod, host, marca, saida, chave=None):
     pid = prod['id']
+    chave = chave or pid   # "id@2", "id@3"…: o mesmo produto com outro gancho (vários vídeos do mesmo produto)
     es = prod['es']
-    info = TEXTOS.get(pid) or {'gancho': es.get('gancho') or es['nombre'], 'puntos': es.get('puntos', [])[:3],
+    info = TEXTOS.get(chave) or TEXTOS.get(pid) or {'gancho': es.get('gancho') or es['nombre'], 'puntos': es.get('puntos', [])[:3],
                                'legenda': es['nombre'] + '. ' + es.get('descripcion', ''), 'tags': '#mascotas #perros #gatos'}
     preco = f"{prod['precio']:.2f} €".replace('.', ',')
-    pasta = saida / pid
+    pasta = saida / chave
     pasta.mkdir(parents=True, exist_ok=True)
     video = '' if pid in SO_FOTOS else (prod.get('video') or '')
     midia = None
@@ -254,10 +275,11 @@ def main():
     host = sys.argv[2].rstrip('/')
     marca = 'LeunaPets' if 'pets.' in host else 'Cachik'
     saida = Path('videos')
-    for pid in sys.argv[3:]:
+    for chave in sys.argv[3:]:
+        pid = chave.split('@')[0]
         if pid not in prods:
             print('não achei', pid); continue
-        fazer(prods[pid], host, marca, saida)
+        fazer(prods[pid], host, marca, saida, chave)
 
 
 if __name__ == '__main__':
