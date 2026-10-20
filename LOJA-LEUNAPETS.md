@@ -65,6 +65,17 @@ Disparar o robô: `gh api -X POST repos/leunamesoftware/Leunamesite/actions/work
 - `freightCalculate` devolve `logisticPrice` e às vezes `taxesFee`/`totalPostageFee` (IVA IOSS) — o robô soma.
 - Limite: 1 chamada/s; 50 000 pontos/dia.
 
+## Trava de ramo (20/10/2026) — cada loja só vende produto do seu nicho
+- O dono reclamou de produto fora do ramo. Regra em DOIS lugares iguais: `ferramentas-loja/publicar_lote.py` (NICHO, nicho_ok,
+  BLOQUEADOS) e `SITE-LEUNAMESOFTWARE/painel-api.js` (NICHO, nichoOk; o Publicar recusa com "fora-do-ramo", `forcar:true` passa por cima).
+- Vale a categoria da CJ OU o nome em inglês (a CJ cadastra errado: coleira como "escritório", relógio de parede como "relógio de pulso"),
+  e NUNCA as palavras proibidas (casa: camping, travel, makeup, monitor/screen, pet/dog/cat, blood…; pets: baby, makeup, phone…).
+- Conferir uma loja: workflow `publicar-lote.yml` com publicar=`conferir-nicho` (só lista) ou `tirar-fora-do-nicho` (desativa; volta no painel).
+  Resultado em dados-lote/lote.json. Loja nova: acrescentar o nicho dela em NICHO nos dois arquivos.
+- 20/10: Cachik teve 7 desativados (lâmpada e lanterna de camping, bolsa de maquiagem, cabide de viagem, suporte de monitor,
+  cadeira de camping, tapete "pegadas de sangue"). LeunaPets: 61, todos de pet.
+- Ver as fotos de todos os produtos: workflow `lista-produtos.yml` → branch dados-produtos (<host>-fotos.jpg, json e feed do Google).
+
 ## Regras que o dono já aprovou / não mudar
 - Banner do topo **fixo** (casinha rosa), sem carrossel. Logo horizontal LeunaPets. Cores: azul-marinho `#0F1E44` + rosa `#E62E73`.
 - **Sem avaliações falsas, sem "mais vendido" inventado, sem preço riscado inventado** (lei da UE).
