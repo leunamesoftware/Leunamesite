@@ -6,7 +6,7 @@ on:
         description: 'Loja (pets ou casa)'
         default: 'casa'
       publicar:
-        description: 'sim = publicar lote; barato = produtos bem baratos; tirar-caros = deixa só uns 6 acima de 14,99 €; reprecificar; nao = só fotos'
+        description: 'sim = publicar lote; barato = produtos bem baratos; tirar-caros = deixa só uns 6 acima de 14,99 €; reprecificar; conferir-nicho = só lista a categoria da CJ; tirar-fora-do-nicho = desativa o que não é do ramo; nao = só fotos'
         default: 'sim'
 jobs:
   lote:
@@ -22,7 +22,7 @@ jobs:
         run: |
           cd ferramentas-loja
           case "${{ github.event.inputs.publicar }}" in
-            reprecificar|barato|video|tirar-caros) python3 publicar_lote.py "${{ github.event.inputs.loja }}" "${{ github.event.inputs.publicar }}" ;;
+            reprecificar|barato|video|tirar-caros|conferir-nicho|tirar-fora-do-nicho) python3 publicar_lote.py "${{ github.event.inputs.loja }}" "${{ github.event.inputs.publicar }}" ;;
             *) python3 publicar_lote.py "${{ github.event.inputs.loja }}" ;;
           esac
           cp lote.json /tmp/

@@ -5,7 +5,7 @@ Para cada busca: pega os mais populares da CJ, confere frete/lucro e publica o 1
 Uso (GitHub Actions): LOJA_ADMIN_SENHA=... python3 publicar_lote.py casa
 A senha vem do segredo do GitHub; nunca no código.
 """
-import json, os, sys, time, urllib.request, urllib.parse
+import json, os, re, sys, time, urllib.request, urllib.parse
 
 BASE = 'https://pets.leuname.com/api/painel/'
 LOJA = sys.argv[1] if len(sys.argv) > 1 else 'casa'
@@ -131,7 +131,7 @@ def baratos(tk, so_video=False):
         for it in itens[:6]:
             d = api('detalhe?pid=' + urllib.parse.quote(it['pid']), token=tk)
             vistos.append(d.get('erro') or (d.get('custoEur'), d.get('entregaTodos')))
-            if d.get('erro') or not d.get('entregaTodos') or not d.get('custoEur') or len(d.get('imagens', [])) < 2:
+            if d.get('erro') or not d.get('entregaTodos') or not d.get('custoEur') or len(d.get('imagens', [])) < 2 or not nicho_ok(d):
                 continue
             preco = preco_rapido(d['custoEur'])
             if preco <= BARATO_PRECO_MAX and d['custoEur'] <= BARATO_CUSTO_TOTAL_EUR:
@@ -146,6 +146,36 @@ def baratos(tk, so_video=False):
         rel.append({'busca': busca, 'ok': bool(p.get('ok')), 'nome': (p.get('produto') or {}).get('es', {}).get('nombre'),
                     'preco': preco, 'custo': d['custoEur'], 'lucro': p.get('lucro'), 'erro': p.get('detalhe') if not p.get('ok') else None})
         print(rel[-1], flush=True)
+    return rel
+
+
+# Trava de ramo: cada loja só vende produtos da categoria certa da CJ (mesma regra do painel-api.js, nichoOk).
+NICHO = {
+    'pets': {'cat': re.compile(r'\bpet', re.I), 'proibido': re.compile(r'\b(car seat cover for kids|baby|makeup|cosmetic|phone|laptop)\b', re.I)},
+    'casa': {'cat': re.compile(r'^(home|furniture|garden)', re.I),
+             'proibido': re.compile(r'\b(makeup|cosmetic|camping|tent|car|auto|phone|laptop|monitor|pet|dog|cat|halloween|blood|travel)\b', re.I)},
+}
+
+
+def nicho_ok(d):
+    n = NICHO[LOJA]
+    return bool(n['cat'].search(d.get('categoriaCJ') or '')) and not n['proibido'].search(d.get('nomeEn') or '')
+
+
+def conferir_nicho(tk, tirar=False):
+    """Confere cada produto ativo da loja com a categoria da CJ. tirar=True desativa os que não são do ramo
+    (dá para voltar no painel)."""
+    rel = []
+    for p in api('publicados', token=tk).get('itens', []):
+        if not p.get('ativo'):
+            continue
+        d = api('detalhe?pid=' + urllib.parse.quote(p['id']), token=tk)
+        ok = nicho_ok(d) if not d.get('erro') else None
+        item = {'nome': p.get('nome'), 'id': p['id'], 'catCJ': d.get('categoriaCJ'), 'en': (d.get('nomeEn') or '')[:60], 'ok': ok}
+        if tirar and ok is False:
+            item['tirado'] = bool(api('editar', {'id': p['id'], 'ativo': False}, token=tk).get('ok'))
+        rel.append(item)
+        print(item, flush=True)
     return rel
 
 
@@ -170,6 +200,11 @@ def main():
     tk = api('login', {'senha': senha}).get('token')
     if not tk:
         sys.exit('login falhou')
+    if len(sys.argv) > 2 and sys.argv[2] in ('conferir-nicho', 'tirar-fora-do-nicho'):
+        rel = conferir_nicho(tk, tirar=sys.argv[2] == 'tirar-fora-do-nicho')
+        json.dump(rel, open('lote.json', 'w'), ensure_ascii=False, indent=1)
+        api('sair', {}, token=tk)
+        return
     if len(sys.argv) > 2 and sys.argv[2] in ('barato', 'video', 'tirar-caros'):
         rel = tirar_caros(tk) if sys.argv[2] == 'tirar-caros' else baratos(tk, so_video=sys.argv[2] == 'video')
         print(rel)
@@ -190,7 +225,7 @@ def main():
         escolhido = None
         for it in itens[:4]:
             d = api('detalhe?pid=' + urllib.parse.quote(it['pid']), token=tk)
-            if d.get('erro') or not d.get('entregaTodos') or not d.get('sugerido'):
+            if d.get('erro') or not d.get('entregaTodos') or not d.get('sugerido') or not nicho_ok(d):
                 continue
             preco = preco_rapido(d['custoEur'])
             if preco > PRECO_MAX or len(d.get('imagens', [])) < 2:
