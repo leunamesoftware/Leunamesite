@@ -1,0 +1,17 @@
+name = "supermisto-site"
+compatibility_date = "2026-09-19"
+
+# Site institucional da Super Misto Temperos (só arquivos estáticos).
+# Fonte: leuname-softwarea-apps/sites/supermisto (copiado para cá para publicar).
+[assets]
+directory = "./"
+not_found_handling = "404-page"
+
+# Domínio supermistotemperos.com.br (Registro.br): ligar as rotas abaixo
+# só DEPOIS que a zona estiver ativa na Cloudflare (DNS trocados no Registro.br).
+# [[routes]]
+# pattern = "supermistotemperos.com.br"
+# custom_domain = true
+# [[routes]]
+# pattern = "www.supermistotemperos.com.br"
+# custom_domain = true
