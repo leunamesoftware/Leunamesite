@@ -1,0 +1,20 @@
+name: Deploy Site Super Misto Temperos (Cloudflare)
+on:
+  workflow_dispatch:
+  push:
+    branches: [claude/leuname-github-setup-qwkedw]
+    paths: ['SITE-SUPERMISTO/**']
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '22' }
+      - name: Publicar
+        working-directory: SITE-SUPERMISTO
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+        run: npx wrangler@latest deploy 2>&1 | tee /tmp/deploy.log
+      - name: Endereço publicado
+        run: grep -o 'https://[^ ]*workers.dev' /tmp/deploy.log | head -1 | sed 's/^/::notice::Site no ar: /' || true
