@@ -1,0 +1,16 @@
+name: Baixar fontes (Google Fonts, licença OFL)
+on: workflow_dispatch
+jobs:
+  fontes:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - run: |
+          mkdir -p /tmp/f && cd /tmp/f
+          for f in kaushanscript/KaushanScript-Regular.ttf kaushanscript/OFL.txt pacifico/Pacifico-Regular.ttf yellowtail/Yellowtail-Regular.ttf lobster/Lobster-Regular.ttf; do
+            curl -sSfL -o "$(echo $f | tr / -)" "https://github.com/google/fonts/raw/main/ofl/$f" || echo "falhou $f"
+          done
+          ls -la
+          git init -q && git checkout -q -b dados-fontes && git config user.name robo && git config user.email robo@users.noreply.github.com
+          git add . && git commit -qm fontes && git push -qf "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" dados-fontes
