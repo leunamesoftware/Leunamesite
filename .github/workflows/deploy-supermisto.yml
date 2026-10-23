@@ -15,6 +15,9 @@ jobs:
         working-directory: SITE-SUPERMISTO
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
-        run: npx wrangler@latest deploy 2>&1 | tee /tmp/deploy.log
+        run: |
+          set -o pipefail
+          npx wrangler@latest deploy 2>&1 | tee /tmp/deploy.log
       - name: Endereço publicado
-        run: grep -o 'https://[^ ]*workers.dev' /tmp/deploy.log | head -1 | sed 's/^/::notice::Site no ar: /' || true
+        run: |
+          grep -o 'https://[^ ]*workers.dev' /tmp/deploy.log | head -1 | sed 's/^/::notice::Site no ar: /' || true
