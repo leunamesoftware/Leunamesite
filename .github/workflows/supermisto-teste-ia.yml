@@ -10,7 +10,10 @@ jobs:
         with: { repository: leunamesoftware/leuname-softwarea-apps, ref: ccr-f58cd13b-ml0bzs, path: app, sparse-checkout: entregas/super-misto/shopee }
       - run: |
           CONTA=$(curl -fsS -H "Authorization: Bearer $CF" https://api.cloudflare.com/client/v4/accounts | jq -r '.result[0].id')
-          IMG=$(base64 -w0 app/entregas/super-misto/shopee/fotos/colorau.jpg)
-          jq -n --arg u "data:image/jpeg;base64,$IMG" '{messages:[{role:"user",content:[{type:"text",text:"Responda só JSON: {\"produto\":\"nome escrito na embalagem\",\"peso\":\"peso escrito\"}"},{type:"image_url",image_url:{url:$u}}]}],max_tokens:200}' > corpo.json
+          python3 - <<'PY'
+          import base64, json
+          u = 'data:image/jpeg;base64,' + base64.b64encode(open('app/entregas/super-misto/shopee/fotos/colorau.jpg','rb').read()).decode()
+          json.dump({'messages':[{'role':'user','content':[{'type':'text','text':'Responda só JSON: {"produto":"nome escrito na embalagem","peso":"peso escrito"}'},{'type':'image_url','image_url':{'url':u}}]}],'max_tokens':200}, open('corpo.json','w'))
+          PY
           R=$(curl -s -H "Authorization: Bearer $CF" -H "Content-Type: application/json" -d @corpo.json "https://api.cloudflare.com/client/v4/accounts/$CONTA/ai/run/@cf/meta/llama-4-scout-17b-16e-instruct")
           echo "::notice::IA: $(echo "$R" | jq -c '{success, errors, r: .result.response}' | head -c 600)"
