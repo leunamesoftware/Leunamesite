@@ -1,0 +1,14 @@
+name: Precificador — ver anúncios lidos
+on: { workflow_dispatch: {} }
+jobs:
+  ver:
+    runs-on: ubuntu-latest
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+    steps:
+      - run: |
+          CONTA=$(curl -fsS -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" https://api.cloudflare.com/client/v4/accounts | jq -r '.result[0].id')
+          export CLOUDFLARE_ACCOUNT_ID=$CONTA
+          npx -y wrangler@4 d1 execute supermisto_precos --remote --json --command "SELECT id, produto_id, anuncio, loja, gramas, preco, vendidos, criado_em FROM concorrentes ORDER BY id DESC LIMIT 60" > r.json
+          jq -c '.[0].results[]' r.json | while read -r l; do echo "::notice::$l"; done
+          echo "::notice::TOTAL $(jq '.[0].results | length' r.json)"
