@@ -1,0 +1,22 @@
+name: Supermisto - domínio na Cloudflare
+on:
+  workflow_dispatch:
+jobs:
+  dominio:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Criar/consultar a zona supermistotemperos.com.br
+        env:
+          CF: ${{ secrets.CF_API_TOKEN }}
+        run: |
+          api() { curl -s -H "Authorization: Bearer $CF" -H "Content-Type: application/json" "$@"; }
+          Z=supermistotemperos.com.br
+          r=$(api "https://api.cloudflare.com/client/v4/zones?name=$Z")
+          if [ "$(echo "$r" | jq '.result|length')" = "0" ]; then
+            acc=$(api https://api.cloudflare.com/client/v4/accounts | jq -r '.result[0].id')
+            r=$(api -X POST https://api.cloudflare.com/client/v4/zones -d "{\"name\":\"$Z\",\"account\":{\"id\":\"$acc\"},\"type\":\"full\"}")
+            echo "$r" | jq -c '{success, errors}'
+            r=$(api "https://api.cloudflare.com/client/v4/zones?name=$Z")
+          fi
+          echo "$r" | jq -c '.result[0] | {status, name_servers}'
+          echo "::notice::Status: $(echo "$r" | jq -r '.result[0].status') | DNS: $(echo "$r" | jq -r '.result[0].name_servers|join(" e ")')"
