@@ -15,7 +15,8 @@ jobs:
           if [ "$(echo "$r" | jq '.result|length')" = "0" ]; then
             acc=$(api https://api.cloudflare.com/client/v4/accounts | jq -r '.result[0].id')
             r=$(api -X POST https://api.cloudflare.com/client/v4/zones -d "{\"name\":\"$Z\",\"account\":{\"id\":\"$acc\"},\"type\":\"full\"}")
-            echo "$r" | jq -c '{success, errors}'
+            echo "::notice::Criar zona: $(echo "$r" | jq -c '{success, errors}')"
+            echo "::notice::Conta: $(api https://api.cloudflare.com/client/v4/accounts | jq -c '{success, errors, n: (.result|length)}')"
             r=$(api "https://api.cloudflare.com/client/v4/zones?name=$Z")
           fi
           echo "$r" | jq -c '.result[0] | {status, name_servers}'
