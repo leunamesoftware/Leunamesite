@@ -1,0 +1,59 @@
+name: Precificador Supermisto — testar e publicar
+
+# Código no repositório leuname-softwarea-apps, pasta supermisto-precos/.
+#   Worker "supermisto-precos" → precos.supermistotemperos.com.br
+#   D1 supermisto_precos (criado sozinho na primeira vez) + Workers AI (lê os prints)
+on:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: 'Branch do código'
+        default: 'ccr-f58cd13b-ml0bzs'
+  push:
+    paths: ['.github/workflows/supermisto-precos.yml']
+
+concurrency: supermisto-precos
+
+jobs:
+  publicar:
+    runs-on: ubuntu-latest
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+    defaults:
+      run:
+        working-directory: app/supermisto-precos
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: leunamesoftware/leuname-softwarea-apps
+          ref: ${{ github.event.inputs.ref || 'ccr-f58cd13b-ml0bzs' }}
+          path: app
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - name: Testes
+        run: npm test
+      - name: Conta da Cloudflare
+        run: |
+          CONTA=$(curl -fsS -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" "https://api.cloudflare.com/client/v4/accounts" | jq -r '.result[0].id')
+          echo "::add-mask::$CONTA"
+          echo "CLOUDFLARE_ACCOUNT_ID=$CONTA" >> "$GITHUB_ENV"
+      - name: Banco (cria na primeira vez)
+        run: |
+          ID=$(npx -y wrangler@4 d1 list --json | jq -r '.[] | select(.name=="supermisto_precos") | .uuid')
+          if [ -z "$ID" ]; then
+            npx -y wrangler@4 d1 create supermisto_precos >/dev/null
+            ID=$(npx -y wrangler@4 d1 list --json | jq -r '.[] | select(.name=="supermisto_precos") | .uuid')
+          fi
+          [ -n "$ID" ] || { echo "::error::Não consegui criar o banco D1"; exit 1; }
+          sed -i "s/ID_DO_BANCO/$ID/" wrangler.toml
+      - name: Publicar
+        run: |
+          npx -y wrangler@4 d1 migrations apply supermisto_precos --remote
+          npx -y wrangler@4 deploy
+      - name: Conferir no ar
+        run: |
+          for i in $(seq 1 12); do
+            if curl -fsS https://precos.supermistotemperos.com.br/api/saude; then echo; break; fi
+            sleep 10
+          done
+          echo "::notice::Precificador: $(curl -s -o /dev/null -w '%{http_code}' https://precos.supermistotemperos.com.br/) em https://precos.supermistotemperos.com.br"
