@@ -24,3 +24,8 @@ jobs:
       - name: DNS público
         run: |
           echo "::notice::NS no .br: $(dig +short NS supermistotemperos.com.br @a.dns.br | tr '\n' ' ') | NS público: $(dig +short NS supermistotemperos.com.br @1.1.1.1 | tr '\n' ' ') | DS: $(dig +short DS supermistotemperos.com.br @a.dns.br | tr '\n' ' ')"
+      - name: Site responde?
+        run: |
+          for h in supermistotemperos.com.br www.supermistotemperos.com.br; do
+            echo "::notice::$h -> $(dig +short A $h @1.1.1.1 | head -2 | tr '\n' ' ') HTTP $(curl -s -o /dev/null -w '%{http_code}' https://$h/)"
+          done
