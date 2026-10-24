@@ -50,6 +50,19 @@ jobs:
         run: |
           npx -y wrangler@4 d1 migrations apply supermisto_precos --remote
           npx -y wrangler@4 deploy
+      - name: Testar a leitura de um print
+        run: |
+          T=$(openssl rand -hex 24)
+          echo "$T" | npx -y wrangler@4 secret put TESTE_IA >/dev/null
+          sleep 10
+          python3 - <<'PY'
+          import base64, json
+          u = 'data:image/jpeg;base64,' + base64.b64encode(open('../entregas/super-misto/shopee/fotos/colorau.jpg','rb').read()).decode()
+          json.dump({'imagem': u}, open('/tmp/corpo.json','w'))
+          PY
+          R=$(curl -s -X POST -H "X-Teste: $T" -H "Content-Type: application/json" -d @/tmp/corpo.json https://precos.supermistotemperos.com.br/api/teste-ia)
+          echo "::notice::Leitura: $(echo "$R" | head -c 700)"
+          npx -y wrangler@4 secret delete TESTE_IA --force >/dev/null || true
       - name: Conferir no ar
         run: |
           for i in $(seq 1 12); do
