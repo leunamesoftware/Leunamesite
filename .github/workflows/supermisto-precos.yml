@@ -57,7 +57,7 @@ jobs:
           sleep 10
           python3 - <<'PY'
           import base64, json
-          u = 'data:image/jpeg;base64,' + base64.b64encode(open('../entregas/super-misto/shopee/fotos/colorau.jpg','rb').read()).decode()
+          u = 'data:image/jpeg;base64,' + base64.b64encode(open('test/imagens/print-exemplo.jpg','rb').read()).decode()
           json.dump({'imagem': u}, open('/tmp/corpo.json','w'))
           PY
           R=$(curl -s -X POST -H "X-Teste: $T" -H "Content-Type: application/json" -d @/tmp/corpo.json https://precos.supermistotemperos.com.br/api/teste-ia)
