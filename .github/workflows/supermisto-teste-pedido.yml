@@ -8,6 +8,9 @@ on:
       minutos:
         description: 'Minutos até apagar o pedido de teste'
         default: '3'
+      shopee:
+        description: '1 = aviso como pedido da Shopee'
+        default: '1'
 
 concurrency: supermisto-teste-pedido
 
@@ -27,7 +30,7 @@ jobs:
           T=$(openssl rand -hex 24)
           echo "$T" | npx -y wrangler@4 secret put TESTE_PEDIDO --name supermisto-precos >/dev/null
           sleep 15
-          R=$(curl -s -X POST -H "X-Teste: $T" https://precos.supermistotemperos.com.br/api/erp/teste-pedido)
+          R=$(curl -s -X POST -H "X-Teste: $T" "https://precos.supermistotemperos.com.br/api/erp/teste-pedido?shopee=${{ github.event.inputs.shopee || 0 }}")
           echo "::notice::Pedido de teste: $R"
           sleep $(( ${{ github.event.inputs.minutos || 3 }} * 60 ))
           curl -s -X DELETE -H "X-Teste: $T" https://precos.supermistotemperos.com.br/api/erp/teste-pedido
