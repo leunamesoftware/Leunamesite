@@ -1,0 +1,35 @@
+name: ERP Supermisto — pedido de teste (aviso no celular)
+
+# Cria um pedido de teste no ERP para tocar o aviso no celular do dono e apaga depois.
+# Não mexe em estoque nem no financeiro. Segredo temporário criado e apagado aqui mesmo.
+on:
+  workflow_dispatch:
+    inputs:
+      minutos:
+        description: 'Minutos até apagar o pedido de teste'
+        default: '3'
+
+concurrency: supermisto-teste-pedido
+
+jobs:
+  teste:
+    runs-on: ubuntu-latest
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+    steps:
+      - name: Conta da Cloudflare
+        run: |
+          CONTA=$(curl -fsS -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" "https://api.cloudflare.com/client/v4/accounts" | jq -r '.result[0].id')
+          echo "::add-mask::$CONTA"
+          echo "CLOUDFLARE_ACCOUNT_ID=$CONTA" >> "$GITHUB_ENV"
+      - name: Pedido de teste
+        run: |
+          T=$(openssl rand -hex 24)
+          echo "$T" | npx -y wrangler@4 secret put TESTE_PEDIDO --name supermisto-precos >/dev/null
+          sleep 15
+          R=$(curl -s -X POST -H "X-Teste: $T" https://precos.supermistotemperos.com.br/api/erp/teste-pedido)
+          echo "::notice::Pedido de teste: $R"
+          sleep $(( ${{ github.event.inputs.minutos || 3 }} * 60 ))
+          curl -s -X DELETE -H "X-Teste: $T" https://precos.supermistotemperos.com.br/api/erp/teste-pedido
+          echo "::notice::Pedido de teste apagado"
+          npx -y wrangler@4 secret delete TESTE_PEDIDO --name supermisto-precos --force >/dev/null || true
