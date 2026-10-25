@@ -1,7 +1,8 @@
-name: Precificador Supermisto — testar e publicar
+name: ERP Supermisto (Precificador) — testar e publicar
 
 # Código no repositório leuname-softwarea-apps, pasta supermisto-precos/.
-#   Worker "supermisto-precos" → precos.supermistotemperos.com.br
+#   Worker "supermisto-precos" → erp.supermistotemperos.com.br (e precos.…)
+#   R2 supermisto-erp (fotos dos produtos, criado sozinho) · segredos SHOPEE_PARTNER_ID/KEY (quando existirem)
 #   D1 supermisto_precos (criado sozinho na primeira vez) + Workers AI (lê os prints)
 on:
   workflow_dispatch:
@@ -46,10 +47,32 @@ jobs:
           fi
           [ -n "$ID" ] || { echo "::error::Não consegui criar o banco D1"; exit 1; }
           sed -i "s/ID_DO_BANCO/$ID/" wrangler.toml
+      - name: Fotos (cria o armazenamento e sobe as fotos da Shopee na primeira vez)
+        run: |
+          npx -y wrangler@4 r2 bucket list | grep -q 'supermisto-erp' || npx -y wrangler@4 r2 bucket create supermisto-erp
+          if ! npx -y wrangler@4 r2 object get supermisto-erp/.semeado --remote --pipe >/dev/null 2>&1; then
+            for f in ../entregas/super-misto/shopee/fotos/*.jpg; do
+              npx -y wrangler@4 r2 object put "supermisto-erp/$(basename "$f")" --file "$f" --content-type image/jpeg --remote >/dev/null
+            done
+            echo ok > /tmp/semeado && npx -y wrangler@4 r2 object put supermisto-erp/.semeado --file /tmp/semeado --remote >/dev/null
+            echo "::notice::Fotos dos produtos enviadas"
+          fi
       - name: Publicar
         run: |
           npx -y wrangler@4 d1 migrations apply supermisto_precos --remote
           npx -y wrangler@4 deploy
+      - name: Ligação com a Shopee (só quando o cadastro existir)
+        env:
+          PID: ${{ secrets.SHOPEE_PARTNER_ID }}
+          PKEY: ${{ secrets.SHOPEE_PARTNER_KEY }}
+        run: |
+          if [ -n "$PID" ] && [ -n "$PKEY" ]; then
+            echo "$PID" | npx -y wrangler@4 secret put SHOPEE_PARTNER_ID >/dev/null
+            echo "$PKEY" | npx -y wrangler@4 secret put SHOPEE_PARTNER_KEY >/dev/null
+            echo "::notice::Credenciais da Shopee instaladas"
+          else
+            echo "::notice::Sem cadastro na Shopee Open Platform ainda (segredos SHOPEE_PARTNER_ID e SHOPEE_PARTNER_KEY)"
+          fi
       - name: Testar a leitura de um print
         run: |
           T=$(openssl rand -hex 24)
@@ -70,3 +93,5 @@ jobs:
             sleep 10
           done
           echo "::notice::Precificador: $(curl -s -o /dev/null -w '%{http_code}' https://precos.supermistotemperos.com.br/) em https://precos.supermistotemperos.com.br"
+          for i in $(seq 1 12); do curl -fsS https://erp.supermistotemperos.com.br/api/saude && break; sleep 10; done
+          echo "::notice::ERP: $(curl -s -o /dev/null -w '%{http_code}' https://erp.supermistotemperos.com.br/) em https://erp.supermistotemperos.com.br"
