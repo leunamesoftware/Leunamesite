@@ -44,7 +44,7 @@ function tamFoto(p) {
   return todos.filter((t, i) => (i === 0 && p.foto) || f[t]).sort((x, y) => ordemTam(x) - ordemTam(y));
 }
 function fotoUrl(p, peso) {
-  if (FOTOS_PESO[p.id]) return `img/produtos/${p.id}-${peso.replace(' ', '')}.webp?v=81`;
+  if (FOTOS_PESO[p.id]) return `img/produtos/${p.id}-${peso.replace(' ', '')}.webp?v=82`;
   const todos = p.tamAll || p.tam || [];
   return (p.fotosPeso && p.fotosPeso[peso]) || (peso === todos[0] ? p.foto : '') || p.foto;
 }
@@ -54,8 +54,8 @@ const CAPAS_LINHA = ['chas', 'puros', 'inteiros', 'misturas', 'desidratados'];
 // foto do quadradinho e capa larga de cada linha: a enviada pelo app (Meu site) vale mais que a do site
 const NOME_IMG = (id) => (id === 'desidratados' ? 'cogumelos-linha' : id);
 const EXT_IMG = (id) => (id === 'desidratados' ? 'jpg' : 'webp');
-const fotoLinha = (l) => l.foto || (FOTOS_LINHA.includes(l.id) ? `img/linhas/${NOME_IMG(l.id)}.${EXT_IMG(l.id)}?v=81` : '');
-const capaLinha = (l) => l.capa || (CAPAS_LINHA.includes(l.id) ? `img/linhas/${NOME_IMG(l.id)}-capa.${EXT_IMG(l.id)}?v=81` : '');
+const fotoLinha = (l) => l.foto || (FOTOS_LINHA.includes(l.id) ? `img/linhas/${NOME_IMG(l.id)}.${EXT_IMG(l.id)}?v=82` : '');
+const capaLinha = (l) => l.capa || (CAPAS_LINHA.includes(l.id) ? `img/linhas/${NOME_IMG(l.id)}-capa.${EXT_IMG(l.id)}?v=82` : '');
 const slug = (n) => n.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 // cada produto tem um id fixo (o slug do nome original): o nome pode ser trocado pelo app sem perder a foto
 PRODUTOS.forEach((p) => { p.id = p.id || slug(p.nome); });
@@ -276,7 +276,7 @@ function revenda() {
   const c = CONFIG.revenda, ac = 'A combinar pelo WhatsApp';
   $('#rv-cond').innerHTML = [['Pedido mínimo', c.pedidoMinimo], ['Prazo de entrega', c.prazo], ['Regiões atendidas', c.regioes], ['Pagamento', c.pagamento]]
     .map(([k, v]) => `<div><dt>${k}</dt><dd>${v || ac}</dd></div>`).join('');
-  $('#rv-linhas').innerHTML = LINHAS.map((l) => `<a href="linha.html?id=${l.id}">${l.nome}</a>`).join('');
+  $('#rv-linhas').innerHTML = LINHAS.filter((l) => PRODUTOS.some((p) => p.linha === l.id && temFoto(p))).map((l) => `<a href="linha.html?id=${l.id}">${l.nome}</a>`).join('');
   const tams = [...new Set(PRODUTOS.flatMap((p) => p.tam))];
   const ordem = (t) => { const n = parseFloat(t.replace(',', '.')); return /kg|L$/.test(t) ? n * 1000 : n; };
   $('#rv-emb').textContent = tams.sort((a, b) => ordem(a) - ordem(b)).join(' · ');

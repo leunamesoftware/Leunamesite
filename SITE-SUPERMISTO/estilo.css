@@ -1127,3 +1127,6 @@ body.gav-aberta{overflow:hidden}
 @media (max-width:700px){.marca img{height:46px!important}.topo-in{padding-top:6px!important}}
 .cat-sus .cat-sus-lista{top:52px!important}
 .ln-nav.cat-sus .cat-sus-lista{top:70px!important}
+
+.ln-nav.rv-linhas{display:flex!important;flex-wrap:wrap!important;gap:8px!important;overflow:visible!important;max-width:none!important;margin:0 0 22px!important;padding:0!important}
+.rv-linhas a{white-space:normal}
