@@ -22,13 +22,15 @@ const KITS = [
    só aparece quando existe a foto dele. Fotos do site: img/produtos/<id>-<peso>.webp (ex.: tomate-seco-desidratado-30g.webp).
    Fotos enviadas pelo app (Meu site) também valem: a principal é do primeiro tamanho e as pequenas dos outros. */
 const FOTOS = new Set();
-const FOTOS_PESO = {
-  'tomate-seco-desidratado': ['10 g', '20 g', '30 g', '50 g', '100 g'],   // 200 g, 250 g, 500 g e 1 kg: arte pronta, escondidos até liberar
+const FOTOS_PESO = {   // 200 g, 250 g, 500 g e 1 kg: arte pronta, escondidos até liberar. Alho em flocos: aguardando a arte nova.
+  'tomate-seco-desidratado': ['10 g', '20 g', '30 g', '50 g', '100 g'],
   'cebola-desidratada-em-flocos': ['10 g', '20 g', '30 g', '50 g', '100 g'],
-  'alho-desidratado-em-flocos': ['10 g', '30 g', '50 g', '100 g'], 'pimentao-desidratado': ['10 g', '30 g', '50 g', '100 g'],
-  'banana-desidratada': ['10 g', '30 g', '50 g', '100 g'], 'maca-desidratada': ['10 g', '30 g', '50 g', '100 g'],
-  'cogumelo-shiitake-desidratado': ['10 g', '30 g', '50 g', '100 g'], 'champignon-desidratado': ['10 g', '30 g', '50 g', '100 g'],
-  'mix-de-cogumelos': ['10 g', '30 g', '50 g', '100 g'],
+  'pimentao-desidratado': ['10 g', '20 g', '30 g', '50 g', '100 g'],
+  'banana-desidratada': ['10 g', '20 g', '30 g', '50 g', '100 g'],
+  'maca-desidratada': ['10 g', '20 g', '30 g', '50 g', '100 g'],
+  'cogumelo-shiitake-desidratado': ['10 g', '20 g', '30 g', '50 g', '100 g'],
+  'champignon-desidratado': ['10 g', '20 g', '30 g', '50 g', '100 g'],
+  'mix-de-cogumelos': ['10 g', '20 g', '30 g', '50 g', '100 g'],
 };
 const ORDEM_TAM = ['10 g', '20 g', '30 g', '50 g', '100 g', '250 g', '500 g', '1 kg'];
 const ordemTam = (t) => { const i = ORDEM_TAM.indexOf(t); return i < 0 ? 99 : i; };
@@ -40,12 +42,12 @@ function tamFoto(p) {
   return todos.filter((t, i) => (i === 0 && p.foto) || f[t]).sort((x, y) => ordemTam(x) - ordemTam(y));
 }
 function fotoUrl(p, peso) {
-  if (FOTOS_PESO[p.id]) return `img/produtos/${p.id}-${peso.replace(' ', '')}.webp?v=69`;
+  if (FOTOS_PESO[p.id]) return `img/produtos/${p.id}-${peso.replace(' ', '')}.webp?v=71`;
   const todos = p.tamAll || p.tam || [];
   return (p.fotosPeso && p.fotosPeso[peso]) || (peso === todos[0] ? p.foto : '') || p.foto;
 }
 // fotos das linhas (cartão 4:3) e capas largas das páginas de linha (img/linhas/<id>-capa.webp)
-const FOTOS_LINHA = ['ervas', 'puros', 'conservas', 'misturas', 'churrasco', 'molhos', 'doces', 'amidos', 'chas', 'inteiros'];
+const FOTOS_LINHA = ['desidratados', 'ervas', 'puros', 'conservas', 'misturas', 'churrasco', 'molhos', 'doces', 'amidos', 'chas', 'inteiros'];
 const CAPAS_LINHA = ['chas', 'puros', 'inteiros', 'misturas', 'desidratados'];
 // foto do quadradinho e capa larga de cada linha: a enviada pelo app (Meu site) vale mais que a do site
 const fotoLinha = (l) => l.foto || (FOTOS_LINHA.includes(l.id) ? `img/linhas/${l.id}.webp?v=63` : '');
@@ -157,18 +159,19 @@ function inicio() {
   const pegar = (nome) => PRODUTOS.find((p) => p.nome === nome);
   // produtos com foto real entram como recorte (sem fundo); os outros com a embalagem desenhada
   const vit = (n) => FOTOS.has(slug(n)) ? `<img src="img/produtos/${slug(n)}-recorte.png" alt="${n} Supermisto">` : embalagem(pegar(n), pegar(n).tam[1] || pegar(n).tam[0]);
-  $('#vitrine').innerHTML = '<img class="vit-kit" src="img/kit-10-temperos.webp?v=63" alt="Kit 10 temperos Supermisto" width="900" height="900">';
-  $('#num-prod').textContent = PRODUTOS.filter(temFoto).length; $('#num-linhas').textContent = LINHAS.length;
-  $('#linhas-grid').innerHTML = LINHAS.map((l) => {
-    const qtd = PRODUTOS.filter((p) => p.linha === l.id).length;
+  $('#vitrine').innerHTML = '';
+  // só aparecem as linhas que já têm produto com foto (as outras entram quando a arte chegar)
+  const linhasOk = LINHAS.filter((l) => PRODUTOS.some((p) => p.linha === l.id && temFoto(p)));
+  $('#num-prod').textContent = PRODUTOS.filter(temFoto).length; $('#num-linhas').textContent = linhasOk.length;
+  $('#linhas-grid').innerHTML = linhasOk.map((l) => {
+    const qtd = PRODUTOS.filter((p) => p.linha === l.id && temFoto(p)).length;
     const f = fotoLinha(l), fundo = f ? `background-image:url('${f}')` : `background:radial-gradient(circle at 50% 40%,#7A3E1E,#2A1208)`;
-    return `<a class="linha aparece" href="linha.html?id=${l.id}"><span class="linha-foto" style="${fundo}">${f ? '' : `<i>${l.emoji}</i>`}</span><b>${l.nome}</b><em>${qtd} produtos</em></a>`;
+    return `<a class="linha aparece" href="linha.html?id=${l.id}"><span class="linha-foto" style="${fundo}">${f ? '' : `<i>${l.emoji}</i>`}</span><b>${l.nome}</b><em>${qtd} produto${qtd > 1 ? 's' : ''}</em></a>`;
   }).join('');
   // só produtos com foto real (os outros entram quando a foto chegar)
   const fav = PRODUTOS.map((p, i) => [p, i]).filter(([p]) => temFoto(p)).slice(0, 7);
   // "Mais sabores" só completa a fileira quando sobra espaço
-  $('#favoritos').innerHTML = fav.map(([p, i]) => cartao(p, i)).join('') + (true ?
-    `<a class="prod prod-breve aparece" href="catalogo.html"><b>Mais sabores</b><span>Lemon pepper, calabresa, canela, tempero baiano e muito mais.</span><em>Ver catálogo completo →</em></a>` : '');
+  $('#favoritos').innerHTML = fav.map(([p, i]) => cartao(p, i)).join('') ;
   receitasLista($('#receitas-home'), RECEITAS.filter((r) => r.foto).slice(0, 4));
   $$('.emp, .dicas article, .passos li, details').forEach((e) => e.classList.add('aparece'));
   $('#form').addEventListener('submit', (e) => {
