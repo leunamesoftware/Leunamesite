@@ -1226,3 +1226,9 @@ body.gav-aberta{overflow:hidden}
   .hist-txt{padding:10px 8px!important;align-self:center}
   .valores{padding:10px 8px!important}
 }
+
+/* botões do início com a mesma largura quando ficam um embaixo do outro */
+@media (max-width:1120px){
+  .hero-btns{flex-direction:column;align-items:stretch;width:max-content;max-width:100%}
+  .hero-btns .btn{text-align:center;justify-content:center}
+}
