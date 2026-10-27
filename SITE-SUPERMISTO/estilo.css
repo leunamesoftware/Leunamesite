@@ -1087,3 +1087,23 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
 .gav-inst a{padding:12px;font-size:16px;color:#6B4A36}
 body.gav-aberta{overflow:hidden}
 .gaveta:not(.aberta){box-shadow:none;visibility:hidden;transition:transform .28s ease,visibility 0s .28s}
+
+/* ===== celular: cabeçalho no mesmo modelo do computador (☰ + logo + botão, menu embaixo) e vitrine em 2 colunas ===== */
+@media (max-width:700px){
+  .topo-in{flex-wrap:wrap!important;height:auto!important;padding:8px 0 0!important;row-gap:2px!important;gap:10px!important;align-items:center}
+  .cat-btn{order:1}.cat-btn span{display:inline!important;font-size:11.5px}
+  .marca{order:2}.marca img{height:34px!important}
+  .topo-cta{order:3;display:inline-flex!important;margin-left:auto;padding:8px 14px!important;font-size:11px!important}
+  .menu{order:4!important;flex:1 0 100%!important;width:100%!important;gap:18px!important;padding:0 14px 0 0!important;-webkit-mask-image:none!important;mask-image:none!important}
+  .menu a{padding:8px 0 10px!important;font-size:11.5px!important}
+  html{scroll-padding-top:110px}
+  #catalogo,#linha-prods,#favoritos,.pd-bloco .grade{grid-template-columns:repeat(2,1fr)!important;gap:12px!important}
+  #catalogo .prod,#linha-prods .prod,#favoritos .prod,.pd-bloco .grade .prod{max-width:none!important}
+  .grade .prod-corpo,.grade .prod-info{padding:12px!important}
+  .grade .prod h3{font-size:14px!important}
+  .grade .prod p{font-size:12px!important}
+}
+@media (max-width:700px){
+  .topo-in .topo-cta{padding:7px 11px!important;font-size:10px!important;letter-spacing:.3px!important;white-space:nowrap;min-width:0!important;width:auto!important;flex:none;box-shadow:none!important}
+  .topo-in{gap:8px!important}.cat-btn{gap:7px;margin-right:0!important}.cat-btn b{width:20px}
+}
