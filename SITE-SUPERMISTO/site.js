@@ -44,7 +44,7 @@ function tamFoto(p) {
   return todos.filter((t, i) => (i === 0 && p.foto) || f[t]).sort((x, y) => ordemTam(x) - ordemTam(y));
 }
 function fotoUrl(p, peso) {
-  if (FOTOS_PESO[p.id]) return `img/produtos/${p.id}-${peso.replace(' ', '')}.webp?v=79`;
+  if (FOTOS_PESO[p.id]) return `img/produtos/${p.id}-${peso.replace(' ', '')}.webp?v=81`;
   const todos = p.tamAll || p.tam || [];
   return (p.fotosPeso && p.fotosPeso[peso]) || (peso === todos[0] ? p.foto : '') || p.foto;
 }
@@ -54,8 +54,8 @@ const CAPAS_LINHA = ['chas', 'puros', 'inteiros', 'misturas', 'desidratados'];
 // foto do quadradinho e capa larga de cada linha: a enviada pelo app (Meu site) vale mais que a do site
 const NOME_IMG = (id) => (id === 'desidratados' ? 'cogumelos-linha' : id);
 const EXT_IMG = (id) => (id === 'desidratados' ? 'jpg' : 'webp');
-const fotoLinha = (l) => l.foto || (FOTOS_LINHA.includes(l.id) ? `img/linhas/${NOME_IMG(l.id)}.${EXT_IMG(l.id)}?v=79` : '');
-const capaLinha = (l) => l.capa || (CAPAS_LINHA.includes(l.id) ? `img/linhas/${NOME_IMG(l.id)}-capa.${EXT_IMG(l.id)}?v=79` : '');
+const fotoLinha = (l) => l.foto || (FOTOS_LINHA.includes(l.id) ? `img/linhas/${NOME_IMG(l.id)}.${EXT_IMG(l.id)}?v=81` : '');
+const capaLinha = (l) => l.capa || (CAPAS_LINHA.includes(l.id) ? `img/linhas/${NOME_IMG(l.id)}-capa.${EXT_IMG(l.id)}?v=81` : '');
 const slug = (n) => n.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 // cada produto tem um id fixo (o slug do nome original): o nome pode ser trocado pelo app sem perder a foto
 PRODUTOS.forEach((p) => { p.id = p.id || slug(p.nome); });
@@ -194,7 +194,7 @@ function catalogo() {
   const qtd = (id) => PRODUTOS.filter((p) => temFoto(p) && (!id || p.linha === id)).length;
   const comProd = LINHAS.filter((l) => qtd(l.id));
   if (linha !== 'todos' && !comProd.some((l) => l.id === linha)) linha = 'todos';
-  $('#filtros').hidden = true; // as categorias ficam na gaveta (☰); aqui é a loja inteira
+  menuCat($('#filtros'), linha);
   const desenhar = () => {
     const q = norm(busca.value.trim());
     const lista = PRODUTOS.map((p, i) => [p, i]).filter(([p]) => temFoto(p) && (linha === 'todos' || p.linha === linha) && (!q || norm(p.nome + ' ' + p.desc + ' ' + p.usos).includes(q)))
@@ -203,7 +203,6 @@ function catalogo() {
     $('#catalogo').innerHTML = lista.map(([p, i]) => cartao(p, i)).join('');
     observar();
   };
-  $('#filtros').addEventListener('change', (e) => { linha = e.target.value; history.replaceState(null, '', linha === 'todos' ? 'catalogo.html' : `catalogo.html?linha=${linha}`); desenhar(); });
   busca.addEventListener('input', desenhar);
   desenhar();
 }
@@ -220,9 +219,7 @@ function paginaLinha() {
   // todas as linhas no mesmo modelo: banner (ou a foto do quadradinho) com a faixa roxa e o nome por cima
   const img = capaLinha(l) || fotoLinha(l);
   $('#linha').innerHTML = `<div class="ln-capa-larga${img ? (capaLinha(l) ? '' : ' so-foto') : ' sem-foto'}">${img ? `<img src="${img}" alt="${l.nome} Supermisto" width="1600" height="900">` : `<span class="ln-emoji">${l.emoji}</span>`}<div class="ln-capa-txt"><div class="caixa"><div>${titulo}</div></div></div></div>`;
-  const okL = LINHAS.filter((x) => x.id === l.id || PRODUTOS.some((p) => p.linha === x.id && temFoto(p)));
-  $('#linhas-nav').innerHTML = `<label class="sel"><span>Ver outra categoria</span><select aria-label="Escolher categoria">${okL.map((x) => `<option value="${x.id}"${x.id === l.id ? ' selected' : ''}>${x.nome}</option>`).join('')}</select></label>`;
-  $('#linhas-nav select').addEventListener('change', (e) => { location.href = `linha.html?id=${e.target.value}`; });
+  menuCat($('#linhas-nav'), l.id);
   $('#linha-prods').innerHTML = lista.map(([p, i]) => cartao(p, i)).join('');
 }
 
@@ -335,7 +332,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   await carregarCatalogo();
   PRODUTOS.forEach((p) => { p.tamAll = p.tamAll || p.tam; const t = tamFoto(p); if (t.length) p.tam = t; });
   rodape();
-  menuCategorias();
   if ($('#vitrine')) tentar(() => inicio());
   if ($('#catalogo')) tentar(() => catalogo());
   if ($('#receitas-lista')) tentar(() => receitasLista($('#receitas-lista'), RECEITAS));
@@ -389,4 +385,20 @@ function menuCategorias() {
   fundo.addEventListener('click', () => abrir(false));
   gav.querySelector('.gav-x').addEventListener('click', () => abrir(false));
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape') abrir(false); });
+}
+
+/* ---------- menu suspenso "Categorias" (canto esquerdo, acima dos produtos) ---------- */
+function menuCat(alvo, atual) {
+  const ls = LINHAS.filter((l) => PRODUTOS.some((p) => p.linha === l.id && temFoto(p)));
+  alvo.hidden = false; alvo.classList.add('cat-sus');
+  alvo.innerHTML = `<button type="button" class="cat-sus-btn" aria-expanded="false">Categorias <i></i></button>
+    <ul class="cat-sus-lista" hidden>
+      <li><a href="catalogo.html"${atual === 'todos' ? ' class="atual"' : ''}>Todos os produtos</a></li>
+      ${ls.map((l) => `<li><a href="linha.html?id=${l.id}"${l.id === atual ? ' class="atual"' : ''}>${l.nome}</a></li>`).join('')}
+    </ul>`;
+  const b = alvo.querySelector('button'), u = alvo.querySelector('ul');
+  const fechar = () => { u.hidden = true; b.setAttribute('aria-expanded', 'false'); };
+  b.addEventListener('click', (e) => { e.stopPropagation(); u.hidden = !u.hidden; b.setAttribute('aria-expanded', !u.hidden); });
+  document.addEventListener('click', (e) => { if (!alvo.contains(e.target)) fechar(); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') fechar(); });
 }

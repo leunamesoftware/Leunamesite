@@ -1107,3 +1107,23 @@ body.gav-aberta{overflow:hidden}
   .topo-in .topo-cta{padding:7px 11px!important;font-size:10px!important;letter-spacing:.3px!important;white-space:nowrap;min-width:0!important;width:auto!important;flex:none;box-shadow:none!important}
   .topo-in{gap:8px!important}.cat-btn{gap:7px;margin-right:0!important}.cat-btn b{width:20px}
 }
+
+/* ===== menu suspenso Categorias (esquerda) — substitui o seletor e o ☰ ===== */
+.filtros.cat-sus,.ln-nav.cat-sus{display:block!important;max-width:1200px!important;margin:0 auto 18px!important;padding:0 16px!important;position:relative;text-align:left}
+.ln-nav.cat-sus{padding-top:18px!important}
+.cat-sus-btn{font:700 14px 'Poppins',system-ui,sans-serif;color:#3E1C0E;background:#fff;border:2px solid #E6D6BE;border-radius:12px;padding:11px 18px;cursor:pointer;display:inline-flex;align-items:center;gap:12px;box-shadow:0 4px 14px rgba(62,28,14,.08)}
+.cat-sus-btn i{width:8px;height:8px;border-right:2px solid #B08A2E;border-bottom:2px solid #B08A2E;transform:rotate(45deg) translateY(-2px);transition:.2s}
+.cat-sus-btn[aria-expanded=true] i{transform:rotate(225deg)}
+.cat-sus-lista{position:absolute;left:16px;top:calc(100% + 4px);z-index:40;list-style:none;margin:0;padding:6px;background:#fff;border:1px solid #E6D6BE;border-radius:14px;box-shadow:0 16px 40px rgba(62,28,14,.22);min-width:230px}
+.ln-nav.cat-sus .cat-sus-lista{top:calc(100% - 6px)}
+.cat-sus-lista[hidden]{display:none}
+.cat-sus-lista a{display:block;padding:11px 14px;border-radius:9px;color:#3E1C0E;font:600 15px 'Poppins',system-ui,sans-serif;text-decoration:none}
+.cat-sus-lista a:hover,.cat-sus-lista a.atual{background:#F6EBD8;color:#7A3E1E}
+.cat-btn{display:none!important}
+.cat-sus{height:auto}
+.cat-sus .cat-sus-lista{top:50px!important}
+.ln-nav.cat-sus .cat-sus-lista{top:68px!important}
+.filtros.cat-sus,.ln-nav.cat-sus{position:relative!important}
+@media (max-width:700px){.marca img{height:46px!important}.topo-in{padding-top:6px!important}}
+.cat-sus .cat-sus-lista{top:52px!important}
+.ln-nav.cat-sus .cat-sus-lista{top:70px!important}
