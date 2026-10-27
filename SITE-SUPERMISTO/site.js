@@ -38,12 +38,13 @@ const ordemTam = (t) => { const i = ORDEM_TAM.indexOf(t); return i < 0 ? 99 : i;
 /** Tamanhos que têm foto (os outros não aparecem para o cliente). */
 function tamFoto(p) {
   if (FOTOS_PESO[p.id]) return FOTOS_PESO[p.id];
+  return []; // fotos antigas do app/ERP não entram: só aparece o que foi liberado em FOTOS_PESO
   const todos = p.tamAll || p.tam || [];
   const f = p.fotosPeso || {};
   return todos.filter((t, i) => (i === 0 && p.foto) || f[t]).sort((x, y) => ordemTam(x) - ordemTam(y));
 }
 function fotoUrl(p, peso) {
-  if (FOTOS_PESO[p.id]) return `img/produtos/${p.id}-${peso.replace(' ', '')}.webp?v=75`;
+  if (FOTOS_PESO[p.id]) return `img/produtos/${p.id}-${peso.replace(' ', '')}.webp?v=76`;
   const todos = p.tamAll || p.tam || [];
   return (p.fotosPeso && p.fotosPeso[peso]) || (peso === todos[0] ? p.foto : '') || p.foto;
 }
@@ -53,8 +54,8 @@ const CAPAS_LINHA = ['chas', 'puros', 'inteiros', 'misturas', 'desidratados'];
 // foto do quadradinho e capa larga de cada linha: a enviada pelo app (Meu site) vale mais que a do site
 const NOME_IMG = (id) => (id === 'desidratados' ? 'cogumelos-linha' : id);
 const EXT_IMG = (id) => (id === 'desidratados' ? 'jpg' : 'webp');
-const fotoLinha = (l) => l.foto || (FOTOS_LINHA.includes(l.id) ? `img/linhas/${NOME_IMG(l.id)}.${EXT_IMG(l.id)}?v=75` : '');
-const capaLinha = (l) => l.capa || (CAPAS_LINHA.includes(l.id) ? `img/linhas/${NOME_IMG(l.id)}-capa.${EXT_IMG(l.id)}?v=75` : '');
+const fotoLinha = (l) => l.foto || (FOTOS_LINHA.includes(l.id) ? `img/linhas/${NOME_IMG(l.id)}.${EXT_IMG(l.id)}?v=76` : '');
+const capaLinha = (l) => l.capa || (CAPAS_LINHA.includes(l.id) ? `img/linhas/${NOME_IMG(l.id)}-capa.${EXT_IMG(l.id)}?v=76` : '');
 const slug = (n) => n.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 // cada produto tem um id fixo (o slug do nome original): o nome pode ser trocado pelo app sem perder a foto
 PRODUTOS.forEach((p) => { p.id = p.id || slug(p.nome); });
@@ -322,7 +323,7 @@ async function carregarCatalogo() {
     if (r.ok) {
       const d = await r.json();
       aplicarCatalogo(d.produtos);
-      for (const [id, x] of Object.entries(d.linhas || {})) { const l = LINHAS.find((y) => y.id === id); if (l) { if (x.foto) l.foto = x.foto; if (x.capa) l.capa = x.capa; } }
+      for (const [id, x] of Object.entries(d.linhas || {})) { const l = LINHAS.find((y) => y.id === id); if (l) { /* fotos das linhas ficam só no site */ } }
     }
   } catch { /* sem internet ou app fora do ar: o site segue com o catálogo fixo */ }
 }
@@ -335,6 +336,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   await carregarCatalogo();
   PRODUTOS.forEach((p) => { p.tamAll = p.tamAll || p.tam; const t = tamFoto(p); if (t.length) p.tam = t; });
   rodape();
+  menuCategorias();
   if ($('#vitrine')) tentar(() => inicio());
   if ($('#catalogo')) tentar(() => catalogo());
   if ($('#receitas-lista')) tentar(() => receitasLista($('#receitas-lista'), RECEITAS));
@@ -362,3 +364,23 @@ document.addEventListener('click', (e) => {
   document.addEventListener('keydown', esc);
   document.body.appendChild(z);
 });
+
+/* ---------- menu suspenso de categorias (cabeçalho) ---------- */
+function menuCategorias() {
+  const menu = $('#menu'), topo = document.querySelector('.topo');
+  if (!menu || !topo) return;
+  const qtd = (id) => PRODUTOS.filter((p) => p.linha === id && temFoto(p)).length;
+  const ls = LINHAS.filter((l) => qtd(l.id));
+  const btn = document.createElement('button');
+  btn.type = 'button'; btn.className = 'cat-btn'; btn.setAttribute('aria-expanded', 'false');
+  btn.innerHTML = 'Categorias <i></i>';
+  menu.prepend(btn);
+  const painel = document.createElement('div');
+  painel.className = 'cat-painel'; painel.hidden = true;
+  painel.innerHTML = `<div class="caixa"><ul>${ls.map((l) => `<li><a href="linha.html?id=${l.id}"><span>${l.nome}</span><em>${qtd(l.id)}</em></a></li>`).join('')}<li class="todos"><a href="catalogo.html"><span>Ver todos os produtos</span><em>→</em></a></li></ul></div>`;
+  topo.appendChild(painel);
+  const fechar = () => { painel.hidden = true; btn.setAttribute('aria-expanded', 'false'); btn.classList.remove('aberto'); };
+  btn.addEventListener('click', (e) => { e.stopPropagation(); const ab = painel.hidden; painel.hidden = !ab; btn.setAttribute('aria-expanded', ab); btn.classList.toggle('aberto', ab); });
+  document.addEventListener('click', (e) => { if (!painel.contains(e.target)) fechar(); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') fechar(); });
+}

@@ -1060,3 +1060,20 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
 .sel span{display:block;font:700 12px 'Poppins',system-ui,sans-serif;letter-spacing:1.4px;text-transform:uppercase;color:#B08A2E;margin:0 0 6px 4px}
 .sel select{width:100%;appearance:none;-webkit-appearance:none;font:600 16px 'Poppins',system-ui,sans-serif;color:#3E1C0E;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='9' viewBox='0 0 14 9'%3E%3Cpath d='M1 1l6 6 6-6' fill='none' stroke='%23B08A2E' stroke-width='2.4' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 20px center;border:2px solid #E6D6BE;border-radius:999px;padding:14px 48px 14px 22px;cursor:pointer;box-shadow:0 6px 18px rgba(62,28,14,.08)}
 .sel select:focus{outline:none;border-color:#C29433}
+
+/* ===== botão e painel de categorias no cabeçalho ===== */
+.topo{position:sticky}
+.cat-btn{font:600 13px 'Poppins',system-ui,sans-serif;letter-spacing:.6px;text-transform:uppercase;color:#1F0F06;background:#E3BE72;border:0;border-radius:999px;padding:9px 16px;cursor:pointer;display:inline-flex;align-items:center;gap:8px;white-space:nowrap;flex:none}
+.cat-btn i{width:7px;height:7px;border-right:2px solid #1F0F06;border-bottom:2px solid #1F0F06;transform:rotate(45deg) translateY(-2px);transition:.2s}
+.cat-btn.aberto i{transform:rotate(225deg) translateY(-1px)}
+.cat-painel{position:absolute;left:0;right:0;top:100%;background:#2A1208;border-top:1px solid rgba(227,190,114,.25);box-shadow:0 18px 40px rgba(0,0,0,.35);padding:10px 0 14px}
+.cat-painel[hidden]{display:none}
+.cat-painel ul{list-style:none;margin:0 auto;padding:0;max-width:420px}
+.cat-painel .caixa{max-width:1200px}
+@media (min-width:861px){.cat-painel ul{margin:0}}
+.cat-painel li a{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 18px;color:#F3E6D2;font:600 16px 'Poppins',system-ui,sans-serif;text-decoration:none;border-bottom:1px solid rgba(255,255,255,.08)}
+.cat-painel li a:hover{background:rgba(227,190,114,.12);color:#fff}
+.cat-painel li em{font-style:normal;font-size:12px;color:#1F0F06;background:#E3BE72;border-radius:999px;padding:2px 9px}
+.cat-painel li.todos a{color:#E3BE72;border-bottom:0}
+.cat-painel li.todos em{background:none;color:#E3BE72;font-size:16px}
+@media (max-width:700px){.menu .cat-btn{padding:7px 12px;font-size:12px}}
