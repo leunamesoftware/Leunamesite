@@ -1189,3 +1189,10 @@ body.gav-aberta{overflow:hidden}
   .hero-btns{flex-wrap:nowrap!important;gap:10px!important}
   .hero-btns .btn{flex:1 1 0;min-width:0;padding:15px 10px!important;font-size:12.5px!important;letter-spacing:.2px!important;text-align:center;white-space:normal;line-height:1.2}
 }
+
+/* ===== seção Nossas linhas centralizada (computador e notebook) ===== */
+#linhas .dupla{grid-template-columns:1fr!important;gap:26px!important;text-align:center}
+#linhas .dupla-txt{max-width:720px;margin:0 auto}
+#linhas .dupla-txt p{margin-left:auto;margin-right:auto;max-width:560px}
+#linhas .sobre-tit{justify-content:center}
+#linhas .linhas-grid{width:100%}
