@@ -51,8 +51,8 @@ function fotoUrl(p, peso) {
 const FOTOS_LINHA = ['desidratados', 'ervas', 'puros', 'conservas', 'misturas', 'churrasco', 'molhos', 'doces', 'amidos', 'chas', 'inteiros'];
 const CAPAS_LINHA = ['chas', 'puros', 'inteiros', 'misturas', 'desidratados'];
 // foto do quadradinho e capa larga de cada linha: a enviada pelo app (Meu site) vale mais que a do site
-const fotoLinha = (l) => l.foto || (FOTOS_LINHA.includes(l.id) ? `img/linhas/${l.id}.webp?v=63` : '');
-const capaLinha = (l) => l.capa || (CAPAS_LINHA.includes(l.id) ? `img/linhas/${l.id}-capa.webp?v=63` : '');
+const fotoLinha = (l) => l.foto || (FOTOS_LINHA.includes(l.id) ? `img/linhas/${l.id}.webp?v=72` : '');
+const capaLinha = (l) => l.capa || (CAPAS_LINHA.includes(l.id) ? `img/linhas/${l.id}-capa.webp?v=72` : '');
 const slug = (n) => n.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 // cada produto tem um id fixo (o slug do nome original): o nome pode ser trocado pelo app sem perder a foto
 PRODUTOS.forEach((p) => { p.id = p.id || slug(p.nome); });
