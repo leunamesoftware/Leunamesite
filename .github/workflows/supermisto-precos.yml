@@ -48,6 +48,7 @@ jobs:
           [ -n "$ID" ] || { echo "::error::Não consegui criar o banco D1"; exit 1; }
           sed -i "s/ID_DO_BANCO/$ID/" wrangler.toml
       - name: Fotos (cria o armazenamento e sobe as fotos da Shopee na primeira vez)
+        continue-on-error: true   # as fotos já foram semeadas; se este passo falhar, o ERP continua sendo publicado
         run: |
           npx -y wrangler@4 r2 bucket list | grep -q 'supermisto-erp' || npx -y wrangler@4 r2 bucket create supermisto-erp
           if ! npx -y wrangler@4 r2 object get supermisto-erp/.semeado --remote --pipe >/dev/null 2>&1; then
