@@ -44,7 +44,7 @@ function tamFoto(p) {
   return todos.filter((t, i) => (i === 0 && p.foto) || f[t]).sort((x, y) => ordemTam(x) - ordemTam(y));
 }
 function fotoUrl(p, peso) {
-  if (FOTOS_PESO[p.id]) return `img/produtos/${p.id}-${peso.replace(' ', '')}.webp?v=78`;
+  if (FOTOS_PESO[p.id]) return `img/produtos/${p.id}-${peso.replace(' ', '')}.webp?v=79`;
   const todos = p.tamAll || p.tam || [];
   return (p.fotosPeso && p.fotosPeso[peso]) || (peso === todos[0] ? p.foto : '') || p.foto;
 }
@@ -54,8 +54,8 @@ const CAPAS_LINHA = ['chas', 'puros', 'inteiros', 'misturas', 'desidratados'];
 // foto do quadradinho e capa larga de cada linha: a enviada pelo app (Meu site) vale mais que a do site
 const NOME_IMG = (id) => (id === 'desidratados' ? 'cogumelos-linha' : id);
 const EXT_IMG = (id) => (id === 'desidratados' ? 'jpg' : 'webp');
-const fotoLinha = (l) => l.foto || (FOTOS_LINHA.includes(l.id) ? `img/linhas/${NOME_IMG(l.id)}.${EXT_IMG(l.id)}?v=78` : '');
-const capaLinha = (l) => l.capa || (CAPAS_LINHA.includes(l.id) ? `img/linhas/${NOME_IMG(l.id)}-capa.${EXT_IMG(l.id)}?v=78` : '');
+const fotoLinha = (l) => l.foto || (FOTOS_LINHA.includes(l.id) ? `img/linhas/${NOME_IMG(l.id)}.${EXT_IMG(l.id)}?v=79` : '');
+const capaLinha = (l) => l.capa || (CAPAS_LINHA.includes(l.id) ? `img/linhas/${NOME_IMG(l.id)}-capa.${EXT_IMG(l.id)}?v=79` : '');
 const slug = (n) => n.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 // cada produto tem um id fixo (o slug do nome original): o nome pode ser trocado pelo app sem perder a foto
 PRODUTOS.forEach((p) => { p.id = p.id || slug(p.nome); });
@@ -194,8 +194,7 @@ function catalogo() {
   const qtd = (id) => PRODUTOS.filter((p) => temFoto(p) && (!id || p.linha === id)).length;
   const comProd = LINHAS.filter((l) => qtd(l.id));
   if (linha !== 'todos' && !comProd.some((l) => l.id === linha)) linha = 'todos';
-  $('#filtros').innerHTML = `<label class="sel"><span>Categoria</span><select id="sel-linha" aria-label="Escolher categoria"><option value="todos">Todas as categorias (${qtd('')})</option>${comProd.map((l) => `<option value="${l.id}">${l.nome} (${qtd(l.id)})</option>`).join('')}</select></label>`;
-  $('#sel-linha').value = linha;
+  $('#filtros').hidden = true; // as categorias ficam na gaveta (☰); aqui é a loja inteira
   const desenhar = () => {
     const q = norm(busca.value.trim());
     const lista = PRODUTOS.map((p, i) => [p, i]).filter(([p]) => temFoto(p) && (linha === 'todos' || p.linha === linha) && (!q || norm(p.nome + ' ' + p.desc + ' ' + p.usos).includes(q)))
@@ -379,9 +378,9 @@ function menuCategorias() {
   const fundo = document.createElement('div'); fundo.className = 'gav-fundo'; fundo.hidden = true;
   const gav = document.createElement('aside'); gav.className = 'gaveta'; gav.setAttribute('aria-label', 'Categorias'); gav.setAttribute('aria-hidden', 'true');
   gav.innerHTML = `<div class="gav-topo"><h2>Super Misto</h2><button type="button" class="gav-x" aria-label="Fechar">✕</button></div>
+    <a class="gav-todos" href="catalogo.html"><span>Todos os produtos</span><b>›</b></a>
     <h3>Categorias</h3>
     <ul class="gav-lista">${ls.map((l) => `<li><a href="linha.html?id=${l.id}"><span class="ic">${ICONE_LINHA[l.id] || '🧂'}</span><span class="nm">${l.nome}</span><em>${qtd(l.id)}</em></a></li>`).join('')}</ul>
-    <a class="gav-todos" href="catalogo.html"><span>Todos os produtos</span><b>›</b></a>
     <h3>Conheça a Super Misto</h3>
     <ul class="gav-lista gav-inst"><li><a href="index.html"><span class="nm">Início</span></a></li><li><a href="receitas.html"><span class="nm">Receitas</span></a></li><li><a href="revenda.html"><span class="nm">Seja revendedor</span></a></li></ul>`;
   document.body.append(fundo, gav);
