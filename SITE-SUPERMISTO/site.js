@@ -44,7 +44,7 @@ function tamFoto(p) {
   return todos.filter((t, i) => (i === 0 && p.foto) || f[t]).sort((x, y) => ordemTam(x) - ordemTam(y));
 }
 function fotoUrl(p, peso) {
-  if (FOTOS_PESO[p.id]) return `img/produtos/${p.id}-${peso.replace(' ', '')}.webp?v=92`;
+  if (FOTOS_PESO[p.id]) return `img/produtos/${p.id}-${peso.replace(' ', '')}.webp?v=93`;
   const todos = p.tamAll || p.tam || [];
   return (p.fotosPeso && p.fotosPeso[peso]) || (peso === todos[0] ? p.foto : '') || p.foto;
 }
@@ -54,8 +54,8 @@ const CAPAS_LINHA = ['chas', 'puros', 'inteiros', 'misturas', 'desidratados'];
 // foto do quadradinho e capa larga de cada linha: a enviada pelo app (Meu site) vale mais que a do site
 const NOME_IMG = (id) => (id === 'desidratados' ? 'cogumelos-linha' : id);
 const EXT_IMG = (id) => (id === 'desidratados' ? 'jpg' : 'webp');
-const fotoLinha = (l) => l.foto || (FOTOS_LINHA.includes(l.id) ? `img/linhas/${NOME_IMG(l.id)}.${EXT_IMG(l.id)}?v=92` : '');
-const capaLinha = (l) => l.capa || (CAPAS_LINHA.includes(l.id) ? `img/linhas/${NOME_IMG(l.id)}-capa.${EXT_IMG(l.id)}?v=92` : '');
+const fotoLinha = (l) => l.foto || (FOTOS_LINHA.includes(l.id) ? `img/linhas/${NOME_IMG(l.id)}.${EXT_IMG(l.id)}?v=93` : '');
+const capaLinha = (l) => l.capa || (CAPAS_LINHA.includes(l.id) ? `img/linhas/${NOME_IMG(l.id)}-capa.${EXT_IMG(l.id)}?v=93` : '');
 const slug = (n) => n.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 // cada produto tem um id fixo (o slug do nome original): o nome pode ser trocado pelo app sem perder a foto
 PRODUTOS.forEach((p) => { p.id = p.id || slug(p.nome); });
@@ -163,7 +163,7 @@ function inicio() {
   const pegar = (nome) => PRODUTOS.find((p) => p.nome === nome);
   // produtos com foto real entram como recorte (sem fundo); os outros com a embalagem desenhada
   const vit = (n) => FOTOS.has(slug(n)) ? `<img src="img/produtos/${slug(n)}-recorte.png" alt="${n} Supermisto">` : embalagem(pegar(n), pegar(n).tam[1] || pegar(n).tam[0]);
-  $('#vitrine').innerHTML = '<img class="chef" src="img/chef-supermisto.webp?v=92" srcset="img/chef-supermisto-640.webp?v=92 640w, img/chef-supermisto.webp?v=92 1000w" sizes="(max-width:860px) 92vw, 460px" width="1000" height="1159" alt="Chef Supermisto apresentando os temperos desidratados">';
+  $('#vitrine').innerHTML = '<img class="chef" src="img/chef-supermisto.webp?v=93" srcset="img/chef-supermisto-640.webp?v=93 640w, img/chef-supermisto.webp?v=93 1000w" sizes="(max-width:860px) 92vw, 460px" width="1000" height="1159" alt="Chef Supermisto apresentando os temperos desidratados">';
   // só aparecem as linhas que já têm produto com foto (as outras entram quando a arte chegar)
   const linhasOk = LINHAS.filter((l) => PRODUTOS.some((p) => p.linha === l.id && temFoto(p)));
   $('#num-prod').textContent = PRODUTOS.filter(temFoto).length; $('#num-linhas').textContent = linhasOk.length;
