@@ -1130,3 +1130,6 @@ body.gav-aberta{overflow:hidden}
 
 .ln-nav.rv-linhas{display:flex!important;flex-wrap:wrap!important;gap:8px!important;overflow:visible!important;max-width:none!important;margin:0 0 22px!important;padding:0!important}
 .rv-linhas a{white-space:normal}
+
+.prod-tam .varios{border:0!important;background:none!important;padding:0!important;font-weight:600;color:#B08A2E;font-size:13px}
+.prod-tam .varios::before{content:'● ';font-size:9px;vertical-align:1px}
