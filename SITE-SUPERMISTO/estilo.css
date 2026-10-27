@@ -1140,3 +1140,4 @@ body.gav-aberta{overflow:hidden}
   .grade .prod .prod-tam .varios{font-size:12px}
   html{scroll-behavior:auto!important}
 }
+.hero::after{display:none!important}
