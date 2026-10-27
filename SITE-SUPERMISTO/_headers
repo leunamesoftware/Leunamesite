@@ -1,0 +1,10 @@
+/
+  Cache-Control: no-cache
+/*.html
+  Cache-Control: no-cache
+/site.js
+  Cache-Control: no-cache
+/estilo.css
+  Cache-Control: no-cache
+/produtos.js
+  Cache-Control: no-cache
