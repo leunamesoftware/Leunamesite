@@ -148,7 +148,7 @@ function inicio() {
   $('#num-prod').textContent = PRODUTOS.filter(temFoto).length; $('#num-linhas').textContent = LINHAS.length;
   $('#linhas-grid').innerHTML = LINHAS.map((l) => {
     const qtd = PRODUTOS.filter((p) => p.linha === l.id).length;
-    const f = fotoLinha(l), fundo = f ? `background-image:url('${f}')` : `background:radial-gradient(circle at 50% 40%,#7B1F95,#2C0739)`;
+    const f = fotoLinha(l), fundo = f ? `background-image:url('${f}')` : `background:radial-gradient(circle at 50% 40%,#7A3E1E,#2A1208)`;
     return `<a class="linha aparece" href="linha.html?id=${l.id}"><span class="linha-foto" style="${fundo}">${f ? '' : `<i>${l.emoji}</i>`}</span><b>${l.nome}</b><em>${qtd} produtos</em></a>`;
   }).join('');
   // só produtos com foto real (os outros entram quando a foto chegar)
@@ -319,4 +319,21 @@ document.addEventListener('DOMContentLoaded', async () => {
   if ($('#rv-form')) tentar(() => revenda());
   ligacoes();
   observar();
+});
+
+/* ---------- zoom da foto ao tocar ---------- */
+document.addEventListener('click', (e) => {
+  const im = e.target.closest('.pd-foto img, .modal-img img.foto-prod, .vit-kit, .ln-capa-larga img');
+  if (!im || im.closest('a')) return;
+  const z = document.createElement('div');
+  z.className = 'zoom';
+  z.setAttribute('role', 'dialog');
+  z.innerHTML = `<button class="zoom-x" aria-label="Fechar">×</button><img src="${im.currentSrc || im.src}" alt="${(im.alt || '').replace(/"/g, '')}"><span class="zoom-dica">Toque na foto para aproximar</span>`;
+  const fechar = () => { z.remove(); document.removeEventListener('keydown', esc); };
+  const esc = (k) => { if (k.key === 'Escape') fechar(); };
+  z.querySelector('.zoom-x').onclick = fechar;
+  z.querySelector('img').onclick = (ev) => { ev.stopPropagation(); z.classList.toggle('mais'); z.querySelector('.zoom-dica')?.remove(); };
+  z.onclick = (ev) => { if (ev.target === z) fechar(); };
+  document.addEventListener('keydown', esc);
+  document.body.appendChild(z);
 });

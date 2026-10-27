@@ -19,7 +19,7 @@ const LINHAS = [
   { id: 'pastas', nome: 'Pastas e temperos pastosos', emoji: '🧄', cor: '#E6DDBE', desc: 'Alho, gengibre, pimenta e ervas batidos, prontos para usar.' },
   { id: 'graos', nome: 'Grãos e sementes', emoji: '🫘', cor: '#B08A4A', desc: 'Grãos e sementes selecionados e embalados por nós.' },
   { id: 'desidratados', nome: 'Desidratados e cogumelos', emoji: '🍄', cor: '#8A5A3A', desc: 'Legumes, frutas e cogumelos desidratados.' },
-  { id: 'chef', nome: 'Linha Chef Supermisto', emoji: '👨‍🍳', cor: '#5E1675', desc: 'Moedores, utensílios e kits presente com a nossa marca.' },
+  { id: 'chef', nome: 'Linha Chef Supermisto', emoji: '👨‍🍳', cor: '#5A2A14', desc: 'Moedores, utensílios e kits presente com a nossa marca.' },
 ];
 
 const P = (nome, linha, cor, desc, usos, tam, emb = 'pouch', tag = '') => ({ nome, linha, cor, desc, usos, tam, emb, tag });
@@ -241,7 +241,7 @@ PRODUTOS.push(
   P('Alecrim para chá', 'chas', '#6E8B3D', 'Folhas de alecrim secas, bem perfumadas.', 'Chá quente.', CHA),
   P('Chá de maracujá com hibisco', 'chas', '#C4501E', 'Casca de maracujá desidratada com hibisco.', 'Chá gelado ou quente.', CHA),
   P('Chá de limão com capim-santo', 'chas', '#A8B44A', 'Capim-santo e casca de limão.', 'Chá gelado e refrescante.', CHA),
-  P('Kit chás da casa', 'chas', '#5E1675', 'Caixa com 6 sabores de chá Supermisto.', 'Para provar todos e dar de presente.', ['6 sabores']),
+  P('Kit chás da casa', 'chas', '#5A2A14', 'Caixa com 6 sabores de chá Supermisto.', 'Para provar todos e dar de presente.', ['6 sabores']),
   P('Erva-doce para chá', 'chas', '#A8A46A', 'Sementes de erva-doce selecionadas.', 'Chá quente, adoçado ou puro.', CHA),
   P('Sopa de legumes', 'sopas', '#D98A2B', 'Legumes desidratados e temperos naturais: é só ferver.', 'Jantar rápido, marmita e lanche quente.', SOPA),
   P('Creme de abóbora com gengibre', 'sopas', '#E08A2E', 'Abóbora e gengibre em pó para um creme encorpado.', 'Jantar e entrada.', SOPA),
@@ -274,9 +274,9 @@ PRODUTOS.push(
   P('Tábua de corte gravada', 'chef', '#9C6A2E', 'Tábua de madeira com a nossa marca.', 'Cortes, petiscos e tábua de frios.', UN),
   P('Moedor de pimenta Supermisto', 'chef', '#3A3330', 'Moedor com regulagem de moagem e a nossa marca.', 'Pimenta-do-reino em grão, sal grosso e especiarias.', UN),
   P('Moedor de sal grosso Supermisto', 'chef', '#E8DFC9', 'Moedor de vidro com a marca Supermisto.', 'Sal grosso, sal de parrilla e sal temperado.', UN),
-  P('Kit moedores Supermisto', 'chef', '#5E1675', 'Dupla de moedores (pimenta e sal) com refil.', 'Mesa, churrasco e presente.', UN),
+  P('Kit moedores Supermisto', 'chef', '#5A2A14', 'Dupla de moedores (pimenta e sal) com refil.', 'Mesa, churrasco e presente.', UN),
   P('Pilão de madeira', 'chef', '#8A5A2E', 'Pilão para amassar alho e especiarias, com a nossa marca.', 'Alho, ervas e temperos frescos.', UN),
-  P('Kit presente Supermisto', 'chef', '#5E1675', 'Avental e pano de prato Supermisto com temperos, em caixa de presente.', 'Presente para quem gosta de cozinhar.', UN),
+  P('Kit presente Supermisto', 'chef', '#5A2A14', 'Avental e pano de prato Supermisto com temperos, em caixa de presente.', 'Presente para quem gosta de cozinhar.', UN),
 );
 
 // Diferenciais: sabores do Brasil, sem sal adicionado, molhos com fruta e por ardência, sais especiais e kits com receita.
