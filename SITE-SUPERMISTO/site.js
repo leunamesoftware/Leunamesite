@@ -23,13 +23,14 @@ const KITS = [
    Fotos enviadas pelo app (Meu site) também valem: a principal é do primeiro tamanho e as pequenas dos outros. */
 const FOTOS = new Set();
 const FOTOS_PESO = {
-  'tomate-seco-desidratado': ['10 g', '30 g', '50 g', '100 g'], 'cebola-desidratada-em-flocos': ['10 g', '30 g', '50 g', '100 g'],
+  'tomate-seco-desidratado': ['10 g', '20 g', '30 g', '50 g', '100 g'],   // 200 g, 250 g, 500 g e 1 kg: arte pronta, escondidos até liberar
+  'cebola-desidratada-em-flocos': ['10 g', '30 g', '50 g', '100 g'],
   'alho-desidratado-em-flocos': ['10 g', '30 g', '50 g', '100 g'], 'pimentao-desidratado': ['10 g', '30 g', '50 g', '100 g'],
   'banana-desidratada': ['10 g', '30 g', '50 g', '100 g'], 'maca-desidratada': ['10 g', '30 g', '50 g', '100 g'],
   'cogumelo-shiitake-desidratado': ['10 g', '30 g', '50 g', '100 g'], 'champignon-desidratado': ['10 g', '30 g', '50 g', '100 g'],
   'mix-de-cogumelos': ['10 g', '30 g', '50 g', '100 g'],
 };
-const ORDEM_TAM = ['10 g', '30 g', '50 g', '100 g', '250 g', '500 g', '1 kg'];
+const ORDEM_TAM = ['10 g', '20 g', '30 g', '50 g', '100 g', '250 g', '500 g', '1 kg'];
 const ordemTam = (t) => { const i = ORDEM_TAM.indexOf(t); return i < 0 ? 99 : i; };
 /** Tamanhos que têm foto (os outros não aparecem para o cliente). */
 function tamFoto(p) {
@@ -39,7 +40,7 @@ function tamFoto(p) {
   return todos.filter((t, i) => (i === 0 && p.foto) || f[t]).sort((x, y) => ordemTam(x) - ordemTam(y));
 }
 function fotoUrl(p, peso) {
-  if (FOTOS_PESO[p.id]) return `img/produtos/${p.id}-${peso.replace(' ', '')}.webp?v=66`;
+  if (FOTOS_PESO[p.id]) return `img/produtos/${p.id}-${peso.replace(' ', '')}.webp?v=68`;
   const todos = p.tamAll || p.tam || [];
   return (p.fotosPeso && p.fotosPeso[peso]) || (peso === todos[0] ? p.foto : '') || p.foto;
 }
