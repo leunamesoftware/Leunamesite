@@ -44,7 +44,7 @@ function tamFoto(p) {
   return todos.filter((t, i) => (i === 0 && p.foto) || f[t]).sort((x, y) => ordemTam(x) - ordemTam(y));
 }
 function fotoUrl(p, peso) {
-  if (FOTOS_PESO[p.id]) return `img/produtos/${p.id}-${peso.replace(' ', '')}.webp?v=83`;
+  if (FOTOS_PESO[p.id]) return `img/produtos/${p.id}-${peso.replace(' ', '')}.webp?v=84`;
   const todos = p.tamAll || p.tam || [];
   return (p.fotosPeso && p.fotosPeso[peso]) || (peso === todos[0] ? p.foto : '') || p.foto;
 }
@@ -54,8 +54,8 @@ const CAPAS_LINHA = ['chas', 'puros', 'inteiros', 'misturas', 'desidratados'];
 // foto do quadradinho e capa larga de cada linha: a enviada pelo app (Meu site) vale mais que a do site
 const NOME_IMG = (id) => (id === 'desidratados' ? 'cogumelos-linha' : id);
 const EXT_IMG = (id) => (id === 'desidratados' ? 'jpg' : 'webp');
-const fotoLinha = (l) => l.foto || (FOTOS_LINHA.includes(l.id) ? `img/linhas/${NOME_IMG(l.id)}.${EXT_IMG(l.id)}?v=83` : '');
-const capaLinha = (l) => l.capa || (CAPAS_LINHA.includes(l.id) ? `img/linhas/${NOME_IMG(l.id)}-capa.${EXT_IMG(l.id)}?v=83` : '');
+const fotoLinha = (l) => l.foto || (FOTOS_LINHA.includes(l.id) ? `img/linhas/${NOME_IMG(l.id)}.${EXT_IMG(l.id)}?v=84` : '');
+const capaLinha = (l) => l.capa || (CAPAS_LINHA.includes(l.id) ? `img/linhas/${NOME_IMG(l.id)}-capa.${EXT_IMG(l.id)}?v=84` : '');
 const slug = (n) => n.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 // cada produto tem um id fixo (o slug do nome original): o nome pode ser trocado pelo app sem perder a foto
 PRODUTOS.forEach((p) => { p.id = p.id || slug(p.nome); });
@@ -402,3 +402,12 @@ function menuCat(alvo, atual) {
   document.addEventListener('click', (e) => { if (!alvo.contains(e.target)) fechar(); });
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape') fechar(); });
 }
+
+/* ao chegar com #âncora (ex.: Nossa história vindo de outra página), vai ao lugar certo mesmo depois que as fotos e produtos carregam */
+(function () {
+  const ir = () => { const h = location.hash; if (h.length > 1) { const el = document.getElementById(decodeURIComponent(h.slice(1))); if (el) el.scrollIntoView(); } };
+  if (location.hash.length > 1) {
+    if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+    window.addEventListener('load', () => { ir(); setTimeout(ir, 400); setTimeout(ir, 1200); });
+  }
+})();

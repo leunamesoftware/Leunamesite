@@ -1133,3 +1133,10 @@ body.gav-aberta{overflow:hidden}
 
 .prod-tam .varios{border:0!important;background:none!important;padding:0!important;font-weight:600;color:#B08A2E;font-size:13px}
 .prod-tam .varios::before{content:'● ';font-size:9px;vertical-align:1px}
+
+@media (max-width:700px){
+  .grade .prod .btn{width:100%;box-sizing:border-box;padding:12px 6px!important;font-size:11.5px!important;letter-spacing:.2px!important;white-space:normal;text-align:center;line-height:1.2}
+  .grade .prod .prod-corpo{overflow:hidden;min-width:0}
+  .grade .prod .prod-tam .varios{font-size:12px}
+  html{scroll-behavior:auto!important}
+}
