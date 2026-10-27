@@ -18,32 +18,45 @@ const KITS = [
   { ico: '🎁', nome: 'Kit Presente Gourmet', itens: 'Geleia de pimenta, pimenta biquinho, lemon pepper e ervas finas' },
 ];
 
-/* Fotos reais: coloque o arquivo em img/produtos/<nome-do-produto>.webp e o nome aqui (ex.: 'colorau').
-   Produto sem foto aparece com a embalagem desenhada. */
-const FOTOS = new Set(['colorau', 'tempero-completo', 'pimenta-do-reino-moida', 'cominho-moido', 'chimichurri', 'oregano', 'paprica-doce', 'paprica-defumada', 'acafrao-da-terra-curcuma', 'alho-em-po', 'cebola-em-po', 'lemon-pepper', 'pimenta-calabresa', 'canela-em-po', 'tempero-baiano', 'molho-de-pimenta-vermelha', 'molho-shoyu', 'molho-de-alho',
-  'paprica-picante', 'noz-moscada-moida', 'cravo-da-india-moido', 'gengibre-em-po', 'mostarda-em-grao', 'tempero-para-peixe',
-  'ervas-finas', 'tempero-para-frango', 'tempero-para-feijao', 'tempero-para-arroz', 'curry',
-  'tempero-para-saladas', 'tempero-para-pizza', 'tempero-para-carne-moida', 'sal-com-alho', 'sal-de-ervas', 'tempero-para-peixe']);
+/* Fotos dos produtos: só aparece para o cliente o que tem foto. Cada tamanho (10 g, 30 g, 50 g, 100 g, 250 g, 500 g, 1 kg)
+   só aparece quando existe a foto dele. Fotos do site: img/produtos/<id>-<peso>.webp (ex.: tomate-seco-desidratado-30g.webp).
+   Fotos enviadas pelo app (Meu site) também valem: a principal é do primeiro tamanho e as pequenas dos outros. */
+const FOTOS = new Set();
+const FOTOS_PESO = {
+  'tomate-seco-desidratado': ['10 g', '30 g', '50 g', '100 g'], 'cebola-desidratada-em-flocos': ['10 g', '30 g', '50 g', '100 g'],
+  'alho-desidratado-em-flocos': ['10 g', '30 g', '50 g', '100 g'], 'pimentao-desidratado': ['10 g', '30 g', '50 g', '100 g'],
+  'banana-desidratada': ['10 g', '30 g', '50 g', '100 g'], 'maca-desidratada': ['10 g', '30 g', '50 g', '100 g'],
+  'cogumelo-shiitake-desidratado': ['10 g', '30 g', '50 g', '100 g'], 'champignon-desidratado': ['10 g', '30 g', '50 g', '100 g'],
+  'mix-de-cogumelos': ['10 g', '30 g', '50 g', '100 g'],
+};
+const ORDEM_TAM = ['10 g', '30 g', '50 g', '100 g', '250 g', '500 g', '1 kg'];
+const ordemTam = (t) => { const i = ORDEM_TAM.indexOf(t); return i < 0 ? 99 : i; };
+/** Tamanhos que têm foto (os outros não aparecem para o cliente). */
+function tamFoto(p) {
+  if (FOTOS_PESO[p.id]) return FOTOS_PESO[p.id];
+  const todos = p.tamAll || p.tam || [];
+  const f = p.fotosPeso || {};
+  return todos.filter((t, i) => (i === 0 && p.foto) || f[t]).sort((x, y) => ordemTam(x) - ordemTam(y));
+}
+function fotoUrl(p, peso) {
+  if (FOTOS_PESO[p.id]) return `img/produtos/${p.id}-${peso.replace(' ', '')}.webp?v=66`;
+  const todos = p.tamAll || p.tam || [];
+  return (p.fotosPeso && p.fotosPeso[peso]) || (peso === todos[0] ? p.foto : '') || p.foto;
+}
 // fotos das linhas (cartão 4:3) e capas largas das páginas de linha (img/linhas/<id>-capa.webp)
 const FOTOS_LINHA = ['ervas', 'puros', 'conservas', 'misturas', 'churrasco', 'molhos', 'doces', 'amidos', 'chas', 'inteiros'];
-const CAPAS_LINHA = ['chas', 'puros', 'inteiros', 'misturas'];
+const CAPAS_LINHA = ['chas', 'puros', 'inteiros', 'misturas', 'desidratados'];
 // foto do quadradinho e capa larga de cada linha: a enviada pelo app (Meu site) vale mais que a do site
 const fotoLinha = (l) => l.foto || (FOTOS_LINHA.includes(l.id) ? `img/linhas/${l.id}.webp?v=63` : '');
 const capaLinha = (l) => l.capa || (CAPAS_LINHA.includes(l.id) ? `img/linhas/${l.id}-capa.webp?v=63` : '');
 const slug = (n) => n.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-// foto do tamanho escolhido: 10 g (padrão), 50 g, 100 g ou o pacote de 1 kg
-const PESO_FOTO = { '50 g': '-50g', '100 g': '-100g', '1 kg': '-1kg' };
-// sabores que já têm a foto do pacote de 1 kg (os outros mostram o sachê com o aviso)
-const FOTOS_1KG = new Set(['acafrao-da-terra-curcuma', 'alho-em-po', 'canela-em-po', 'cebola-em-po', 'chimichurri', 'colorau', 'cominho-moido', 'gengibre-em-po', 'mostarda-em-grao', 'tempero-para-peixe',
-  'lemon-pepper', 'oregano', 'paprica-defumada', 'paprica-doce', 'pimenta-calabresa', 'pimenta-do-reino-moida', 'tempero-baiano', 'tempero-completo']);
 // cada produto tem um id fixo (o slug do nome original): o nome pode ser trocado pelo app sem perder a foto
 PRODUTOS.forEach((p) => { p.id = p.id || slug(p.nome); });
-const temFoto = (p) => FOTOS.has(p.id) || !!p.foto;
+const temFoto = (p) => tamFoto(p).length > 0;
 function midia(p, peso) {
-  const s = p.id;
-  if (p.foto) return `<img class="foto-prod" src="${escapar((p.fotosPeso && p.fotosPeso[peso]) || p.foto)}" alt="${escapar(p.nome)} Supermisto ${peso || ''}" loading="lazy">`;
-  if (FOTOS.has(s) && peso === '1 kg' && !FOTOS_1KG.has(s)) return `<img class="foto-prod" src="img/produtos/${s}.webp?v=63" alt="${escapar(p.nome)} Supermisto" loading="lazy"><span class="foto-aviso">Foto do pacote de 1 kg em breve</span>`;
-  return FOTOS.has(s) ? `<img class="foto-prod" src="img/produtos/${s}${PESO_FOTO[peso] || ''}.webp?v=63" alt="${escapar(p.nome)} Supermisto ${peso || ''}" loading="lazy">` : embalagem(p, peso);
+  const t = tamFoto(p), pe = t.includes(peso) ? peso : t[0];
+  if (!pe) return embalagem(p, peso);
+  return `<img class="foto-prod" src="${escapar(fotoUrl(p, pe))}" alt="${escapar(p.nome)} Supermisto ${pe}" loading="lazy" onerror="this.closest('.prod,.pd-foto,.rc-prod')&&this.closest('.prod,.rc-prod')&&(this.closest('.prod,.rc-prod').hidden=true)">`;
 }
 
 const $ = (s, el = document) => el.querySelector(s);
@@ -60,7 +73,6 @@ function cartao(p) {
       <small class="prod-linha">${linhaDe(p.linha).nome}</small>
       <h3>${escapar(p.nome)}</h3>
       <p>${escapar(p.desc)}</p>
-      <div class="prod-tam">${p.tam.map((t) => `<span>${t}</span>`).join('')}</div>
       <span class="btn btn-breve">Em breve</span>
     </div>
   </article>`;
@@ -175,7 +187,7 @@ function catalogo() {
   const desenhar = () => {
     $$('#filtros button').forEach((b) => b.classList.toggle('ativo', b.dataset.f === linha));
     const q = norm(busca.value.trim());
-    const lista = PRODUTOS.map((p, i) => [p, i]).filter(([p]) => (linha === 'todos' || p.linha === linha) && (!q || norm(p.nome + ' ' + p.desc + ' ' + p.usos).includes(q)))
+    const lista = PRODUTOS.map((p, i) => [p, i]).filter(([p]) => temFoto(p) && (linha === 'todos' || p.linha === linha) && (!q || norm(p.nome + ' ' + p.desc + ' ' + p.usos).includes(q)))
       .sort(([a], [b]) => temFoto(b) - temFoto(a));
     $('#conta').textContent = lista.length ? `${lista.length} produto${lista.length > 1 ? 's' : ''}` : 'Nenhum produto encontrado. Chame no WhatsApp: a gente pode produzir!';
     $('#catalogo').innerHTML = lista.map(([p, i]) => cartao(p, i)).join('');
@@ -190,11 +202,11 @@ function catalogo() {
 function paginaLinha() {
   const l = LINHAS.find((x) => x.id === new URLSearchParams(location.search).get('id')) || LINHAS[0];
   document.title = `${l.nome} | Supermisto Temperos`;
-  const lista = PRODUTOS.map((p, i) => [p, i]).filter(([p]) => p.linha === l.id)
+  const lista = PRODUTOS.map((p, i) => [p, i]).filter(([p]) => p.linha === l.id && temFoto(p))
     .sort(([a], [b]) => temFoto(b) - temFoto(a));
   const prontos = lista.filter(([p]) => temFoto(p)).length;
   const titulo = `<span class="sobre-tit amarelo">Nossas linhas</span><h1>${l.nome}</h1><p>${l.desc}</p>
-    <span class="ln-conta">${lista.length} produtos${prontos < lista.length ? ` · ${lista.length - prontos} em breve` : ''}</span>`;
+    <span class="ln-conta">${lista.length ? `${lista.length} produto${lista.length > 1 ? 's' : ''}` : 'Em breve novidades nesta linha'}</span>`;
   // todas as linhas no mesmo modelo: banner (ou a foto do quadradinho) com a faixa roxa e o nome por cima
   const img = capaLinha(l) || fotoLinha(l);
   $('#linha').innerHTML = `<div class="ln-capa-larga${img ? (capaLinha(l) ? '' : ' so-foto') : ' sem-foto'}">${img ? `<img src="${img}" alt="${l.nome} Supermisto" width="1600" height="900">` : `<span class="ln-emoji">${l.emoji}</span>`}<div class="ln-capa-txt"><div class="caixa"><div>${titulo}</div></div></div></div>`;
@@ -309,6 +321,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   hamb.addEventListener('click', () => { const ab = menu.classList.toggle('aberto'); hamb.setAttribute('aria-expanded', ab); });
   $$('#menu a').forEach((a) => a.addEventListener('click', () => { menu.classList.remove('aberto'); hamb.setAttribute('aria-expanded', false); }));
   await carregarCatalogo();
+  PRODUTOS.forEach((p) => { p.tamAll = p.tamAll || p.tam; const t = tamFoto(p); if (t.length) p.tam = t; });
   rodape();
   if ($('#vitrine')) tentar(() => inicio());
   if ($('#catalogo')) tentar(() => catalogo());

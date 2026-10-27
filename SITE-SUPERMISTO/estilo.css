@@ -821,7 +821,7 @@ body{background:#FBF6EE}
 @media (max-width:860px){.modal-img{height:min(46vh,380px)!important;padding:6px!important}.modal-img .foto-prod{height:100%!important;max-height:100%!important;width:100%!important;max-width:100%!important;object-fit:contain!important}}
 
 /* Roxo e dourado (logo nova): topo e rodapé roxos com a logo branca solta */
-.topo{background:linear-gradient(90deg,#3E1C0E,#5A2A14)!important;box-shadow:0 2px 16px rgba(40,5,50,.35)!important}
+.topo{background:linear-gradient(90deg,#3E1C0E,#5A2A14)!important;box-shadow:0 2px 16px rgba(40,15,5,.35)!important}
 .menu a{color:#fff}
 .marca img{height:60px!important;width:auto!important}
 @media (max-width:1120px){.menu{background:#3E1C0E}.menu a{color:#fff;border-bottom-color:rgba(255,255,255,.12)}}
@@ -900,7 +900,7 @@ body{background:#FBF6EE}
 .pd-trilha a{color:var(--roxo);font-weight:600}
 .pd-grid{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:start}
 .pd-foto{background:radial-gradient(circle at 50% 55%,#FFF4E6 0%,#F6EEE2 75%);border-radius:24px;aspect-ratio:1/1;display:grid;place-items:center;padding:18px}
-.pd-foto .foto-prod{position:static;width:100%;height:100%;object-fit:contain;padding:0;background:transparent;filter:drop-shadow(0 14px 22px rgba(60,20,70,.2))}
+.pd-foto .foto-prod{position:static;width:100%;height:100%;object-fit:contain;padding:0;background:transparent;filter:drop-shadow(0 14px 22px rgba(70,35,15,.2))}
 .pd-foto svg{width:60%;height:auto}
 .pd-txt{display:grid;gap:12px;align-content:start}
 .pd-txt .prod-linha{color:#9C7420;font-weight:700;font-size:13px;letter-spacing:1px;text-transform:uppercase}
@@ -951,7 +951,7 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
 .pd-btns{grid-template-columns:repeat(2,minmax(0,1fr))}
 @media (max-width:380px){.pd-btns .btn{font-size:12px;letter-spacing:.2px;padding:14px 6px}}
 .pd-foto{position:relative}
-.foto-aviso{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);background:rgba(61,10,79,.88);color:#fff;font-size:12px;font-weight:600;padding:5px 12px;border-radius:99px;white-space:nowrap}
+.foto-aviso{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);background:rgba(62,28,14,.88);color:#fff;font-size:12px;font-weight:600;padding:5px 12px;border-radius:99px;white-space:nowrap}
 /* capa larga da linha: no computador o título vai por cima, no espaço livre à esquerda da foto */
 .ln-capa-larga{position:relative;background:#3E1C0E}
 .ln-capa-txt{background:linear-gradient(135deg,#3E1C0E,#7A3E1E);color:#fff;padding:22px 0}
@@ -959,7 +959,7 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
 .ln-capa-txt p{color:#EFE2CF;font-size:17px;max-width:34ch}
 @media (min-width:861px){
   .ln-capa-larga img{max-height:620px;object-fit:cover;object-position:70% 55%}
-  .ln-capa-txt{position:absolute;inset:0;background:linear-gradient(90deg,rgba(45,7,57,.75) 0%,rgba(45,7,57,.35) 38%,transparent 55%);display:flex;align-items:center;padding:0}
+  .ln-capa-txt{position:absolute;inset:0;background:linear-gradient(90deg,rgba(44,19,9,.75) 0%,rgba(44,19,9,.35) 38%,transparent 55%);display:flex;align-items:center;padding:0}
   .ln-capa-txt .caixa{width:100%}.ln-capa-txt .caixa>div{max-width:440px}
 }
 @media (min-width:861px){.ln-capa-txt .caixa{max-width:1200px;margin:0 auto;padding:0 32px}}
@@ -984,7 +984,7 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
 .ln-capa-larga{position:relative;overflow:hidden;background:#2A1208}
 .ln-capa-larga img{display:block;width:100%;object-fit:cover}
 .ln-capa-txt{position:absolute!important;inset:0;display:flex!important;align-items:center;padding:0!important;
-  background:linear-gradient(90deg,rgba(44,19,9,.96) 0%,rgba(61,10,79,.88) 26%,rgba(90,42,20,.55) 46%,rgba(90,42,20,.12) 64%,transparent 76%)!important}
+  background:linear-gradient(90deg,rgba(44,19,9,.96) 0%,rgba(62,28,14,.88) 26%,rgba(90,42,20,.55) 46%,rgba(90,42,20,.12) 64%,transparent 76%)!important}
 .ln-capa-txt::after{content:'';position:absolute;left:0;right:0;bottom:0;height:4px;background:linear-gradient(90deg,#C29433,#E3BE72 40%,transparent 80%)}
 .ln-capa-txt .caixa{width:100%;max-width:1200px;margin:0 auto;padding:0 32px}
 .ln-capa-txt .caixa>div{max-width:440px}
@@ -992,7 +992,7 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
 @media (min-width:861px){.ln-capa-larga img{height:min(560px,calc(100svh - 84px));max-height:none}}
 @media (max-width:860px){
   .ln-capa-larga img{height:300px;object-position:78% 50%}
-  .ln-capa-txt{background:linear-gradient(90deg,rgba(44,19,9,.95) 0%,rgba(61,10,79,.85) 40%,rgba(90,42,20,.45) 66%,transparent 92%)!important}
+  .ln-capa-txt{background:linear-gradient(90deg,rgba(44,19,9,.95) 0%,rgba(62,28,14,.85) 40%,rgba(90,42,20,.45) 66%,transparent 92%)!important}
   .ln-capa-txt .caixa{padding:0 18px}.ln-capa-txt .caixa>div{max-width:250px}
   .ln-capa-txt h1{font-size:30px!important;margin:4px 0 6px!important}
   .ln-capa-txt p{font-size:14px!important;line-height:1.4}
