@@ -43,7 +43,7 @@ function tamFoto(p) {
   return todos.filter((t, i) => (i === 0 && p.foto) || f[t]).sort((x, y) => ordemTam(x) - ordemTam(y));
 }
 function fotoUrl(p, peso) {
-  if (FOTOS_PESO[p.id]) return `img/produtos/${p.id}-${peso.replace(' ', '')}.webp?v=72`;
+  if (FOTOS_PESO[p.id]) return `img/produtos/${p.id}-${peso.replace(' ', '')}.webp?v=73`;
   const todos = p.tamAll || p.tam || [];
   return (p.fotosPeso && p.fotosPeso[peso]) || (peso === todos[0] ? p.foto : '') || p.foto;
 }
@@ -51,8 +51,8 @@ function fotoUrl(p, peso) {
 const FOTOS_LINHA = ['desidratados', 'ervas', 'puros', 'conservas', 'misturas', 'churrasco', 'molhos', 'doces', 'amidos', 'chas', 'inteiros'];
 const CAPAS_LINHA = ['chas', 'puros', 'inteiros', 'misturas', 'desidratados'];
 // foto do quadradinho e capa larga de cada linha: a enviada pelo app (Meu site) vale mais que a do site
-const fotoLinha = (l) => l.foto || (FOTOS_LINHA.includes(l.id) ? `img/linhas/${l.id}.webp?v=72` : '');
-const capaLinha = (l) => l.capa || (CAPAS_LINHA.includes(l.id) ? `img/linhas/${l.id}-capa.webp?v=72` : '');
+const fotoLinha = (l) => l.foto || (FOTOS_LINHA.includes(l.id) ? `img/linhas/${l.id}.webp?v=73` : '');
+const capaLinha = (l) => l.capa || (CAPAS_LINHA.includes(l.id) ? `img/linhas/${l.id}-capa.webp?v=73` : '');
 const slug = (n) => n.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 // cada produto tem um id fixo (o slug do nome original): o nome pode ser trocado pelo app sem perder a foto
 PRODUTOS.forEach((p) => { p.id = p.id || slug(p.nome); });
@@ -188,9 +188,12 @@ function catalogo() {
   let linha = LINHAS.some((l) => l.id === url.get('linha')) ? url.get('linha') : 'todos';
   const busca = $('#busca');
   const norm = (s) => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
-  $('#filtros').innerHTML = `<button data-f="todos">Todos</button>` + LINHAS.map((l) => `<button data-f="${l.id}">${l.nome}</button>`).join('');
+  const qtd = (id) => PRODUTOS.filter((p) => temFoto(p) && (!id || p.linha === id)).length;
+  const comProd = LINHAS.filter((l) => qtd(l.id));
+  if (linha !== 'todos' && !comProd.some((l) => l.id === linha)) linha = 'todos';
+  $('#filtros').innerHTML = `<label class="sel"><span>Categoria</span><select id="sel-linha" aria-label="Escolher categoria"><option value="todos">Todas as categorias (${qtd('')})</option>${comProd.map((l) => `<option value="${l.id}">${l.nome} (${qtd(l.id)})</option>`).join('')}</select></label>`;
+  $('#sel-linha').value = linha;
   const desenhar = () => {
-    $$('#filtros button').forEach((b) => b.classList.toggle('ativo', b.dataset.f === linha));
     const q = norm(busca.value.trim());
     const lista = PRODUTOS.map((p, i) => [p, i]).filter(([p]) => temFoto(p) && (linha === 'todos' || p.linha === linha) && (!q || norm(p.nome + ' ' + p.desc + ' ' + p.usos).includes(q)))
       .sort(([a], [b]) => temFoto(b) - temFoto(a));
@@ -198,7 +201,7 @@ function catalogo() {
     $('#catalogo').innerHTML = lista.map(([p, i]) => cartao(p, i)).join('');
     observar();
   };
-  $('#filtros').addEventListener('click', (e) => { const b = e.target.closest('button'); if (!b) return; linha = b.dataset.f; history.replaceState(null, '', linha === 'todos' ? 'catalogo.html' : `catalogo.html?linha=${linha}`); desenhar(); });
+  $('#filtros').addEventListener('change', (e) => { linha = e.target.value; history.replaceState(null, '', linha === 'todos' ? 'catalogo.html' : `catalogo.html?linha=${linha}`); desenhar(); });
   busca.addEventListener('input', desenhar);
   desenhar();
 }
@@ -215,7 +218,9 @@ function paginaLinha() {
   // todas as linhas no mesmo modelo: banner (ou a foto do quadradinho) com a faixa roxa e o nome por cima
   const img = capaLinha(l) || fotoLinha(l);
   $('#linha').innerHTML = `<div class="ln-capa-larga${img ? (capaLinha(l) ? '' : ' so-foto') : ' sem-foto'}">${img ? `<img src="${img}" alt="${l.nome} Supermisto" width="1600" height="900">` : `<span class="ln-emoji">${l.emoji}</span>`}<div class="ln-capa-txt"><div class="caixa"><div>${titulo}</div></div></div></div>`;
-  $('#linhas-nav').innerHTML = LINHAS.map((x) => `<a href="linha.html?id=${x.id}"${x.id === l.id ? ' class="ativo" aria-current="page"' : ''}>${x.nome}</a>`).join('');
+  const okL = LINHAS.filter((x) => x.id === l.id || PRODUTOS.some((p) => p.linha === x.id && temFoto(p)));
+  $('#linhas-nav').innerHTML = `<label class="sel"><span>Ver outra categoria</span><select aria-label="Escolher categoria">${okL.map((x) => `<option value="${x.id}"${x.id === l.id ? ' selected' : ''}>${x.nome}</option>`).join('')}</select></label>`;
+  $('#linhas-nav select').addEventListener('change', (e) => { location.href = `linha.html?id=${e.target.value}`; });
   $('#linha-prods').innerHTML = lista.map(([p, i]) => cartao(p, i)).join('');
 }
 
