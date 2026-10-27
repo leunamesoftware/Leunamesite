@@ -1141,3 +1141,34 @@ body.gav-aberta{overflow:hidden}
   html{scroll-behavior:auto!important}
 }
 .hero::after{display:none!important}
+
+/* ===== Nossa história: as duas fotos aparecem em qualquer tamanho de tela ===== */
+.historia{overflow:hidden}
+.hist-foto,.hist-foto2{aspect-ratio:auto;align-self:stretch;min-height:260px}
+.hist-foto{-webkit-mask-image:linear-gradient(90deg,#000 75%,transparent);mask-image:linear-gradient(90deg,#000 75%,transparent)}
+@media (max-width:1120px) and (min-width:701px){
+  .historia{grid-template-columns:1fr 1fr!important}
+  .hist-foto2{display:block!important;grid-column:1;grid-row:2;-webkit-mask-image:none;mask-image:none}
+  .hist-txt{grid-column:2;grid-row:1;padding:34px 28px}
+  .hist-foto{grid-column:1;grid-row:1}
+  .valores{grid-column:2!important;grid-row:2;grid-template-columns:1fr 1fr!important;padding:28px!important;align-content:center}
+}
+@media (max-width:700px){
+  .historia{grid-template-columns:1fr!important}
+  .hist-foto{min-height:210px;-webkit-mask-image:linear-gradient(180deg,#000 75%,transparent);mask-image:linear-gradient(180deg,#000 75%,transparent)}
+  .hist-foto2{display:block!important;min-height:230px;margin:0 20px;border-radius:18px}
+  .hist-txt{padding:18px 20px 22px!important}
+  .valores{grid-template-columns:1fr 1fr!important;padding:22px 20px 34px!important}
+}
+
+/* ===== cartões um pouco maiores e mais quadrados ===== */
+.linhas-grid{display:grid!important;grid-template-columns:repeat(auto-fit,minmax(240px,340px))!important;justify-content:center;gap:22px}
+#favoritos .prod-img,.pd-bloco .grade .prod-img{height:auto!important;aspect-ratio:1/1}
+#favoritos .prod-img .foto-prod,.pd-bloco .grade .prod-img .foto-prod{padding:6px!important}
+@media (max-width:700px){
+  #catalogo,#linha-prods,#favoritos,.pd-bloco .grade{gap:16px!important}
+  .grade .prod-corpo{padding:16px 16px 18px!important}
+  .grade .prod h3{font-size:16px!important}
+  .grade .prod p{font-size:13px!important}
+  .caixa{padding-left:18px;padding-right:18px}
+}
