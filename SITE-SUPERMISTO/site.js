@@ -44,7 +44,7 @@ function tamFoto(p) {
   return todos.filter((t, i) => (i === 0 && p.foto) || f[t]).sort((x, y) => ordemTam(x) - ordemTam(y));
 }
 function fotoUrl(p, peso) {
-  if (FOTOS_PESO[p.id]) return `img/produtos/${p.id}-${peso.replace(' ', '')}.webp?v=76`;
+  if (FOTOS_PESO[p.id]) return `img/produtos/${p.id}-${peso.replace(' ', '')}.webp?v=77`;
   const todos = p.tamAll || p.tam || [];
   return (p.fotosPeso && p.fotosPeso[peso]) || (peso === todos[0] ? p.foto : '') || p.foto;
 }
@@ -54,8 +54,8 @@ const CAPAS_LINHA = ['chas', 'puros', 'inteiros', 'misturas', 'desidratados'];
 // foto do quadradinho e capa larga de cada linha: a enviada pelo app (Meu site) vale mais que a do site
 const NOME_IMG = (id) => (id === 'desidratados' ? 'cogumelos-linha' : id);
 const EXT_IMG = (id) => (id === 'desidratados' ? 'jpg' : 'webp');
-const fotoLinha = (l) => l.foto || (FOTOS_LINHA.includes(l.id) ? `img/linhas/${NOME_IMG(l.id)}.${EXT_IMG(l.id)}?v=76` : '');
-const capaLinha = (l) => l.capa || (CAPAS_LINHA.includes(l.id) ? `img/linhas/${NOME_IMG(l.id)}-capa.${EXT_IMG(l.id)}?v=76` : '');
+const fotoLinha = (l) => l.foto || (FOTOS_LINHA.includes(l.id) ? `img/linhas/${NOME_IMG(l.id)}.${EXT_IMG(l.id)}?v=77` : '');
+const capaLinha = (l) => l.capa || (CAPAS_LINHA.includes(l.id) ? `img/linhas/${NOME_IMG(l.id)}-capa.${EXT_IMG(l.id)}?v=77` : '');
 const slug = (n) => n.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 // cada produto tem um id fixo (o slug do nome original): o nome pode ser trocado pelo app sem perder a foto
 PRODUTOS.forEach((p) => { p.id = p.id || slug(p.nome); });
@@ -365,22 +365,29 @@ document.addEventListener('click', (e) => {
   document.body.appendChild(z);
 });
 
-/* ---------- menu suspenso de categorias (cabeçalho) ---------- */
+/* ---------- gaveta de categorias (botão ☰ no cabeçalho) ---------- */
+const ICONE_LINHA = { desidratados: '🍄', puros: '🌿', ervas: '🌿', misturas: '🧂', churrasco: '🔥', molhos: '🥫', conservas: '🫙', doces: '🍯', amidos: '🌾', chas: '🍵', inteiros: '🌰' };
 function menuCategorias() {
-  const menu = $('#menu'), topo = document.querySelector('.topo');
-  if (!menu || !topo) return;
+  const topo = document.querySelector('.topo'), marca = topo && topo.querySelector('.marca');
+  if (!topo) return;
   const qtd = (id) => PRODUTOS.filter((p) => p.linha === id && temFoto(p)).length;
   const ls = LINHAS.filter((l) => qtd(l.id));
   const btn = document.createElement('button');
-  btn.type = 'button'; btn.className = 'cat-btn'; btn.setAttribute('aria-expanded', 'false');
-  btn.innerHTML = 'Categorias <i></i>';
-  menu.prepend(btn);
-  const painel = document.createElement('div');
-  painel.className = 'cat-painel'; painel.hidden = true;
-  painel.innerHTML = `<div class="caixa"><ul>${ls.map((l) => `<li><a href="linha.html?id=${l.id}"><span>${l.nome}</span><em>${qtd(l.id)}</em></a></li>`).join('')}<li class="todos"><a href="catalogo.html"><span>Ver todos os produtos</span><em>→</em></a></li></ul></div>`;
-  topo.appendChild(painel);
-  const fechar = () => { painel.hidden = true; btn.setAttribute('aria-expanded', 'false'); btn.classList.remove('aberto'); };
-  btn.addEventListener('click', (e) => { e.stopPropagation(); const ab = painel.hidden; painel.hidden = !ab; btn.setAttribute('aria-expanded', ab); btn.classList.toggle('aberto', ab); });
-  document.addEventListener('click', (e) => { if (!painel.contains(e.target)) fechar(); });
-  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') fechar(); });
+  btn.type = 'button'; btn.className = 'cat-btn'; btn.setAttribute('aria-label', 'Abrir categorias'); btn.setAttribute('aria-expanded', 'false');
+  btn.innerHTML = '<b><i></i><i></i><i></i></b><span>Categorias</span>';
+  topo.querySelector('.topo-in').prepend(btn);
+  const fundo = document.createElement('div'); fundo.className = 'gav-fundo'; fundo.hidden = true;
+  const gav = document.createElement('aside'); gav.className = 'gaveta'; gav.setAttribute('aria-label', 'Categorias'); gav.setAttribute('aria-hidden', 'true');
+  gav.innerHTML = `<div class="gav-topo"><h2>Super Misto</h2><button type="button" class="gav-x" aria-label="Fechar">✕</button></div>
+    <h3>Categorias</h3>
+    <ul class="gav-lista">${ls.map((l) => `<li><a href="linha.html?id=${l.id}"><span class="ic">${ICONE_LINHA[l.id] || '🧂'}</span><span class="nm">${l.nome}</span><em>${qtd(l.id)}</em></a></li>`).join('')}</ul>
+    <a class="gav-todos" href="catalogo.html"><span>Todos os produtos</span><b>›</b></a>
+    <h3>Conheça a Super Misto</h3>
+    <ul class="gav-lista gav-inst"><li><a href="index.html"><span class="nm">Início</span></a></li><li><a href="receitas.html"><span class="nm">Receitas</span></a></li><li><a href="revenda.html"><span class="nm">Seja revendedor</span></a></li></ul>`;
+  document.body.append(fundo, gav);
+  const abrir = (v) => { fundo.hidden = !v; gav.classList.toggle('aberta', v); gav.setAttribute('aria-hidden', !v); btn.setAttribute('aria-expanded', v); document.body.classList.toggle('gav-aberta', v); };
+  btn.addEventListener('click', () => abrir(true));
+  fundo.addEventListener('click', () => abrir(false));
+  gav.querySelector('.gav-x').addEventListener('click', () => abrir(false));
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') abrir(false); });
 }
