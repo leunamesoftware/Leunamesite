@@ -1218,3 +1218,11 @@ body.gav-aberta{overflow:hidden}
   #linhas .dupla-txt p{font-size:15px!important;line-height:1.55!important}
   .sec-cab p,.sec p{font-size:15px}
 }
+
+/* ===== Nossa história: fotos separadas e arredondadas em tela média ===== */
+@media (min-width:701px) and (max-width:1120px){
+  .historia{gap:20px!important;padding:34px 22px!important;align-items:stretch}
+  .hist-foto,.hist-foto2{border-radius:20px;-webkit-mask-image:none!important;mask-image:none!important;min-height:230px}
+  .hist-txt{padding:10px 8px!important;align-self:center}
+  .valores{padding:10px 8px!important}
+}
