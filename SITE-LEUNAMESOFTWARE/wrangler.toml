@@ -51,9 +51,11 @@ database_id = "ad40b547-8532-4316-aafe-45280db14070"
 binding = "AI"
 
 # Downloads (APK do painel do dono: /painel/app.apk)
-[[r2_buckets]]
-binding = "DOWNLOADS"
-bucket_name = "leuname-downloads"
+# R2 desligado: a conta Cloudflare ainda não ativou o R2 (erro 10136). Sem ele, vídeos e APKs do painel ficam fora do ar.
+# Ativar no painel da Cloudflare (R2) e descomentar.
+# [[r2_buckets]]
+# binding = "DOWNLOADS"
+# bucket_name = "leuname-downloads"
 
 # Loja Cachik (casa, jardim e decoração). Arquivos em _lojas/casa/. casa.leuname.com redireciona para cachik.
 [[routes]]
