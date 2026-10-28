@@ -5,7 +5,7 @@
 // O preço é SEMPRE o de produtos.json (o navegador só manda id e quantidade).
 import { painel, catalogo, servirVideo, lojaPorHost, roboPedidos, legendaTikTok, salvarVendaPayPal } from "./painel-api.js";
 
-const PAISES = ["DE", "FR", "ES", "IT", "NL", "BE", "AT", "PT", "IE"];
+const PAISES = ["PT"];
 const HOST_LOJA = "pets.leuname.com";
 
 const json = (dados, status = 200) =>
@@ -22,12 +22,12 @@ async function pagar(req, env, L) {
   if (!env.STRIPE_SECRET_KEY) return json({ erro: "stripe-desligado" }, 503);
   const corpo = await req.json().catch(() => null);
   if (!corpo || !Array.isArray(corpo.itens) || !corpo.itens.length || corpo.itens.length > 30) return json({ erro: "carrinho" }, 400);
-  const lang = ["es", "pt", "en"].includes(corpo.lang) ? corpo.lang : "en";
+  const lang = "pt";
   const cat = await produtos(env, req, L);
   const f = new URLSearchParams();
   f.set("mode", "payment");
   f.set("payment_method_types[0]", "card");
-  f.set("locale", lang === "en" ? "auto" : lang);
+  f.set("locale", "pt");
   f.set("success_url", `${SITE}/gracias.html?ok=1&pedido={CHECKOUT_SESSION_ID}`);
   f.set("cancel_url", `${SITE}/carrito.html`);
   f.set("phone_number_collection[enabled]", "true");
@@ -167,13 +167,14 @@ export default {
     if (url.pathname === "/google-shopping.xml") {
       const x = (s) => String(s == null ? "" : s).replace(/[<>&'"]/g, (c) => ({ "<": "&lt;", ">": "&gt;", "&": "&amp;", "'": "&apos;", '"': "&quot;" }[c]));
       const base = "https://" + L.host;
-      const itens = (await catalogo(env, req, L.id)).filter((p) => p && p.id && p.precio > 0 && p.es && p.es.nombre && (p.imagenes || []).length);
+      const itens = (await catalogo(env, req, L.id)).filter((p) => p && p.id && p.precio > 0 && ((p.pt && p.pt.nombre) || (p.es && p.es.nombre)) && (p.imagenes || []).length);
       const xml = itens.map((p) => {
         const img = p.imagenes.map((i) => (/^https?:/.test(i) ? i : base + "/" + String(i).replace(/^\//, "")));
-        const desc = [p.es.descripcion, ...(p.es.puntos || [])].filter(Boolean).join(" · ").slice(0, 4900);
+        const tx = (p.pt && p.pt.nombre) ? p.pt : p.es;
+        const desc = [tx.descripcion, ...(tx.puntos || [])].filter(Boolean).join(" · ").slice(0, 4900);
         return "<item>" +
-          "<g:id>" + x(p.id) + "</g:id><title>" + x(p.es.nombre.slice(0, 150)) + "</title>" +
-          "<description>" + x(desc || p.es.nombre) + "</description>" +
+          "<g:id>" + x(p.id) + "</g:id><title>" + x(tx.nombre.slice(0, 150)) + "</title>" +
+          "<description>" + x(desc || tx.nombre) + "</description>" +
           "<link>" + x(base + "/producto.html?id=" + encodeURIComponent(p.id)) + "</link>" +
           "<g:image_link>" + x(img[0]) + "</g:image_link>" +
           img.slice(1, 10).map((i) => "<g:additional_image_link>" + x(i) + "</g:additional_image_link>").join("") +
@@ -181,11 +182,11 @@ export default {
           "<g:price>" + Number(p.precio).toFixed(2) + " EUR</g:price>" +
           "<g:brand>" + x(L.marca) + "</g:brand><g:identifier_exists>no</g:identifier_exists>" +
           "<g:product_type>" + x(p.categoria || "") + "</g:product_type>" +
-          "<g:shipping><g:country>ES</g:country><g:service>Envío gratis</g:service><g:price>0.00 EUR</g:price></g:shipping>" +
+          "<g:shipping><g:country>PT</g:country><g:service>Portes grátis</g:service><g:price>0.00 EUR</g:price></g:shipping>" +
           "</item>";
       }).join("\n");
       const doc = '<?xml version="1.0" encoding="UTF-8"?>\n<rss version="2.0" xmlns:g="http://base.google.com/ns/1.0"><channel>' +
-        "<title>" + x(L.marca) + "</title><link>" + base + "</link><description>" + x(L.marca) + " – envío gratis</description>\n" + xml + "\n</channel></rss>";
+        "<title>" + x(L.marca) + "</title><link>" + base + "</link><description>" + x(L.marca) + " – portes grátis para Portugal</description>\n" + xml + "\n</channel></rss>";
       return new Response(doc, { headers: { "Content-Type": "application/xml; charset=utf-8", "Cache-Control": "public, max-age=3600" } });
     }
     if (url.pathname === "/painel/app-versao.json" && env.DOWNLOADS) {

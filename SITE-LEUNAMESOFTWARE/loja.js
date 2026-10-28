@@ -2,8 +2,8 @@
   "use strict";
   var C = window.CONFIG || {};
   var html = document.documentElement;
-  var lang = function () { return html.lang === "en" ? "en" : "es"; };
-  var PAISES = ["DE", "FR", "ES", "IT", "NL", "BE", "AT", "PT", "IE"];
+  var lang = function () { return "pt"; };
+  var PAISES = ["PT"];
   var $ = function (s, r) { return (r || document).querySelector(s); };
   var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
   var guardar = function (k, v) { try { localStorage.setItem(k, v); } catch (e) {} };
@@ -72,8 +72,8 @@
 
   /* ---------- produtos ---------- */
   var PRODUTOS = [], porId = {};
-  var nome = function (p) { return (p[lang()] || p.es || {}).nombre || ""; };
-  var info = function (p) { return p[lang()] || p.es || {}; };
+  var nome = function (p) { return ((p.pt && p.pt.nombre) ? p.pt : (p.es || {})).nombre || ""; };
+  var info = function (p) { return (p.pt && p.pt.nombre) ? p.pt : (p.es || {}); };
   // item do carrinho: "id" ou "id|vid" (variação: cor/tamanho)
   function resolver(chave) {
     var partes = chave.split("|"), p = porId[partes[0]];

@@ -272,19 +272,19 @@ function textoBase(nome) {
   return { nombre: nome.slice(0, 80), gancho: "", descripcion: nome, puntos: [] };
 }
 async function traduzir(env, nomeEn, descricaoEn, animal, L) {
-  if (!env.AI) return { es: textoBase(nomeEn), en: textoBase(nomeEn), ia: false };
+  if (!env.AI) return { es: textoBase(nomeEn), pt: textoBase(nomeEn), en: textoBase(nomeEn), ia: false };
   const pedido = `Product from a supplier (English, may be messy):
 NAME: ${nomeEn}
 DESCRIPTION: ${descricaoEn.slice(0, 1800)}
 ${L.id === "pets" ? "Animal: " + (animal === "perro" ? "dog" : animal === "gato" ? "cat" : "dogs and cats") : ""}
 
 Write store copy for "${L.marca}", ${DESC_LOJA[L.id] || "an online shop in Spain"}. Return ONLY valid JSON, no markdown:
-{"es":{"nombre":"...","gancho":"...","descripcion":"...","puntos":["...","...","..."]},"en":{"nombre":"...","gancho":"...","descripcion":"...","puntos":["...","...","..."]}}
-Rules: "es" in natural Spanish from Spain, "en" in English. nombre: short product name, max 6 words, no brand, no supplier codes.
+{"es":{"nombre":"...","gancho":"...","descripcion":"...","puntos":["...","...","..."]},"pt":{"nombre":"...","gancho":"...","descripcion":"...","puntos":["...","...","..."]},"en":{"nombre":"...","gancho":"...","descripcion":"...","puntos":["...","...","..."]}}
+Rules: "es" in natural Spanish from Spain, "pt" in EUROPEAN Portuguese from Portugal (pt-PT: use "cão", "portes grátis", "telemóvel", "ecrã", never Brazilian words like "cachorro", "frete", "celular", "tela"), "en" in English. nombre: short product name, max 6 words, no brand, no supplier codes.
 gancho: one warm short sentence (max 12 words). descripcion: 2 sentences, honest, no medical claims, no "best seller", no invented numbers.
 puntos: 3 or 4 short factual benefits based only on the description (size/material only if given).`;
   try {
-    const r = await env.AI.run(MODELO, { messages: [{ role: "user", content: pedido }], max_tokens: 900, temperature: 0.3 });
+    const r = await env.AI.run(MODELO, { messages: [{ role: "user", content: pedido }], max_tokens: 1400, temperature: 0.3 });
     let txt = typeof r.response === "string" ? r.response : JSON.stringify(r.response || "");
     txt = txt.slice(txt.indexOf("{"), txt.lastIndexOf("}") + 1);
     const o = JSON.parse(txt);
@@ -293,9 +293,9 @@ puntos: 3 or 4 short factual benefits based only on the description (size/materi
       descripcion: String(x.descripcion || "").slice(0, 600), puntos: lista(x.puntos).map(String).slice(0, 5),
     });
     if (!o.es || !o.es.nombre) throw new Error("sem es");
-    return { es: limpa(o.es), en: limpa(o.en || o.es), ia: true };
+    return { es: limpa(o.es), pt: limpa(o.pt || o.es), en: limpa(o.en || o.es), ia: true };
   } catch (e) {
-    return { es: textoBase(nomeEn), en: textoBase(nomeEn), ia: false, erro: String(e).slice(0, 200) };
+    return { es: textoBase(nomeEn), pt: textoBase(nomeEn), en: textoBase(nomeEn), ia: false, erro: String(e).slice(0, 200) };
   }
 }
 
@@ -326,12 +326,18 @@ export async function catalogo(env, req, lojaId = "pets") {
 
 // nomes das variações (CJ: "Pink-Large") em espanhol
 const PALAVRAS = {
-  black: "Negro", white: "Blanco", red: "Rojo", blue: "Azul", green: "Verde", yellow: "Amarillo", pink: "Rosa", purple: "Morado",
-  orange: "Naranja", grey: "Gris", gray: "Gris", brown: "Marrón", beige: "Beige", khaki: "Caqui", navy: "Azul marino", gold: "Dorado",
-  silver: "Plateado", rose: "Rosa", coffee: "Café", camel: "Camel", cyan: "Cian", transparent: "Transparente", colorful: "Multicolor",
-  light: "claro", dark: "oscuro", sky: "cielo", army: "militar", wine: "Vino", apricot: "Albaricoque", mint: "Menta",
-  small: "Pequeño", medium: "Mediano", large: "Grande", big: "Grande", style: "Modelo", type: "Tipo", random: "Aleatorio",
+  black: "Preto", white: "Branco", red: "Vermelho", blue: "Azul", green: "Verde", yellow: "Amarelo", pink: "Rosa", purple: "Roxo",
+  orange: "Laranja", grey: "Cinzento", gray: "Cinzento", brown: "Castanho", beige: "Bege", khaki: "Caqui", navy: "Azul-marinho", gold: "Dourado",
+  silver: "Prateado", rose: "Rosa", coffee: "Café", camel: "Camel", cyan: "Ciano", transparent: "Transparente", colorful: "Multicolor",
+  light: "claro", dark: "escuro", sky: "céu", army: "militar", wine: "Vinho", apricot: "Alperce", mint: "Menta",
+  small: "Pequeno", medium: "Médio", large: "Grande", big: "Grande", style: "Modelo", type: "Tipo", random: "Aleatório",
 };
+// nomes antigos (espanhol) → português de Portugal
+const ES_PT = { Negro: "Preto", Blanco: "Branco", Rojo: "Vermelho", Azul: "Azul", Verde: "Verde", Amarillo: "Amarelo", Rosa: "Rosa", Morado: "Roxo",
+  Naranja: "Laranja", Gris: "Cinzento", "Marrón": "Castanho", Caqui: "Caqui", Dorado: "Dourado", Plateado: "Prateado", "Café": "Café",
+  Cian: "Ciano", Multicolor: "Multicolor", claro: "claro", oscuro: "escuro", cielo: "céu", militar: "militar", Vino: "Vinho", Albaricoque: "Alperce",
+  Menta: "Menta", "Pequeño": "Pequeno", Mediano: "Médio", Grande: "Grande", Modelo: "Modelo", Tipo: "Tipo", Aleatorio: "Aleatório", marino: "marinho" };
+const rotuloPt = (t) => String(t || "").split(/\s+/).map((w) => ES_PT[w] || w).join(" ").replace("Azul marinho", "Azul-marinho");
 export function rotulo(v) {
   let t = String(v.chave || "").trim();
   if (!t) t = String(v.nome || "").split(" ").slice(-2).join(" ");
@@ -354,7 +360,7 @@ export function variacoes(d, precio) {
 function montar(pid, d, campos, textos, L) {
   const preco = sem13(Math.round((num(campos.precio) || d.sugerido) * 100) / 100);
   return {
-    id: pid, es: textos.es, pt: textos.es, en: textos.en,
+    id: pid, es: textos.es, pt: textos.pt || textos.es, en: textos.en,
     categoria: catsDe(L).includes(campos.categoria) ? campos.categoria : catsDe(L)[0],
     animal: L.id === "pets" && ANIMAIS.includes(campos.animal) ? campos.animal : "ambos",
     nuevo: campos.nuevo !== false, destaque: !!campos.destaque,
@@ -405,12 +411,42 @@ async function editar(req, env, L) {
   if (typeof c.nuevo === "boolean") p.nuevo = c.nuevo;
   if (c.es && c.es.nombre) {
     p.es = { nombre: String(c.es.nombre).slice(0, 80), gancho: String(c.es.gancho || "").slice(0, 140), descripcion: String(c.es.descripcion || "").slice(0, 600), puntos: lista(c.es.puntos).map(String).slice(0, 5) };
-    p.pt = p.es;
   }
   const ativo = c.ativo === false ? 0 : 1;
   await env.DB.prepare("INSERT OR REPLACE INTO produtos_v2 (loja, id, dados, ativo, criado, atualizado) VALUES (?,?,?,?,COALESCE((SELECT criado FROM produtos_v2 WHERE loja=? AND id=?),datetime('now')),datetime('now'))")
     .bind(L.id, id, JSON.stringify(p), ativo, L.id, id).run();
   return json({ ok: true, produto: p, ativo: !!ativo });
+}
+
+// Texto em português de Portugal para os produtos que já estavam na loja (a loja agora é só Portugal).
+// Cada chamada faz até 5 produtos (limite de subrequests); o robô repete até "restantes" = 0.
+async function retraduzir(req, env, L) {
+  if (!env.AI) return json({ erro: "ia" }, 500);
+  const todos = (await catalogo(env, req, L.id)).filter((p) => p && p.id && p.es && p.es.nombre);
+  const pendentes = todos.filter((p) => !p.ptOk);
+  let feitos = 0;
+  const falhas = [];
+  for (const p of pendentes.slice(0, 5)) {
+    const pedido = `Translate this product text for an online pet shop into EUROPEAN Portuguese from Portugal (pt-PT). Use "cão", "portes grátis", "telemóvel", "ecrã"; never Brazilian words ("cachorro", "frete", "celular", "tela", "você"). Keep it honest and short, do not add claims or numbers that are not in the source. Return ONLY valid JSON: {"nombre":"...","gancho":"...","descripcion":"...","puntos":["..."]}
+SOURCE (Spanish):
+${JSON.stringify({ nombre: p.es.nombre, gancho: p.es.gancho || "", descripcion: p.es.descripcion || "", puntos: p.es.puntos || [] })}`;
+    try {
+      const r = await env.AI.run(MODELO, { messages: [{ role: "user", content: pedido }], max_tokens: 900, temperature: 0.2 });
+      let txt = typeof r.response === "string" ? r.response : JSON.stringify(r.response || "");
+      txt = txt.slice(txt.indexOf("{"), txt.lastIndexOf("}") + 1);
+      const o = JSON.parse(txt);
+      if (!o.nombre) throw new Error("sem nome");
+      p.pt = { nombre: String(o.nombre).slice(0, 80), gancho: String(o.gancho || "").slice(0, 140), descripcion: String(o.descripcion || "").slice(0, 600), puntos: lista(o.puntos).map(String).slice(0, 5) };
+      if (Array.isArray(p.variantes)) p.variantes = p.variantes.map((v) => ({ ...v, nombre: rotuloPt(v.nombre) }));
+      p.ptOk = true;
+      await env.DB.prepare("INSERT OR REPLACE INTO produtos_v2 (loja, id, dados, ativo, criado, atualizado) VALUES (?,?,?,1,COALESCE((SELECT criado FROM produtos_v2 WHERE loja=? AND id=?),datetime('now')),datetime('now'))").bind(L.id, p.id, JSON.stringify(p), L.id, p.id).run();
+      feitos++;
+    } catch (e) {
+      falhas.push({ id: p.id, erro: String(e).slice(0, 120) });
+      p.ptOk = false;
+    }
+  }
+  return json({ ok: true, feitos, falhas, restantes: Math.max(0, pendentes.length - feitos) });
 }
 
 async function publicados(req, env, L) {
@@ -832,6 +868,7 @@ export async function painel(req, env, url) {
     }
     if (rota === "publicar" && req.method === "POST") return await publicar(req, env, L);
     if (rota === "editar" && req.method === "POST") return await editar(req, env, L);
+    if (rota === "retraduzir" && req.method === "POST") return await retraduzir(req, env, L);
     if (rota === "video" && req.method === "POST") {
       const c = await req.json().catch(() => ({}));
       const p = (await catalogo(env, req, L.id)).find((x) => x.id === c.id);

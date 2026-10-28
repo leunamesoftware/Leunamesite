@@ -206,6 +206,40 @@ def tirar_caros(tk, limite=15.0, manter=6):
     return rel
 
 
+def trinta(tk, quantos=30, preco_max=25.0, lucro_min=5.0):
+    """Loja Portugal: fica só com os ~30 melhores (preço até 25 €, lucro de pelo menos 5 € depois do custo e da Stripe;
+    destaque e vídeo primeiro, depois o maior lucro). Os outros são desativados (dá para voltar no painel)."""
+    itens = [p for p in api('publicados', token=tk).get('itens', []) if p.get('ativo')]
+    def lucro(p):
+        c = p.get('custoEur') or 0
+        return p['precio'] - c * (1 + IOF) - (p['precio'] * 0.07 + 0.35) if c else -99
+    bons = [p for p in itens if p.get('precio', 0) <= preco_max and lucro(p) >= lucro_min]
+    bons.sort(key=lambda p: (not p.get('destaque'), not p.get('video'), -lucro(p)))
+    fica = bons[:quantos]
+    ids = {p['id'] for p in fica}
+    rel = [{'nome': p['nome'], 'preco': p['precio'], 'lucro': round(lucro(p), 2), 'fica': True} for p in fica]
+    for p in itens:
+        if p['id'] in ids:
+            continue
+        r = api('editar', {'id': p['id'], 'ativo': False}, token=tk)
+        rel.append({'nome': p['nome'], 'preco': p['precio'], 'lucro': round(lucro(p), 2), 'tirado': bool(r.get('ok'))})
+    return rel
+
+
+def portugues(tk, voltas=20):
+    """Gera o texto em português de Portugal dos produtos ativos (5 por chamada, repete até acabar)."""
+    rel = {'feitos': 0, 'falhas': []}
+    for _ in range(voltas):
+        r = api('retraduzir', {}, token=tk)
+        rel['feitos'] += r.get('feitos', 0)
+        rel['falhas'] = r.get('falhas', [])
+        rel['restantes'] = r.get('restantes')
+        print(r, flush=True)
+        if not r.get('restantes') or (not r.get('feitos') and r.get('falhas')):
+            break
+    return rel
+
+
 def main():
     senha = os.environ['LOJA_ADMIN_SENHA']
     tk = api('login', {'senha': senha}).get('token')
@@ -216,8 +250,8 @@ def main():
         json.dump(rel, open('lote.json', 'w'), ensure_ascii=False, indent=1)
         api('sair', {}, token=tk)
         return
-    if len(sys.argv) > 2 and sys.argv[2] in ('barato', 'video', 'tirar-caros'):
-        rel = tirar_caros(tk) if sys.argv[2] == 'tirar-caros' else baratos(tk, so_video=sys.argv[2] == 'video')
+    if len(sys.argv) > 2 and sys.argv[2] in ('barato', 'video', 'tirar-caros', 'trinta', 'portugal'):
+        rel = [trinta(tk), portugues(tk)] if sys.argv[2] == 'portugal' else trinta(tk) if sys.argv[2] == 'trinta' else tirar_caros(tk) if sys.argv[2] == 'tirar-caros' else baratos(tk, so_video=sys.argv[2] == 'video')
         print(rel)
         json.dump(rel, open('lote.json', 'w'), ensure_ascii=False, indent=1)
         api('sair', {}, token=tk)

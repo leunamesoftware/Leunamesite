@@ -10,13 +10,13 @@ DATA = ('13 de octubre de 2026', '13 de outubro de 2026', '13 October 2026')
 
 
 def t(es, pt, en):
-    return f'<span class="es">{es}</span><span class="pt">{pt}</span><span class="en">{en}</span>'
+    return pt
 
 
 PAISES = (
-    'Alemania, Francia, España, Italia, Países Bajos, Bélgica, Austria, Portugal e Irlanda',
-    'Alemanha, França, Espanha, Itália, Países Baixos, Bélgica, Áustria, Portugal e Irlanda',
-    'Germany, France, Spain, Italy, the Netherlands, Belgium, Austria, Portugal and Ireland',
+    'Portugal continental e ilhas',
+    'Portugal continental e ilhas',
+    'Portugal (mainland and islands)',
 )
 
 # ícones de linha (24x24)
@@ -74,9 +74,7 @@ ICONE = ("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 
          "<g fill='%23fff'><ellipse cx='15' cy='20' rx='3.6' ry='4.6'/><ellipse cx='22' cy='14' rx='3.6' ry='4.6'/><ellipse cx='30' cy='14' rx='3.6' ry='4.6'/>"
          "<ellipse cx='36' cy='21' rx='3.4' ry='4.4'/><path d='M15 33c0-6 5-10 10-10s10 4 10 10c0 4-4 4-10 4s-10 0-10-4z'/></g></svg>")
 
-IDIOMA_JS = ('try{var q=location.search.match(/[?&]lang=(es|en)/),g=localStorage.getItem("lang"),'
-             'l=(q&&q[1])||(g==="en"?"en":"es");document.documentElement.lang=l}'
-             'catch(e){document.documentElement.lang="es"}')
+IDIOMA_JS = 'document.documentElement.lang="pt-PT"'
 
 
 
@@ -95,7 +93,7 @@ def gerar(L):
         robots = '' if indexar else '<meta name="robots" content="noindex">\n'
         nav = ''.join(f'<a href="./#{c}">{ico(i)}{t(es, pt, en)}</a>' for c, i, es, pt, en in CATS)
         return f'''<!doctype html>
-    <html lang="es">
+    <html lang="pt-PT">
     <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -115,10 +113,9 @@ def gerar(L):
     <body>
     <div class="barra">
       <div class="wrap barra-in">
-        <span>{ico('camiao')}{t('Envío gratis a 9 países de Europa', 'Envio grátis para 9 países da Europa', 'Free shipping to 9 EU countries')}</span>
+        <span>{ico('camiao')}{t('Envío gratis a 9 países de Europa', 'Portes grátis para Portugal', 'Free shipping to 9 EU countries')}</span>
         <span class="b2">{ico('escudo')}{t('Compra segura', 'Compra segura', 'Secure checkout')}</span>
         <span class="b3">{ico('volta')}{t('Devolución en 14 días', 'Devolução em 14 dias', '14-day returns')}</span>
-        <select class="idioma" data-idioma aria-label="Idioma / Language"><option value="es">🇪🇸 ES</option><option value="en">🇬🇧 EN</option></select>
       </div>
     </div>
     <header class="top">
@@ -138,7 +135,7 @@ def gerar(L):
     RODAPE = f'''
     <section class="garantias">
       <div class="wrap gar-in">
-        <div>{ico('camiao', 'gi')}<span><b>{t('Envío gratis', 'Envio grátis', 'Free shipping')}</b>{t('Con seguimiento, sin costes extra al recibir', 'Com seguimento, sem custos extra na entrega', 'Tracked, no extra fees on delivery')}</span></div>
+        <div>{ico('camiao', 'gi')}<span><b>{t('Envío gratis', 'Portes grátis', 'Free shipping')}</b>{t('Con seguimiento, sin costes extra al recibir', 'Com seguimento, sem custos extra na entrega', 'Tracked, no extra fees on delivery')}</span></div>
         <div>{ico('escudo', 'gi')}<span><b>{t('Pago seguro', 'Pagamento seguro', 'Secure payment')}</b>{t('Tarjeta, Apple Pay o Google Pay', 'Cartão, Apple Pay ou Google Pay', 'Card, Apple Pay or Google Pay')}</span></div>
         <div>{ico('volta', 'gi')}<span><b>{t('Devoluciones fáciles', 'Devoluções fáceis', 'Easy returns')}</b>{t('14 días para cambiar de opinión', '14 dias para mudar de ideias', '14 days to change your mind')}</span></div>
         <div>{ico('apoio', 'gi')}<span><b>{t('Atención al cliente', 'Apoio ao cliente', 'Customer care')}</b>{t('Respuesta en menos de 24 h', 'Resposta em menos de 24 h', 'Reply within 24 h')}</span></div>
@@ -177,7 +174,7 @@ def gerar(L):
     slides = ''.join(f'''<div class="slide{' on' if i == 0 else ''}{' slide-luz' if img in ('hero', 'banner-casa') else ''}{' slide-clara' if img.startswith('banner') and img != 'banner-casa' else ''}{' slide-roxo' if img == 'banner-2' else ''}" data-slide>
         <picture>{f'<source media="(max-width:720px)" srcset="img/{img}-m.webp">' if img.startswith('banner') else ''}<img class="slide-foto" src="img/{img}.webp" alt="" {'fetchpriority="high"' if i == 0 else 'loading="lazy"'}></picture>
         <div class="wrap slide-tx">
-          <p class="selo">{t('Envío gratis a toda Europa', 'Envio grátis para toda a Europa', 'Free shipping across Europe')}</p>
+          <p class="selo">{t('Envío gratis a toda Europa', 'Portes grátis para todo o Portugal', 'Free shipping across Europe')}</p>
           <h1>{h}</h1>
           <p class="hero-p">{p}</p>
           <a class="bt bt-cor" href="#novedades">{t('Comprar ahora', 'Comprar agora', 'Shop now')} {ico('seta')}</a>
@@ -218,7 +215,7 @@ def gerar(L):
         <div class="info">
           <h1 id="pNome"></h1>
           <div class="preco" id="pPreco"></div>
-          <p class="iva">{t('IVA incluido · Envío gratis', 'IVA incluído · Envio grátis', 'VAT included · Free shipping')}</p>
+          <p class="iva">{t('IVA incluido · Envío gratis', 'IVA incluído · Portes grátis', 'VAT included · Free shipping')}</p>
           <p class="desc" id="pDesc"></p>
           <ul class="lista" id="pLista"></ul>
           <div class="compra">
@@ -236,7 +233,7 @@ def gerar(L):
       <div class="vazio-in" id="pNada" hidden><h2>{t('Producto no encontrado', 'Produto não encontrado', 'Product not found')}</h2><a class="bt" href="./">{t('Ver la tienda', 'Ver a loja', 'Go to shop')}</a></div>
     </main>
     '''
-    pagina('producto.html', f'Producto — {MARCA}', 'Product details, free shipping across Europe.', produto)
+    pagina('producto.html', f'Produto — {MARCA}', 'Detalhes do produto, portes grátis para Portugal.', produto)
 
     # ---------------- CARRINHO ----------------
     carrito = f'''<main class="wrap carr">
@@ -259,26 +256,26 @@ def gerar(L):
       </div>
     </main>
     '''
-    pagina('carrito.html', f'Carrito — {MARCA}', 'Your cart.', carrito, indexar=False)
+    pagina('carrito.html', f'Carrinho — {MARCA}', 'O seu carrinho.', carrito, indexar=False)
 
     gracias = f'''<main class="wrap ok">
       <div class="vazio-in">
         <h1>{t('¡Gracias por tu pedido!', 'Obrigado pela sua encomenda!', 'Thank you for your order!')}</h1>
-        <p>{t('Hemos recibido tu pago. En 1–2 días laborables te enviamos por email el número de seguimiento.', 'Recebemos o seu pagamento. Em 1–2 dias úteis enviamos por email o número de seguimento.', 'We have received your payment. Within 1–2 business days we will email you the tracking number.')}</p>
+        <p>{t('Hemos recibido tu pago. En 1–2 días laborables te enviamos por email el número de seguimiento.', 'Recebemos o seu pagamento. Em 1–2 dias úteis enviamos por email o número de rastreio.', 'We have received your payment. Within 1–2 business days we will email you the tracking number.')}</p>
         <p class="nr" id="nrPedido"></p>
         <a class="bt" href="./">{t('Seguir comprando', 'Continuar a comprar', 'Keep shopping')}</a>
       </div>
     </main>
     '''
-    pagina('gracias.html', f'Gracias — {MARCA}', 'Order received.', gracias, indexar=False)
+    pagina('gracias.html', f'Obrigado — {MARCA}', 'Encomenda recebida.', gracias, indexar=False)
 
 
     # ---------------- LEGAIS ----------------
     def legal(nome, titulos, textos, desc):
         corpo = (f'<main class="wrap legal"><h1>{t(*titulos)}</h1>'
-                 f'<div class="es">{textos[0]}</div><div class="pt">{textos[1]}</div><div class="en">{textos[2]}</div>'
+                 f'<div class="pt">{textos[1]}</div>'
                  f'<p class="act">{t("Última actualización: " + DATA[0], "Última atualização: " + DATA[1], "Last updated: " + DATA[2])}.</p></main>')
-        pagina(nome, f'{titulos[0]} — {MARCA}', desc, corpo)
+        pagina(nome, f'{titulos[1]} — {MARCA}', desc, corpo)
 
 
     legal('envios.html', ('Envíos y devoluciones', 'Envios e devoluções', 'Shipping & returns'), (f'''
@@ -290,35 +287,35 @@ def gerar(L):
     <h2>Productos defectuosos o dañados</h2><p>Si algo llega roto o no funciona, envíanos una foto por email y te enviamos otro o te devolvemos el dinero, sin coste para ti. </p>
     <h2>Garantía</h2><p>Todos los productos tienen la garantía legal de conformidad que establece la normativa de la Unión Europea, en los plazos que marca la ley de tu país.</p>
     <h2>Pedidos no recibidos</h2><p>Si tu pedido no llega en el plazo indicado, escríbenos y lo resolvemos: reenvío o reembolso completo.</p>''', f'''
-    <h2>Para onde enviamos</h2><p>{PAISES[1]}. O envio é gratuito.</p>
-    <h2>Prazos</h2><p>Preparamos a sua encomenda em 1–3 dias úteis e enviamos o número de seguimento por email. Os produtos são enviados a partir dos armazéns do nosso parceiro logístico internacional; a entrega costuma demorar entre 7 e 15 dias úteis conforme o produto e o país (vê o prazo em cada página).</p>
+    <h2>Para onde enviamos</h2><p>{PAISES[1]}. Os portes de envio são grátis.</p>
+    <h2>Prazos</h2><p>Preparamos a sua encomenda em 1–3 dias úteis e enviamos o número de rastreio por email. Os produtos são enviados a partir dos armazéns do nosso parceiro logístico internacional; a entrega costuma demorar entre 7 e 15 dias úteis conforme o produto e o país (vê o prazo em cada página).</p>
     <h2>Preços e impostos</h2><p>Os preços são finais, em euros e com IVA incluído. Nas encomendas até 150 € o IVA é declarado e pago na origem (regime IOSS da UE), por isso não paga nada a mais ao receber.</p>
     <h2 id="desistimiento">Direito de livre resolução (14 dias)</h2><p>Tem 14 dias de calendário a partir da receção do produto para desistir da compra sem justificação. Envie-nos um email com o número da encomenda; indicamos a morada de devolução. Reembolsamos todos os valores pagos, incluindo o envio inicial, no prazo máximo de 14 dias após a sua comunicação, pelo mesmo meio de pagamento. Podemos reter o reembolso até recebermos o produto ou a prova do seu envio. Os custos da devolução ficam a cargo do cliente, exceto se o produto chegar com defeito ou não for o encomendado.</p>
     <p>Modelo de livre resolução: «Pela presente comunico que desisto do meu contrato de compra do seguinte bem: [produto], encomendado em [data] / recebido em [data]. Nome, morada, data.»</p>
     <h2>Produtos com defeito ou danificados</h2><p>Se algo chegar partido ou não funcionar, envie-nos uma foto por email e enviamos outro ou devolvemos o dinheiro, sem custos para si. Tem ainda a garantia legal de conformidade prevista na lei do seu país.</p>
     <h2>Encomendas não recebidas</h2><p>Se a encomenda não chegar no prazo indicado, escreva-nos e resolvemos: reenvio ou reembolso total.</p>''', f'''
     <h2>Where we ship</h2><p>{PAISES[2]}. Shipping is free.</p>
-    <h2>Delivery times</h2><p>We process your order within 1–3 business days and email you the tracking number. Products ship from our international logistics partner's warehouses; delivery usually takes 7–15 business days depending on the product and country (shown on each product page).</p>
+    <h2>Delivery times</h2><p>We process your order within 1–3 business days and email you the tracking number. Products ship from our international logistics partner's warehouses; delivery usually takes 8–18 business days depending on the product and country (shown on each product page).</p>
     <h2>Prices and taxes</h2><p>Prices are final, in euros and include VAT. For orders up to €150, VAT is declared and paid at origin (EU IOSS scheme), so there is nothing extra to pay on delivery.</p>
     <h2 id="desistimiento">Right of withdrawal (14 days)</h2><p>You have 14 calendar days from receiving your item to cancel the purchase without giving a reason. Email us with your order number and we will send you the return address. We will refund all payments received, including the original shipping cost, within 14 days of your notice, using the same payment method. We may withhold the refund until we receive the item or proof that it was sent back. Return shipping costs are paid by the customer unless the item is faulty or not what you ordered.</p>
     <p>Model withdrawal form: “I hereby give notice that I withdraw from my contract of sale of the following goods: [product], ordered on [date] / received on [date]. Name, address, date.”</p>
     <h2>Faulty or damaged items</h2><p>If something arrives broken or does not work, email us a photo and we will send a replacement or refund you at no cost. </p>
     <h2>Guarantee</h2><p>All products come with the legal guarantee of conformity set by European Union rules, for the period set by your country's law.</p>
     <h2>Missing orders</h2><p>If your order does not arrive within the stated time, email us and we will fix it: reshipment or full refund.</p>'''),
-          'Free shipping to 9 EU countries, delivery times and 14-day right of withdrawal.')
+          'Portes grátis para Portugal, prazos de entrega e direito de resolução em 14 dias.')
 
 
     legal('sobre.html', ('Quiénes somos y contacto', 'Quem somos e contacto', 'About us & contact'), (f'''
     <h2>Quiénes somos</h2><p>{MARCA} es una tienda online gestionada por Emanuel da Silva Antunes Coletto desde Brasil. Seleccionamos {L["objeto"][0]} y los enviamos a toda Europa con número de seguimiento, desde los almacenes de nuestro socio logístico internacional.</p>
     <h2>Datos del vendedor</h2><p>Emanuel da Silva Antunes Coletto · Estrada de Xerém, s/n, Parque Xerém, Duque de Caxias, RJ, CEP 25241-390, Brasil · Email: <a href="#" data-mail>contacto por email</a> · Web: {HOST}</p>
     <h2>Atención al cliente</h2><p>Respondemos por email en un máximo de 2 días laborables. Para pedidos, seguimiento, devoluciones o garantía, indica siempre tu número de pedido. Más información en <a href="envios.html">Envíos y devoluciones</a>.</p>''', f'''
-    <h2>Quem somos</h2><p>{MARCA} é uma loja online gerida por Emanuel da Silva Antunes Coletto a partir do Brasil. Selecionamos {L["objeto"][1]} e enviamos para toda a Europa com seguimento, a partir dos armazéns do nosso parceiro logístico internacional.</p>
+    <h2>Quem somos</h2><p>{MARCA} é uma loja online gerida por Emanuel da Silva Antunes Coletto a partir do Brasil. Selecionamos {L["objeto"][1]} e enviamos para Portugal com rastreio, a partir dos armazéns do nosso parceiro logístico internacional.</p>
     <h2>Dados do vendedor</h2><p>Emanuel da Silva Antunes Coletto · Estrada de Xerém, s/n, Parque Xerém, Duque de Caxias, RJ, CEP 25241-390, Brasil · Email: <a href="#" data-mail>contacto por email</a> · Site: {HOST}</p>
     <h2>Apoio ao cliente</h2><p>Respondemos por email em, no máximo, 2 dias úteis. Para encomendas, seguimento, devoluções ou garantia, indique sempre o número da encomenda. Mais informação em <a href="envios.html">Envios e devoluções</a>.</p>''', f'''
     <h2>About us</h2><p>{MARCA} is an online store run by Emanuel da Silva Antunes Coletto from Brazil. We select {L["objeto"][2]} and ship them across Europe with tracking, from our international logistics partner's warehouses.</p>
     <h2>Seller details</h2><p>Emanuel da Silva Antunes Coletto · Estrada de Xerém, s/n, Parque Xerém, Duque de Caxias, RJ, CEP 25241-390, Brasil · Email: <a href="#" data-mail>contact by email</a> · Website: {HOST}</p>
     <h2>Customer support</h2><p>We reply by email within 2 business days. For orders, tracking, returns or warranty, always include your order number. More in <a href="envios.html">Shipping &amp; returns</a>.</p>'''),
-          'About {MARCA}: seller details, address and customer support.')
+          f'Sobre a {MARCA}: dados do vendedor, morada e apoio ao cliente.')
 
     legal('aviso-legal.html', ('Aviso legal', 'Aviso legal', 'Legal notice'), (f'''
     <h2>Titular de la tienda</h2><p data-titular>Titular: Emanuel da Silva Antunes Coletto (marca {MARCA}) · Correo: <a href="#" data-mail>contacto por email</a> · Web: {HOST}</p>
@@ -326,14 +323,14 @@ def gerar(L):
     <h2>Precios y pago</h2><p>Precios en euros con IVA incluido. Pago con tarjeta, Apple Pay o Google Pay (procesado por Stripe). El contrato se perfecciona al recibir la confirmación del pago.</p>
     <h2>Resolución de litigios</h2><p>Si tienes cualquier problema, escríbenos primero: lo solucionamos. También puedes acudir a los organismos de consumo de tu país.</p>''', f'''
     <h2>Titular da loja</h2><p data-titular>Titular: Emanuel da Silva Antunes Coletto (marca {MARCA}) · Email: <a href="#" data-mail>contacto por email</a> · Site: {HOST}</p>
-    <h2>Objeto</h2><p>Venda à distância de {L["objeto"][1]} a consumidores da União Europeia. As encomendas são enviadas através do nosso parceiro logístico internacional, com seguimento.</p>
+    <h2>Objeto</h2><p>Venda à distância de {L["objeto"][1]} a consumidores da União Europeia. As encomendas são enviadas através do nosso parceiro logístico internacional, com rastreio.</p>
     <h2>Preços e pagamento</h2><p>Preços em euros com IVA incluído. Pagamento com cartão, Apple Pay ou Google Pay (processado pela Stripe). O contrato fica concluído com a confirmação do pagamento.</p>
     <h2>Resolução de litígios</h2><p>Se tiver algum problema, escreva-nos primeiro: resolvemos. Em Portugal pode também usar o Livro de Reclamações Eletrónico (livroreclamacoes.pt) e as entidades de resolução alternativa de litígios de consumo.</p>''', f'''
     <h2>Shop owner</h2><p data-titular>Owner: Emanuel da Silva Antunes Coletto ({MARCA} brand) · Email: <a href="#" data-mail>contact by email</a> · Website: {HOST}</p>
     <h2>Purpose</h2><p>Distance selling of {L["objeto"][2]} to consumers in the European Union. Orders ship through our international logistics partner, with tracking.</p>
     <h2>Prices and payment</h2><p>Prices in euros including VAT. Payment by card, Apple Pay or Google Pay (processed by Stripe). The contract is concluded when you receive payment confirmation.</p>
     <h2>Disputes</h2><p>If you have any problem, please contact us first and we will sort it out. You can also contact the consumer authorities in your country.</p>'''),
-          f'Shop owner details and terms of {MARCA}.')
+          f'Dados do vendedor e condições da {MARCA}.')
 
     legal('privacidad.html', ('Política de privacidad', 'Política de privacidade', 'Privacy policy'), ('''
     <h2>Responsable</h2><p>Emanuel da Silva Antunes Coletto (<a href="#" data-mail>email</a>).</p>
@@ -351,7 +348,7 @@ def gerar(L):
     <h2>Why</h2><p>To prepare and ship your order (data is shared with the warehouse and the carrier) and to support you. Legal basis: performance of the contract. We keep it for the period required by tax law.</p>
     <h2>Your rights</h2><p>You can request access, rectification, erasure, objection, restriction and portability by email, and complain to your country's data protection authority.</p>
     <h2>No marketing</h2><p>We never sell your data or send you marketing without your consent.</p>'''),
-          'How we handle your data (GDPR).')
+          'Como tratamos os seus dados pessoais (RGPD).')
 
     legal('cookies.html', ('Política de cookies', 'Política de cookies', 'Cookie policy'), ('''
     <p>Esta tienda no usa cookies de publicidad ni de análisis. Solo guarda en tu navegador el carrito, el idioma y si has cerrado el aviso de cookies (almacenamiento técnico y necesario).</p>
@@ -360,7 +357,7 @@ def gerar(L):
     <p>No pagamento, a Stripe podem usar cookies necessários ao pagamento e à prevenção de fraude, segundo as suas políticas.</p>''', '''
     <p>This shop uses no advertising or analytics cookies. It only stores your cart, language and whether you closed the cookie notice in your browser (strictly necessary storage).</p>
     <p>At checkout, Stripe may use cookies needed for payment and fraud prevention, under their own policies.</p>'''),
-          'Strictly necessary storage only.')
+          'Apenas armazenamento estritamente necessário.')
 
 
 

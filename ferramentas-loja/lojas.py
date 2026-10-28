@@ -9,7 +9,7 @@ import os
 
 AQUI = os.path.dirname(os.path.abspath(__file__))
 SITE = os.path.join(AQUI, '..', 'SITE-LEUNAMESOFTWARE')
-PAISES_LD = '["DE","FR","ES","IT","NL","BE","AT","PT","IE"]'
+PAISES_LD = '["PT"]'
 
 
 def jsonld(marca, host, desc, logo):
@@ -36,13 +36,13 @@ def lojas(t, ico):
         'busca': 'data-ph-es="¿Qué buscas para tu perro o tu gato?" data-ph-pt="O que procura para o seu cão ou gato?" data-ph-en="What are you looking for?"',
         'menu_extra': f'<a href="./?animal=perro">{ico("cao")}{t("Perros", "Cães", "Dogs")}</a><a href="./?animal=gato">{ico("gato")}{t("Gatos", "Gatos", "Cats")}</a>',
         'rodape_tx': ('Tienda especializada en perros y gatos. Productos bonitos y prácticos, enviados a toda Europa.',
-                      'Loja especializada em cães e gatos. Produtos bonitos e práticos, enviados para toda a Europa.',
+                      'Loja especializada em cães e gatos. Produtos bonitos e práticos, enviados para todo o Portugal.',
                       'A shop for dogs and cats only. Practical, beautiful products shipped across Europe.'),
         'novedades_sub': ('Elegidos uno a uno para tu mascota', 'Escolhidos um a um para o seu animal', 'Hand-picked for your pet'),
         'objeto': ('productos para perros y gatos', 'produtos para cães e gatos', 'products for dogs and cats'),
-        'titulo': 'LeunaPets — Todo para tu perro y tu gato · Envío gratis en Europa',
-        'desc': 'Camas, fuentes, juguetes y accesorios para perros y gatos con envío gratis a España, Portugal, Francia, Alemania, Italia, Países Bajos, Bélgica, Austria e Irlanda. 14 días para devolver.',
-        'jsonld': jsonld('LeunaPets', 'pets.leuname.com', 'Tienda online especializada en productos para perros y gatos, con envío gratis a 9 países de Europa.', 'img/emblema-192.png'),
+        'titulo': 'LeunaPets — Tudo para o seu cão e gato · Portes grátis para Portugal',
+        'desc': 'Camas, fontes, brinquedos e acessórios para cães e gatos, com portes grátis para Portugal. 14 dias para devolver.',
+        'jsonld': jsonld('LeunaPets', 'pets.leuname.com', 'Loja online especializada em produtos para cães e gatos, com portes grátis para Portugal.', 'img/emblema-192.png'),
         'hero': lambda slides: f'''<section class="hero" aria-label="Destacado">
   {slides}
   <div class="preco-selo" id="desde" hidden><small>{t('Desde', 'Desde', 'From')}</small><b></b></div>
@@ -56,7 +56,7 @@ def lojas(t, ico):
   <div class="porque-tx">
     <h2>{t('¿Por qué LeunaPets?', 'Porquê a LeunaPets?', 'Why LeunaPets?')}</h2>
     <p>{t('Somos una tienda especializada solo en perros y gatos. Probamos y elegimos cada producto pensando en su bienestar y en tu casa.', 'Somos uma loja especializada só em cães e gatos. Escolhemos cada produto a pensar no bem-estar deles e na sua casa.', 'We are a shop specialised only in dogs and cats. Every product is chosen with their wellbeing and your home in mind.')}</p>
-    <ul><li>{ico('camiao')}{t('Envío gratis con seguimiento a toda Europa', 'Envio grátis com seguimento para toda a Europa', 'Free tracked shipping across Europe')}</li>
+    <ul><li>{ico('camiao')}{t('Envío gratis con seguimiento a toda Europa', 'Portes grátis com rastreio para todo o Portugal', 'Free tracked shipping across Europe')}</li>
     <li>{ico('volta')}{t('14 días para devolver', '14 dias para devolver', '14-day returns')}</li>
     <li>{ico('escudo')}{t('Pago seguro con tarjeta, Apple Pay o Google Pay', 'Pagamento seguro com cartão, Apple Pay ou Google Pay', 'Secure payment by card, Apple Pay or Google Pay')}</li></ul>
   </div>
@@ -99,7 +99,7 @@ def lojas(t, ico):
         'busca': 'data-ph-es="Buscar productos…" data-ph-pt="Procurar produtos…" data-ph-en="Search products…"',
         'menu_extra': '',
         'rodape_tx': ('Hogar, jardín y decoración: ideas bonitas y prácticas para cada rincón, enviadas a toda Europa.',
-                      'Casa, jardim e decoração: ideias bonitas e práticas para cada canto, enviadas para toda a Europa.',
+                      'Casa, jardim e decoração: ideias bonitas e práticas para cada canto, enviadas para todo o Portugal.',
                       'Home, garden and décor: beautiful, practical ideas for every corner, shipped across Europe.'),
         'novedades_sub': ('Elegidos para hacer tu casa más bonita', 'Escolhidos para deixar a sua casa mais bonita', 'Chosen to make your home lovelier'),
         'objeto': ('artículos de hogar, jardín y decoración', 'artigos de casa, jardim e decoração', 'home, garden and décor products'),
