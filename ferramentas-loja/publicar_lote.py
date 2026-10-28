@@ -226,6 +226,16 @@ def trinta(tk, quantos=30, preco_max=25.0, lucro_min=5.0):
     return rel
 
 
+def zerar(tk):
+    """Tira TODOS os produtos da vitrine (ativo=0). Nada é apagado: dá para voltar no painel."""
+    rel = []
+    for p in api('publicados', token=tk).get('itens', []):
+        if p.get('ativo'):
+            r = api('editar', {'id': p['id'], 'ativo': False}, token=tk)
+            rel.append({'nome': p['nome'], 'tirado': bool(r.get('ok'))})
+    return rel
+
+
 def portugues(tk, voltas=20):
     """Gera o texto em português de Portugal dos produtos ativos (5 por chamada, repete até acabar)."""
     rel = {'feitos': 0, 'falhas': []}
@@ -250,8 +260,8 @@ def main():
         json.dump(rel, open('lote.json', 'w'), ensure_ascii=False, indent=1)
         api('sair', {}, token=tk)
         return
-    if len(sys.argv) > 2 and sys.argv[2] in ('barato', 'video', 'tirar-caros', 'trinta', 'portugal'):
-        rel = [trinta(tk), portugues(tk)] if sys.argv[2] == 'portugal' else trinta(tk) if sys.argv[2] == 'trinta' else tirar_caros(tk) if sys.argv[2] == 'tirar-caros' else baratos(tk, so_video=sys.argv[2] == 'video')
+    if len(sys.argv) > 2 and sys.argv[2] in ('barato', 'video', 'tirar-caros', 'trinta', 'portugal', 'zerar'):
+        rel = zerar(tk) if sys.argv[2] == 'zerar' else [trinta(tk), portugues(tk)] if sys.argv[2] == 'portugal' else trinta(tk) if sys.argv[2] == 'trinta' else tirar_caros(tk) if sys.argv[2] == 'tirar-caros' else baratos(tk, so_video=sys.argv[2] == 'video')
         print(rel)
         json.dump(rel, open('lote.json', 'w'), ensure_ascii=False, indent=1)
         api('sair', {}, token=tk)
