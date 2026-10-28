@@ -7,6 +7,6 @@
 window.CONFIG = {
   paypalClientId: "",
   email: "leunamesoftware@gmail.com",
-  titular: "Emanuel da Silva Antunes Coletto (marcas LeunaPets y Cachik) · Domicilio: Rio de Janeiro, Brasil",
+  titular: "Emanuel da Silva Antunes Coletto (marcas LeunaPets y Cachik) · Estrada de Xerém, s/n, Parque Xerém, Duque de Caxias, RJ, CEP 25241-390, Brasil",
   marca: "LeunaPets"
 };

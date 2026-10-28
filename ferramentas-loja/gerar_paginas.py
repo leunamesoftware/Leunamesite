@@ -149,7 +149,7 @@ def gerar(L):
         <div>{L["logo"]}
           <p>{t(*L["rodape_tx"])}</p></div>
         <div><h4>{t('Tienda', 'Loja', 'Shop')}</h4>{links_cats()}</div>
-        <div><h4>{t('Ayuda', 'Ajuda', 'Help')}</h4><a href="envios.html">{t('Envíos y devoluciones', 'Envios e devoluções', 'Shipping & returns')}</a><a href="#" data-mail>{t('Contacto', 'Contacto', 'Contact')}</a><a href="carrito.html">{t('Mi carrito', 'O meu carrinho', 'My cart')}</a></div>
+        <div><h4>{t('Ayuda', 'Ajuda', 'Help')}</h4><a href="envios.html">{t('Envíos y devoluciones', 'Envios e devoluções', 'Shipping & returns')}</a><a href="sobre.html">{t('Quiénes somos y contacto', 'Quem somos e contacto', 'About us & contact')}</a><a href="#" data-mail>{t('Contacto', 'Contacto', 'Contact')}</a><a href="carrito.html">{t('Mi carrito', 'O meu carrinho', 'My cart')}</a></div>
         <div><h4>Legal</h4><a href="aviso-legal.html">{t('Aviso legal', 'Aviso legal', 'Legal notice')}</a><a href="envios.html#desistimiento">{t('Derecho de desistimiento', 'Direito de livre resolução', 'Right of withdrawal')}</a><a href="privacidad.html">{t('Privacidad', 'Privacidade', 'Privacy')}</a><a href="cookies.html">Cookies</a></div>
       </div>
       <div class="wrap pie-bajo"><span>© <span data-ano>2026</span> {MARCA} · {HOST}</span><span class="ssl"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="10" width="14" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>{t('Sitio seguro · Conexión cifrada SSL', 'Site seguro · Ligação cifrada SSL', 'Secure site · SSL encrypted')}</span><span class="pagos" aria-label="Formas de pago"><i class="pg pg-stripe">stripe</i><i class="pg pg-visa">VISA</i><i class="pg pg-mc"><span></span><span></span></i><i class="pg pg-apple"><svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path fill="currentColor" d="M16.4 12.6c0-2.4 2-3.5 2.1-3.6-1.1-1.7-2.9-1.9-3.5-1.9-1.5-.2-2.9.9-3.7.9s-1.9-.9-3.2-.8c-1.6 0-3.1 1-4 2.4-1.7 3-.4 7.3 1.2 9.7.8 1.2 1.8 2.5 3 2.4 1.2 0 1.7-.8 3.1-.8s1.9.8 3.2.8c1.3 0 2.1-1.2 2.9-2.4.9-1.4 1.3-2.7 1.3-2.8 0 0-2.4-1-2.4-3.9zM14 5.5c.7-.8 1.1-1.9 1-3-1 0-2.1.7-2.8 1.5-.6.7-1.2 1.8-1 2.9 1.1.1 2.1-.6 2.8-1.4z"/></svg>Pay</i><i class="pg pg-gpay"><b>G</b> Pay</i></span></div>
@@ -306,6 +306,19 @@ def gerar(L):
     <h2>Guarantee</h2><p>All products come with the legal guarantee of conformity set by European Union rules, for the period set by your country's law.</p>
     <h2>Missing orders</h2><p>If your order does not arrive within the stated time, email us and we will fix it: reshipment or full refund.</p>'''),
           'Free shipping to 9 EU countries, delivery times and 14-day right of withdrawal.')
+
+
+    legal('sobre.html', ('Quiénes somos y contacto', 'Quem somos e contacto', 'About us & contact'), (f'''
+    <h2>Quiénes somos</h2><p>{MARCA} es una tienda online gestionada por Emanuel da Silva Antunes Coletto desde Brasil. Seleccionamos {L["objeto"][0]} y los enviamos a toda Europa con número de seguimiento, desde los almacenes de nuestro socio logístico internacional.</p>
+    <h2>Datos del vendedor</h2><p>Emanuel da Silva Antunes Coletto · Estrada de Xerém, s/n, Parque Xerém, Duque de Caxias, RJ, CEP 25241-390, Brasil · Email: <a href="#" data-mail>contacto por email</a> · Web: {HOST}</p>
+    <h2>Atención al cliente</h2><p>Respondemos por email en un máximo de 2 días laborables. Para pedidos, seguimiento, devoluciones o garantía, indica siempre tu número de pedido. Más información en <a href="envios.html">Envíos y devoluciones</a>.</p>''', f'''
+    <h2>Quem somos</h2><p>{MARCA} é uma loja online gerida por Emanuel da Silva Antunes Coletto a partir do Brasil. Selecionamos {L["objeto"][1]} e enviamos para toda a Europa com seguimento, a partir dos armazéns do nosso parceiro logístico internacional.</p>
+    <h2>Dados do vendedor</h2><p>Emanuel da Silva Antunes Coletto · Estrada de Xerém, s/n, Parque Xerém, Duque de Caxias, RJ, CEP 25241-390, Brasil · Email: <a href="#" data-mail>contacto por email</a> · Site: {HOST}</p>
+    <h2>Apoio ao cliente</h2><p>Respondemos por email em, no máximo, 2 dias úteis. Para encomendas, seguimento, devoluções ou garantia, indique sempre o número da encomenda. Mais informação em <a href="envios.html">Envios e devoluções</a>.</p>''', f'''
+    <h2>About us</h2><p>{MARCA} is an online store run by Emanuel da Silva Antunes Coletto from Brazil. We select {L["objeto"][2]} and ship them across Europe with tracking, from our international logistics partner's warehouses.</p>
+    <h2>Seller details</h2><p>Emanuel da Silva Antunes Coletto · Estrada de Xerém, s/n, Parque Xerém, Duque de Caxias, RJ, CEP 25241-390, Brasil · Email: <a href="#" data-mail>contact by email</a> · Website: {HOST}</p>
+    <h2>Customer support</h2><p>We reply by email within 2 business days. For orders, tracking, returns or warranty, always include your order number. More in <a href="envios.html">Shipping &amp; returns</a>.</p>'''),
+          'About {MARCA}: seller details, address and customer support.')
 
     legal('aviso-legal.html', ('Aviso legal', 'Aviso legal', 'Legal notice'), (f'''
     <h2>Titular de la tienda</h2><p data-titular>Titular: Emanuel da Silva Antunes Coletto (marca {MARCA}) · Correo: <a href="#" data-mail>contacto por email</a> · Web: {HOST}</p>
