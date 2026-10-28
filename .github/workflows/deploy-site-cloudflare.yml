@@ -65,7 +65,9 @@ jobs:
         working-directory: SITE-LEUNAMESOFTWARE
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
-        run: npx wrangler@latest deploy
+        run: |
+          npx wrangler@latest deploy > /tmp/dep.log 2>&1 || { echo "::error::DEPLOY: $(sed 's/\x1b\[[0-9;]*m//g' /tmp/dep.log | tail -c 900 | tr '\n' ' ')"; exit 1; }
+          tail -3 /tmp/dep.log
 
       - name: Segredos no Worker (Stripe, CJ e senha do painel; só os que existem no GitHub)
         working-directory: SITE-LEUNAMESOFTWARE
