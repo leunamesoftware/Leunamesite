@@ -21,7 +21,9 @@ jobs:
           if [ -z "$Z" ]; then echo "::error::DNS: zona nao encontrada: $(echo "$r" | jq -c '.errors')"; exit 1; fi
           echo "::notice::Zona $(echo "$r" | jq -r '.result[0].status')"
           add() { # tipo nome conteudo prio proxied
-            ex=$(api "$B/zones/$Z/dns_records?type=$1&name=$2" | jq -r --arg c "$3" '[.result[]|select(.content==$c)]|length')
+            q=$(api "$B/zones/$Z/dns_records?type=$1&name=$2")
+            if [ "$(echo "$q" | jq -r '.success')" != "true" ]; then echo "::error::DNS: $(echo "$q" | jq -c '.errors')"; exit 1; fi
+            ex=$(echo "$q" | jq -r --arg c "$3" '[.result[]|select(.content==$c)]|length')
             if [ "$ex" != "0" ]; then echo "::notice::ja existe $1 $2 $3"; return; fi
             if [ "$1" = "MX" ]; then d="{\"type\":\"MX\",\"name\":\"$2\",\"content\":\"$3\",\"priority\":$4,\"ttl\":3600}"
             else d="{\"type\":\"$1\",\"name\":\"$2\",\"content\":\"$3\",\"ttl\":3600,\"proxied\":false}"; fi
