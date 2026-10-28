@@ -1,0 +1,37 @@
+name: LeunaPets - DNS do dominio (e-mail Titan + Shopify)
+on:
+  workflow_dispatch:
+    inputs:
+      shopify:
+        description: 'Ligar o dominio a Shopify (sim/nao)'
+        default: 'nao'
+jobs:
+  dns:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Criar registros
+        env:
+          CF: ${{ secrets.CF_API_TOKEN }}
+          SHOP: ${{ github.event.inputs.shopify }}
+        run: |
+          api() { curl -s -H "Authorization: Bearer $CF" -H "Content-Type: application/json" "$@"; }
+          B=https://api.cloudflare.com/client/v4
+          r=$(api "$B/zones?name=leunapets.com")
+          Z=$(echo "$r" | jq -r '.result[0].id // empty')
+          if [ -z "$Z" ]; then echo "::error::DNS: zona nao encontrada: $(echo "$r" | jq -c '.errors')"; exit 1; fi
+          echo "::notice::Zona $(echo "$r" | jq -r '.result[0].status')"
+          add() { # tipo nome conteudo prio proxied
+            ex=$(api "$B/zones/$Z/dns_records?type=$1&name=$2" | jq -r --arg c "$3" '[.result[]|select(.content==$c)]|length')
+            if [ "$ex" != "0" ]; then echo "::notice::ja existe $1 $2 $3"; return; fi
+            if [ "$1" = "MX" ]; then d="{\"type\":\"MX\",\"name\":\"$2\",\"content\":\"$3\",\"priority\":$4,\"ttl\":3600}"
+            else d="{\"type\":\"$1\",\"name\":\"$2\",\"content\":\"$3\",\"ttl\":3600,\"proxied\":false}"; fi
+            echo "::notice::$1 $2 -> $(api -X POST "$B/zones/$Z/dns_records" -d "$d" | jq -c '{success,errors}')"
+          }
+          add MX leunapets.com mx1.titan.email 10
+          add MX leunapets.com mx2.titan.email 20
+          add TXT leunapets.com "v=spf1 include:spf.titan.email ~all"
+          if [ "$SHOP" = "sim" ]; then
+            add A leunapets.com 23.227.38.65
+            add CNAME www.leunapets.com shops.myshopify.com
+          fi
+          echo "::notice::Registros: $(api "$B/zones/$Z/dns_records?per_page=100" | jq -r '[.result[]|"\(.type) \(.name) \(.content)"]|join(" | ")')"
