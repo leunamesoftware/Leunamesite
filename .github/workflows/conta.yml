@@ -12,7 +12,7 @@ jobs:
           CJ: ${{ secrets.CJ_API_KEY }}
         run: |
           mkdir -p /tmp/c
-          curl -s https://api.stripe.com/v1/account -u "$SK:" | jq -c '{erro:.error.message, nome:.business_profile.name, email, pais:.country, moeda:.default_currency, repasses_ok:.payouts_enabled, cobrancas_ok:.charges_enabled, conta_banco:[.external_accounts.data[]?|{banco:.bank_name, final:.last4, moeda:.currency, status:.status}], pendencias:.requirements.currently_due}' > /tmp/c/stripe.json || true
+          curl -s https://api.stripe.com/v1/account -u "$SK:" | jq -c '{erro:.error.message, nome:.business_profile.name, site:.business_profile.url, suporte_email:.business_profile.support_email, suporte_endereco:.business_profile.support_address, empresa_endereco:.company.address, descritivo:.settings.payments.statement_descriptor, email, pais:.country, moeda:.default_currency, repasses_ok:.payouts_enabled, cobrancas_ok:.charges_enabled, pendencias:.requirements.currently_due}' > /tmp/c/stripe.json || true
           curl -s "https://api.stripe.com/v1/accounts" -u "$SK:" > /dev/null
           curl -s "https://api.stripe.com/v1/balance" -u "$SK:" | jq -c '{erro:.error.message, disponivel:.available, pendente:.pending}' > /tmp/c/saldo.json || true
           T=$(curl -s -X POST https://developers.cjdropshipping.com/api2.0/v1/authentication/getAccessToken -H 'Content-Type: application/json' -d "{\"apiKey\":\"$CJ\"}" | jq -r '.data.accessToken // empty')
