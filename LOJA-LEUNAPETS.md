@@ -105,3 +105,12 @@ Disparar o robô: `gh api -X POST repos/leunamesoftware/Leunamesite/actions/work
 - Lucro por venda (preço − custo CJ − Stripe): bolsa de viagem 42,99 € → ~20,75 €; mochila 30,99 € → ~14,86 €;
   os outros 41 → 6–8 €. Anúncio pago só com produto de lucro ≥ 15 € e depois de vender no grátis.
   O dono não pode perder dinheiro: teste pago só pré-pago (Pix) com teto definido antes.
+
+## ESTADO ATUAL (31/10/2026) — loja NOVA na Shopify (substitui tudo acima sobre pets.leuname.com)
+- Loja Shopify `bfstxp-0s`, domínio **leunapets.com**, Portugal, EUR, tema "LeunaPets v19 (celular compacto)" (MAIN). 33 produtos ativos (CJ, só cães/gatos), todos com SEO.
+- Pagamento: **Stripe** (cartão) ativo. Cartão emitido no Brasil falha em EUR ("Moeda não aceita"); cartão não-BR deve funcionar (Stripe confirmou). **Falta teste real** com cartão europeu (irmão do dono, Espanha): produto `teste-interno-pagamento` (€0,65) está ATIVO só para o teste → depois esconder (DRAFT), cancelar/reembolsar o pedido. Não ligar anúncio antes do teste.
+- **PayPal**: incompleto (exige CNPJ). Parado até o contador (CNAE pet / empresa nova). Considerar remover para o cliente não ver botão quebrado.
+- Google: Search Console verificado + sitemap. Merchant Center 5874703190 ligado ao app Google & YouTube da Shopify (Portugal/português). Fonte antiga PRODUCTS SOURCE 2 (61 produtos, loja velha) APAGADA em 31/10. Revisão "Deturpação" pedida em 31/10 (restam 2 tentativas); não mexer em endereço/frete/políticas até sair. Conferir se os produtos novos entraram.
+- Políticas e página "Quem somos e contacto" prontas (titular Emanuel da Silva Antunes Coletto, e-mail suporte@leunapets.com).
+- Pendências: pixel da Meta (dono abre Events Manager no Chrome), conta de anúncios + cartão (só o dono), criativos de 3–4 produtos, código de boas-vindas 5% (aguarda "sim"), fotos extras (Tigela Dupla 2, Trela Retrátil 3), Judge.me em pt-PT, promo Casaco 30/11 a 24,90, produtos novos da CJ.
+- Dica de ferramenta: API Shopify 2026-10 recusa campos antigos (featuredImage, images, ruleSet, collectionByHandle); use featuredMedia/media/collectionByIdentifier. Tema principal não aceita themeFilesUpsert: duplicar, editar, o dono publica.
