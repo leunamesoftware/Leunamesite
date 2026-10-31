@@ -5,6 +5,9 @@ on:
       shopify:
         description: 'Ligar o dominio a Shopify (sim/nao)'
         default: 'nao'
+      txt:
+        description: 'Registro TXT extra na raiz (ex.: verificacao do Google)'
+        default: ''
 jobs:
   dns:
     runs-on: ubuntu-latest
@@ -13,6 +16,7 @@ jobs:
         env:
           CF: ${{ secrets.CF_API_TOKEN }}
           SHOP: ${{ github.event.inputs.shopify }}
+          TXT: ${{ github.event.inputs.txt }}
         run: |
           api() { curl -s -H "Authorization: Bearer $CF" -H "Content-Type: application/json" "$@"; }
           B=https://api.cloudflare.com/client/v4
@@ -32,6 +36,7 @@ jobs:
           add MX leunapets.com mx1.titan.email 10
           add MX leunapets.com mx2.titan.email 20
           add TXT leunapets.com "v=spf1 include:spf.titan.email ~all"
+          if [ -n "$TXT" ]; then add TXT leunapets.com "$TXT"; fi
           if [ "$SHOP" = "sim" ]; then
             add A leunapets.com 23.227.38.65
             add CNAME www.leunapets.com shops.myshopify.com
