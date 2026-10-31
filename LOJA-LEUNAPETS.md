@@ -115,7 +115,7 @@ Disparar o robô: `gh api -X POST repos/leunamesoftware/Leunamesite/actions/work
 - Pendências: pixel da Meta (dono abre Events Manager no Chrome), conta de anúncios + cartão (só o dono), criativos de 3–4 produtos, código de boas-vindas 5% (aguarda "sim"), fotos extras (Tigela Dupla 2, Trela Retrátil 3), Judge.me em pt-PT, promo Casaco 30/11 a 24,90, produtos novos da CJ.
 - Dica de ferramenta: API Shopify 2026-10 recusa campos antigos (featuredImage, images, ruleSet, collectionByHandle); use featuredMedia/media/collectionByIdentifier. Tema principal não aceita themeFilesUpsert: duplicar, editar, o dono publica.
 
-## PLANO DE TRÁFEGO PAGO — teste 1 (decidido em 31/10/2026)
+## PLANO DE TRÁFEGO PAGO — teste 1 (decidido em 31/10/2026; produto e verba MUDARAM, veja "ATUALIZAÇÃO 31/10 noite" no fim)
 **Regra do dono: não pode perder dinheiro.** Verba pequena, pré-paga por Pix, teto definido antes.
 - Estado pronto em 31/10: Página Facebook **LeunaPets** (id 1461136540407748) criada e ligada ao portfólio Meta Business LeunaPets (1595457741884338). Conta de anúncios **LeunaPets Portugal** (payment_account 2285209352332107): país/moeda corrigidos para **Brasil + BRL**, fuso Lisboa (o Meta bloqueia criar outra conta por semanas; a atual não tinha gasto). Anúncios continuam mirando **Portugal**. Pixel Meta (id 1103055322646663) instalado via Customer Events.
 - Pagamento: **Pix pré-pago** (o dono gera e paga no banco; CPF dele nos dados de cobrança, o Claude nunca digita CPF/cartão). Valor combinado: R$ 150–200.
@@ -132,3 +132,17 @@ Disparar o robô: `gh api -X POST repos/leunamesoftware/Leunamesite/actions/work
 - Lembrar: dinheiro das vendas só chega à Caixa ~5–7 dias depois (Stripe, repasse diário). CJ paga-se na hora → ter colchão em dólar na Nomad (R$ 300–500).
 - Margem do casaco: falta confirmar o custo na CJ (conferir também se os 33 produtos estão ligados a produtos CJ).
 - Se o tempo acabar: outra sessão deve ler este bloco, conferir Meta Ads Manager (gasto, cliques, carrinhos, compras) e aplicar as regras de parada acima.
+
+
+## ATUALIZAÇÃO 31/10/2026 (noite) — anúncio da Meta publicado (vale mais que o plano acima)
+- **Produto do teste: Bolsa de Transporte Quentinha para Animais (€34,90)**, ligada à CJ (variantes Café/Cinzento/Rosa; `inventoryPolicy` = CONTINUE nas 3, estoque 34450). Conferir no check diário que continua CONTINUE.
+- Campanha Meta "Bolsa Quentinha - Portugal - Teste 1" (conta 2285209352332107, campanha 52621920188064, conjunto 52621920188464, anúncio 52621920188264): **publicada pelo dono em 31/10 20:35**, Advantage+ vendas, só Portugal,
+  R$ 40/dia (máx. R$ 70/dia), termina 3/11, otimizada para "adicionar ao carrinho", Pix pré-pago (para quando acabar o saldo).
+- Criativo: foto vertical 9:16 (versão do dono feita no ChatGPT a partir da foto da CJ, com rosto acrescentado) → **caixa "inclui mídia criada ou editada com IA" MARCADA** (decisão de honestidade; manter em qualquer troca de foto semelhante).
+  Melhorias automáticas da Meta (música, animação, retoque) DESLIGADAS. Excluídos: Audience Network, Marketplace, coluna da direita (+1). Stories/Reels não dá para excluir nesse tipo de campanha; a prévia mostrou bom em Stories/Reels/Feed.
+- Pontuação da campanha (66) só mede recursos automáticos da Meta ligados; não indica resultado. Não "subir a pontuação" ligando recursos automáticos.
+- Logo real da LeunaPets está na foto de perfil da Página.
+- Regra de parada: ~R$ 80 gastos sem nenhum carrinho/venda → PAUSAR. Se vender, o dono paga o pedido na CJ na hora (CJ só envia após pagamento; ~US$ 20 por bolsa).
+- Google Merchant Center (31/10 noite): 211 produtos, **210 aprovados, 1 reprovado** (Coleira para Gatos, variante Prateado, "imagem não processada"; as imagens estão READY na Shopify, deve se resolver sozinho, reconferir). Zero cliques ainda. Google Ads pago NÃO ligado. Revisão "Deturpação": não mexer em frete/políticas/endereço até sair.
+- Shopify (últimos 7 dias, 31/10): 440 sessões (435 diretas, 3 Google), 9 sessões com carrinho, só os pedidos de teste #1001 e #1002 (€0,65). Nenhuma venda real ainda.
+- Pendências: pixel (já ligado, conferir eventos após o anúncio rodar), vídeo 9:16 com fotos reais (sem IA) para Stories/Reels/TikTok, texto genérico em ~8 produtos ("pensado para o dia a dia... preço justo"), unificar a linha de entrega nas descrições (só depois da revisão do Merchant Center), segundo teste conforme o resultado.
