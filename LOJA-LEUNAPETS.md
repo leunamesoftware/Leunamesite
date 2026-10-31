@@ -114,3 +114,21 @@ Disparar o robô: `gh api -X POST repos/leunamesoftware/Leunamesite/actions/work
 - Políticas e página "Quem somos e contacto" prontas (titular Emanuel da Silva Antunes Coletto, e-mail suporte@leunapets.com).
 - Pendências: pixel da Meta (dono abre Events Manager no Chrome), conta de anúncios + cartão (só o dono), criativos de 3–4 produtos, código de boas-vindas 5% (aguarda "sim"), fotos extras (Tigela Dupla 2, Trela Retrátil 3), Judge.me em pt-PT, promo Casaco 30/11 a 24,90, produtos novos da CJ.
 - Dica de ferramenta: API Shopify 2026-10 recusa campos antigos (featuredImage, images, ruleSet, collectionByHandle); use featuredMedia/media/collectionByIdentifier. Tema principal não aceita themeFilesUpsert: duplicar, editar, o dono publica.
+
+## PLANO DE TRÁFEGO PAGO — teste 1 (decidido em 31/10/2026)
+**Regra do dono: não pode perder dinheiro.** Verba pequena, pré-paga por Pix, teto definido antes.
+- Estado pronto em 31/10: Página Facebook **LeunaPets** (id 1461136540407748) criada e ligada ao portfólio Meta Business LeunaPets (1595457741884338). Conta de anúncios **LeunaPets Portugal** (payment_account 2285209352332107): país/moeda corrigidos para **Brasil + BRL**, fuso Lisboa (o Meta bloqueia criar outra conta por semanas; a atual não tinha gasto). Anúncios continuam mirando **Portugal**. Pixel Meta (id 1103055322646663) instalado via Customer Events.
+- Pagamento: **Pix pré-pago** (o dono gera e paga no banco; CPF dele nos dados de cobrança, o Claude nunca digita CPF/cartão). Valor combinado: R$ 150–200.
+- Estratégia: **1 campanha, 1 produto** (Casaco Acolchoado Quentinho para Cães, €27,90), Portugal, ~R$ 28/dia por 7 dias (≈ €5/dia). Não dividir em vários anúncios/produtos/canais na semana 1.
+  Plano B de produto (semana 2): Cama Gruta Quentinha (€32,90); comparação evergreen: Peitoral com Trela (€25,90).
+- Google: grátis pelo Merchant Center já; Google Ads pago só na semana 2, conforme o resultado do Meta.
+- Código de desconto de boas-vindas: BEMVINDO5 (5%). Promo do casaco 30/11 a 24,90.
+- **Regras de parada (valem para qualquer sessão que continue):**
+  1. Gastou ~R$ 80 e **ninguém** pôs no carrinho → PAUSAR; trocar foto/texto/produto antes de gastar mais.
+  2. Dia 3–4 com muito pouco clique (< ~10/dia) ou entrega parada → revisar público/criativo ou pausar.
+  3. Dia 7 sem venda e sem carrinho → parar e passar o saldo restante para o plano B de produto.
+  4. Venda saiu → conferir se o pedido foi para a CJ (produto precisa estar LIGADO a um produto CJ), margem após anúncio, e só então subir o valor.
+- "Robô": no Meta, criar **Regras automáticas** na própria campanha (pausar se gasto ≥ R$ 80 sem compra/carrinho). Além disso, a tarefa agendada "Check diário LeunaPets" (20h07) confere a loja e as taxas da Stripe.
+- Lembrar: dinheiro das vendas só chega à Caixa ~5–7 dias depois (Stripe, repasse diário). CJ paga-se na hora → ter colchão em dólar na Nomad (R$ 300–500).
+- Margem do casaco: falta confirmar o custo na CJ (conferir também se os 33 produtos estão ligados a produtos CJ).
+- Se o tempo acabar: outra sessão deve ler este bloco, conferir Meta Ads Manager (gasto, cliques, carrinhos, compras) e aplicar as regras de parada acima.
