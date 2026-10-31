@@ -157,8 +157,14 @@ export default {
     if (url.hostname === "casa.leuname.com") return Response.redirect("https://cachik.leuname.com" + url.pathname + url.search, 301);
     // leuname.com / www.leuname.com = domínio-mãe das lojas drop; com uma loja só, leva para a LeunaPets
     if (/^(www\.)?leuname\.com$/.test(url.hostname)) {
-      return Response.redirect("https://" + HOST_LOJA + url.pathname + url.search, 301);
+      return Response.redirect("https://leunapets.com/", 301);
     }
+    // 31/10/2026: a loja antiga saiu do ar. O dono usa a loja Shopify https://leunapets.com.
+    // Tudo que não é painel/API do dono vai para lá com redirecionamento permanente (o Google troca o endereço antigo pelo novo).
+    if (url.hostname === "pets.leuname.com" && !/^\/(painel|novidades|v\/|api\/)/.test(url.pathname)) {
+      return Response.redirect("https://leunapets.com/", 301);
+    }
+    if (url.hostname === "pets.leuname.com" && /^\/api\/(pagar|paypal)/.test(url.pathname)) return json({ erro: "loja-encerrada" }, 410);
     const L = lojaPorHost(url.hostname);
     if (url.pathname === "/produtos.json") {
       return new Response(JSON.stringify(await catalogo(env, req, L.id)), { headers: { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-cache" } });
