@@ -28,3 +28,23 @@
 - Shopify: usar GraphQL 2026-10 com media/featuredMedia. Tema no ar não é editável por mim; copiar (themeDuplicate) e editar a cópia.
 
 **Nunca**: publicar anúncio, gastar dinheiro, digitar senha/cartão, apagar dados, postar sem "pode" do dono, escrever em pt-BR para clientes de Portugal.
+
+---
+## PLANO B DO ANÚNCIO (preparado em 01/11, só usar se o dia 2 à noite der 0 carrinho ou ~R$ 80 gastos)
+Regra: criar um anúncio NOVO (duplicar), pausar o antigo. Mudar UMA coisa por vez. O dono clica em Publicar.
+Textos em português de Portugal. Link: https://leunapets.com/products/bolsa-transporte-quentinha-animais
+
+**Texto A (problema → solução)**
+Primeira linha: O seu cão ou gato sente frio nos passeios? 🐾
+Corpo: A Bolsa de Transporte Quentinha leva o seu animal aconchegado junto a si, com as mãos livres. Interior macio com enchimento 3D que mantém o calor. Ideal para passeios, veterinário e viagens. Portes grátis para Portugal 🚚 14 dias para devolver.
+Título: Quentinho e à vontade
+Botão: Comprar agora
+
+**Texto B (curto, preço)**
+Primeira linha: Leve o seu animal sempre consigo, quentinho. 🧡
+Corpo: Bolsa macia e lavável para cães e gatos pequenos. Portes grátis para todo o Portugal. Só €34,90.
+Título: Bolsa Quentinha para Animais
+Botão: Comprar agora
+
+**Foto**
+1ª tentativa: foto REAL do produto (sem a modelo de IA), pegar nas fotos da CJ/loja. Se usar a modelo de IA, marcar "conteúdo de IA".
