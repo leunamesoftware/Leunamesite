@@ -226,8 +226,8 @@ fill();render();
 <button id="instalar" style="display:none;position:fixed;right:16px;bottom:16px;z-index:9;background:#e8742b;color:#fff;border:0;border-radius:12px;padding:14px 20px;font:600 16px system-ui;box-shadow:0 4px 14px rgba(0,0,0,.3);cursor:pointer">⬇ Instalar no computador</button>
 <script>
 if('serviceWorker' in navigator)navigator.serviceWorker.register('vigia-sw.js',{scope:'/painel/'}).catch(function(){});
-var ev=null,b=document.getElementById('instalar');
-addEventListener('beforeinstallprompt',function(e){e.preventDefault();ev=e;b.style.display='block'});
+var ev=null,b=document.getElementById('instalar');var dentro=(window.top!==window);
+addEventListener('beforeinstallprompt',function(e){e.preventDefault();ev=e;if(!dentro)b.style.display='block'});
 b.onclick=function(){if(ev){ev.prompt();ev.userChoice.then(function(){b.style.display='none';ev=null})}};
 addEventListener('appinstalled',function(){b.style.display='none'});
 </script>
