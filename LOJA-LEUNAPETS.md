@@ -146,3 +146,10 @@ Disparar o robô: `gh api -X POST repos/leunamesoftware/Leunamesite/actions/work
 - Google Merchant Center (31/10 noite): 211 produtos, **210 aprovados, 1 reprovado** (Coleira para Gatos, variante Prateado, "imagem não processada"; as imagens estão READY na Shopify, deve se resolver sozinho, reconferir). Zero cliques ainda. Google Ads pago NÃO ligado. Revisão "Deturpação": não mexer em frete/políticas/endereço até sair.
 - Shopify (últimos 7 dias, 31/10): 440 sessões (435 diretas, 3 Google), 9 sessões com carrinho, só os pedidos de teste #1001 e #1002 (€0,65). Nenhuma venda real ainda.
 - Pendências: pixel (já ligado, conferir eventos após o anúncio rodar), vídeo 9:16 com fotos reais (sem IA) para Stories/Reels/TikTok, texto genérico em ~8 produtos ("pensado para o dia a dia... preço justo"), unificar a linha de entrega nas descrições (só depois da revisão do Merchant Center), segundo teste conforme o resultado.
+
+### 31/10/2026 noite (continuação)
+- Anúncio da Meta **APROVADO às 20:54** (e-mail "Seu anúncio foi aprovado"); em veiculação/programado.
+- Loja: foto principal da bolsa trocada pela do anúncio, em versão **quadrada 1400×1400** (o tema corta fotos verticais em quadrado e escondia o rosto); foto da Café (só a bolsa) **desvinculada** da variante Café para a página abrir com a mulher; foto antiga cortada e a vertical foram para o fim da galeria. Descrição da bolsa ganhou a nota "rosto da modelo criado com IA".
+- **Categoria de produto (taxonomia Shopify) aplicada nos 33 produtos ativos** (ap-2-16 bolsas, ap-2-9 camas, ap-2-6 roupas, ap-2-17 coleiras/peitorais, ap-2-31 guias, ap-2-14 tigelas, ap-2-43 sacos, ap-2-26 beleza, ap-2-3 cães, ap-2-2 gatos).
+- **PayPal DESATIVADO** (checkout expresso, em 31/10 21:11) porque estava "Configuração incompleta" e o botão aparecia quebrado. Reativar só quando existir conta Empresas (CNPJ).
+- CJ: só a bolsa está ligada (Store Products, bfstxp-0s); os outros 32 produtos NÃO estão ligados (pedido manual na CJ se vender).
