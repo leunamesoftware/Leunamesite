@@ -120,7 +120,7 @@ label{display:block;font-size:13px;color:var(--suave);margin-top:8px}
 <div id="app" hidden>
   <div class="topo"><b>Painel das lojas</b><button id="zMenos" title="Diminuir">A−</button><button id="zMais" title="Aumentar">A+</button><button id="modoBt" title="Tela larga (computador) ou celular">🖥️</button><a class="topo-cj" href="https://cjdropshipping.com/" target="_blank">🛒 CJ</a><button id="aliaBt" class="topo-cj" title="Falar com a Alia Lin, sua agente da CJ">💬 Alia</button><a class="baixar" href="app.apk">📲 App</a><button id="sair">Sair</button></div>
   <div class="lojas" id="lojas"></div>
-  <div class="abas"><button class="aba on" data-aba="buscar">Buscar na CJ</button><button class="aba" data-aba="loja">Na loja</button><button class="aba" data-aba="ver">Ver loja</button><button class="aba" data-aba="pedidos">💰 Pedidos <b id="nPed" class="nped" hidden></b></button><button class="aba" data-aba="resultados">📊 Resultados</button><button class="aba" data-aba="contas">💱 Contas</button><button class="aba" data-aba="tiktok">📱 TikTok</button><button class="aba" data-aba="videos">🎬 Vídeos</button><button class="aba" data-aba="vigia">🐾 Vigia</button><button class="aba" data-aba="atalhos">🔗 Atalhos</button></div>
+  <div class="abas"><button class="aba on" data-aba="buscar">Buscar na CJ</button><button class="aba" data-aba="loja">Na loja</button><button class="aba" data-aba="ver">Ver loja</button><button class="aba" data-aba="pedidos">💰 Pedidos <b id="nPed" class="nped" hidden></b></button><button class="aba" data-aba="resultados">📊 Resultados</button><button class="aba" data-aba="contas">💱 Contas</button><button class="aba" data-aba="tiktok">📱 TikTok</button><button class="aba" data-aba="videos">🎬 Vídeos</button><button class="aba" data-aba="vigia">🐾 Vigia</button><button class="aba" data-aba="senha">🔑 Senha</button><button class="aba" data-aba="atalhos">🔗 Atalhos</button></div>
   <main>
     <section class="caixa" id="buscar">
       <form class="busca" id="fBusca"><input id="q" placeholder="Ex.: cat toy, dog bed, leash…" enterkeyhint="search"><button class="bt">Buscar</button></form>
@@ -204,6 +204,14 @@ label{display:block;font-size:13px;color:var(--suave);margin-top:8px}
     <section class="caixa" id="vigia" hidden>
       <iframe id="vigiaFrame" data-src="vigia.html" title="Vigia LeunaPets" style="width:100%;height:calc(100vh - 150px);min-height:600px;border:0;border-radius:12px;background:transparent"></iframe>
     </section>
+    <section class="caixa" id="senha" hidden>
+      <h3 style="margin:0 0 8px">Trocar a senha do painel</h3>
+      <p class="msg" style="text-align:left">Digite a senha nova (mínimo 8 caracteres). Vale na hora. Os outros aparelhos saem e têm que entrar com a nova.</p>
+      <input class="campo" type="password" id="senhaNova" placeholder="Senha nova" autocomplete="new-password">
+      <input class="campo" type="password" id="senhaNova2" placeholder="Repita a senha nova" autocomplete="new-password" style="margin-top:8px">
+      <button class="bt verde" id="senhaBt" style="margin-top:10px">Salvar senha nova</button>
+      <p class="msg" id="senhaMsg"></p>
+    </section>
     <section class="caixa" id="atalhos" hidden>
       <p class="msg" style="text-align:left">Tudo num toque. No celular, abre o app da rede; no computador, abre em outra aba.</p>
       <div class="atalhos">
@@ -271,7 +279,7 @@ $("#fLogin").onsubmit=function(ev){ev.preventDefault();$("#erroLogin").textConte
 $("#sair").onclick=sair;
 document.querySelectorAll(".aba").forEach(function(b){b.onclick=function(){
   document.querySelectorAll(".aba").forEach(function(x){x.classList.toggle("on",x===b)});
-  ["buscar","loja","ver","pedidos","resultados","contas","tiktok","videos","vigia","atalhos"].forEach(function(a){$("#"+a).hidden=b.dataset.aba!==a});
+  ["buscar","loja","ver","pedidos","resultados","contas","tiktok","videos","vigia","senha","atalhos"].forEach(function(a){$("#"+a).hidden=b.dataset.aba!==a});
   if(b.dataset.aba==="vigia"){var vf=$("#vigiaFrame");if(!vf.src)vf.src=vf.dataset.src}
   if(b.dataset.aba==="resultados")carregarResumo();
   if(b.dataset.aba==="videos")carregarVideos();
@@ -401,6 +409,9 @@ function caixa(){ // "cha-ching" de caixa registradora
   if(navigator.vibrate)navigator.vibrate([200,80,200]);
 }
 function desenharSom(){$("#somBt").textContent=somOn?"🔔 Som de venda LIGADO":"🔕 Ativar som de venda";$("#somBt").className="bt "+(somOn?"verde":"cinza")}
+$("#senhaBt").onclick=function(){var a=$("#senhaNova").value,b=$("#senhaNova2").value,m=$("#senhaMsg");
+  if(a.length<8){m.textContent="Mínimo 8 caracteres";return}if(a!==b){m.textContent="As duas senhas não são iguais";return}
+  api("trocar-senha",{nova:a}).then(function(){$("#senhaNova").value="";$("#senhaNova2").value="";m.textContent="✅ Senha trocada. Já vale.";toast("Senha trocada")}).catch(function(e){m.textContent="Erro: "+e.message})};
 $("#somBt").onclick=function(){somOn=!somOn;try{localStorage.setItem("lp_som",somOn?"1":"0")}catch(e){}ctx();if(somOn)caixa();desenharSom()};
 $("#testeSom").onclick=function(){caixa();if(window.LeuNativo)setTimeout(function(){nativo("testarSom")},1600)};
 $("#atuPed").onclick=function(){carregarPedidos()};

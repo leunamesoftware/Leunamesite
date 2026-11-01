@@ -80,13 +80,17 @@ async function tabelas(env) {
 
 // ---------- login ----------
 async function login(req, env) {
-  if (!env.LOJA_ADMIN_SENHA) return json({ erro: "senha-nao-configurada" }, 503);
+  const temSalva = await env.DB.prepare("SELECT 1 AS x FROM config WHERE chave='senha_hash'").first();
+  if (!env.LOJA_ADMIN_SENHA && !temSalva) return json({ erro: "senha-nao-configurada" }, 503);
   const ip = req.headers.get("CF-Connecting-IP") || "?";
   const agora = Date.now();
   const t = await env.DB.prepare("SELECT n, desde FROM tentativas WHERE ip=?").bind(ip).first();
   if (t && t.n >= 6 && agora - t.desde < 15 * 60e3) return json({ erro: "muitas-tentativas" }, 429);
   const corpo = await req.json().catch(() => ({}));
-  const ok = (await sha(String(corpo.senha || ""))) === (await sha(env.LOJA_ADMIN_SENHA));
+  const salva = await env.DB.prepare("SELECT valor FROM config WHERE chave='senha_hash'").first();
+  let ok;
+  if (salva) { const [sal, h] = salva.valor.split(":"); ok = (await sha(sal + String(corpo.senha || ""))) === h; }
+  else ok = (await sha(String(corpo.senha || ""))) === (await sha(env.LOJA_ADMIN_SENHA));
   if (!ok) {
     if (!t || agora - t.desde >= 15 * 60e3) await env.DB.prepare("INSERT OR REPLACE INTO tentativas (ip,n,desde) VALUES (?,1,?)").bind(ip, agora).run();
     else await env.DB.prepare("UPDATE tentativas SET n=n+1 WHERE ip=?").bind(ip).run();
@@ -859,6 +863,16 @@ export async function painel(req, env, url) {
       const { results } = await env.DB.prepare("SELECT loja, COUNT(*) n FROM produtos_v2 WHERE ativo=1 GROUP BY loja").all();
       const n = Object.fromEntries(results.map((r) => [r.loja, r.n]));
       return json({ lojas: LOJAS.map((l) => ({ ...l, publicados: n[l.id] || 0 })) });
+    }
+    if (rota === "trocar-senha" && req.method === "POST") {   // o dono troca a senha dentro do painel; vale na hora
+      const c = await req.json().catch(() => ({}));
+      const nova = String(c.nova || "");
+      if (nova.length < 8) return json({ erro: "curta" }, 400);
+      const sal = [...crypto.getRandomValues(new Uint8Array(12))].map((b) => b.toString(16).padStart(2, "0")).join("");
+      await env.DB.prepare("INSERT OR REPLACE INTO config (chave, valor) VALUES ('senha_hash', ?)").bind(sal + ":" + (await sha(sal + nova))).run();
+      const m = /^Bearer ([a-f0-9]{64})$/.exec(req.headers.get("Authorization") || "");
+      await env.DB.prepare("DELETE FROM sessoes WHERE token<>?").bind(await sha(m[1])).run();   // derruba outros aparelhos
+      return json({ ok: true });
     }
     if (rota === "estado") return json({ ok: true, cj: !!env.CJ_API_KEY, ia: !!env.AI, stripe: !!env.STRIPE_SECRET_KEY });
     if (rota === "buscar") return await buscar(env, url, L);
