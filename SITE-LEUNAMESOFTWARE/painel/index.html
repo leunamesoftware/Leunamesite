@@ -120,7 +120,7 @@ label{display:block;font-size:13px;color:var(--suave);margin-top:8px}
 <div id="app" hidden>
   <div class="topo"><b>Painel das lojas</b><button id="zMenos" title="Diminuir">A−</button><button id="zMais" title="Aumentar">A+</button><button id="modoBt" title="Tela larga (computador) ou celular">🖥️</button><a class="topo-cj" href="https://cjdropshipping.com/" target="_blank">🛒 CJ</a><button id="aliaBt" class="topo-cj" title="Falar com a Alia Lin, sua agente da CJ">💬 Alia</button><a class="baixar" href="app.apk">📲 App</a><button id="sair">Sair</button></div>
   <div class="lojas" id="lojas"></div>
-  <div class="abas"><button class="aba on" data-aba="buscar">Buscar na CJ</button><button class="aba" data-aba="loja">Na loja</button><button class="aba" data-aba="ver">Ver loja</button><button class="aba" data-aba="pedidos">💰 Pedidos <b id="nPed" class="nped" hidden></b></button><button class="aba" data-aba="resultados">📊 Resultados</button><button class="aba" data-aba="contas">💱 Contas</button><button class="aba" data-aba="tiktok">📱 TikTok</button><button class="aba" data-aba="videos">🎬 Vídeos</button><button class="aba" data-aba="atalhos">🔗 Atalhos</button></div>
+  <div class="abas"><button class="aba on" data-aba="buscar">Buscar na CJ</button><button class="aba" data-aba="loja">Na loja</button><button class="aba" data-aba="ver">Ver loja</button><button class="aba" data-aba="pedidos">💰 Pedidos <b id="nPed" class="nped" hidden></b></button><button class="aba" data-aba="resultados">📊 Resultados</button><button class="aba" data-aba="contas">💱 Contas</button><button class="aba" data-aba="tiktok">📱 TikTok</button><button class="aba" data-aba="videos">🎬 Vídeos</button><button class="aba" data-aba="vigia">🐾 Vigia</button><button class="aba" data-aba="atalhos">🔗 Atalhos</button></div>
   <main>
     <section class="caixa" id="buscar">
       <form class="busca" id="fBusca"><input id="q" placeholder="Ex.: cat toy, dog bed, leash…" enterkeyhint="search"><button class="bt">Buscar</button></form>
@@ -201,6 +201,9 @@ label{display:block;font-size:13px;color:var(--suave);margin-top:8px}
       <div id="progresso" class="msg" hidden></div>
       <div id="vidLista" class="vid-grade"><p class="msg">Crie uma pasta para começar.</p></div>
     </section>
+    <section class="caixa" id="vigia" hidden>
+      <iframe id="vigiaFrame" data-src="vigia.html" title="Vigia LeunaPets" style="width:100%;height:calc(100vh - 150px);min-height:600px;border:0;border-radius:12px;background:transparent"></iframe>
+    </section>
     <section class="caixa" id="atalhos" hidden>
       <p class="msg" style="text-align:left">Tudo num toque. No celular, abre o app da rede; no computador, abre em outra aba.</p>
       <div class="atalhos">
@@ -268,7 +271,8 @@ $("#fLogin").onsubmit=function(ev){ev.preventDefault();$("#erroLogin").textConte
 $("#sair").onclick=sair;
 document.querySelectorAll(".aba").forEach(function(b){b.onclick=function(){
   document.querySelectorAll(".aba").forEach(function(x){x.classList.toggle("on",x===b)});
-  ["buscar","loja","ver","pedidos","resultados","contas","tiktok","videos","atalhos"].forEach(function(a){$("#"+a).hidden=b.dataset.aba!==a});
+  ["buscar","loja","ver","pedidos","resultados","contas","tiktok","videos","vigia","atalhos"].forEach(function(a){$("#"+a).hidden=b.dataset.aba!==a});
+  if(b.dataset.aba==="vigia"){var vf=$("#vigiaFrame");if(!vf.src)vf.src=vf.dataset.src}
   if(b.dataset.aba==="resultados")carregarResumo();
   if(b.dataset.aba==="videos")carregarVideos();
   if(b.dataset.aba==="contas")abrirContas();
