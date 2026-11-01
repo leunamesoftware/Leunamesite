@@ -48,3 +48,8 @@ Botão: Comprar agora
 
 **Foto**
 1ª tentativa: foto REAL do produto (sem a modelo de IA), pegar nas fotos da CJ/loja. Se usar a modelo de IA, marcar "conteúdo de IA".
+
+## PEDIDOS DO DONO EM 01/11 (12h45), para o próximo Claude
+1. **Robô da Meta de 15 em 15 min dentro do app LeunaPets** (leuapps/public/leunapets, repo leuname-softwarea-apps). Precisa de uma chave de leitura da Meta (ads_read, conta act_2285209352332107): o dono gera em Business Settings > Usuários do sistema > gerar token, e põe no GitHub como segredo META_TOKEN (e no Worker). Depois: cron no Worker (a cada 15 min) lê gasto, impressões, cliques, carrinhos e compras pela Graph API e grava no D1 com data/hora; o app mostra gráfico bonito do histórico, "o que mudou desde a última leitura" com setas verde (melhor) e vermelha (pior) e alerta; o painel atualiza sozinho a cada 15 min. Sem a chave isso não existe. O gasto/ROAS do Painel hoje vêm só do que o dono digita (D.camp).
+2. **Senha do dono do app LeunaPets**: ele não lembra. O classificador de segurança bloqueou afrouxar a troca de senha e tirar a senha. Só fazer com o dono presente e liberando: apagar dono_acesso no D1 para o app voltar ao "Primeiro acesso: crie a sua senha". A tela "Trocar senha" (Conta) já existe, pede a senha de agora (calculadora/src/dono.js, trocarSenhaDono).
+3. Vigia dentro do app: pronto (leunapets/vigia.html em iframe).
