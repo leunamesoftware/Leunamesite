@@ -3,7 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Painel LeunaPets</title>
+<title>Vigia LeunaPets</title>
+<link rel="manifest" href="vigia.webmanifest">
+<meta name="theme-color" content="#e8742b">
 <style>
 :root{--bg:#f6f4ef;--card:#fff;--tx:#1f2430;--mut:#6b7280;--bd:#e5e1d8;--g:#1a9d58;--gb:#e3f6ec;--y:#d99a00;--yb:#fff4d6;--r:#d33a3a;--rb:#fde6e6;--ac:#e8742b}
 @media (prefers-color-scheme:dark){:root{--bg:#15171c;--card:#1f232b;--tx:#eef0f4;--mut:#9aa3b2;--bd:#2f3541;--gb:#12301f;--yb:#3a2f0c;--rb:#3b1717}}
@@ -220,6 +222,14 @@ $('salvar').onclick=function(){
 $('limpar').onclick=function(){S.hist=[];save();render()};
 F.forEach(function(f){$(f).addEventListener('input',function(){read();save();render()})});
 fill();render();
+</script>
+<button id="instalar" style="display:none;position:fixed;right:16px;bottom:16px;z-index:9;background:#e8742b;color:#fff;border:0;border-radius:12px;padding:14px 20px;font:600 16px system-ui;box-shadow:0 4px 14px rgba(0,0,0,.3);cursor:pointer">⬇ Instalar no computador</button>
+<script>
+if('serviceWorker' in navigator)navigator.serviceWorker.register('vigia-sw.js',{scope:'/painel/'}).catch(function(){});
+var ev=null,b=document.getElementById('instalar');
+addEventListener('beforeinstallprompt',function(e){e.preventDefault();ev=e;b.style.display='block'});
+b.onclick=function(){if(ev){ev.prompt();ev.userChoice.then(function(){b.style.display='none';ev=null})}};
+addEventListener('appinstalled',function(){b.style.display='none'});
 </script>
 </body>
 </html>
