@@ -1,5 +1,7 @@
 # Padrões LeuName Softwares
 
+> **LEIA PRIMEIRO `RECADO-AMANHA.md` (raiz do repositório): estado atual da loja LeunaPets e a checagem do dia (31/10/2026).**
+
 ## Loja Europa LeunaPets (leunamesoftware.com)
 Loja de dropshipping de cães e gatos (CJ, Stripe, PayPal, robô diário). **Antes de mexer leia `LOJA-LEUNAPETS.md`** (arquivos, segredos, como ler o catálogo da CJ, regras e pendências).
 
