@@ -20,7 +20,6 @@
 - Checkout mais bonito (logo, cores, menos campos): só com "pode" do dono.
 - Testar pagamento com cartão europeu real.
 - Conectar mais produtos à CJ (32 sem conexão; Casaco Acolchoado Quentinho e Cama Gruta primeiro).
-- Perguntas para o contador (qual CNPJ no PayPal, CNAE de e-commerce).
 - Vídeo vertical com foto real (sem IA) para anúncio/TikTok. Descrições genéricas de ~8 produtos e linha de entrega consistente, depois da revisão do Google.
 
 **Técnicas que funcionaram (Chrome)**
@@ -56,3 +55,5 @@ Botão: Comprar agora
 
 ## Robô da Meta pelo Chrome do dono (pedido 01/11 13h07)
 O dono deixa o computador ligado 24h com o Chrome aberto. Alternativa SEM chave da Meta: tarefa agendada (create_trigger, requires_local_device=true, a cada 15 min) que abre o Gerenciador de Anúncios (conta act_2285209352332107, período Máximo) no Chrome dele e lê: gasto, impressões, alcance, cliques, carrinhos, compras e REAÇÕES (colunas "Reações no post"). Grava numa tabela D1 (ex.: meta_leituras: quando, gasto, imp, alc, cli, car, com, rp, rn) pelo MCP da Cloudflare (calculadora-receitas, id 7117bdcb-9d07-49ed-88a5-a57502ef1b73) e o Worker da calculadora ganha um GET /api/dono/meta (só dono logado) que devolve a última leitura e o histórico. O Vigia (leuapps/public/leunapets/vigia.html) busca isso a cada 15 min, preenche os campos sozinho e o "robô: o que mudou" (já existe) mostra melhor/pior; o som já existe. Alinhar o layout do Vigia (dono reclamou de desalinhado nos campos/indicadores). A tarefa só LÊ; nunca clicar em Publicar nem alterar anúncio.
+
+**Decisão do dono 02/11:** esquecer contador (não lembrar nem cobrar IVA/OSS/CNPJ do PayPal). Pedidos de teste #1001–#1003 arquivados na Shopify; dono não vai fazer mais testes de compra.
