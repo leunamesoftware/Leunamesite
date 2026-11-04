@@ -23,8 +23,8 @@ const KITS = [
    Fotos enviadas pelo app (Meu site) também valem: a principal é do primeiro tamanho e as pequenas dos outros. */
 const FOTOS = new Set();
 const FOTOS_PESO = {   // só aparece no site o que está aqui (site refeito em 04/11/2026: Linha 1 – Temperos Moídos)
-  'l1-tempero-baiano': ['50 g', '100 g', '250 g'], 'l1-colorau': ['50 g', '100 g', '250 g'], 'l1-cominho': ['50 g', '100 g', '250 g'], 'l1-pimenta-do-reino': ['50 g', '100 g', '250 g'],
-  'l1-acafrao': ['50 g', '100 g', '250 g'], 'l1-paprica-doce': ['50 g', '100 g', '250 g'], 'l1-paprica-defumada': ['50 g', '100 g', '250 g'], 'l1-alho-e-cebola': ['50 g', '100 g', '250 g'],
+  'l1-tempero-baiano': ['50 g', '100 g', '250 g', '1 kg'], 'l1-colorau': ['50 g', '100 g', '250 g', '1 kg'], 'l1-cominho': ['50 g', '100 g', '250 g', '1 kg'], 'l1-pimenta-do-reino': ['50 g', '100 g', '250 g', '1 kg'],
+  'l1-acafrao': ['50 g', '100 g', '250 g', '1 kg'], 'l1-paprica-doce': ['50 g', '100 g', '250 g', '1 kg'], 'l1-paprica-defumada': ['50 g', '100 g', '250 g', '1 kg'], 'l1-alho-e-cebola': ['50 g', '100 g', '250 g', '1 kg'],
 };
 const ORDEM_TAM = ['10 g', '20 g', '30 g', '50 g', '100 g', '250 g', '500 g', '1 kg'];
 const ordemTam = (t) => { const i = ORDEM_TAM.indexOf(t); return i < 0 ? 99 : i; };

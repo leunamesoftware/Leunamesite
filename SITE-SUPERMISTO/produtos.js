@@ -2,7 +2,7 @@
    (temperos, molhos e condimentos; conservas de legumes e de frutas; amidos e féculas; outros alimentos; envase).
    emb: pouch (sachê) | pote | garrafa | saco. cor: cor do produto na janela da embalagem. */
 const LINHAS = [
-  { id: 'moidos', nome: 'Temperos Moídos', emoji: '🟤', cor: '#4A2410', desc: 'Especiarias e temperos moídos na nossa fábrica, 100% naturais e sem conservantes. Pacotes de 50 g, 100 g e 250 g.' },
+  { id: 'moidos', nome: 'Temperos Moídos', emoji: '🟤', cor: '#4A2410', desc: 'Especiarias e temperos moídos na nossa fábrica, 100% naturais e sem conservantes. Pacotes de 50 g, 100 g e 250 g, e 1 kg para restaurantes e revenda.' },
   { id: 'puros', nome: 'Especiarias puras', emoji: '🌶️', cor: '#D8401E', desc: 'Especiarias moídas, puras e cheirosas, prontas para usar.' },
   { id: 'inteiros', nome: 'Especiarias em grão', emoji: '🫚', cor: '#8E6A35', desc: 'Grãos, sementes e especiarias inteiras para moer na hora.' },
   { id: 'misturas', nome: 'Misturas da Casa', emoji: '🥘', cor: '#C99A3B', desc: 'Receitas exclusivas que já dão sabor à comida.' },
@@ -334,7 +334,7 @@ const L1 = [
   ['l1-alho-e-cebola', 'Alho e Cebola em Pó', '#E8CFA0', 'Alho e cebola desidratados em pó: o sabor do refogado em segundos.', 'Arroz, feijão, carnes, frango, molhos, sopas, ovos e legumes.', 'Alho desidratado em pó e cebola desidratada em pó.'],
 ];
 [...L1].reverse().forEach(([id, nome, cor, desc, usos, ingr]) => {
-  const p = P(nome, 'moidos', cor, desc, usos, ['50 g', '100 g', '250 g'], 'pouch');
+  const p = P(nome, 'moidos', cor, desc, usos, ['50 g', '100 g', '250 g', '1 kg'], 'pouch');
   p.id = id;
   p.info = { ingredientes: ingr, conservacao: 'Conservar em local seco, fresco e arejado, ao abrigo da luz. Após aberto, manter bem fechado.', alergicos: 'Não contém glúten.' };
   PRODUTOS.unshift(p);
