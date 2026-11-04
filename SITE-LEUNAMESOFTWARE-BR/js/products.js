@@ -46,6 +46,7 @@
       { q: 'Como funciona o site pronto?', a: 'Veja a demonstração ao vivo, compre pelo Mercado Pago (Pix ou cartão parcelado) e receba no e-mail a pasta completa do site (ZIP) com o manual. Você troca nome, WhatsApp, cores, fotos e preços em um arquivo só e publica na sua hospedagem ou grátis.' },
       { q: 'O site vem com a marca de vocês?', a: 'Vem com o nome, o logo e as cores da sua empresa: você troca tudo. No rodapé fica só uma linha pequena: “Desenvolvido por LeuName Softwares”. Prefere sem? Na hora de comprar, escolha a opção “Sem o crédito no rodapé” (R$ 50 a mais).' },
       { q: 'Posso usar em mais de uma empresa?', a: 'Cada compra é a licença de 1 empresa e 1 domínio. Para outra empresa, é só comprar outra licença.' },
+      { q: 'Onde posso colocar o site?', a: 'Em qualquer hospedagem que aceite enviar arquivos: Hostinger, HostGator, Locaweb, KingHost, cPanel, ou grátis no Netlify e no Cloudflare Pages. Não precisa de banco de dados. Não funciona em Shopify, Nuvemshop, Wix ou como tema de WordPress.' },
       { q: 'Preciso saber programar?', a: 'Não. O manual mostra passo a passo como editar e publicar. Se preferir, fazemos tudo para você: peça um orçamento pelo WhatsApp.' }
     ],
     logomarcas: [
