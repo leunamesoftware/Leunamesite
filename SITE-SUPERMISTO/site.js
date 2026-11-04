@@ -22,16 +22,9 @@ const KITS = [
    só aparece quando existe a foto dele. Fotos do site: img/produtos/<id>-<peso>.webp (ex.: tomate-seco-desidratado-30g.webp).
    Fotos enviadas pelo app (Meu site) também valem: a principal é do primeiro tamanho e as pequenas dos outros. */
 const FOTOS = new Set();
-const FOTOS_PESO = {   // 200 g, 250 g, 500 g e 1 kg: arte pronta, escondidos até liberar.
-  'tomate-seco-desidratado': ['10 g', '20 g', '30 g', '50 g', '100 g'],
-  'cebola-desidratada-em-flocos': ['10 g', '20 g', '30 g', '50 g', '100 g'],
-  'pimentao-desidratado': ['10 g', '20 g', '30 g', '50 g', '100 g'],
-  'banana-desidratada': ['10 g', '20 g', '30 g', '50 g', '100 g'],
-  'maca-desidratada': ['10 g', '20 g', '30 g', '50 g', '100 g'],
-  'cogumelo-shiitake-desidratado': ['10 g', '20 g', '30 g', '50 g', '100 g'],
-  'champignon-desidratado': ['10 g', '20 g', '30 g', '50 g', '100 g'],
-  'mix-de-cogumelos': ['10 g', '20 g', '30 g', '50 g', '100 g'],
-  'alho-desidratado-em-flocos': ['10 g', '20 g', '30 g', '50 g', '100 g'],
+const FOTOS_PESO = {   // só aparece no site o que está aqui (site refeito em 04/11/2026: Linha 1 – Temperos Moídos)
+  'l1-tempero-baiano': ['250 g'], 'l1-colorau': ['250 g'], 'l1-cominho': ['250 g'], 'l1-pimenta-do-reino': ['250 g'],
+  'l1-acafrao': ['250 g'], 'l1-paprica-doce': ['250 g'], 'l1-paprica-defumada': ['250 g'], 'l1-alho-e-cebola': ['250 g'],
 };
 const ORDEM_TAM = ['10 g', '20 g', '30 g', '50 g', '100 g', '250 g', '500 g', '1 kg'];
 const ordemTam = (t) => { const i = ORDEM_TAM.indexOf(t); return i < 0 ? 99 : i; };
@@ -44,18 +37,18 @@ function tamFoto(p) {
   return todos.filter((t, i) => (i === 0 && p.foto) || f[t]).sort((x, y) => ordemTam(x) - ordemTam(y));
 }
 function fotoUrl(p, peso) {
-  if (FOTOS_PESO[p.id]) return `img/produtos/${p.id}-${peso.replace(' ', '')}.webp?v=95`;
+  if (FOTOS_PESO[p.id]) return `img/produtos/${p.id}-${peso.replace(' ', '')}.webp?v=96`;
   const todos = p.tamAll || p.tam || [];
   return (p.fotosPeso && p.fotosPeso[peso]) || (peso === todos[0] ? p.foto : '') || p.foto;
 }
 // fotos das linhas (cartão 4:3) e capas largas das páginas de linha (img/linhas/<id>-capa.webp)
-const FOTOS_LINHA = ['desidratados', 'ervas', 'puros', 'conservas', 'misturas', 'churrasco', 'molhos', 'doces', 'amidos', 'chas', 'inteiros'];
-const CAPAS_LINHA = ['chas', 'puros', 'inteiros', 'misturas', 'desidratados'];
+const FOTOS_LINHA = ['moidos', 'desidratados', 'ervas', 'puros', 'conservas', 'misturas', 'churrasco', 'molhos', 'doces', 'amidos', 'chas', 'inteiros'];
+const CAPAS_LINHA = ['moidos', 'chas', 'puros', 'inteiros', 'misturas', 'desidratados'];
 // foto do quadradinho e capa larga de cada linha: a enviada pelo app (Meu site) vale mais que a do site
 const NOME_IMG = (id) => (id === 'desidratados' ? 'cogumelos-linha' : id);
 const EXT_IMG = (id) => (id === 'desidratados' ? 'jpg' : 'webp');
-const fotoLinha = (l) => l.foto || (FOTOS_LINHA.includes(l.id) ? `img/linhas/${NOME_IMG(l.id)}.${EXT_IMG(l.id)}?v=95` : '');
-const capaLinha = (l) => l.capa || (CAPAS_LINHA.includes(l.id) ? `img/linhas/${NOME_IMG(l.id)}-capa.${EXT_IMG(l.id)}?v=95` : '');
+const fotoLinha = (l) => l.foto || (FOTOS_LINHA.includes(l.id) ? `img/linhas/${NOME_IMG(l.id)}.${EXT_IMG(l.id)}?v=96` : '');
+const capaLinha = (l) => l.capa || (CAPAS_LINHA.includes(l.id) ? `img/linhas/${NOME_IMG(l.id)}-capa.${EXT_IMG(l.id)}?v=96` : '');
 const slug = (n) => n.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 // cada produto tem um id fixo (o slug do nome original): o nome pode ser trocado pelo app sem perder a foto
 PRODUTOS.forEach((p) => { p.id = p.id || slug(p.nome); });
@@ -137,7 +130,7 @@ function redes() {
 function rodape() {
   $('#rodape').innerHTML = `<div class="caixa rod-grid">
     <div><img src="img/logo-supermisto.png" alt="Supermisto Temperos" width="190" height="94" loading="lazy"><p><span class="ln">Temperos de verdade, 100% naturais</span> <span class="ln">e sem conservantes. Fábrica própria.</span></p>${redes()}</div>
-    <div><b>Produtos</b>${LINHAS.slice(0, 5).map((l) => `<a href="linha.html?id=${l.id}">${l.nome}</a>`).join('')}<a href="catalogo.html">Ver todos →</a></div>
+    <div><b>Produtos</b>${LINHAS.filter((l) => PRODUTOS.some((p) => p.linha === l.id && temFoto(p))).map((l) => `<a href="linha.html?id=${l.id}">${l.nome}</a>`).join('')}<a href="catalogo.html">Ver todos →</a></div>
     <div><b>Empresa</b><a href="receitas.html">Receitas</a><a href="index.html#sobre">Nossa história</a><a href="revenda.html">Revenda e atacado</a><a href="revenda.html">Marca própria</a></div>
     <div class="rod-contato"><b>Contato</b><a data-whats="Olá! Vim pelo site da Supermisto."><span data-fone></span></a><a data-mail-link><span data-mail-txt></span></a><span class="rod-end"><span class="ln">Estrada de Xerém, 484 · Xerém</span><i class="sep"> · </i><span class="ln">Duque de Caxias (RJ)</span></span></div>
   </div>
@@ -163,7 +156,7 @@ function inicio() {
   const pegar = (nome) => PRODUTOS.find((p) => p.nome === nome);
   // produtos com foto real entram como recorte (sem fundo); os outros com a embalagem desenhada
   const vit = (n) => FOTOS.has(slug(n)) ? `<img src="img/produtos/${slug(n)}-recorte.png" alt="${n} Supermisto">` : embalagem(pegar(n), pegar(n).tam[1] || pegar(n).tam[0]);
-  $('#vitrine').innerHTML = '<img class="chef" src="img/chef-supermisto.webp?v=95" srcset="img/chef-supermisto-640.webp?v=95 640w, img/chef-supermisto.webp?v=95 1000w" sizes="(max-width:860px) 92vw, 460px" width="1000" height="1159" alt="Chef Supermisto apresentando os temperos desidratados">';
+  $('#vitrine').innerHTML = '<img class="chef" src="img/chef-supermisto.webp?v=96" srcset="img/chef-supermisto-640.webp?v=96 640w, img/chef-supermisto.webp?v=96 1000w" sizes="(max-width:860px) 92vw, 460px" width="1000" height="1159" alt="Chef Supermisto apresentando os temperos desidratados">';
   // só aparecem as linhas que já têm produto com foto (as outras entram quando a arte chegar)
   const linhasOk = LINHAS.filter((l) => PRODUTOS.some((p) => p.linha === l.id && temFoto(p)));
   $('#num-prod').textContent = PRODUTOS.filter(temFoto).length; $('#num-linhas').textContent = linhasOk.length;
@@ -280,7 +273,7 @@ function revenda() {
   const tams = [...new Set(PRODUTOS.flatMap((p) => p.tam))];
   const ordem = (t) => { const n = parseFloat(t.replace(',', '.')); return /kg|L$/.test(t) ? n * 1000 : n; };
   $('#rv-emb').textContent = tams.sort((a, b) => ordem(a) - ordem(b)).join(' · ');
-  $('#rv-interesse').innerHTML = LINHAS.map((l) => `<label class="rv-chk"><input type="checkbox" name="linhas" value="${l.nome}"> ${l.nome}</label>`).join('');
+  $('#rv-interesse').innerHTML = LINHAS.filter((l) => PRODUTOS.some((p) => p.linha === l.id && temFoto(p))).map((l) => `<label class="rv-chk"><input type="checkbox" name="linhas" value="${l.nome}"> ${l.nome}</label>`).join('');
   $('#rv-form').addEventListener('submit', (e) => {
     e.preventDefault();
     const f = new FormData(e.target), linhas = f.getAll('linhas');

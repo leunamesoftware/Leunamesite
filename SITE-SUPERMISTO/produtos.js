@@ -2,6 +2,7 @@
    (temperos, molhos e condimentos; conservas de legumes e de frutas; amidos e féculas; outros alimentos; envase).
    emb: pouch (sachê) | pote | garrafa | saco. cor: cor do produto na janela da embalagem. */
 const LINHAS = [
+  { id: 'moidos', nome: 'Temperos Moídos', emoji: '🟤', cor: '#4A2410', desc: 'Especiarias e temperos moídos na nossa fábrica, 100% naturais e sem conservantes. Pacote de 250 g.' },
   { id: 'puros', nome: 'Especiarias puras', emoji: '🌶️', cor: '#D8401E', desc: 'Especiarias moídas, puras e cheirosas, prontas para usar.' },
   { id: 'inteiros', nome: 'Especiarias em grão', emoji: '🫚', cor: '#8E6A35', desc: 'Grãos, sementes e especiarias inteiras para moer na hora.' },
   { id: 'misturas', nome: 'Misturas da Casa', emoji: '🥘', cor: '#C99A3B', desc: 'Receitas exclusivas que já dão sabor à comida.' },
@@ -319,6 +320,25 @@ const LINHA_SACHES = ['Páprica picante', 'Noz-moscada moída', 'Cravo-da-índia
   'Ervas finas', 'Tempero para frango', 'Tempero para feijão', 'Tempero para arroz', 'Curry',
   'Tempero para saladas', 'Tempero para pizza', 'Tempero para carne moída', 'Sal com alho', 'Sal de ervas', 'Tempero para peixe'];
 PRODUTOS.forEach((p) => { if (LINHA_SACHES.includes(p.nome)) p.tam = ['10 g', '50 g', '100 g', '1 kg']; });
+
+
+/* ===== LINHA 1 – TEMPEROS MOÍDOS (embalagem nova, solapa marrom). Fotos de amostra: trocar pelas fotos reais quando chegarem. ===== */
+const L1 = [
+  ['l1-tempero-baiano', 'Tempero Baiano', '#E08A1E', 'Mistura tradicional de especiarias, cheirosa e colorida, sem sal.', 'Carnes, frango, peixes, feijão, arroz, legumes e farofas.', 'Cominho, cúrcuma (açafrão-da-terra), colorau (fubá e urucum), pimenta-do-reino, orégano e pimenta calabresa.'],
+  ['l1-colorau', 'Colorau', '#D2341A', 'Colorífico de urucum que dá aquela cor dourada e o sabor de comida caseira.', 'Carnes, frango, arroz, feijão, molhos, refogados e farofas.', 'Fubá de milho e urucum.'],
+  ['l1-cominho', 'Cominho Moído', '#9C7A2E', 'Cominho moído, de aroma marcante, puro.', 'Feijão, carnes, frango, molhos, ensopados e pratos árabes e nordestinos.', 'Cominho moído.'],
+  ['l1-pimenta-do-reino', 'Pimenta-do-reino Moída', '#5A4030', 'Pimenta-do-reino preta moída, pura e picante na medida.', 'Carnes, aves, peixes, ovos, molhos, saladas e legumes.', 'Pimenta-do-reino preta moída.'],
+  ['l1-acafrao', 'Açafrão (Cúrcuma) Moído', '#E9A21A', 'Açafrão-da-terra moído, cor dourada intensa e sabor suave.', 'Arroz, frango, carnes, ovos, molhos, sopas e legumes.', 'Açafrão-da-terra (cúrcuma) moído.'],
+  ['l1-paprica-doce', 'Páprica Doce', '#C81E10', 'Páprica doce de pimentão vermelho, cor viva e sabor suave.', 'Carnes, frango, batatas, ovos, molhos, sopas e arroz.', 'Páprica doce (pimentão vermelho desidratado e moído).'],
+  ['l1-paprica-defumada', 'Páprica Defumada', '#8A1F0E', 'Páprica defumada com sabor de churrasco.', 'Carnes, frango, linguiça, batatas, feijão, molhos e farofas.', 'Páprica defumada (pimentão vermelho defumado, desidratado e moído).'],
+  ['l1-alho-e-cebola', 'Alho e Cebola em Pó', '#E8CFA0', 'Alho e cebola desidratados em pó: o sabor do refogado em segundos.', 'Arroz, feijão, carnes, frango, molhos, sopas, ovos e legumes.', 'Alho desidratado em pó e cebola desidratada em pó.'],
+];
+[...L1].reverse().forEach(([id, nome, cor, desc, usos, ingr]) => {
+  const p = P(nome, 'moidos', cor, desc, usos, ['250 g'], 'pouch');
+  p.id = id;
+  p.info = { ingredientes: ingr, conservacao: 'Conservar em local seco, fresco e arejado, ao abrigo da luz. Após aberto, manter bem fechado.', alergicos: 'Não contém glúten.' };
+  PRODUTOS.unshift(p);
+});
 
 /* Ficha técnica que aparece na página do produto (só o que estiver preenchido; confira com o rótulo).
    Ex.: 'Colorau': { ingredientes: 'Fubá de milho e urucum.', conservacao: 'Local seco e arejado, longe do sol.', validade: '12 meses', alergicos: '' }, */
