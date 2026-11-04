@@ -1231,7 +1231,11 @@ html{ scroll-behavior:smooth; }
 .promo-dot{ position:relative; }
 .promo-dot::after{ content:''; position:absolute; inset:-12px -6px; }
 /* Computador: banner da página inicial com a mesma largura do resto da página. */
-@media (min-width:1024px){ .banner-wrap{ max-width:var(--container-max); } }
+/* Computador: o banner cabe inteiro na tela (notebook baixo não corta a parte de baixo). */
+@media (min-width:1024px){
+  .banner-wrap{ max-width:clamp(640px, calc((100vh - 200px) * 2.15), 1180px); }
+  .sites-banner{ max-width:clamp(640px, calc((100vh - 200px) * 2.15), 1180px); margin-inline:auto; }
+}
 /* Telas grandes: letras um pouco maiores, tudo mais perto e nítido. */
 @media (min-width:1280px){
   body{ font-size:16px; }
