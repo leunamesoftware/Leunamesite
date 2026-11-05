@@ -33,8 +33,12 @@
   document.documentElement.classList.add('tem-banner-topo');
   var destino = topo.link ? '<a href="' + topo.link + '" aria-label="' + topo.alt + '">'
     : '<a href="https://wa.me/5524998721557?text=' + encodeURIComponent('Olá, LeuName Softwares! Vim pelo site e quero um orçamento de ' + topo.pedido + '.') + '" target="_blank" rel="noopener" aria-label="' + topo.alt + ' Pedir orçamento grátis no WhatsApp">';
+  // Proporção certa de cada imagem (computador e celular): mostra a arte inteira, sem cortar.
+  var rPc = topo.pcTam[0] / topo.pcTam[1], rCel = topo.celTam[0] / topo.celTam[1];
+  destino = destino.replace('<a ', '<a style="--r:' + rPc.toFixed(4) + '" ');
   var html = '<div class="cat-banner-topo container">' + destino +
-    '<img src="' + topo.pc + '" width="1920" height="720" alt="' + topo.alt + '" fetchpriority="high" decoding="async">' +
+    '<picture><source media="(max-width:700px)" srcset="' + topo.cel + '" width="' + topo.celTam[0] + '" height="' + topo.celTam[1] + '">' +
+    '<img src="' + topo.pc + '" width="' + topo.pcTam[0] + '" height="' + topo.pcTam[1] + '" style="aspect-ratio:' + rPc.toFixed(4) + '" data-rcel="' + rCel.toFixed(4) + '" alt="' + topo.alt + '" fetchpriority="high" decoding="async"></picture>' +
     '<span class="cbt-cta' + (topo.link ? ' cbt-azul' : '') + (topo.cor ? ' cbt-' + topo.cor : '') + (topo.botao ? '' : ' cbt-so-cel') + '">' + (topo.botaoTexto || 'Pedir orçamento grátis') + '</span></a></div>';
   var aqui = document.currentScript;
   if (aqui) aqui.insertAdjacentHTML('beforebegin', html);
