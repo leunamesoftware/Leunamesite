@@ -140,3 +140,13 @@ Estado em 05/11 10h20: viabilidade nova aberta (aba 1 preenchida e avançada at�
 - **10/11 17h45 — RESPOSTA DA SEFAZ (chamado AE-12540, ID 4344351-6):** IE 13896135 (Trans Antunes) NÃO pode ser baixada (ativa na RFB, atividade exige IE; se não exerce, alterar atividades na JUCERJA/RFB). Motivos dos impedimentos: **Trans Antunes = falta reiterada de PGDAS-D**; **Super Misto = falta reiterada de EFD ICMS/IPI**. Regra (portal.fazenda.rj.gov.br/efd/omissao-efd-icms-ipi/): transmitir TODOS os períodos omissos dos últimos 5 anos (mesmo sem movimento; não declarar "sem movimento" se houve NF-e), depois pedir REATIVAÇÃO no SEC (exige certificado digital); reativa no dia seguinte. Multas: EFD (Lei 2.657/96 art. 62-B, reduções 70-A/70-B); PGDAS-D (LC 123 art. 38). Depois de reativar as duas: novo pedido de IE da LeunaShop no REGIN.
 - e-CPF: compra na Certifica.ai (R$ 74,90, videochamada) travou porque o dono NÃO tem CNH e talvez nunca teve certificado → provavelmente validação presencial com RG.
 - **REGRA DO DONO (10/11): sempre que aparecer CAPTCHA ou login, ESPERAR na mesma página sem sair nem recarregar; ele resolve e avisa.**
+
+## 10/11/2026 noite — Trans Antunes / Super Misto (dívidas e IE)
+- PGDAS-D da Trans Antunes: TODOS transmitidos zerados até 10/2026 (inclui retificações 12/2025–05/2026). Próximo: PA 11/2026 até 20/12 (zerado, ordem do dono; ele faz login).
+- Parcelamento Simples da Trans Antunes: consolidado R$ 50.706,88, parcela R$ 859,43, só 1 paga (03/2026), ~8 atrasadas → risco de rescisão (vai para PGFN). Dono ainda decide (quer mínimo ~R$100–150/mês sem entrada).
+- Regularize (PGFN), CPF do Emanuel: única inscrição = 70 4 22 056077-09 da SUPER MISTO (13.580.397/0001-80), receita 1537 DAS-MEI, 81 competências jan/2013–set/2019 (só INSS, 5% do SM) = R$ 5.601,36 (princ. 2.492,24). Protesto lavrado 06/10/2024, 2º Ofício Protesto Duque de Caxias, prot. 0000047165. Pagos antes R$ 2.111,48 (3 parcelamentos rescindidos). Entra no PERDÃO DO MEI automático em 01/01/2027 → NÃO pagar. Em jan/2027 conferir extinção e se protesto caiu (emolumentos via CENPROT).
+- Trans Antunes NÃO tem nada em dívida ativa PGFN. LEUNASHOP sem dívidas.
+- Simples Nacional p/ 2027: prazo acabou 15/10/2026 (antecipado pela reforma). Super Misto só p/ 2028, e precisa IE regular e sem débitos.
+- Novo chamado COCAF **#AE-12542** (10/11 20:32): pedido de reativação da IE 13896135 (Trans Antunes) sem certificado, citando PGDAS-D em dia e a IE da LEUNASHOP. Resposta no leunashop.vendas@gmail.com.
+- Super Misto IE 12920806: omissão EFD ICMS/IPI (últimos 5 anos); precisa PVA + certificado; se houve NF-e no período não pode ir zerada. Multa EFD atrasada 1.000 UFIR-RJ (-70% espontânea).
+- Próximo passo-chave: e-CPF presencial com RG (sem CNH).
