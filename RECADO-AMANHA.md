@@ -131,3 +131,9 @@ Estado em 05/11 10h20: viabilidade nova aberta (aba 1 preenchida e avançada at�
   - Os documentos originais estão no LEUNASHOP_Documentos_Completo (com o dono). Contrato válido = o REGISTRADO na JUCERJA (as outras 2 versões e a viabilidade de 05/11 são repetidas/antigas).
 - **Computer use só funciona em conversa aberta no app Claude do PC** (sessão de Code na nuvem não acessa o computador). Telefone no cartão CNPJ aparece (24) 9872-1557 — conferir com o dono se está certo.
 - Próximo: SICAF (Compras.gov.br) com gov.br do dono; ele quer participar de licitações. Shopee: conta nova LeunaShop precisa de outro e-mail (leunashop.vendas@gmail.com) e outro celular.
+
+## 10/11/2026 (16h40) — INSCRIÇÃO ESTADUAL DA LEUNASHOP INDEFERIDA
+- Pedido de IE RJP2600365054 **INDEFERIDO** pela SEFAZ-RJ: o CPF do Emanuel (096.463.317-50) é responsável por IEs impedidas: **12920806 (Super Misto Temperos, "Não habilitado" desde 11/05/2026)** e **13896135 (Trans Antunes, "Não habilitado" desde 09/11/2026)** (consultado no CCC / dfe-portal.svrs.rs.gov.br/NFE/CCC). Sefaz diz: regularizar a IE impedida ou, se cancelada, processo SEI à COCAF comprovando não enquadramento na restrição; depois transmitir novo pedido de IE.
+- Com gov.br (não MEI) NÃO dá para entrar no SEC nem no DEC (exigem certificado digital); Fisco Fácil não mostrou as empresas.
+- **Aberto chamado no Canal de Atendimento do Cadastro (COCAF): protocolo #AE-12540** (10/11 16h37), resposta no e-mail leunashop.vendas@gmail.com. Pedido: baixa da IE da Trans Antunes (fretamento municipal 4929-9/01, ISS, não precisa IE); motivo do impedimento da Super Misto e como regularizar; orientação de SEI para liberar a IE da LeunaShop.
+- Próximo: acompanhar resposta; avaliar comprar e-CPF (acesso ao SEC e também necessário para NF-e). Telefone (atendimento geral Sefaz): (21) 2334-4300.
