@@ -9242,7 +9242,8 @@ html, body{ overflow-x:hidden; max-width:100%; }
       '<div class="field" style="margin-top:10px;"><label>Senha</label><input id="ob-senha" type="password" placeholder="mín. 6 caracteres"></div>' +
       '<div class="field" style="margin-top:10px;"><label>Confirmar senha</label><input id="ob-senha2" type="password"></div>' +
       '<div id="ob-err" class="alert alert--danger" style="display:none;margin-top:12px;"></div>' +
-      '<button class="btn btn--primary" id="ob-finish" style="width:100%;justify-content:center;margin-top:16px;">Criar minha loja</button>'
+      '<button class="btn btn--primary" id="ob-finish" style="width:100%;justify-content:center;margin-top:16px;">Criar minha loja</button>' +
+      '<p style="font-size:11px;color:var(--text-tertiary);text-align:center;margin:12px 0 0;word-break:break-all;">Diagnóstico: chave ' + esc(String(lsGet(LICENSE_LS_KEY) || '(vazia)').slice(0, 13)) + ' · sync ' + esc(JSON.stringify(window.__pullInfo || 'não rodou')) + '</p>'
     );
     document.getElementById('ob-finish').onclick = async function () {
       var err = document.getElementById('ob-err');
@@ -10711,7 +10712,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
     if (restored) { await startApp(); return; }
     var firstRun = await isFirstRun();
     if (firstRun) {
-      try { await syncPull(); } catch (e) {}
+      try { window.__pullInfo = await syncPull(); } catch (e) { window.__pullInfo = { erro: String((e && e.message) || e) }; }
       firstRun = await isFirstRun();
     }
     if (firstRun) { OB = { data: { resp_nome: '', resp_email: '', resp_senha: '', resp_senha2: '', loja_nome: '' } }; renderOnboarding(); }
