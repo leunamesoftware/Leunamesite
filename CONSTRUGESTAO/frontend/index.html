@@ -8671,6 +8671,19 @@ html, body{ overflow-x:hidden; max-width:100%; }
     }
     return { ok: true, enviados: pendentes.length };
   }
+  /* Trocou a chave de sincronização (ex.: teste -> licença da conta): reenvia TODOS os dados deste
+     aparelho para a chave nova, senão outro aparelho entraria vazio e pediria para criar a loja de novo. */
+  async function syncReenfileirar() {
+    for (var i = 0; i < SYNC_STORES.length; i++) {
+      var st = SYNC_STORES[i];
+      var linhas = await idbAll(st);
+      for (var j = 0; j < linhas.length; j++) {
+        var r = linhas[j];
+        await idbPutLocal('_sync_outbox', { id: st + '|' + r.id, store: st, registroId: r.id, payload: r, atualizadoEm: r._syncTs || Date.now(), deletado: 0 });
+      }
+    }
+    syncScheduleSoon();
+  }
   async function syncPull() {
     var chave = lsGet(LICENSE_LS_KEY);
     if (!chave) return { ok: false };
@@ -9028,7 +9041,9 @@ html, body{ overflow-x:hidden; max-width:100%; }
       var d = await r.json(); __testesConta = (d && d.testes) || {}; __motivoConta = (d && d.motivo) || null;
       var g = d && d.apps && d.apps.construgestao;
       if (g && g.chave && await licenseKeyValid(g.chave)) {
-        lsSet(LICENSE_LS_KEY, g.chave); lsSet(LICENSE_REVOKED_LS_KEY, ''); lsSet(CONTA_EXPIRA_LS_KEY, g.expiraEm || ''); lsSet(DA_CONTA_LS_KEY, '1'); return true;
+        var chaveAntes = lsGet(LICENSE_LS_KEY);
+        lsSet(LICENSE_LS_KEY, g.chave);
+        if (chaveAntes && chaveAntes !== g.chave) { try { await syncReenfileirar(); } catch (e) {} } lsSet(LICENSE_REVOKED_LS_KEY, ''); lsSet(CONTA_EXPIRA_LS_KEY, g.expiraEm || ''); lsSet(DA_CONTA_LS_KEY, '1'); return true;
       }
       if (g && g.teste) {
         var k = lsGet(LICENSE_LS_KEY);
