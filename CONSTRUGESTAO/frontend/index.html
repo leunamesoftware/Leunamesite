@@ -9400,7 +9400,8 @@ html, body{ overflow-x:hidden; max-width:100%; }
         var status = calcularStatusEstoque(Number(p.estoque_atual || 0), Number(p.estoque_minimo || 0));
         var info = STATUS_ESTOQUE_INFO[status];
         return '<div data-prod-edit="' + p.id + '" style="cursor:pointer;border:1px solid var(--border-subtle);border-radius:12px;overflow:hidden;background:var(--bg-surface);display:flex;flex-direction:column;">' +
-          '<div style="width:100%;aspect-ratio:1;overflow:hidden;">' +
+          '<div data-prod-zoom="' + p.id + '" title="Ver fotos grandes" style="width:100%;aspect-ratio:1;overflow:hidden;position:relative;cursor:zoom-in;">' +
+            ((p.fotos && p.fotos.length) ? '<span style="position:absolute;right:6px;bottom:6px;background:rgba(0,0,0,.65);color:#fff;font-size:11px;padding:2px 7px;border-radius:10px;">+' + p.fotos.length + ' fotos</span>' : '') +
             (p.foto ? '<img src="' + p.foto + '" alt="" style="width:100%;height:100%;object-fit:cover;display:block;">' :
               '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:' + ic.grad + ';"><span class="icon" style="width:36px;height:36px;color:#fff;"><svg><use href="#' + ic.icone + '"/></svg></span></div>') +
           '</div>' +
@@ -9518,6 +9519,10 @@ html, body{ overflow-x:hidden; max-width:100%; }
             '</div>' +
           '</div>' +
         '</div>' +
+        '<div class="field"><label>Mais fotos (até 8)</label>' +
+          '<input id="prodFotosExtraInput" type="file" accept="image/*" multiple style="font-size:12.5px;max-width:260px;">' +
+          '<div id="prodFotosExtraLista" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;"></div>' +
+        '</div>' +
         '<div class="field"><label>Nome do produto</label><input id="prodNome" list="prodNomeSugestoes" value="' + esc(prod.nome) + '" required>' +
           '<datalist id="prodNomeSugestoes">' + PRODUTOS_SUGERIDOS.map(function (p) { return '<option value="' + esc(p.nome) + '">'; }).join('') + '</datalist>' +
         '</div>' +
@@ -9572,6 +9577,34 @@ html, body{ overflow-x:hidden; max-width:100%; }
       fotoPreviewEl.innerHTML = prodThumbHTML({}, document.getElementById('prodCategoria').selectedOptions[0] ? document.getElementById('prodCategoria').selectedOptions[0].textContent : '', 64);
       fotoRemoverBtn.style.display = 'none';
     });
+    var fotosExtras = Array.isArray(prod.fotos) ? prod.fotos.slice(0, 8) : [];
+    var extraInputEl = document.getElementById('prodFotosExtraInput');
+    var extraListaEl = document.getElementById('prodFotosExtraLista');
+    function desenharFotosExtras() {
+      extraListaEl.innerHTML = fotosExtras.map(function (f, i) {
+        return '<span style="position:relative;display:inline-block;width:64px;height:64px;">' +
+          '<img src="' + f + '" alt="" style="width:64px;height:64px;object-fit:cover;border-radius:8px;display:block;">' +
+          '<button type="button" data-foto-extra-del="' + i + '" title="Remover" style="position:absolute;top:-6px;right:-6px;width:20px;height:20px;border-radius:50%;border:0;background:#dc2626;color:#fff;font-size:12px;line-height:20px;cursor:pointer;padding:0;">×</button>' +
+        '</span>';
+      }).join('');
+    }
+    desenharFotosExtras();
+    extraListaEl.addEventListener('click', function (ev) {
+      var b = ev.target.closest('[data-foto-extra-del]');
+      if (!b) return;
+      fotosExtras.splice(Number(b.getAttribute('data-foto-extra-del')), 1);
+      desenharFotosExtras();
+    });
+    extraInputEl.addEventListener('change', async function () {
+      var arquivos = Array.prototype.slice.call(extraInputEl.files || []);
+      for (var i = 0; i < arquivos.length; i++) {
+        if (fotosExtras.length >= 8) { toast('Máximo de 8 fotos extras.', 'error'); break; }
+        if (!arquivos[i].type || arquivos[i].type.indexOf('image/') !== 0) continue;
+        try { fotosExtras.push(await redimensionarFoto(arquivos[i], 800, 0.72)); } catch (err) { toast('Não foi possível carregar uma das fotos.', 'error'); }
+      }
+      extraInputEl.value = '';
+      desenharFotosExtras();
+    });
     document.getElementById('prodForm').addEventListener('submit', async function (e) {
       e.preventDefault();
       var nome = document.getElementById('prodNome').value.trim();
@@ -9583,7 +9616,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
         categoria_id: document.getElementById('prodCategoria').value || null, fornecedor_id: document.getElementById('prodFornecedor').value || null, sku: document.getElementById('prodSku').value.trim(),
         preco: preco, estoque_atual: Number(document.getElementById('prodEstoqueAtual').value || 0),
         estoque_minimo: Number(document.getElementById('prodEstoqueMinimo').value || 0), estoque_ideal: Number(document.getElementById('prodEstoqueIdeal').value || 0),
-        foto: fotoAtual, criado_em: prod.criado_em || nowISO()
+        foto: fotoAtual, fotos: fotosExtras, criado_em: prod.criado_em || nowISO()
       };
       await idbPut('produtos', obj);
       await logAction(prod.id ? 'produto_editado' : 'produto_criado', obj.nome);
@@ -9592,7 +9625,44 @@ html, body{ overflow-x:hidden; max-width:100%; }
       await renderProdutos(); await renderEstoqueDerivados(); await renderDashboard();
     });
   }
+  /* Visualizador de fotos grandes do produto (foto principal + extras). */
+  function abrirFotosProduto(prod) {
+    var fotos = [prod.foto].concat(Array.isArray(prod.fotos) ? prod.fotos : []).filter(Boolean);
+    if (!fotos.length) { toast('Esse produto ainda não tem foto.', 'error'); return; }
+    var i = 0;
+    var box = document.createElement('div');
+    box.style.cssText = 'position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.88);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px;padding:16px;';
+    function desenhar() {
+      box.innerHTML = '<div style="color:#fff;font-size:14px;font-weight:600;text-align:center;">' + esc(prod.nome) + ' (' + (i + 1) + '/' + fotos.length + ')</div>' +
+        '<div style="display:flex;align-items:center;gap:10px;max-width:100%;">' +
+          '<button type="button" data-fv="-1" style="font-size:28px;background:#fff2;color:#fff;border:0;border-radius:50%;width:44px;height:44px;cursor:pointer;">‹</button>' +
+          '<img src="' + fotos[i] + '" alt="" style="max-width:min(86vw,900px);max-height:76vh;border-radius:10px;background:#fff;object-fit:contain;">' +
+          '<button type="button" data-fv="1" style="font-size:28px;background:#fff2;color:#fff;border:0;border-radius:50%;width:44px;height:44px;cursor:pointer;">›</button>' +
+        '</div>' +
+        '<button type="button" data-fv="0" style="background:#fff;border:0;border-radius:8px;padding:8px 18px;font-weight:600;cursor:pointer;">Fechar</button>';
+    }
+    box.addEventListener('click', function (ev) {
+      var b = ev.target.closest('[data-fv]');
+      if (b) {
+        var d = Number(b.getAttribute('data-fv'));
+        if (d === 0) { box.remove(); return; }
+        i = (i + d + fotos.length) % fotos.length; desenhar();
+      } else if (ev.target === box) { box.remove(); }
+    });
+    desenhar();
+    document.body.appendChild(box);
+  }
   document.addEventListener('click', async function (e) {
+    var zoomEl = e.target.closest('[data-prod-zoom]');
+    if (zoomEl) {
+      e.stopPropagation();
+      var pz = await idbGet('produtos', zoomEl.getAttribute('data-prod-zoom'));
+      if (pz) abrirFotosProduto(pz);
+      return;
+    }
+  }, true);
+  document.addEventListener('click', async function (e) {
+    if (e.target.closest('[data-prod-zoom]')) return;
     var editBtn = e.target.closest('[data-prod-edit]');
     if (editBtn) { var p = await idbGet('produtos', editBtn.getAttribute('data-prod-edit')); if (p) produtoFormModal(p); return; }
     var delBtn = e.target.closest('[data-prod-del]');
