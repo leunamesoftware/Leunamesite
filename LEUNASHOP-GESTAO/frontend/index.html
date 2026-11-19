@@ -10849,9 +10849,12 @@ html, body{ overflow-x:hidden; max-width:100%; }
     var box = document.getElementById('cotBox'); if (!box) return;
     var cfg = await idbGet('config', 'cotacao');
     if (!cfg) { cfg = cotSemente(); await idbPut('config', cfg); }
+    if (!cfg.extras) { cfg.extras = ['Posto 13']; cfg.minimos = cfg.minimos || { 'look china': 200 }; await idbPut('config', cfg); }
+    cfg.minimos = cfg.minimos || {};
     var R = function (n) { return 'R$ ' + kFmt(n); };
     var inp = function (attrs, val, st, extra) { return '<input ' + attrs + ' value="' + esc(val) + '" ' + (extra || '') + ' style="padding:9px 10px;border:1px solid var(--border-subtle);border-radius:8px;font:inherit;font-size:16px;min-width:0;' + (st || '') + '">'; };
     var lojas = {}; cfg.itens.forEach(function (i) { (i.precos || []).forEach(function (p) { var l = (p.loja || '').trim(); if (l) lojas[l] = 1; }); });
+    (cfg.extras || []).forEach(function (l) { lojas[l] = 1; });
     cfg.cores = cfg.cores || {}; var _ch = false, _n = Object.keys(cfg.cores).length;
     Object.keys(lojas).forEach(function (l) { var k = l.toLowerCase(); if (!cfg.cores[k]) { cfg.cores[k] = COT_PAL[_n % COT_PAL.length]; _n++; _ch = true; } });
     if (_ch) await idbPut('config', cfg);
@@ -10868,15 +10871,16 @@ html, body{ overflow-x:hidden; max-width:100%; }
     });
     var h = '<style>@keyframes cotPisca{0%,100%{box-shadow:0 0 0 0 var(--c);}50%{box-shadow:0 0 14px 5px var(--c);}}</style><datalist id="cotLojas">' + Object.keys(lojas).map(function (l) { return '<option value="' + esc(l) + '">'; }).join('') + '</datalist>';
     var _ln = Object.keys(cfg.cores).filter(function (k) { return Object.keys(lojas).some(function (l) { return l.toLowerCase() === k; }); });
-    if (_ln.length) h += '<div class="card" style="padding:12px 16px;margin-bottom:14px;"><b style="font-size:13px;">Lojas (toque na cor para trocar)</b><div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;">' + _ln.map(function (k) { var nome = Object.keys(lojas).filter(function (l) { return l.toLowerCase() === k; })[0]; return '<button type="button" data-cact="cor" data-loja="' + esc(k) + '" style="background:' + cfg.cores[k] + ';color:#fff;border:0;border-radius:99px;padding:6px 14px;font-weight:700;font-size:13px;">' + esc(nome) + '</button>'; }).join('') + '</div></div>';
+    h += '<div class="card" style="padding:12px 16px;margin-bottom:14px;"><b style="font-size:13px;">Lojas (toque na cor para trocar)</b>' + _ln.map(function (k) { var nome = Object.keys(lojas).filter(function (l) { return l.toLowerCase() === k; })[0]; return '<div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:8px;"><button type="button" data-cact="cor" data-loja="' + esc(k) + '" style="background:' + cfg.cores[k] + ';color:#fff;border:0;border-radius:99px;padding:6px 14px;font-weight:700;font-size:13px;">' + esc(nome) + '</button><label style="font-size:12.5px;color:var(--text-muted);">Pedido mínimo R$ ' + inp('data-cf="minimo" data-loja="' + esc(k) + '"', cfg.minimos[k] > 0 ? String(cfg.minimos[k]).replace('.', ',') : '', 'width:80px;padding:6px 8px;', 'inputmode="decimal" placeholder="sem"') + '</label></div>'; }).join('') + '<div style="display:flex;gap:8px;margin-top:12px;border-top:1px solid var(--border-subtle);padding-top:10px;">' + inp('id="cotNovaLoja"', '', 'flex:1;', 'placeholder="Cadastrar loja nova"') + '<button class="btn btn--secondary btn--sm" type="button" data-cact="loja-nova">+ Cadastrar</button></div></div>';
     var tile = function (rot, val, bom) { return '<div style="border:1px solid var(--border-subtle);border-radius:10px;padding:10px 12px;background:' + (bom ? '#e8f5ee' : 'var(--surface-2,#f6f7f9)') + ';"><div style="font-size:11px;color:var(--text-muted);">' + rot + '</div><div style="font-size:17px;font-weight:700;' + (bom ? 'color:#16794c;' : '') + '">' + val + '</div></div>'; };
     h += '<div class="card" style="padding:14px 16px;margin-bottom:14px;"><b>Resumo</b><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin-top:10px;">' +
       tile('Total no mais barato', R(totMin)) + tile('Total só na Look China', R(totLook)) + tile('Você economiza', R(Math.max(0, totLook - totMin)), true) + '</div>' +
       (semPreco ? '<div style="font-size:12.5px;color:var(--text-muted);margin-top:8px;">' + semPreco + ' item(ns) ainda sem preço, não entram na conta.</div>' : '') + '</div>';
     var nomes = Object.keys(porLoja);
     if (nomes.length) h += '<div class="card" style="padding:14px 16px;margin-bottom:14px;"><b>Onde comprar</b>' + nomes.map(function (n) {
-      var tot = porLoja[n].reduce(function (s, x) { return s + x.sub; }, 0);
-      return '<div style="border-top:1px solid var(--border-subtle);margin-top:10px;padding-top:10px;"><div style="display:flex;justify-content:space-between;gap:10px;font-weight:700;"><span>' + dot(n) + esc(n) + '</span><span>' + R(tot) + '</span></div>' +
+      var tot = porLoja[n].reduce(function (s, x) { return s + x.sub; }, 0), mi = Number(cfg.minimos[n.toLowerCase()] || 0);
+      var aviso = mi > 0 ? (tot >= mi ? '<div style="font-size:12.5px;color:#16794c;font-weight:700;">✔ passa do pedido mínimo (' + R(mi) + ')</div>' : '<div style="font-size:12.5px;color:#c0392b;font-weight:700;">⚠ falta ' + R(mi - tot) + ' para o pedido mínimo de ' + R(mi) + '</div>') : '';
+      return '<div style="border-top:1px solid var(--border-subtle);margin-top:10px;padding-top:10px;"><div style="display:flex;justify-content:space-between;gap:10px;font-weight:700;"><span>' + dot(n) + esc(n) + '</span><span>' + R(tot) + '</span></div>' + aviso +
         porLoja[n].map(function (x) { return '<div style="font-size:13px;color:var(--text-muted);display:flex;justify-content:space-between;gap:10px;"><span>' + qf(x.i.qtd) + ' × ' + esc(x.i.nome) + ' (' + R(x.preco) + ')</span><span>' + R(x.sub) + '</span></div>'; }).join('') + '</div>';
     }).join('') + '</div>';
     cfg.itens.forEach(function (i) {
@@ -10918,6 +10922,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
     var el = e.target; if (!el.closest || !el.closest('#cotBox')) return;
     var f = el.getAttribute('data-cf'); if (!f) return;
     var cfg = await idbGet('config', 'cotacao'); if (!cfg) return;
+    if (f === 'minimo') { cfg.minimos = cfg.minimos || {}; cfg.minimos[el.getAttribute('data-loja')] = Math.max(0, kNum(el.value)); return cotSalvar(cfg); }
     var i = cfg.itens.find(function (x) { return x.id === el.getAttribute('data-cid'); }); if (!i) return;
     if (f === 'nome') i.nome = el.value.trim() || i.nome;
     else if (f === 'qtd') i.qtd = Math.max(0, kNum(el.value));
@@ -10930,6 +10935,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
     var b = e.target.closest('#cotBox [data-cact]'); if (!b) return;
     var act = b.getAttribute('data-cact'), cfg = await idbGet('config', 'cotacao'); if (!cfg) return;
     var i = cfg.itens.find(function (x) { return x.id === b.getAttribute('data-cid'); });
+    if (act === 'loja-nova') { var nl = ((document.getElementById('cotNovaLoja') || {}).value || '').trim(); if (!nl) return; cfg.extras = cfg.extras || []; if (!cfg.extras.some(function (x) { return x.toLowerCase() === nl.toLowerCase(); })) cfg.extras.push(nl); return cotSalvar(cfg); }
     if (act === 'cor') { var kk = b.getAttribute('data-loja'); cfg.cores = cfg.cores || {}; var ix = COT_PAL.indexOf(cfg.cores[kk]), usadas = Object.keys(cfg.cores).filter(function (o) { return o !== kk; }).map(function (o) { return cfg.cores[o]; }); for (var t2 = 1; t2 <= COT_PAL.length; t2++) { var cand = COT_PAL[(ix + t2) % COT_PAL.length]; if (usadas.indexOf(cand) < 0 || t2 === COT_PAL.length) { cfg.cores[kk] = cand; break; } } return cotSalvar(cfg); }
     if (act === 'novo') { cfg.itens.push({ id: uid(), nome: 'Novo produto', un: 'un', qtd: 1, precos: [{ id: uid(), loja: '', preco: 0 }] }); return cotSalvar(cfg); }
     if (act === 'add-preco' && i) { i.precos.push({ id: uid(), loja: '', preco: 0 }); return cotSalvar(cfg); }
