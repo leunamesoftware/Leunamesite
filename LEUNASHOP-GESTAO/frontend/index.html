@@ -10662,9 +10662,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
     var kit = function (nome, preco, itens) { return { id: uid(), nome: nome, preco: preco, itens: itens, vendidos: 0, hist: [] }; };
     return { id: 'kits', taxas: { shopee: 20, simples: 6, fixa: 4.5, emb: 0 }, kits: [
       kit('Kit 1 - 3 discos + luva anticorte + óculos', 39.9, [it(D, 3, 1.47), it(LA, 1, 8.5), it(OC, 1, 6)]),
-      kit('Kit 2 - 4 em 1 (4 discos + luva de couro + óculos + protetor)', 49.9, [it(D, 4, 1.47), it(LC, 1, 12.37), it(OC, 1, 6), it(PA, 1, 3)]),
-      kit('Kit 3 (rascunho) - 5 discos + luva anticorte + óculos', 42.9, [it(D, 5, 1.47), it(LA, 1, 8.5), it(OC, 1, 6)]),
-      kit('Kit 4 (rascunho) - 6 discos + luva de couro + óculos + protetor', 54.9, [it(D, 6, 1.47), it(LC, 1, 12.37), it(OC, 1, 6), it(PA, 1, 3)])
+      kit('Kit 2 - 4 em 1 (4 discos + luva de couro + óculos + protetor)', 49.9, [it(D, 4, 1.47), it(LC, 1, 12.37), it(OC, 1, 6), it(PA, 1, 3)])
     ] };
   }
   function kitCalc(k, t) {
@@ -10689,6 +10687,9 @@ html, body{ overflow-x:hidden; max-width:100%; }
     var box = document.getElementById('kitsBox'); if (!box) return;
     var cfg = await idbGet('config', 'kits');
     if (!cfg) { cfg = kitsSemente(); await idbPut('config', cfg); }
+    var _antes = cfg.kits.length;
+    cfg.kits = cfg.kits.filter(function (k) { return !(/^Kit [34] \(rascunho\)/.test(k.nome || '') && !(k.vendidos > 0)); });
+    if (cfg.kits.length !== _antes) await idbPut('config', cfg);
     var produtos = await idbAll('produtos'), pmap = {}; produtos.forEach(function (p) { pmap[p.id] = p; });
     var t = cfg.taxas, h = '';
     var inp = function (attrs, val, w, tipo) { return '<input ' + attrs + ' value="' + esc(val) + '" ' + (tipo === 'txt' ? '' : 'inputmode="decimal" ') + 'style="width:' + w + ';padding:6px 8px;border:1px solid var(--border-subtle);border-radius:6px;font:inherit;">'; };
