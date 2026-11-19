@@ -1,0 +1,33 @@
+# CÓPIA PARTICULAR da ConstruGestão, só do Emanuel (LeunaShop). Mudanças aqui NÃO afetam os clientes.
+name = "leunashop-gestao"
+compatibility_date = "2026-09-19"
+
+# Publica o app ConstruGestão (SITE estático, mesmo padrão dos sites
+# leunamesoftware.com/.com.br) como um Worker de "static assets" na
+# Cloudflare. É um app local-first (banco de dados no próprio
+# dispositivo, IndexedDB) — este Worker só serve os arquivos, não tem
+# backend próprio: login, licença e sincronização entre dispositivos
+# usam o MESMO servidor de licenças já existente
+# (PROJETO/servidor-licencas-cloudflare), só muda o app_id
+# ("construgestao").
+main = "worker.js"
+
+# Tudo passa pelo worker.js: ele leva /loja-api/* ao servidor de contas (CONTAS) e o resto aos arquivos.
+[assets]
+directory = "./"
+binding = "ASSETS"
+run_worker_first = true
+
+# Servidor de vendas e contas da loja LeuApps (worker do Quanto Cobrar): login, teste grátis e planos.
+[[services]]
+binding = "CONTAS"
+service = "calculadora-receitas"
+
+# Domínio customizado: subdomínio do leunamesoftware.com.br (domínio
+# que já é do lojista e já está ativo na Cloudflare) -- assim o link
+# entregue ao cliente final não expõe o nome da conta pessoal
+# (*.workers.dev). O "wrangler deploy" cria o registro de DNS e liga a
+# rota automaticamente, sem precisar comprar nada novo.
+[[routes]]
+pattern = "lsgestao.leunamesoftware.com.br"
+custom_domain = true
