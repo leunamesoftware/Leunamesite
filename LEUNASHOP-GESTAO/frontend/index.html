@@ -10866,7 +10866,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
       var lk = (i.precos || []).filter(function (p) { return /look/i.test(p.loja || '') && Number(p.preco) > 0; })[0];
       totLook += q * (lk ? Number(lk.preco) : m.preco);
     });
-    var h = '<datalist id="cotLojas">' + Object.keys(lojas).map(function (l) { return '<option value="' + esc(l) + '">'; }).join('') + '</datalist>';
+    var h = '<style>@keyframes cotPisca{0%,100%{box-shadow:0 0 0 0 var(--c);}50%{box-shadow:0 0 14px 5px var(--c);}}</style><datalist id="cotLojas">' + Object.keys(lojas).map(function (l) { return '<option value="' + esc(l) + '">'; }).join('') + '</datalist>';
     var _ln = Object.keys(cfg.cores).filter(function (k) { return Object.keys(lojas).some(function (l) { return l.toLowerCase() === k; }); });
     if (_ln.length) h += '<div class="card" style="padding:12px 16px;margin-bottom:14px;"><b style="font-size:13px;">Lojas (toque na cor para trocar)</b><div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;">' + _ln.map(function (k) { var nome = Object.keys(lojas).filter(function (l) { return l.toLowerCase() === k; })[0]; return '<button type="button" data-cact="cor" data-loja="' + esc(k) + '" style="background:' + cfg.cores[k] + ';color:#fff;border:0;border-radius:99px;padding:6px 14px;font-weight:700;font-size:13px;">' + esc(nome) + '</button>'; }).join('') + '</div></div>';
     var tile = function (rot, val, bom) { return '<div style="border:1px solid var(--border-subtle);border-radius:10px;padding:10px 12px;background:' + (bom ? '#e8f5ee' : 'var(--surface-2,#f6f7f9)') + ';"><div style="font-size:11px;color:var(--text-muted);">' + rot + '</div><div style="font-size:17px;font-weight:700;' + (bom ? 'color:#16794c;' : '') + '">' + val + '</div></div>'; };
@@ -10888,7 +10888,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
         (i.precos || []).map(function (p) {
           var v = Number(p.preco || 0), ganha = m && v > 0 && v === m.preco, perde = m && v > 0 && v > m.preco, aq = at + ' data-qid="' + p.id + '"';
           var st = ganha ? 'background:#e8f5ee;border-color:#16794c;' : (perde ? 'text-decoration:line-through;opacity:.55;' : '');
-          return '<div style="display:flex;gap:8px;align-items:center;margin-top:8px;border-left:7px solid ' + cor(p.loja) + ';padding-left:8px;">' + inp('data-cf="loja"' + aq, p.loja, 'flex:1 1 120px;' + st, 'list="cotLojas" placeholder="Nome da loja"') +
+          return '<div style="display:flex;gap:8px;align-items:center;margin-top:8px;border-left:7px solid ' + cor(p.loja) + ';padding-left:8px;' + (ganha ? '--c:' + cor(p.loja) + ';animation:cotPisca 1.1s ease-in-out infinite;border-radius:8px;padding-top:5px;padding-bottom:5px;' : '') + '">' + inp('data-cf="loja"' + aq, p.loja, 'flex:1 1 120px;' + st, 'list="cotLojas" placeholder="Nome da loja"') +
             inp('data-cf="preco"' + aq, v > 0 ? String(v).replace('.', ',') : '', 'width:92px;' + st, 'inputmode="decimal" placeholder="R$"') +
             '<button type="button" data-cact="del-preco"' + aq + ' title="Apagar este preço" style="border:0;background:none;font-size:18px;color:var(--text-muted);padding:4px 6px;">✕</button></div>' +
             (ganha ? '<div style="font-size:11px;color:#16794c;font-weight:700;margin:2px 0 0 4px;">✔ MAIS BARATO</div>' : '');
@@ -10897,6 +10897,19 @@ html, body{ overflow-x:hidden; max-width:100%; }
         (m ? '<div style="margin-top:10px;font-size:13px;border-top:1px solid var(--border-subtle);padding-top:8px;">Melhor: ' + dot(m.loja) + '<b>' + esc(m.loja) + '</b> a ' + R(m.preco) + ' · ' + qf(i.qtd) + ' × = <b>' + R(Number(i.qtd || 0) * m.preco) + '</b></div>' : '<div style="margin-top:10px;font-size:12.5px;color:var(--text-muted);">Coloque um preço para comparar.</div>') + '</div>';
     });
     h += '<button class="btn btn--primary" type="button" data-cact="novo">+ Novo produto</button>';
+    // gráfico final: quem vende mais barato
+    var barra = function (pct, c, txt, forte, fraco) { return '<div style="margin:5px 0;"><div style="height:24px;border-radius:6px;background:var(--surface-2,#eef0f3);overflow:hidden;"><div style="height:100%;width:' + Math.max(3, Math.min(100, pct)).toFixed(1) + '%;background:' + c + ';border-radius:6px;opacity:' + (fraco ? .4 : 1) + ';"></div></div><div style="font-size:12.5px;margin-top:2px;' + (forte ? 'font-weight:700;' : '') + '">' + txt + '</div></div>'; };
+    if (nomes.length) {
+      var gh = '<div class="card" style="padding:14px 16px;margin-top:18px;"><b>Gráfico: onde comprar mais barato</b><div style="font-size:12.5px;color:var(--text-muted);margin:6px 0 4px;">Quanto você gasta em cada loja comprando só o mais barato:</div>';
+      nomes.forEach(function (n) { var tot = porLoja[n].reduce(function (a, x) { return a + x.sub; }, 0); gh += barra(totMin > 0 ? tot / totMin * 100 : 0, cor(n), dot(n) + esc(n) + ' — ' + porLoja[n].length + ' produto(s) — <b>' + R(tot) + '</b>', true); });
+      gh += '<div style="font-size:12.5px;color:var(--text-muted);margin:16px 0 4px;border-top:1px solid var(--border-subtle);padding-top:10px;">Preço de cada produto por loja (✔ = o mais barato):</div>';
+      cfg.itens.forEach(function (i) {
+        var ps = (i.precos || []).filter(function (x) { return Number(x.preco) > 0; }); if (!ps.length) return;
+        var mx = Math.max.apply(null, ps.map(function (x) { return Number(x.preco); })), mn = cotMin(i);
+        gh += '<div style="margin-top:12px;font-weight:700;font-size:13.5px;">' + esc(i.nome) + '</div>' + ps.map(function (x) { var v = Number(x.preco), g = v === mn.preco; return barra(v / mx * 100, cor(x.loja), (g ? '✔ ' : '') + dot(x.loja) + esc(x.loja || 'Sem nome') + ' — ' + R(v), g, !g); }).join('');
+      });
+      h += gh + '</div>';
+    }
     var ae = document.activeElement, keep = ae && ae.closest && ae.closest('#cotBox') ? null : 0;
     box.innerHTML = h;
   }
