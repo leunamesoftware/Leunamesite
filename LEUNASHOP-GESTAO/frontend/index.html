@@ -10827,6 +10827,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
      cada loja ao lado. Mostra o mais barato (os outros ficam riscados),
      o total e onde comprar cada item. Guardado em config/'cotacao'.
      ============================================================ */
+  var COT_PAL = ['#ff7a1a', '#d93025', '#1a73e8', '#8e44ad', '#0f9d8a', '#e91e8c', '#8d5a2b', '#7a8b00'];
   function cotSemente() {
     var it = function (nome, un, qtd, ref) { return { id: uid(), nome: nome, un: un, qtd: qtd, precos: [{ id: uid(), loja: 'Look China', preco: ref }] }; };
     return { id: 'cotacao', itens: [
@@ -10851,6 +10852,11 @@ html, body{ overflow-x:hidden; max-width:100%; }
     var R = function (n) { return 'R$ ' + kFmt(n); };
     var inp = function (attrs, val, st, extra) { return '<input ' + attrs + ' value="' + esc(val) + '" ' + (extra || '') + ' style="padding:9px 10px;border:1px solid var(--border-subtle);border-radius:8px;font:inherit;font-size:16px;min-width:0;' + (st || '') + '">'; };
     var lojas = {}; cfg.itens.forEach(function (i) { (i.precos || []).forEach(function (p) { var l = (p.loja || '').trim(); if (l) lojas[l] = 1; }); });
+    cfg.cores = cfg.cores || {}; var _ch = false, _n = Object.keys(cfg.cores).length;
+    Object.keys(lojas).forEach(function (l) { var k = l.toLowerCase(); if (!cfg.cores[k]) { cfg.cores[k] = COT_PAL[_n % COT_PAL.length]; _n++; _ch = true; } });
+    if (_ch) await idbPut('config', cfg);
+    var cor = function (n) { return cfg.cores[(n || '').trim().toLowerCase()] || '#9aa0a6'; };
+    var dot = function (n) { return '<span style="display:inline-block;width:12px;height:12px;border-radius:50%;background:' + cor(n) + ';margin-right:7px;vertical-align:-1px;"></span>'; };
     var totMin = 0, totLook = 0, semPreco = 0, porLoja = {};
     cfg.itens.forEach(function (i) {
       var m = cotMin(i), q = Number(i.qtd || 0);
@@ -10861,6 +10867,8 @@ html, body{ overflow-x:hidden; max-width:100%; }
       totLook += q * (lk ? Number(lk.preco) : m.preco);
     });
     var h = '<datalist id="cotLojas">' + Object.keys(lojas).map(function (l) { return '<option value="' + esc(l) + '">'; }).join('') + '</datalist>';
+    var _ln = Object.keys(cfg.cores).filter(function (k) { return Object.keys(lojas).some(function (l) { return l.toLowerCase() === k; }); });
+    if (_ln.length) h += '<div class="card" style="padding:12px 16px;margin-bottom:14px;"><b style="font-size:13px;">Lojas (toque na cor para trocar)</b><div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;">' + _ln.map(function (k) { var nome = Object.keys(lojas).filter(function (l) { return l.toLowerCase() === k; })[0]; return '<button type="button" data-cact="cor" data-loja="' + esc(k) + '" style="background:' + cfg.cores[k] + ';color:#fff;border:0;border-radius:99px;padding:6px 14px;font-weight:700;font-size:13px;">' + esc(nome) + '</button>'; }).join('') + '</div></div>';
     var tile = function (rot, val, bom) { return '<div style="border:1px solid var(--border-subtle);border-radius:10px;padding:10px 12px;background:' + (bom ? '#e8f5ee' : 'var(--surface-2,#f6f7f9)') + ';"><div style="font-size:11px;color:var(--text-muted);">' + rot + '</div><div style="font-size:17px;font-weight:700;' + (bom ? 'color:#16794c;' : '') + '">' + val + '</div></div>'; };
     h += '<div class="card" style="padding:14px 16px;margin-bottom:14px;"><b>Resumo</b><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin-top:10px;">' +
       tile('Total no mais barato', R(totMin)) + tile('Total só na Look China', R(totLook)) + tile('Você economiza', R(Math.max(0, totLook - totMin)), true) + '</div>' +
@@ -10868,7 +10876,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
     var nomes = Object.keys(porLoja);
     if (nomes.length) h += '<div class="card" style="padding:14px 16px;margin-bottom:14px;"><b>Onde comprar</b>' + nomes.map(function (n) {
       var tot = porLoja[n].reduce(function (s, x) { return s + x.sub; }, 0);
-      return '<div style="border-top:1px solid var(--border-subtle);margin-top:10px;padding-top:10px;"><div style="display:flex;justify-content:space-between;gap:10px;font-weight:700;"><span>' + esc(n) + '</span><span>' + R(tot) + '</span></div>' +
+      return '<div style="border-top:1px solid var(--border-subtle);margin-top:10px;padding-top:10px;"><div style="display:flex;justify-content:space-between;gap:10px;font-weight:700;"><span>' + dot(n) + esc(n) + '</span><span>' + R(tot) + '</span></div>' +
         porLoja[n].map(function (x) { return '<div style="font-size:13px;color:var(--text-muted);display:flex;justify-content:space-between;gap:10px;"><span>' + qf(x.i.qtd) + ' × ' + esc(x.i.nome) + ' (' + R(x.preco) + ')</span><span>' + R(x.sub) + '</span></div>'; }).join('') + '</div>';
     }).join('') + '</div>';
     cfg.itens.forEach(function (i) {
@@ -10880,13 +10888,13 @@ html, body{ overflow-x:hidden; max-width:100%; }
         (i.precos || []).map(function (p) {
           var v = Number(p.preco || 0), ganha = m && v > 0 && v === m.preco, perde = m && v > 0 && v > m.preco, aq = at + ' data-qid="' + p.id + '"';
           var st = ganha ? 'background:#e8f5ee;border-color:#16794c;' : (perde ? 'text-decoration:line-through;opacity:.55;' : '');
-          return '<div style="display:flex;gap:8px;align-items:center;margin-top:8px;">' + inp('data-cf="loja"' + aq, p.loja, 'flex:1 1 120px;' + st, 'list="cotLojas" placeholder="Nome da loja"') +
+          return '<div style="display:flex;gap:8px;align-items:center;margin-top:8px;border-left:7px solid ' + cor(p.loja) + ';padding-left:8px;">' + inp('data-cf="loja"' + aq, p.loja, 'flex:1 1 120px;' + st, 'list="cotLojas" placeholder="Nome da loja"') +
             inp('data-cf="preco"' + aq, v > 0 ? String(v).replace('.', ',') : '', 'width:92px;' + st, 'inputmode="decimal" placeholder="R$"') +
             '<button type="button" data-cact="del-preco"' + aq + ' title="Apagar este preço" style="border:0;background:none;font-size:18px;color:var(--text-muted);padding:4px 6px;">✕</button></div>' +
             (ganha ? '<div style="font-size:11px;color:#16794c;font-weight:700;margin:2px 0 0 4px;">✔ MAIS BARATO</div>' : '');
         }).join('') +
         '<button class="btn btn--secondary btn--sm" type="button" data-cact="add-preco"' + at + ' style="margin-top:10px;">+ Preço de outra loja</button>' +
-        (m ? '<div style="margin-top:10px;font-size:13px;border-top:1px solid var(--border-subtle);padding-top:8px;">Melhor: <b>' + esc(m.loja) + '</b> a ' + R(m.preco) + ' · ' + qf(i.qtd) + ' × = <b>' + R(Number(i.qtd || 0) * m.preco) + '</b></div>' : '<div style="margin-top:10px;font-size:12.5px;color:var(--text-muted);">Coloque um preço para comparar.</div>') + '</div>';
+        (m ? '<div style="margin-top:10px;font-size:13px;border-top:1px solid var(--border-subtle);padding-top:8px;">Melhor: ' + dot(m.loja) + '<b>' + esc(m.loja) + '</b> a ' + R(m.preco) + ' · ' + qf(i.qtd) + ' × = <b>' + R(Number(i.qtd || 0) * m.preco) + '</b></div>' : '<div style="margin-top:10px;font-size:12.5px;color:var(--text-muted);">Coloque um preço para comparar.</div>') + '</div>';
     });
     h += '<button class="btn btn--primary" type="button" data-cact="novo">+ Novo produto</button>';
     var ae = document.activeElement, keep = ae && ae.closest && ae.closest('#cotBox') ? null : 0;
@@ -10909,6 +10917,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
     var b = e.target.closest('#cotBox [data-cact]'); if (!b) return;
     var act = b.getAttribute('data-cact'), cfg = await idbGet('config', 'cotacao'); if (!cfg) return;
     var i = cfg.itens.find(function (x) { return x.id === b.getAttribute('data-cid'); });
+    if (act === 'cor') { var kk = b.getAttribute('data-loja'); cfg.cores = cfg.cores || {}; var ix = COT_PAL.indexOf(cfg.cores[kk]), usadas = Object.keys(cfg.cores).filter(function (o) { return o !== kk; }).map(function (o) { return cfg.cores[o]; }); for (var t2 = 1; t2 <= COT_PAL.length; t2++) { var cand = COT_PAL[(ix + t2) % COT_PAL.length]; if (usadas.indexOf(cand) < 0 || t2 === COT_PAL.length) { cfg.cores[kk] = cand; break; } } return cotSalvar(cfg); }
     if (act === 'novo') { cfg.itens.push({ id: uid(), nome: 'Novo produto', un: 'un', qtd: 1, precos: [{ id: uid(), loja: '', preco: 0 }] }); return cotSalvar(cfg); }
     if (act === 'add-preco' && i) { i.precos.push({ id: uid(), loja: '', preco: 0 }); return cotSalvar(cfg); }
     if (act === 'del-preco' && i) { i.precos = i.precos.filter(function (x) { return x.id !== b.getAttribute('data-qid'); }); return cotSalvar(cfg); }
