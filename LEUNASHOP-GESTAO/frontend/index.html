@@ -1761,6 +1761,11 @@ html, body{ overflow-x:hidden; max-width:100%; }
       Orçamentos
       <span class="icon navitem__chev"><svg><use href="#i-chevron-right"/></svg></span>
     </button>
+    <button class="navitem" type="button" data-view="Kits">
+      <span class="icon"><svg><use href="#i-layers"/></svg></span>
+      Kits
+      <span class="icon navitem__chev"><svg><use href="#i-chevron-right"/></svg></span>
+    </button>
     <button class="navitem" type="button" data-view="Calculadoras">
       <span class="icon"><svg><use href="#i-ruler"/></svg></span>
       Calculadoras
@@ -6955,6 +6960,15 @@ html, body{ overflow-x:hidden; max-width:100%; }
       </div>
 
       <!-- ================= VIEW: WHATSAPP ================= -->
+      <div id="view-kits" class="view" hidden>
+        <div class="page-head">
+          <div>
+            <h1>Kits</h1>
+            <p>Quanto gasta em cada kit (produtos, impostos, taxa da Shopee), por quanto vende e quanto sobra de lucro.</p>
+          </div>
+        </div>
+        <div id="kitsBox"></div>
+      </div>
       <div id="view-calculadoras" class="view" hidden>
         <div class="page-head">
           <div>
@@ -8248,6 +8262,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
     'Vendas': document.getElementById('view-vendas'),
     'Orçamentos': document.getElementById('view-orcamentos'),
     'Calculadoras': document.getElementById('view-calculadoras'),
+    'Kits': document.getElementById('view-kits'),
     'Clientes': document.getElementById('view-clientes'),
     'Cliente Pediu e Não Tem': document.getElementById('view-demandaclientes'),
     'Central de Demandas': document.getElementById('view-centraldemandas'),
@@ -10631,6 +10646,155 @@ html, body{ overflow-x:hidden; max-width:100%; }
   document.addEventListener('click', function (e) {
     var b = e.target.closest('[data-calc-aba]'); if (b) { CALC.aba = b.getAttribute('data-calc-aba'); renderCalculadoras(); }
     if (e.target.closest('[data-view="Calculadoras"],[data-nav-target="Calculadoras"]')) renderCalculadoras();
+  });
+
+  /* ============================================================
+     KITS (só desta cópia, LeunaShop Gestão): custo de cada kit por
+     componente e por loja, impostos, taxa da Shopee, lucro e margem,
+     e baixa automática do estoque dos componentes ao vender o kit.
+     Guardado em config/'kits' (sincroniza com a conta).
+     ============================================================ */
+  function kNum(v) { var s = String(v == null ? '' : v).trim(); if (s.indexOf(',') > -1) s = s.replace(/\./g, '').replace(',', '.'); var n = parseFloat(s); return isFinite(n) ? n : 0; }
+  function kFmt(n) { return Number(n || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+  function kitsSemente() {
+    var it = function (nome, qtd, custo) { return { id: uid(), nome: nome, qtd: qtd, custo: custo, loja: 'Look China', produto_id: null }; };
+    var D = 'Disco de corte 4.5" 115x1,2 mm', LA = 'Luva anticorte nível A5 (par)', LC = 'Luva de couro pele de carneiro (par)', OC = 'Óculos de proteção', PA = 'Protetor auricular com cordão';
+    var kit = function (nome, preco, itens) { return { id: uid(), nome: nome, preco: preco, itens: itens, vendidos: 0, hist: [] }; };
+    return { id: 'kits', taxas: { shopee: 20, simples: 6, fixa: 4.5, emb: 0 }, kits: [
+      kit('Kit 1 - 3 discos + luva anticorte + óculos', 39.9, [it(D, 3, 1.47), it(LA, 1, 8.5), it(OC, 1, 6)]),
+      kit('Kit 2 - 4 em 1 (4 discos + luva de couro + óculos + protetor)', 49.9, [it(D, 4, 1.47), it(LC, 1, 12.37), it(OC, 1, 6), it(PA, 1, 3)]),
+      kit('Kit 3 (rascunho) - 5 discos + luva anticorte + óculos', 42.9, [it(D, 5, 1.47), it(LA, 1, 8.5), it(OC, 1, 6)]),
+      kit('Kit 4 (rascunho) - 6 discos + luva de couro + óculos + protetor', 54.9, [it(D, 6, 1.47), it(LC, 1, 12.37), it(OC, 1, 6), it(PA, 1, 3)])
+    ] };
+  }
+  function kitCalc(k, t) {
+    var itens = k.itens || [], prod = 0, lojas = {};
+    itens.forEach(function (i) { var c = Number(i.qtd || 0) * Number(i.custo || 0); prod += c; var l = (i.loja || 'Sem loja').trim() || 'Sem loja'; lojas[l] = (lojas[l] || 0) + c; });
+    var preco = Number(k.preco || 0);
+    var simples = preco * t.simples / 100, shopee = preco * t.shopee / 100, fixa = Number(t.fixa || 0), emb = Number(t.emb || 0);
+    var total = prod + simples + shopee + fixa + emb, lucro = preco - total;
+    return { prod: prod, simples: simples, shopee: shopee, fixa: fixa, emb: emb, total: total, lucro: lucro, margem: preco > 0 ? lucro / preco * 100 : 0, lojas: lojas };
+  }
+  function kitPossiveis(k, pmap) {
+    var min = null;
+    for (var n = 0; n < (k.itens || []).length; n++) {
+      var i = k.itens[n], p = i.produto_id ? pmap[i.produto_id] : null;
+      if (!p || !(i.qtd > 0)) return null;
+      var q = Math.floor(Number(p.estoque_atual || 0) / i.qtd);
+      min = min == null ? q : Math.min(min, q);
+    }
+    return min;
+  }
+  async function renderKits() {
+    var box = document.getElementById('kitsBox'); if (!box) return;
+    var cfg = await idbGet('config', 'kits');
+    if (!cfg) { cfg = kitsSemente(); await idbPut('config', cfg); }
+    var produtos = await idbAll('produtos'), pmap = {}; produtos.forEach(function (p) { pmap[p.id] = p; });
+    var t = cfg.taxas, h = '';
+    var inp = function (attrs, val, w, tipo) { return '<input ' + attrs + ' value="' + esc(val) + '" ' + (tipo === 'txt' ? '' : 'inputmode="decimal" ') + 'style="width:' + w + ';padding:6px 8px;border:1px solid var(--border-subtle);border-radius:6px;font:inherit;">'; };
+    h += '<div class="card" style="padding:14px 18px;margin-bottom:14px;"><b>Taxas (valem para todos os kits)</b><div style="display:flex;gap:16px;flex-wrap:wrap;margin-top:8px;font-size:13px;">' +
+      [['shopee', 'Shopee %'], ['simples', 'Simples %'], ['fixa', 'Taxa fixa R$'], ['emb', 'Embalagem R$']].map(function (c) { return '<label>' + c[1] + '<br>' + inp('data-ktax="' + c[0] + '"', String(t[c[0]]).replace('.', ','), '90px') + '</label>'; }).join('') + '</div></div>';
+    // resumo
+    var linhas = cfg.kits.map(function (k) { var c = kitCalc(k, t), pos = kitPossiveis(k, pmap); return { k: k, c: c, pos: pos }; });
+    h += '<div class="card" style="padding:14px 18px;margin-bottom:14px;overflow-x:auto;"><b>Resumo dos kits</b><table style="width:100%;border-collapse:collapse;font-size:13px;margin-top:8px;white-space:nowrap;"><thead><tr style="text-align:right;color:var(--text-muted);"><th style="text-align:left;padding:6px;">Kit</th><th>Produtos</th><th>Impostos</th><th>Taxa Shopee</th><th>Total gasto</th><th>Vendido por</th><th>LUCRO</th><th>Margem</th><th>Dá p/ montar</th><th>Vendidos</th><th>Lucro acumulado</th></tr></thead><tbody>' +
+      linhas.map(function (l) { return '<tr style="text-align:right;border-top:1px solid var(--border-subtle);"><td style="text-align:left;padding:6px;">' + esc(l.k.nome) + '</td><td>' + kFmt(l.c.prod) + '</td><td>' + kFmt(l.c.simples) + '</td><td>' + kFmt(l.c.shopee + l.c.fixa) + (l.c.emb ? ' (+emb ' + kFmt(l.c.emb) + ')' : '') + '</td><td>' + kFmt(l.c.total) + '</td><td>' + kFmt(l.k.preco) + '</td><td style="font-weight:700;color:' + (l.c.lucro >= 0 ? 'var(--success,#16794c)' : '#c0392b') + ';">' + kFmt(l.c.lucro) + '</td><td>' + kFmt(l.c.margem) + '%</td><td>' + (l.pos == null ? '—' : l.pos) + '</td><td>' + (l.k.vendidos || 0) + '</td><td>' + kFmt((l.k.hist || []).reduce(function (s, x) { return s + Number(x.lucro || 0); }, 0)) + '</td></tr>'; }).join('') +
+      '</tbody></table><div style="font-size:12px;color:var(--text-muted);margin-top:6px;">Valores em R$. "Dá p/ montar" aparece depois de vincular os componentes aos produtos.</div></div>';
+    // componentes (estoque)
+    var comp = {}; cfg.kits.forEach(function (k) { (k.itens || []).forEach(function (i) { var key = (i.nome || '').trim().toLowerCase(); if (key && !comp[key]) comp[key] = i; }); });
+    var compKeys = Object.keys(comp);
+    h += '<div class="card" style="padding:14px 18px;margin-bottom:14px;"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;"><b>Componentes e estoque</b><button class="btn btn--secondary btn--sm" type="button" data-kact="vincular">Criar/vincular produtos dos componentes</button></div><table style="width:100%;border-collapse:collapse;font-size:13px;margin-top:8px;"><tbody>' +
+      compKeys.map(function (key) { var i = comp[key], p = i.produto_id ? pmap[i.produto_id] : null; return '<tr style="border-top:1px solid var(--border-subtle);"><td style="padding:6px;">' + esc(i.nome) + ' <span style="color:var(--text-muted);">(' + esc(i.loja || '') + ')</span></td><td style="text-align:right;">' + (p ? 'Estoque: <b>' + Number(p.estoque_atual || 0) + '</b>' : '<span style="color:#c0392b;">sem produto vinculado</span>') + '</td><td style="text-align:right;white-space:nowrap;">' + (p ? '+ <input id="kent-' + esc(p.id) + '" value="1" inputmode="numeric" style="width:54px;padding:4px 6px;border:1px solid var(--border-subtle);border-radius:6px;"> <button class="btn btn--secondary btn--sm" type="button" data-kact="entrada" data-pid="' + esc(p.id) + '">Dar entrada</button>' : '') + '</td></tr>'; }).join('') + '</tbody></table></div>';
+    // cartões
+    linhas.forEach(function (l) {
+      var k = l.k, c = l.c;
+      h += '<div class="card" style="padding:16px 18px;margin-bottom:14px;"><div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">' + inp('data-kk="nome" data-kid="' + k.id + '"', k.nome, 'min(100%,420px)', 'txt') +
+        '<label style="font-size:13px;">Vendido por R$ ' + inp('data-kk="preco" data-kid="' + k.id + '"', String(k.preco).replace('.', ','), '90px') + '</label>' +
+        '<button class="btn btn--danger btn--sm" type="button" data-kact="del-kit" data-kid="' + k.id + '" style="margin-left:auto;">Excluir kit</button></div>' +
+        '<table style="width:100%;border-collapse:collapse;font-size:13px;margin-top:10px;"><thead><tr style="color:var(--text-muted);text-align:left;"><th>Produto</th><th>Qtd</th><th>Custo un. (R$)</th><th>Comprado em (loja)</th><th style="text-align:right;">Subtotal</th><th></th></tr></thead><tbody>' +
+        (k.itens || []).map(function (i) { return '<tr style="border-top:1px solid var(--border-subtle);"><td>' + inp('data-kk="i-nome" data-kid="' + k.id + '" data-iid="' + i.id + '"', i.nome, '100%', 'txt') + '</td><td>' + inp('data-kk="i-qtd" data-kid="' + k.id + '" data-iid="' + i.id + '"', i.qtd, '56px') + '</td><td>' + inp('data-kk="i-custo" data-kid="' + k.id + '" data-iid="' + i.id + '"', String(i.custo).replace('.', ','), '80px') + '</td><td>' + inp('data-kk="i-loja" data-kid="' + k.id + '" data-iid="' + i.id + '"', i.loja || '', '130px', 'txt') + '</td><td style="text-align:right;">' + kFmt(i.qtd * i.custo) + '</td><td><button class="btn btn--secondary btn--sm" type="button" data-kact="del-item" data-kid="' + k.id + '" data-iid="' + i.id + '">x</button></td></tr>'; }).join('') +
+        '</tbody></table><button class="btn btn--secondary btn--sm" type="button" data-kact="add-item" data-kid="' + k.id + '" style="margin-top:8px;">+ Item</button>' +
+        '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-top:12px;font-size:13px;">' +
+        '<div>Produtos<br><b>R$ ' + kFmt(c.prod) + '</b></div><div>Impostos (' + kFmt(t.simples) + '%)<br><b>R$ ' + kFmt(c.simples) + '</b></div><div>Taxa Shopee (' + kFmt(t.shopee) + '% + fixa)<br><b>R$ ' + kFmt(c.shopee + c.fixa) + '</b></div><div>Embalagem<br><b>R$ ' + kFmt(c.emb) + '</b></div><div>Total gasto<br><b>R$ ' + kFmt(c.total) + '</b></div><div>Vendido por<br><b>R$ ' + kFmt(k.preco) + '</b></div><div>LUCRO<br><b style="font-size:16px;color:' + (c.lucro >= 0 ? 'var(--success,#16794c)' : '#c0392b') + ';">R$ ' + kFmt(c.lucro) + ' (' + kFmt(c.margem) + '%)</b></div></div>' +
+        '<div style="font-size:12.5px;color:var(--text-muted);margin-top:8px;">Gasto por loja: ' + Object.keys(c.lojas).map(function (n) { return esc(n) + ' R$ ' + kFmt(c.lojas[n]); }).join(' · ') + '</div>' +
+        '<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:12px;border-top:1px solid var(--border-subtle);padding-top:10px;font-size:13px;">Vendi <input id="kvq-' + k.id + '" value="1" inputmode="numeric" style="width:54px;padding:5px 7px;border:1px solid var(--border-subtle);border-radius:6px;"> kit(s) <button class="btn btn--primary btn--sm" type="button" data-kact="vender" data-kid="' + k.id + '">Registrar venda e baixar estoque</button>' +
+        ((k.hist || []).length ? '<button class="btn btn--secondary btn--sm" type="button" data-kact="desfazer" data-kid="' + k.id + '">Desfazer última venda</button>' : '') +
+        '<span style="color:var(--text-muted);">Vendidos: ' + (k.vendidos || 0) + (l.pos == null ? '' : ' · Dá para montar: ' + l.pos) + '</span></div></div>';
+    });
+    h += '<button class="btn btn--primary" type="button" data-kact="novo">+ Novo kit</button>';
+    box.innerHTML = h;
+  }
+  async function kitsSalvar(cfg) { cfg.atualizado_em = nowISO(); await idbPut('config', cfg); await renderKits(); }
+  document.addEventListener('change', async function (e) {
+    var el = e.target; if (!el.closest || !el.closest('#kitsBox')) return;
+    var cfg = await idbGet('config', 'kits'); if (!cfg) return;
+    var tx = el.getAttribute('data-ktax');
+    if (tx) { cfg.taxas[tx] = kNum(el.value); return kitsSalvar(cfg); }
+    var f = el.getAttribute('data-kk'); if (!f) return;
+    var k = cfg.kits.find(function (x) { return x.id === el.getAttribute('data-kid'); }); if (!k) return;
+    if (f === 'nome') k.nome = el.value.trim() || k.nome;
+    else if (f === 'preco') k.preco = kNum(el.value);
+    else {
+      var i = (k.itens || []).find(function (x) { return x.id === el.getAttribute('data-iid'); }); if (!i) return;
+      if (f === 'i-nome') { i.nome = el.value.trim(); i.produto_id = null; }
+      else if (f === 'i-qtd') i.qtd = Math.max(0, kNum(el.value));
+      else if (f === 'i-custo') i.custo = kNum(el.value);
+      else if (f === 'i-loja') i.loja = el.value.trim();
+    }
+    await kitsSalvar(cfg);
+  });
+  document.addEventListener('click', async function (e) {
+    if (e.target.closest('[data-view="Kits"],[data-nav-target="Kits"]')) renderKits();
+    var b = e.target.closest('#kitsBox [data-kact]'); if (!b) return;
+    var act = b.getAttribute('data-kact'), cfg = await idbGet('config', 'kits'); if (!cfg) return;
+    var k = cfg.kits.find(function (x) { return x.id === b.getAttribute('data-kid'); });
+    if (act === 'novo') { cfg.kits.push({ id: uid(), nome: 'Kit novo', preco: 0, itens: [], vendidos: 0, hist: [] }); return kitsSalvar(cfg); }
+    if (act === 'add-item' && k) { k.itens.push({ id: uid(), nome: 'Novo item', qtd: 1, custo: 0, loja: 'Look China', produto_id: null }); return kitsSalvar(cfg); }
+    if (act === 'del-item' && k) { k.itens = k.itens.filter(function (x) { return x.id !== b.getAttribute('data-iid'); }); return kitsSalvar(cfg); }
+    if (act === 'del-kit' && k) { if (!confirm('Excluir "' + k.nome + '"? Os produtos e o estoque não são apagados.')) return; cfg.kits = cfg.kits.filter(function (x) { return x !== k; }); return kitsSalvar(cfg); }
+    if (act === 'vincular') {
+      var produtos = await idbAll('produtos'), criados = 0;
+      for (var a = 0; a < cfg.kits.length; a++) for (var z = 0; z < cfg.kits[a].itens.length; z++) {
+        var it = cfg.kits[a].itens[z]; if (it.produto_id && produtos.some(function (p) { return p.id === it.produto_id; })) continue;
+        var nm = (it.nome || '').trim().toLowerCase(); if (!nm) continue;
+        var p = produtos.find(function (x) { return (x.nome || '').trim().toLowerCase() === nm; });
+        if (!p) {
+          p = { id: uid(), nome: it.nome.trim(), descricao: 'Componente de kit. Fornecedor: ' + (it.loja || '-') + '. Custo R$ ' + kFmt(it.custo), categoria_id: null, fornecedor_id: null, sku: '', preco: Number(it.custo || 0), estoque_atual: 0, estoque_minimo: 0, estoque_ideal: 0, foto: '', fotos: [], criado_em: nowISO() };
+          await idbPut('produtos', p); produtos.push(p); criados++;
+        }
+        it.produto_id = p.id;
+      }
+      await kitsSalvar(cfg); try { await renderProdutos(); } catch (er) {}
+      return toast(criados ? criados + ' produto(s) criado(s) e vinculados.' : 'Componentes vinculados aos produtos que já existem.');
+    }
+    if (act === 'entrada') {
+      var pid = b.getAttribute('data-pid'), q = Math.floor(kNum((document.getElementById('kent-' + pid) || {}).value));
+      var pr = await idbGet('produtos', pid); if (!pr || !(q > 0)) return toast('Informe uma quantidade maior que zero.', 'error');
+      pr.estoque_atual = Number(pr.estoque_atual || 0) + q; await idbPut('produtos', pr);
+      await idbPut('estoque_mov', { id: uid(), produto_id: pid, tipo: 'entrada', quantidade: q, motivo: 'Entrada para kits', criado_em: nowISO() });
+      await logAction('estoque_entrada', pr.nome + ' +' + q); toast('Entrada registrada.'); try { await renderProdutos(); } catch (er) {} return renderKits();
+    }
+    if (act === 'vender' && k) {
+      var n = Math.floor(kNum((document.getElementById('kvq-' + k.id) || {}).value)); if (!(n > 0)) return toast('Informe quantos kits foram vendidos.', 'error');
+      var prods = await idbAll('produtos'), pm = {}; prods.forEach(function (x) { pm[x.id] = x; });
+      if (!k.itens.length || k.itens.some(function (i) { return !i.produto_id || !pm[i.produto_id]; })) return toast('Vincule os componentes aos produtos primeiro (botão "Criar/vincular produtos dos componentes").', 'error');
+      var falta = k.itens.filter(function (i) { return Number(pm[i.produto_id].estoque_atual || 0) < i.qtd * n; });
+      if (falta.length && !confirm('Estoque insuficiente de: ' + falta.map(function (i) { return i.nome; }).join(', ') + '. Registrar mesmo assim (o estoque fica em 0)?')) return;
+      var c = kitCalc(k, cfg.taxas), mov = [];
+      for (var m = 0; m < k.itens.length; m++) {
+        var i2 = k.itens[m], p2 = pm[i2.produto_id], q2 = i2.qtd * n, tira = Math.min(q2, Number(p2.estoque_atual || 0));
+        p2.estoque_atual = Number(p2.estoque_atual || 0) - tira; await idbPut('produtos', p2);
+        await idbPut('estoque_mov', { id: uid(), produto_id: p2.id, tipo: 'saida', quantidade: tira, motivo: 'Venda de ' + n + ' ' + k.nome, criado_em: nowISO() });
+        mov.push({ produto_id: p2.id, qtd: tira });
+      }
+      k.vendidos = (k.vendidos || 0) + n; k.hist = k.hist || []; k.hist.push({ id: uid(), n: n, lucro: c.lucro * n, em: nowISO(), mov: mov });
+      await logAction('kit_vendido', n + ' x ' + k.nome); toast(n + ' kit(s) vendido(s). Estoque dos componentes baixado.'); try { await renderProdutos(); } catch (er) {} return kitsSalvar(cfg);
+    }
+    if (act === 'desfazer' && k && (k.hist || []).length) {
+      var ult = k.hist[k.hist.length - 1];
+      if (!confirm('Desfazer a última venda (' + ult.n + ' kit(s)) e devolver os componentes ao estoque?')) return;
+      for (var d = 0; d < ult.mov.length; d++) { var pd = await idbGet('produtos', ult.mov[d].produto_id); if (pd) { pd.estoque_atual = Number(pd.estoque_atual || 0) + ult.mov[d].qtd; await idbPut('produtos', pd); await idbPut('estoque_mov', { id: uid(), produto_id: pd.id, tipo: 'entrada', quantidade: ult.mov[d].qtd, motivo: 'Venda de kit desfeita', criado_em: nowISO() }); } }
+      k.hist.pop(); k.vendidos = Math.max(0, (k.vendidos || 0) - ult.n); toast('Última venda desfeita.'); try { await renderProdutos(); } catch (er) {} return kitsSalvar(cfg);
+    }
   });
 
   /* ============================================================
