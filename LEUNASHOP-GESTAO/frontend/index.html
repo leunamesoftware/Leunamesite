@@ -10882,7 +10882,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
         var aviso = !lista.length ? '' : (mi > 0 ? (tot >= mi ? '<div style="font-size:12.5px;color:#16794c;font-weight:700;margin-top:6px;">✔ passa do pedido mínimo</div>' : '<div style="font-size:12.5px;color:#c0392b;font-weight:700;margin-top:6px;">⚠ falta ' + R(mi - tot) + ' para o mínimo</div>') : '');
         return '<div style="border:2px solid ' + cc + ';border-radius:14px;overflow:hidden;background:var(--surface,#fff);">' +
           '<button type="button" data-cact="cor" data-loja="' + esc(c.k) + '" style="display:flex;justify-content:space-between;gap:8px;width:100%;border:0;background:' + cc + ';color:#fff;padding:10px 12px;font:inherit;font-weight:700;font-size:15px;"><span>' + esc(c.nome) + '</span><span>' + (lista.length ? R(tot) : '') + '</span></button>' +
-          '<div style="padding:10px 12px;">' + (lista.length ? lista.map(function (x) { return '<div style="display:flex;justify-content:space-between;gap:8px;align-items:center;font-size:13.5px;padding:3px 0;"><span style="flex:1;">' + qf(x.i.qtd) + ' × ' + esc(x.i.nome) + '</span><b style="white-space:nowrap;">' + R(x.sub) + '</b><button type="button" data-cact="del" data-cid="' + x.i.id + '" title="Tirar da lista" style="border:0;background:none;font-size:15px;color:var(--text-muted);padding:0 2px;">✕</button></div>'; }).join('') : '<div style="font-size:13px;color:var(--text-muted);">Nenhum produto mais barato aqui.</div>') + aviso +
+          '<div style="padding:10px 12px;">' + (lista.length ? lista.map(function (x) { return '<div style="display:flex;justify-content:space-between;gap:8px;align-items:center;font-size:13.5px;padding:3px 0;"><span style="flex:1;">' + qf(x.i.qtd) + ' × ' + esc(x.i.nome) + '</span><b style="white-space:nowrap;">' + R(x.sub) + '</b><button type="button" data-cact="del" data-cid="' + x.i.id + '" title="Tirar da lista" style="border:0;background:none;font-size:15px;color:var(--text-muted);padding:0 2px;">✕</button></div>'; }).join('') : '<div style="font-size:13px;color:var(--text-muted);">' + (cfg.itens.some(function (it) { return (it.precos || []).some(function (x) { return (x.loja || '').trim().toLowerCase() === c.k && Number(x.preco) > 0; }); }) ? 'Nenhum produto mais barato aqui.' : 'Ainda sem preço digitado nesta loja. Vá em "Digitar preços" e preencha a caixinha dela.') + '</div>') + aviso +
           '<label style="display:block;font-size:12px;color:var(--text-muted);margin-top:10px;">Pedido mínimo R$ ' + inp('data-cf="minimo" data-loja="' + esc(c.k) + '"', mi > 0 ? String(mi).replace('.', ',') : '', 'width:80px;padding:5px 8px;', 'inputmode="decimal" placeholder="sem"') + '</label><button type="button" data-cact="del-loja" data-loja="' + esc(c.k) + '" style="display:block;margin-top:10px;border:0;background:none;color:#c0392b;font-size:12.5px;padding:0;">Excluir esta loja</button></div></div>';
       }).join('') + '</div>';
     }
@@ -10908,16 +10908,23 @@ html, body{ overflow-x:hidden; max-width:100%; }
     }
 
     if (cotModo === 'grafico') {
-      var barra = function (pct, c, txt, forte, fraco) { return '<div style="margin:5px 0;"><div style="height:22px;border-radius:6px;background:var(--surface-2,#eef0f3);overflow:hidden;"><div style="height:100%;width:' + Math.max(3, Math.min(100, pct)).toFixed(1) + '%;background:' + c + ';border-radius:6px;opacity:' + (fraco ? .4 : 1) + ';"></div></div><div style="font-size:12.5px;margin-top:2px;' + (forte ? 'font-weight:700;' : '') + '">' + txt + '</div></div>'; };
-      h += '<div class="card" style="padding:14px 16px;"><b>Quanto gasta em cada loja (só o mais barato)</b>';
-      cols.forEach(function (c) { var lista = porLoja[c.k] || []; if (!lista.length) return; var tot = lista.reduce(function (a, x) { return a + x.sub; }, 0); h += barra(totMin > 0 ? tot / totMin * 100 : 0, cfg.cores[c.k], dot(c.nome) + esc(c.nome) + ' — ' + lista.length + ' produto(s) — <b>' + R(tot) + '</b>', true); });
-      h += '<div style="margin-top:16px;border-top:1px solid var(--border-subtle);padding-top:10px;"><b>Preço de cada produto (✔ = mais barato)</b></div>';
-      cfg.itens.forEach(function (i) {
-        var ps = (i.precos || []).filter(function (x) { return Number(x.preco) > 0; }); if (!ps.length) return;
-        var mx = Math.max.apply(null, ps.map(function (x) { return Number(x.preco); })), mn = cotMin(i);
-        h += '<div style="margin-top:12px;font-weight:700;font-size:13.5px;">' + esc(i.nome) + '</div>' + ps.map(function (x) { var v = Number(x.preco), g = v === mn.preco; return barra(v / mx * 100, cor(x.loja), (g ? '✔ ' : '') + dot(x.loja) + esc(x.loja || 'Sem nome') + ' — ' + R(v), g, !g); }).join('');
-      });
+      var ativas = cols.filter(function (c) { return (porLoja[c.k] || []).length; });
+      var totLoja = function (c) { return porLoja[c.k].reduce(function (a, x) { return a + x.sub; }, 0); };
+      h += '<div style="border:1px solid var(--border-subtle);border-radius:14px;padding:14px 16px;background:var(--surface,#fff);">';
+      if (!ativas.length) h += '<div style="color:var(--text-muted);font-size:13.5px;">Digite alguns preços na aba "Digitar preços" para ver o gráfico.</div>';
+      else {
+        var eco = Math.max(0, totLook - totMin);
+        h += '<div style="font-size:12px;color:var(--text-muted);">Gasto total comprando o mais barato</div><div style="font-size:26px;font-weight:800;">' + R(totMin) + '</div>' +
+          (eco > 0 ? '<div style="font-size:13px;color:#16794c;font-weight:700;">economiza ' + R(eco) + ' (' + (totLook > 0 ? (eco / totLook * 100).toFixed(1).replace('.', ',') : '0') + '%) em relação a comprar tudo na Look China</div>' : '') +
+          '<div style="display:flex;height:30px;border-radius:99px;overflow:hidden;margin:14px 0 10px;background:var(--surface-2,#eef0f3);">' + ativas.map(function (c) { var pc = totMin > 0 ? totLoja(c) / totMin * 100 : 0; return '<div title="' + esc(c.nome) + '" style="width:' + pc.toFixed(2) + '%;background:' + cfg.cores[c.k] + ';color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;">' + (pc >= 12 ? Math.round(pc) + '%' : '') + '</div>'; }).join('') + '</div>' +
+          '<div style="display:flex;flex-direction:column;gap:6px;">' + ativas.map(function (c) { return '<div style="display:flex;align-items:center;gap:8px;font-size:13.5px;"><span style="width:12px;height:12px;border-radius:50%;background:' + cfg.cores[c.k] + ';flex:none;"></span><span style="flex:1;">' + esc(c.nome) + ' <span style="color:var(--text-muted);">· ' + porLoja[c.k].length + ' produto(s)</span></span><b>' + R(totLoja(c)) + '</b></div>'; }).join('') + '</div>';
+      }
       h += '</div>';
+      var comPreco = cfg.itens.filter(function (i) { return (i.precos || []).some(function (x) { return Number(x.preco) > 0; }); });
+      if (comPreco.length) h += '<div style="border:1px solid var(--border-subtle);border-radius:14px;padding:6px 16px;margin-top:12px;background:var(--surface,#fff);"><div style="font-size:12px;color:var(--text-muted);padding:10px 0 4px;">Preço de cada produto (cheio = mais barato)</div>' + comPreco.map(function (i) {
+        var mn = cotMin(i), ps = (i.precos || []).filter(function (x) { return Number(x.preco) > 0; }).sort(function (a, b2) { return a.preco - b2.preco; });
+        return '<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;padding:9px 0;border-top:1px solid var(--border-subtle);"><span style="font-size:13.5px;font-weight:600;flex:1 1 150px;">' + esc(i.nome) + '</span><span style="display:flex;gap:5px;flex-wrap:wrap;">' + ps.map(function (x) { var g = Number(x.preco) === mn.preco, cc = cor(x.loja); return '<span style="padding:4px 10px;border-radius:99px;font-size:12.5px;font-weight:700;' + (g ? 'background:' + cc + ';color:#fff;border:1px solid ' + cc + ';' : 'color:' + cc + ';border:1px solid ' + cc + ';opacity:.75;') + '">' + (g ? '✔ ' : '') + esc(x.loja || '?') + ' ' + kFmt(x.preco) + '</span>'; }).join('') + '</span></div>';
+      }).join('') + '</div>';
     }
     box.innerHTML = h;
   }
