@@ -10888,6 +10888,8 @@ html, body{ overflow-x:hidden; max-width:100%; }
     }
 
     if (cotModo === 'precos') {
+      h += '<div style="font-size:12.5px;color:var(--text-muted);margin-bottom:4px;">O que você digita nas caixinhas:</div><div style="display:flex;gap:6px;margin-bottom:10px;">' + [[false, 'Preço de 1 unidade'], [true, 'Total do produto']].map(function (o) { var on = !!cfg.modoTotal === o[0]; return '<button type="button" data-cact="modo-digito" data-v="' + (o[0] ? '1' : '0') + '" style="flex:1;padding:9px 6px;border-radius:10px;font:inherit;font-size:13.5px;font-weight:700;cursor:pointer;border:2px solid ' + (on ? '#ff7a1a' : 'var(--border-subtle)') + ';background:' + (on ? '#fff3e8' : 'transparent') + ';color:inherit;">' + (on ? '● ' : '○ ') + o[1] + '</button>'; }).join('') + '</div>' +
+        '<div style="font-size:12px;color:var(--text-muted);margin-bottom:10px;">' + (cfg.modoTotal ? 'Digite quanto custa a quantidade toda (ex.: os 4 pacotes de disco). O aplicativo divide pela quantidade.' : 'Digite o preço de um (um pacote, um par). O aplicativo multiplica pela quantidade.') + '</div>';
       h += '<div style="display:flex;gap:8px;margin-bottom:10px;">' + inp('id="cotNovaLoja"', '', 'flex:1;', 'placeholder="Cadastrar loja nova"') + '<button class="btn btn--secondary btn--sm" type="button" data-cact="loja-nova">+ Cadastrar</button></div>';
       h += '<input id="cotBusca" placeholder="Buscar produto..." style="width:100%;box-sizing:border-box;padding:10px 12px;border:1px solid var(--border-subtle);border-radius:10px;font:inherit;font-size:16px;margin-bottom:10px;">';
       cfg.itens.forEach(function (i) {
@@ -10901,7 +10903,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
             var q = (i.precos || []).filter(function (x) { return (x.loja || '').trim().toLowerCase() === c.k; })[0], v = q ? Number(q.preco || 0) : 0;
             var ganha = m && v > 0 && v === m.preco, perde = m && v > 0 && v > m.preco, cc = cfg.cores[c.k];
             return '<div style="border-top:4px solid ' + cc + ';border-radius:6px;' + (ganha ? '--c:' + cc + ';animation:cotPisca 1.1s ease-in-out infinite;' : '') + '"><div style="font-size:10.5px;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:2px 2px 0;">' + (ganha ? '✔ ' : '') + esc(c.nome) + '</div>' +
-              inp('data-cf="preco"' + at + ' data-lk="' + esc(c.k) + '" data-ln="' + esc(c.nome) + '"', v > 0 ? String(v).replace('.', ',') : '', 'width:100%;box-sizing:border-box;padding:6px 6px;font-size:15px;' + (ganha ? 'background:#e8f5ee;font-weight:700;' : '') + (perde ? 'text-decoration:line-through;opacity:.55;' : ''), 'inputmode="decimal" placeholder="R$"') + '</div>';
+              inp('data-cf="preco"' + at + ' data-lk="' + esc(c.k) + '" data-ln="' + esc(c.nome) + '"', v > 0 ? String(+((cfg.modoTotal ? v * Number(i.qtd || 0) : v)).toFixed(2)).replace('.', ',') : '', 'width:100%;box-sizing:border-box;padding:6px 6px;font-size:15px;' + (ganha ? 'background:#e8f5ee;font-weight:700;' : '') + (perde ? 'text-decoration:line-through;opacity:.55;' : ''), 'inputmode="decimal" placeholder="R$"') + '</div>';
           }).join('') + '</div></div>';
       });
       h += '<button class="btn btn--primary" type="button" data-cact="novo">+ Novo produto</button>';
@@ -10910,21 +10912,18 @@ html, body{ overflow-x:hidden; max-width:100%; }
     if (cotModo === 'grafico') {
       var ativas = cols.filter(function (c) { return (porLoja[c.k] || []).length; });
       var totLoja = function (c) { return porLoja[c.k].reduce(function (a, x) { return a + x.sub; }, 0); };
-      h += '<div style="border:1px solid var(--border-subtle);border-radius:14px;padding:14px 16px;background:var(--surface,#fff);">';
-      if (!ativas.length) h += '<div style="color:var(--text-muted);font-size:13.5px;">Digite alguns preços na aba "Digitar preços" para ver o gráfico.</div>';
+      var comPreco = cfg.itens.filter(function (i) { return (i.precos || []).some(function (x) { return Number(x.preco) > 0; }); });
+      if (!comPreco.length) h += '<div style="color:var(--text-muted);font-size:13.5px;">Digite alguns preços na aba "Digitar preços" para ver o gráfico.</div>';
       else {
         var eco = Math.max(0, totLook - totMin);
-        h += '<div style="font-size:12px;color:var(--text-muted);">Gasto total comprando o mais barato</div><div style="font-size:26px;font-weight:800;">' + R(totMin) + '</div>' +
-          (eco > 0 ? '<div style="font-size:13px;color:#16794c;font-weight:700;">economiza ' + R(eco) + ' (' + (totLook > 0 ? (eco / totLook * 100).toFixed(1).replace('.', ',') : '0') + '%) em relação a comprar tudo na Look China</div>' : '') +
-          '<div style="display:flex;height:30px;border-radius:99px;overflow:hidden;margin:14px 0 10px;background:var(--surface-2,#eef0f3);">' + ativas.map(function (c) { var pc = totMin > 0 ? totLoja(c) / totMin * 100 : 0; return '<div title="' + esc(c.nome) + '" style="width:' + pc.toFixed(2) + '%;background:' + cfg.cores[c.k] + ';color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;">' + (pc >= 12 ? Math.round(pc) + '%' : '') + '</div>'; }).join('') + '</div>' +
-          '<div style="display:flex;flex-direction:column;gap:6px;">' + ativas.map(function (c) { return '<div style="display:flex;align-items:center;gap:8px;font-size:13.5px;"><span style="width:12px;height:12px;border-radius:50%;background:' + cfg.cores[c.k] + ';flex:none;"></span><span style="flex:1;">' + esc(c.nome) + ' <span style="color:var(--text-muted);">· ' + porLoja[c.k].length + ' produto(s)</span></span><b>' + R(totLoja(c)) + '</b></div>'; }).join('') + '</div>';
+        h += '<div style="font-size:13.5px;margin-bottom:8px;">Total no mais barato: <b>' + R(totMin) + '</b>' + (eco > 0 ? ' · economiza <b style="color:#16794c;">' + R(eco) + '</b>' : '') + '</div>';
+        if (ativas.length > 1) h += '<div style="display:flex;height:14px;border-radius:99px;overflow:hidden;margin-bottom:8px;background:var(--surface-2,#eef0f3);">' + ativas.map(function (c) { return '<div title="' + esc(c.nome) + '" style="width:' + (totMin > 0 ? totLoja(c) / totMin * 100 : 0).toFixed(2) + '%;background:' + cfg.cores[c.k] + ';"></div>'; }).join('') + '</div>';
+        h += '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;">' + ativas.map(function (c) { return '<span style="background:' + cfg.cores[c.k] + ';color:#fff;border-radius:99px;padding:4px 11px;font-size:12.5px;font-weight:700;">' + esc(c.nome) + ' · ' + porLoja[c.k].length + ' · ' + R(totLoja(c)) + '</span>'; }).join('') + '</div>';
+        h += comPreco.map(function (i) {
+          var mn = cotMin(i), ps = (i.precos || []).filter(function (x) { return Number(x.preco) > 0; }).sort(function (a, b2) { return a.preco - b2.preco; });
+          return '<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;padding:7px 0;border-top:1px solid var(--border-subtle);"><span style="font-size:13px;font-weight:600;flex:1 1 140px;">' + esc(i.nome) + '</span><span style="display:flex;gap:4px;flex-wrap:wrap;">' + ps.map(function (x) { var g = Number(x.preco) === mn.preco, cc = cor(x.loja); return '<span style="padding:3px 9px;border-radius:99px;font-size:12px;font-weight:700;' + (g ? 'background:' + cc + ';color:#fff;border:1px solid ' + cc + ';' : 'color:' + cc + ';border:1px solid ' + cc + ';opacity:.7;') + '">' + (g ? '✔ ' : '') + esc(x.loja || '?') + ' ' + kFmt(x.preco) + '</span>'; }).join('') + '</span></div>';
+        }).join('');
       }
-      h += '</div>';
-      var comPreco = cfg.itens.filter(function (i) { return (i.precos || []).some(function (x) { return Number(x.preco) > 0; }); });
-      if (comPreco.length) h += '<div style="border:1px solid var(--border-subtle);border-radius:14px;padding:6px 16px;margin-top:12px;background:var(--surface,#fff);"><div style="font-size:12px;color:var(--text-muted);padding:10px 0 4px;">Preço de cada produto (cheio = mais barato)</div>' + comPreco.map(function (i) {
-        var mn = cotMin(i), ps = (i.precos || []).filter(function (x) { return Number(x.preco) > 0; }).sort(function (a, b2) { return a.preco - b2.preco; });
-        return '<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;padding:9px 0;border-top:1px solid var(--border-subtle);"><span style="font-size:13.5px;font-weight:600;flex:1 1 150px;">' + esc(i.nome) + '</span><span style="display:flex;gap:5px;flex-wrap:wrap;">' + ps.map(function (x) { var g = Number(x.preco) === mn.preco, cc = cor(x.loja); return '<span style="padding:4px 10px;border-radius:99px;font-size:12.5px;font-weight:700;' + (g ? 'background:' + cc + ';color:#fff;border:1px solid ' + cc + ';' : 'color:' + cc + ';border:1px solid ' + cc + ';opacity:.75;') + '">' + (g ? '✔ ' : '') + esc(x.loja || '?') + ' ' + kFmt(x.preco) + '</span>'; }).join('') + '</span></div>';
-      }).join('') + '</div>';
     }
     box.innerHTML = h;
   }
@@ -10939,7 +10938,8 @@ html, body{ overflow-x:hidden; max-width:100%; }
       var lk = el.getAttribute('data-lk'); i.precos = i.precos || [];
       var qq = i.precos.filter(function (x) { return (x.loja || '').trim().toLowerCase() === lk; })[0];
       if (!qq) { qq = { id: uid(), loja: el.getAttribute('data-ln') || lk, preco: 0 }; i.precos.push(qq); }
-      qq.preco = Math.max(0, kNum(el.value)); return cotSalvar(cfg);
+      var vv = Math.max(0, kNum(el.value)); if (cfg.modoTotal) vv = Number(i.qtd) > 0 ? vv / Number(i.qtd) : 0;
+      qq.preco = Math.round(vv * 10000) / 10000; return cotSalvar(cfg);
     }
     if (f === 'nome') i.nome = el.value.trim() || i.nome;
     else if (f === 'qtd') i.qtd = Math.max(0, kNum(el.value));
@@ -10965,6 +10965,7 @@ html, body{ overflow-x:hidden; max-width:100%; }
       if (cfg.cores) delete cfg.cores[lk2]; if (cfg.minimos) delete cfg.minimos[lk2];
       return cotSalvar(cfg);
     }
+    if (act === 'modo-digito') { cfg.modoTotal = b.getAttribute('data-v') === '1'; return cotSalvar(cfg); }
     if (act === 'modo') { cotModo = b.getAttribute('data-m'); return renderCotacao(); }
     if (act === 'loja-nova') { var nl = ((document.getElementById('cotNovaLoja') || {}).value || '').trim(); if (!nl) return; cfg.extras = cfg.extras || []; if (!cfg.extras.some(function (x) { return x.toLowerCase() === nl.toLowerCase(); })) cfg.extras.push(nl); return cotSalvar(cfg); }
     if (act === 'cor') { var kk = b.getAttribute('data-loja'); cfg.cores = cfg.cores || {}; var ix = COT_PAL.indexOf(cfg.cores[kk]), usadas = Object.keys(cfg.cores).filter(function (o) { return o !== kk; }).map(function (o) { return cfg.cores[o]; }); for (var t2 = 1; t2 <= COT_PAL.length; t2++) { var cand = COT_PAL[(ix + t2) % COT_PAL.length]; if (usadas.indexOf(cand) < 0 || t2 === COT_PAL.length) { cfg.cores[kk] = cand; break; } } return cotSalvar(cfg); }
